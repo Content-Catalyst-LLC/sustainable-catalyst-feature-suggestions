@@ -1,0 +1,12 @@
+.DS_Store
+*.log
+.env
+.env.*
+node_modules/
+vendor/
+__pycache__/
+.pytest_cache/
+exports/*.csv
+exports/*.json
+exports/*.xlsx
+!exports/.gitkeep

@@ -1,0 +1,281 @@
+/* Sustainable Catalyst Feature Suggestions page */
+.scsuggest-page {
+  --scsuggest-black: #000000;
+  --scsuggest-red: #9b1111;
+  --scsuggest-white: #ffffff;
+  --scsuggest-cream: #f7f3ea;
+  --scsuggest-cream-soft: #fbfaf6;
+  --scsuggest-border: #d9d2c4;
+  --scsuggest-text: #171717;
+  --scsuggest-muted: #555555;
+  --scsuggest-shadow: 0 10px 26px rgba(0,0,0,0.045);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 34px 22px 70px;
+  color: var(--scsuggest-text);
+}
+
+.scsuggest-hero,
+.scsuggest-panel,
+.scsuggest-next {
+  background: var(--scsuggest-white);
+  border: 1px solid var(--scsuggest-border);
+  box-shadow: var(--scsuggest-shadow);
+}
+
+.scsuggest-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(30px, 5vw, 58px);
+  border-top: 7px solid var(--scsuggest-black);
+}
+
+.scsuggest-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 8px;
+  background: var(--scsuggest-red);
+}
+
+.scsuggest-eyebrow,
+.scsuggest-section-label {
+  margin: 0 0 10px;
+  color: var(--scsuggest-red);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.scsuggest-hero h1 {
+  margin: 0 0 16px;
+  color: var(--scsuggest-black);
+  font-size: clamp(2.35rem, 6vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.065em;
+}
+
+.scsuggest-lede,
+.scsuggest-intro,
+.scsuggest-panel p,
+.scsuggest-next p {
+  line-height: 1.7;
+}
+
+.scsuggest-lede {
+  max-width: 880px;
+  margin: 0 0 16px;
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 650;
+  color: var(--scsuggest-black);
+}
+
+.scsuggest-intro {
+  max-width: 920px;
+  margin: 0 0 24px;
+  color: var(--scsuggest-muted);
+  font-size: 1.03rem;
+}
+
+.scsuggest-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.scsuggest-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 11px 14px;
+  border: 2px solid var(--scsuggest-black);
+  background: var(--scsuggest-white);
+  color: var(--scsuggest-black) !important;
+  text-decoration: none !important;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.scsuggest-button:hover,
+.scsuggest-button:focus {
+  background: var(--scsuggest-black);
+  color: var(--scsuggest-white) !important;
+}
+
+.scsuggest-note {
+  margin: 22px 0 0;
+  padding: 14px 16px;
+  background: var(--scsuggest-cream-soft);
+  border: 1px solid var(--scsuggest-border);
+  border-left: 5px solid var(--scsuggest-red);
+  font-weight: 700;
+}
+
+.scsuggest-panel,
+.scsuggest-next {
+  margin-top: 22px;
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.scsuggest-soft {
+  background: var(--scsuggest-cream-soft);
+}
+
+.scsuggest-section-head {
+  max-width: 920px;
+  margin-bottom: 20px;
+}
+
+.scsuggest-panel h2,
+.scsuggest-next h2 {
+  margin: 0 0 14px;
+  color: var(--scsuggest-black);
+  font-size: clamp(1.6rem, 3vw, 2.45rem);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.scsuggest-panel h3 {
+  margin: 0 0 10px;
+  color: var(--scsuggest-black);
+  font-size: 1.08rem;
+  line-height: 1.2;
+}
+
+.scsuggest-nav-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  list-style: none !important;
+  margin: 18px 0 0 !important;
+  padding: 0 !important;
+}
+
+.scsuggest-nav-list li {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.scsuggest-nav-link {
+  display: grid !important;
+  grid-template-rows: auto auto 1fr !important;
+  min-height: 138px !important;
+  height: 100% !important;
+  padding: 18px !important;
+  background: var(--scsuggest-white);
+  border: 1px solid var(--scsuggest-border);
+  color: var(--scsuggest-black) !important;
+  text-decoration: none !important;
+}
+
+.scsuggest-nav-link span,
+.scsuggest-card-number,
+.scsuggest-process span {
+  color: var(--scsuggest-red);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.scsuggest-nav-link strong {
+  display: block;
+  margin: 6px 0 8px;
+  font-size: 1.12rem;
+}
+
+.scsuggest-nav-link em {
+  color: var(--scsuggest-muted);
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.scsuggest-card-grid,
+.scsuggest-process,
+.scsuggest-boundary-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.scsuggest-card,
+.scsuggest-process div,
+.scsuggest-boundary-list article {
+  padding: 18px;
+  background: var(--scsuggest-white);
+  border: 1px solid var(--scsuggest-border);
+}
+
+.scsuggest-card p,
+.scsuggest-process p,
+.scsuggest-boundary-list p {
+  margin: 0;
+  color: var(--scsuggest-muted);
+}
+
+.scsuggest-card-number {
+  margin: 0 0 12px !important;
+}
+
+.scsuggest-boundary-list strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.scsuggest-form-shell {
+  margin-top: 24px;
+  padding: 0;
+  background: var(--scsuggest-white);
+  border: 1px solid var(--scsuggest-border);
+  box-shadow: var(--scsuggest-shadow);
+  overflow: hidden;
+}
+
+.scsuggest-form-shell > * {
+  margin-top: 0;
+}
+
+.scsuggest-back-top {
+  margin: 22px 0 0;
+  text-align: right;
+}
+
+.scsuggest-back-top a {
+  color: var(--scsuggest-black);
+  font-weight: 800;
+}
+
+@media (max-width: 1100px) {
+  .scsuggest-card-grid,
+  .scsuggest-process,
+  .scsuggest-boundary-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .scsuggest-page {
+    padding: 22px 14px 54px;
+  }
+
+  .scsuggest-nav-list,
+  .scsuggest-card-grid,
+  .scsuggest-process,
+  .scsuggest-boundary-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .scsuggest-button-row {
+    flex-direction: column;
+  }
+
+  .scsuggest-button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "title": "Add a Platform Demo Hub",
+  "category": "Online demo improvement",
+  "problem": "Visitors can try individual demos, but there is no single page that explains which demo to use first.",
+  "beneficiaries": "New visitors, sustainability teams, students, researchers, and potential consulting clients.",
+  "suggestion": "Create /platform/demos/ with cards for Catalyst Canvas, Catalyst Data, Analytics R, Global Impact Catalyst, Narrative Risk, Catalyst Finance, and Catalyst Grit.",
+  "relevant_page_or_repo": "/platform/ and module demo pages",
+  "priority": "high",
+  "follow_up_allowed": true
+}

@@ -1,0 +1,20 @@
+.scfs-admin-details {
+  display: grid;
+  gap: 14px;
+}
+
+.scfs-admin-row {
+  padding: 12px 14px;
+  background: #fbfaf6;
+  border: 1px solid #d9d2c4;
+}
+
+.scfs-admin-row strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.scfs-admin-row p {
+  margin: 0;
+  white-space: normal;
+}

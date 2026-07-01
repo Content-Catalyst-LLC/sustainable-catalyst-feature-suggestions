@@ -1,0 +1,28 @@
+{
+  "name": "Sustainable Catalyst Feature Suggestions",
+  "slug": "sustainable-catalyst-feature-suggestions",
+  "repository": "Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions",
+  "type": "wordpress-plugin-and-page-package",
+  "shortcode": "[sustainable_catalyst_feature_suggestions]",
+  "public_page": "/platform/feature-suggestions/",
+  "version": "0.1.0",
+  "created": "2026-07-01",
+  "capabilities": [
+    "private WordPress suggestion records",
+    "admin email notification",
+    "CSV export",
+    "consent checkbox",
+    "honeypot spam protection",
+    "page HTML",
+    "site CSS",
+    "documentation",
+    "examples"
+  ],
+  "boundaries": [
+    "no confidential information",
+    "no proprietary information",
+    "no sensitive personal information",
+    "no legal, financial, medical, compliance, or regulated information",
+    "no guarantee of implementation, attribution, compensation, or response"
+  ]
+}
