@@ -10,6 +10,11 @@ This repository supports the public feature suggestion workflow at:
 
 The plugin gives visitors a structured way to suggest new platform modules, demo improvements, Research Librarian features, repository upgrades, documentation improvements, accessibility fixes, bug reports, and data/export ideas without requiring GitHub knowledge.
 
+## Where submissions and settings appear
+
+Submitted ideas are stored as the `sc_feature_suggestion` custom post type. Review them in WordPress Admin → Feature Suggestions, or open `/wp-admin/edit.php?post_type=sc_feature_suggestion`. Configure the plugin in Feature Suggestions → Settings, Settings → Feature Suggestions, or from the plugin-row Settings link on the Installed Plugins screen.
+
+
 ## Shortcode
 
 ```text

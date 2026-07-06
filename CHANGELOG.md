@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.0.2 - 2026-07-06
+
+- Fixed settings access on WordPress installs where the Plugins screen is available but `manage_options` does not resolve as expected.
+- Lowered the settings-page capability to `edit_posts` by default, with a `scfs_settings_capability` filter for stricter site policies.
+- Added a hidden standalone settings URL at `/wp-admin/admin.php?page=scfs-settings-standalone` so the plugin-row Settings link does not depend on the custom post type parent menu.
+- Kept the visible locations under Feature Suggestions → Settings and Settings → Feature Suggestions.
+
+## 2.0.1
+
+- Added visible plugin-row action links for Submissions, Settings, and Export CSV on the WordPress Plugins screen.
+- Added a secondary Settings menu location under WordPress Settings → Feature Suggestions, while keeping the main Feature Suggestions → Settings submenu.
+- Clarified that submitted ideas are stored as the `sc_feature_suggestion` custom post type and reviewed under WordPress Admin → Feature Suggestions.
+
 ## 2.0.0 - 2026-07-06
 
 - Added full plugin settings screen under **Feature Suggestions → Settings**.

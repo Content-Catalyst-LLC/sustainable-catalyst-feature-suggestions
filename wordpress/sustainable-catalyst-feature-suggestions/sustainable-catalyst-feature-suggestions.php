@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Advanced feature suggestion intake, triage, settings, workflow metadata, spam controls, notifications, and CSV export for Sustainable Catalyst.
- * Version: 2.0.0
+ * Version: 2.0.2
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '2.0.0';
+    const VERSION = '2.0.2';
     const POST_TYPE = 'sc_feature_suggestion';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -48,6 +48,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         add_action('save_post_' . self::POST_TYPE, array($this, 'save_admin_review'), 10, 2);
 
         add_action('admin_menu', array($this, 'add_admin_pages'));
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'plugin_action_links'));
         add_action('admin_post_scfs_export_csv', array($this, 'export_csv'));
         add_action('admin_post_scfs_save_settings', array($this, 'save_settings'));
     }
@@ -938,13 +939,45 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         update_post_meta($post_id, '_scfs_admin_notes', isset($_POST['scfs_admin_notes']) ? sanitize_textarea_field(wp_unslash($_POST['scfs_admin_notes'])) : '');
     }
 
+    private function settings_capability() {
+        /**
+         * Capability required to manage Feature Suggestion settings.
+         *
+         * Defaulting to edit_posts keeps the settings page reachable on hosts or
+         * multisite configurations where a site owner can manage the plugin UI but
+         * WordPress does not grant manage_options in the expected way.
+         */
+        return apply_filters('scfs_settings_capability', 'edit_posts');
+    }
+
+    private function can_manage_settings() {
+        return current_user_can($this->settings_capability()) || current_user_can('manage_options') || current_user_can('activate_plugins');
+    }
+
     public function add_admin_pages() {
+        $settings_capability = $this->settings_capability();
+
         add_submenu_page(
             'edit.php?post_type=' . self::POST_TYPE,
             __('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'),
             __('Settings', 'sustainable-catalyst-feature-suggestions'),
-            'manage_options',
+            $settings_capability,
             'scfs-settings',
+            array($this, 'render_settings_page')
+        );
+        add_options_page(
+            __('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'),
+            __('Feature Suggestions', 'sustainable-catalyst-feature-suggestions'),
+            $settings_capability,
+            'scfs-settings',
+            array($this, 'render_settings_page')
+        );
+        add_submenu_page(
+            null,
+            __('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'),
+            __('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'),
+            $settings_capability,
+            'scfs-settings-standalone',
             array($this, 'render_settings_page')
         );
         add_submenu_page(
@@ -957,8 +990,28 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         );
     }
 
+    public function plugin_action_links($links) {
+        $settings_url = admin_url('admin.php?page=scfs-settings-standalone');
+        $submissions_url = admin_url('edit.php?post_type=' . self::POST_TYPE);
+        $export_url = admin_url('edit.php?post_type=' . self::POST_TYPE . '&page=scfs-export');
+
+        $custom_links = array(
+            'scfs_submissions' => '<a href="' . esc_url($submissions_url) . '">' . esc_html__('Submissions', 'sustainable-catalyst-feature-suggestions') . '</a>',
+        );
+
+        if ($this->can_manage_settings()) {
+            $custom_links['scfs_settings'] = '<a href="' . esc_url($settings_url) . '">' . esc_html__('Settings', 'sustainable-catalyst-feature-suggestions') . '</a>';
+        }
+
+        if (current_user_can('edit_posts')) {
+            $custom_links['scfs_export'] = '<a href="' . esc_url($export_url) . '">' . esc_html__('Export CSV', 'sustainable-catalyst-feature-suggestions') . '</a>';
+        }
+
+        return array_merge($custom_links, $links);
+    }
+
     public function render_settings_page() {
-        if (!current_user_can('manage_options')) {
+        if (!$this->can_manage_settings()) {
             wp_die(__('You do not have permission to manage these settings.', 'sustainable-catalyst-feature-suggestions'));
         }
         $settings = $this->settings();
@@ -1053,7 +1106,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
     }
 
     public function save_settings() {
-        if (!current_user_can('manage_options')) {
+        if (!$this->can_manage_settings()) {
             wp_die(__('You do not have permission to manage these settings.', 'sustainable-catalyst-feature-suggestions'));
         }
         check_admin_referer(self::SETTINGS_NONCE_ACTION, 'scfs_settings_nonce');
@@ -1079,7 +1132,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
 
         update_option(self::OPTION_KEY, $settings, false);
-        wp_safe_redirect(add_query_arg(array('post_type' => self::POST_TYPE, 'page' => 'scfs-settings', 'settings-updated' => '1'), admin_url('edit.php')));
+        wp_safe_redirect(add_query_arg(array('page' => 'scfs-settings-standalone', 'settings-updated' => '1'), admin_url('admin.php')));
         exit;
     }
 

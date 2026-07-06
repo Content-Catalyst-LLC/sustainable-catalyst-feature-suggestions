@@ -1,6 +1,6 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 2.0.0 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 2.0.2 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
 
 ## Shortcode
 
@@ -18,7 +18,7 @@ Optional category preselection:
 
 - Renders a configurable public feature suggestion form.
 - Saves submissions as WordPress Feature Suggestion records.
-- Adds a real **Feature Suggestions → Settings** screen.
+- Adds a real **Feature Suggestions → Settings** screen, plus a standalone fallback settings route for hosts with unusual admin capabilities.
 - Lets you configure categories, priorities, messages, visible fields, notification email, saved post status, rate limits, duplicate detection, link limits, blocked terms, and nonce behavior.
 - Defaults new submissions to **Pending Review** instead of private records, which avoids common front-end save failures on some WordPress installs.
 - Keeps strict WordPress nonce validation off by default because cached public pages can break nonce-based forms.
@@ -45,6 +45,12 @@ After activation, go to:
 Feature Suggestions → Settings
 ```
 
+If WordPress blocks that route, use the plugin-row Settings link or this direct fallback URL:
+
+```text
+/wp-admin/admin.php?page=scfs-settings-standalone
+```
+
 Recommended defaults for Sustainable Catalyst:
 
 - Default saved status: **Pending Review**
@@ -58,3 +64,8 @@ Recommended defaults for Sustainable Catalyst:
 ## Boundary note
 
 The form is for non-confidential suggestions only. Visitors should not submit confidential, proprietary, sensitive personal, medical, legal, financial, or regulated information.
+
+
+## Where submissions and settings appear
+
+Submitted ideas are stored as the `sc_feature_suggestion` custom post type. Review them in WordPress Admin → Feature Suggestions. Configure the plugin from Feature Suggestions → Settings, Settings → Feature Suggestions, the plugin-row Settings link on the Installed Plugins screen, or `/wp-admin/admin.php?page=scfs-settings-standalone`.
