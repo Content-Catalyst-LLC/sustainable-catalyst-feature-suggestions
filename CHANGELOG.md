@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.0 - 2026-07-06
+
+- Added full plugin settings screen under **Feature Suggestions → Settings**.
+- Added configurable categories, priorities, form copy, consent copy, visible fields, notification email, and saved post status.
+- Changed default submission status to **Pending Review** to avoid front-end save failures associated with private post insertion on some WordPress installs.
+- Added configurable strict nonce validation, off by default for better compatibility with cached public pages.
+- Added honeypot, IP-hash rate limiting, duplicate detection, link limits, blocked terms, minimum field lengths, and configurable abuse controls.
+- Added admin workflow metadata: review status, impact score, effort score, roadmap area, GitHub issue URL, and internal notes.
+- Added admin filters and sortable columns for category, priority, and workflow status.
+- Expanded CSV export with workflow metadata, consent status, referrer, IP hash, and admin notes.
+- Added optional front-end fields for success criteria and implementation notes.
+- Updated admin and front-end CSS.
+- Updated plugin documentation and manifest.
+
 ## 0.1.0 - 2026-07-01
 
 - Initial repository package for Sustainable Catalyst Feature Suggestions.

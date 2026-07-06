@@ -1,6 +1,6 @@
 # Sustainable Catalyst Feature Suggestions
 
-A lightweight WordPress plugin and page package for collecting, storing, reviewing, and exporting Sustainable Catalyst platform feature suggestions.
+An advanced WordPress plugin and page package for collecting, storing, reviewing, triaging, and exporting Sustainable Catalyst platform feature suggestions.
 
 This repository supports the public feature suggestion workflow at:
 
@@ -16,14 +16,24 @@ The plugin gives visitors a structured way to suggest new platform modules, demo
 [sustainable_catalyst_feature_suggestions]
 ```
 
-## What the plugin does
+Optional category preselection:
 
-- Saves submissions as private WordPress records.
-- Adds a **Feature Suggestions** admin area.
-- Emails the site admin when a suggestion is submitted.
-- Provides an admin CSV export screen.
-- Includes nonce protection, sanitization, a consent checkbox, and a honeypot field.
-- Keeps the public workflow aligned with Sustainable Catalyst boundaries: no confidential, proprietary, sensitive personal, medical, legal, financial, or regulated information should be submitted.
+```text
+[sustainable_catalyst_feature_suggestions category="Research Librarian feature"]
+```
+
+## Version 2 highlights
+
+- Real **Feature Suggestions → Settings** screen.
+- Configurable categories, priorities, messages, visible fields, notification email, and saved post status.
+- Saves new submissions as **Pending Review** by default to avoid front-end private-post save failures.
+- Strict WordPress nonce validation is configurable and off by default because cached public pages often break nonce-based forms.
+- Honeypot, IP-hash rate limiting, duplicate detection, link limits, blocked terms, and minimum field lengths.
+- Admin workflow metadata: review status, impact score, effort score, roadmap area, GitHub issue URL, and internal notes.
+- Admin list filters for category, priority, and workflow status.
+- Expanded CSV export for backlog planning and GitHub issue creation.
+- Configurable email notifications.
+- Non-confidential submission boundary retained.
 
 ## Repository structure
 
@@ -42,9 +52,14 @@ feature_suggestions_manifest.json                    Repository manifest
 1. Download `dist/sustainable-catalyst-feature-suggestions.zip`.
 2. In WordPress, go to **Plugins → Add New → Upload Plugin**.
 3. Upload and activate the plugin.
-4. Create a page at `/platform/feature-suggestions/`.
-5. Paste the HTML from `docs/feature-suggestions-page.html`.
-6. Add the CSS from `docs/feature-suggestions-site.css` to the end of the site CSS.
+4. Go to **Feature Suggestions → Settings** and configure the form.
+5. Create a page at `/platform/feature-suggestions/`.
+6. Add the shortcode: `[sustainable_catalyst_feature_suggestions]`.
+7. Optionally paste the surrounding page HTML from `docs/feature-suggestions-page.html` and site CSS from `docs/feature-suggestions-site.css`.
+
+## Important v2 save fix
+
+The previous version had no settings page and saved public submissions as private records by default. On some WordPress installs that can fail or behave inconsistently from the public front end. Version 2 defaults to **Pending Review**, assigns a safe author when possible, and adds configurable nonce behavior for cached pages.
 
 ## Suggested page role
 

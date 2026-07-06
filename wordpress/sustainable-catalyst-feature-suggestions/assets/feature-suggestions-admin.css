@@ -18,3 +18,53 @@
   margin: 0;
   white-space: normal;
 }
+
+.scfs-admin-meta code {
+  display: block;
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.scfs-settings-page .scfs-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 1400px;
+}
+
+.scfs-settings-card {
+  background: #ffffff;
+  border: 1px solid #d9d2c4;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  padding: 18px;
+}
+
+.scfs-settings-card h2 {
+  margin-top: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d9d2c4;
+}
+
+.scfs-setting-field label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.scfs-setting-field input.regular-text,
+.scfs-setting-field textarea.large-text,
+.scfs-setting-field select {
+  max-width: 100%;
+}
+
+.scfs-setting-check label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+@media (max-width: 1100px) {
+  .scfs-settings-page .scfs-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
