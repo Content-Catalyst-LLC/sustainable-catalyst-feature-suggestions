@@ -1,6 +1,6 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 2.0.2 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 2.0.3 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
 
 ## Shortcode
 
@@ -68,4 +68,4 @@ The form is for non-confidential suggestions only. Visitors should not submit co
 
 ## Where submissions and settings appear
 
-Submitted ideas are stored as the `sc_feature_suggestion` custom post type. Review them in WordPress Admin → Feature Suggestions. Configure the plugin from Feature Suggestions → Settings, Settings → Feature Suggestions, the plugin-row Settings link on the Installed Plugins screen, or `/wp-admin/admin.php?page=scfs-settings-standalone`.
+Submitted ideas are stored as the `sc_feature_suggest` custom post type. Review them in WordPress Admin → Feature Suggestions. Configure the plugin from Feature Suggestions → Settings, Settings → Feature Suggestions, the plugin-row Settings link on the Installed Plugins screen, or `/wp-admin/admin.php?page=scfs-settings-standalone`.

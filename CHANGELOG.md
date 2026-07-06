@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.3 - 2026-07-06
+
+- Fixed the invalid submissions page by changing the custom post type slug from `sc_feature_suggestion` to `sc_feature_suggest`, which stays within WordPress's 20-character post type limit.
+- Updated all admin links to point to `/wp-admin/edit.php?post_type=sc_feature_suggest`.
+- Added notification delivery status metadata to saved suggestions.
+- Added a Settings-page test email button to verify WP Mail SMTP / host mail delivery.
+- Email notifications now use explicit plain-text UTF-8 headers and return delivery status for diagnostics.
+- Added a small legacy migration for any previously inserted/truncated feature suggestion records.
+
 ## 2.0.2 - 2026-07-06
 
 - Fixed settings access on WordPress installs where the Plugins screen is available but `manage_options` does not resolve as expected.

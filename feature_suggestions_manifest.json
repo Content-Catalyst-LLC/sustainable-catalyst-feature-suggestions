@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-page-package",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "updated": "2026-07-06",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -36,5 +36,7 @@
     "no sensitive personal information",
     "no legal, financial, medical, compliance, or regulated information",
     "no guarantee of implementation, attribution, compensation, or response"
-  ]
+  ],
+  "wordpress_post_type": "sc_feature_suggest",
+  "notes": "Version 2.0.3 fixes the invalid-post-type bug by using a <=20 character custom post type slug and adds notification test-email diagnostics."
 }

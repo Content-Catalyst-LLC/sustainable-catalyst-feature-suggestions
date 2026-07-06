@@ -12,7 +12,7 @@ The plugin gives visitors a structured way to suggest new platform modules, demo
 
 ## Where submissions and settings appear
 
-Submitted ideas are stored as the `sc_feature_suggestion` custom post type. Review them in WordPress Admin → Feature Suggestions, or open `/wp-admin/edit.php?post_type=sc_feature_suggestion`. Configure the plugin in Feature Suggestions → Settings, Settings → Feature Suggestions, or from the plugin-row Settings link on the Installed Plugins screen.
+Submitted ideas are stored as the `sc_feature_suggest` custom post type. Review them in WordPress Admin → Feature Suggestions, or open `/wp-admin/edit.php?post_type=sc_feature_suggest`. Configure the plugin in Feature Suggestions → Settings, Settings → Feature Suggestions, or from the plugin-row Settings link on the Installed Plugins screen.
 
 
 ## Shortcode

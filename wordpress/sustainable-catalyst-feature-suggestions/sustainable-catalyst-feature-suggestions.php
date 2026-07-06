@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Advanced feature suggestion intake, triage, settings, workflow metadata, spam controls, notifications, and CSV export for Sustainable Catalyst.
- * Version: 2.0.2
+ * Version: 2.0.3
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,8 +13,8 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '2.0.2';
-    const POST_TYPE = 'sc_feature_suggestion';
+    const VERSION = '2.0.3';
+    const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
     const ADMIN_NONCE_ACTION = 'scfs_save_review';
@@ -48,14 +48,17 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         add_action('save_post_' . self::POST_TYPE, array($this, 'save_admin_review'), 10, 2);
 
         add_action('admin_menu', array($this, 'add_admin_pages'));
+        add_action('admin_init', array($this, 'migrate_legacy_post_type'));
         add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'plugin_action_links'));
         add_action('admin_post_scfs_export_csv', array($this, 'export_csv'));
         add_action('admin_post_scfs_save_settings', array($this, 'save_settings'));
+        add_action('admin_post_scfs_send_test_email', array($this, 'send_test_email'));
     }
 
     public static function activate() {
         $instance = self::instance();
         $instance->register_post_type();
+        $instance->migrate_legacy_post_type();
         flush_rewrite_rules();
         if (!get_option(self::OPTION_KEY)) {
             add_option(self::OPTION_KEY, $instance->default_settings(), '', false);
@@ -64,6 +67,27 @@ final class Sustainable_Catalyst_Feature_Suggestions {
 
     public static function deactivate() {
         flush_rewrite_rules();
+    }
+
+    public function migrate_legacy_post_type() {
+        global $wpdb;
+        if (!isset($wpdb->posts)) {
+            return;
+        }
+        $legacy_types = array(
+            'sc_feature_suggestion',
+            'sc_feature_suggesti'
+        );
+        foreach ($legacy_types as $legacy_type) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->update(
+                $wpdb->posts,
+                array('post_type' => self::POST_TYPE),
+                array('post_type' => $legacy_type),
+                array('%s'),
+                array('%s')
+            );
+        }
     }
 
     public function register_post_type() {
@@ -511,7 +535,15 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             set_transient($duplicate_key, '1', HOUR_IN_SECONDS * $this->int_setting($settings, 'duplicate_window_hours', 24, 0, 168));
         }
         $this->increment_rate_limits($settings);
-        $this->send_notification($post_id, $values, $settings);
+        $notification_result = $this->send_notification($post_id, $values, $settings);
+        if ($notification_result === true) {
+            update_post_meta($post_id, '_scfs_notification_status', 'sent');
+        } elseif ($notification_result === false) {
+            update_post_meta($post_id, '_scfs_notification_status', 'failed');
+        } else {
+            update_post_meta($post_id, '_scfs_notification_status', 'disabled_or_unavailable');
+        }
+        update_post_meta($post_id, '_scfs_notification_email', sanitize_email(isset($settings['notification_email']) ? $settings['notification_email'] : get_option('admin_email')));
 
         return array(
             'success' => true,
@@ -654,14 +686,14 @@ final class Sustainable_Catalyst_Feature_Suggestions {
 
     private function send_notification($post_id, $values, $settings) {
         if ($settings['enable_email_notifications'] !== '1') {
-            return;
+            return null;
         }
         $to = sanitize_email($settings['notification_email']);
         if (!$to || !is_email($to)) {
             $to = get_option('admin_email');
         }
         if (!$to || !is_email($to)) {
-            return;
+            return null;
         }
 
         $subject = sprintf('[Sustainable Catalyst] Feature suggestion: %s', $values['title']);
@@ -687,7 +719,8 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $body .= "Follow-up allowed: " . ($values['follow_up'] === '1' ? 'Yes' : 'No') . "\n\n";
         $body .= "Review in WordPress: " . $edit_link . "\n";
 
-        wp_mail($to, $subject, $body);
+        $headers = array('Content-Type: text/plain; charset=UTF-8');
+        return wp_mail($to, $subject, $body, $headers);
     }
 
     public function admin_columns($columns) {
@@ -1021,6 +1054,13 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             <?php if (!empty($_GET['settings-updated'])) : ?>
                 <div class="notice notice-success is-dismissible"><p><?php esc_html_e('Settings saved.', 'sustainable-catalyst-feature-suggestions'); ?></p></div>
             <?php endif; ?>
+            <?php if (isset($_GET['test-email'])) : ?>
+                <?php if ($_GET['test-email'] === 'sent') : ?>
+                    <div class="notice notice-success is-dismissible"><p><?php esc_html_e('Test email sent according to WordPress. If you do not receive it, check WP Mail SMTP logs, spam, or your SMTP provider.', 'sustainable-catalyst-feature-suggestions'); ?></p></div>
+                <?php else : ?>
+                    <div class="notice notice-error is-dismissible"><p><?php esc_html_e('WordPress could not send the test email. Check WP Mail SMTP configuration and mail logs.', 'sustainable-catalyst-feature-suggestions'); ?></p></div>
+                <?php endif; ?>
+            <?php endif; ?>
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="scfs_save_settings">
                 <?php wp_nonce_field(self::SETTINGS_NONCE_ACTION, 'scfs_settings_nonce'); ?>
@@ -1061,6 +1101,10 @@ final class Sustainable_Catalyst_Feature_Suggestions {
                         </p>
                         <?php $this->checkbox_input('enable_email_notifications', __('Send email notifications', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
                         <?php $this->text_input('notification_email', __('Notification email', 'sustainable-catalyst-feature-suggestions'), $settings, 'email'); ?>
+                        <p class="scfs-setting-field">
+                            <a class="button" href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_send_test_email'), 'scfs_send_test_email')); ?>"><?php esc_html_e('Send test notification email', 'sustainable-catalyst-feature-suggestions'); ?></a>
+                            <span class="description"><?php esc_html_e('Use this to verify WP Mail SMTP or your host mail configuration.', 'sustainable-catalyst-feature-suggestions'); ?></span>
+                        </p>
                         <?php $this->checkbox_input('collect_referrer', __('Store referrer URL', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
                         <?php $this->checkbox_input('collect_user_agent', __('Store user agent', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
                     </section>
@@ -1103,6 +1147,27 @@ final class Sustainable_Catalyst_Feature_Suggestions {
     private function number_input($key, $label, $settings, $min, $max) {
         echo '<p class="scfs-setting-field"><label for="scfs_' . esc_attr($key) . '"><strong>' . esc_html($label) . '</strong></label>';
         echo '<input id="scfs_' . esc_attr($key) . '" type="number" min="' . esc_attr((string) $min) . '" max="' . esc_attr((string) $max) . '" name="scfs_settings[' . esc_attr($key) . ']" value="' . esc_attr($settings[$key]) . '" class="small-text"></p>';
+    }
+
+    public function send_test_email() {
+        if (!$this->can_manage_settings()) {
+            wp_die(__('You do not have permission to send a test email.', 'sustainable-catalyst-feature-suggestions'));
+        }
+        check_admin_referer('scfs_send_test_email');
+        $settings = $this->settings();
+        $to = sanitize_email(isset($settings['notification_email']) ? $settings['notification_email'] : get_option('admin_email'));
+        if (!$to || !is_email($to)) {
+            $to = get_option('admin_email');
+        }
+        $sent = false;
+        if ($to && is_email($to)) {
+            $subject = '[Sustainable Catalyst] Feature suggestions test email';
+            $body = "This is a test email from Sustainable Catalyst Feature Suggestions.\n\nIf you received this, WordPress mail delivery is working for plugin notifications.";
+            $headers = array('Content-Type: text/plain; charset=UTF-8');
+            $sent = wp_mail($to, $subject, $body, $headers);
+        }
+        wp_safe_redirect(add_query_arg(array('page' => 'scfs-settings-standalone', 'test-email' => $sent ? 'sent' : 'failed'), admin_url('admin.php')));
+        exit;
     }
 
     public function save_settings() {
