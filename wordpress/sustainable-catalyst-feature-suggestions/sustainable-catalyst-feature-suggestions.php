@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Advanced feature suggestion intake, triage, settings, workflow metadata, spam controls, notifications, and CSV export for Sustainable Catalyst.
- * Version: 2.0.3
+ * Version: 2.3.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '2.0.3';
+    const VERSION = '2.3.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -22,6 +22,10 @@ final class Sustainable_Catalyst_Feature_Suggestions {
     const SETTINGS_NONCE_ACTION = 'scfs_save_settings';
     const OPTION_KEY = 'scfs_settings';
     const SHORTCODE = 'sustainable_catalyst_feature_suggestions';
+    const REST_NAMESPACE = 'scfs/v1';
+    const EVENT_SCHEMA_VERSION = '1.0';
+    const WEBHOOK_QUEUE_KEY = 'scfs_webhook_queue';
+    const CRON_HOOK = 'scfs_process_webhook_queue';
 
     private static $instance = null;
 
@@ -53,6 +57,13 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         add_action('admin_post_scfs_export_csv', array($this, 'export_csv'));
         add_action('admin_post_scfs_save_settings', array($this, 'save_settings'));
         add_action('admin_post_scfs_send_test_email', array($this, 'send_test_email'));
+        add_action('admin_post_scfs_analyze_suggestion', array($this, 'analyze_suggestion_action'));
+        add_action('admin_post_scfs_analyze_batch', array($this, 'analyze_batch_action'));
+        add_action('admin_post_scfs_export_intelligence_csv', array($this, 'export_intelligence_csv'));
+        add_action('rest_api_init', array($this, 'register_rest_routes'));
+        add_filter('cron_schedules', array($this, 'cron_schedules'));
+        add_action(self::CRON_HOOK, array($this, 'process_webhook_queue'));
+        add_action('scfs_dispatch_event', array($this, 'dispatch_event_webhook'), 10, 1);
     }
 
     public static function activate() {
@@ -63,9 +74,16 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         if (!get_option(self::OPTION_KEY)) {
             add_option(self::OPTION_KEY, $instance->default_settings(), '', false);
         }
+        if (!wp_next_scheduled(self::CRON_HOOK)) {
+            wp_schedule_event(time() + 300, 'scfs_five_minutes', self::CRON_HOOK);
+        }
     }
 
     public static function deactivate() {
+        $timestamp = wp_next_scheduled(self::CRON_HOOK);
+        if ($timestamp) {
+            wp_unschedule_event($timestamp, self::CRON_HOOK);
+        }
         flush_rewrite_rules();
     }
 
@@ -183,6 +201,19 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             )),
             'priorities' => "Low\nMedium\nHigh\nUrgent",
             'blocked_terms' => '',
+            'enable_rest_submissions' => '1',
+            'rest_require_api_key' => '',
+            'rest_api_key' => '',
+            'enable_shared_events' => '1',
+            'enable_webhooks' => '',
+            'webhook_url' => '',
+            'webhook_secret' => '',
+            'webhook_timeout' => '8',
+            'webhook_max_attempts' => '5',
+            'ai_backend_url' => '',
+            'ai_backend_api_key' => '',
+            'ai_auto_analyze' => '',
+            'ai_timeout' => '20',
         );
     }
 
@@ -523,6 +554,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         update_post_meta($post_id, '_scfs_impact_score', '0');
         update_post_meta($post_id, '_scfs_effort_score', '0');
         update_post_meta($post_id, '_scfs_ip_hash', $this->ip_hash());
+        $submission_uuid = $this->ensure_submission_uuid($post_id);
+        update_post_meta($post_id, '_scfs_source', 'shortcode_form');
+        update_post_meta($post_id, '_scfs_schema_version', self::EVENT_SCHEMA_VERSION);
 
         if ($settings['collect_user_agent'] === '1') {
             update_post_meta($post_id, '_scfs_user_agent', isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '');
@@ -544,6 +578,11 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             update_post_meta($post_id, '_scfs_notification_status', 'disabled_or_unavailable');
         }
         update_post_meta($post_id, '_scfs_notification_email', sanitize_email(isset($settings['notification_email']) ? $settings['notification_email'] : get_option('admin_email')));
+
+        $this->publish_event('feedback.submitted', $post_id, array(
+            'source' => 'shortcode_form',
+            'submission_uuid' => $submission_uuid,
+        ));
 
         return array(
             'success' => true,
@@ -844,6 +883,14 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             'high'
         );
         add_meta_box(
+            'scfs_ai_triage',
+            __('AI Triage', 'sustainable-catalyst-feature-suggestions'),
+            array($this, 'render_ai_metabox'),
+            self::POST_TYPE,
+            'normal',
+            'default'
+        );
+        add_meta_box(
             'scfs_submission_meta',
             __('Submission Metadata', 'sustainable-catalyst-feature-suggestions'),
             array($this, 'render_submission_meta_metabox'),
@@ -931,6 +978,26 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         <?php
     }
 
+
+    public function render_ai_metabox($post) {
+        $status = get_post_meta($post->ID, '_scfs_ai_analysis_status', true);
+        $analysis = get_post_meta($post->ID, '_scfs_ai_analysis', true);
+        $error = get_post_meta($post->ID, '_scfs_ai_analysis_error', true);
+        $url = wp_nonce_url(admin_url('admin-post.php?action=scfs_analyze_suggestion&post_id=' . $post->ID), 'scfs_analyze_' . $post->ID);
+        echo '<p><a class="button button-primary" href="' . esc_url($url) . '">' . esc_html__('Analyze or reanalyze submission', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<p><strong>' . esc_html__('Status:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($status ? $status : 'not analyzed') . '</p>';
+        if ($error) echo '<div class="notice notice-error inline"><p>' . esc_html($error) . '</p></div>';
+        if (is_array($analysis)) {
+            $labels = array('summary'=>'Summary','feature_type'=>'Feature type','platform_area'=>'Platform area','suggested_action'=>'Suggested action','suggested_roadmap_destination'=>'Roadmap destination','confidence'=>'Confidence','provider'=>'Provider','model'=>'Model');
+            echo '<table class="widefat striped"><tbody>';
+            foreach ($labels as $key=>$label) if (isset($analysis[$key])) echo '<tr><th>' . esc_html($label) . '</th><td>' . esc_html(is_scalar($analysis[$key]) ? (string)$analysis[$key] : wp_json_encode($analysis[$key])) . '</td></tr>';
+            if (!empty($analysis['topics'])) echo '<tr><th>Topics</th><td>' . esc_html(implode(', ', (array)$analysis['topics'])) . '</td></tr>';
+            if (!empty($analysis['scores'])) echo '<tr><th>Scores</th><td><code>' . esc_html(wp_json_encode($analysis['scores'])) . '</code></td></tr>';
+            if (!empty($analysis['safety_flags'])) echo '<tr><th>Safety flags</th><td>' . esc_html(implode(', ', (array)$analysis['safety_flags'])) . '</td></tr>';
+            echo '</tbody></table><p class="description">AI output is advisory. Review the original submission before changing workflow status or scores.</p>';
+        }
+    }
+
     public function render_submission_meta_metabox($post) {
         $fields = array(
             'ip_hash' => __('IP hash', 'sustainable-catalyst-feature-suggestions'),
@@ -959,6 +1026,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         if (!current_user_can('edit_post', $post_id)) {
             return;
         }
+        $old_review_status = get_post_meta($post_id, '_scfs_review_status', true);
         $statuses = $this->review_statuses();
         $review_status = isset($_POST['scfs_review_status']) ? sanitize_text_field(wp_unslash($_POST['scfs_review_status'])) : 'new';
         if (!isset($statuses[$review_status])) {
@@ -970,6 +1038,14 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         update_post_meta($post_id, '_scfs_roadmap_area', isset($_POST['scfs_roadmap_area']) ? sanitize_text_field(wp_unslash($_POST['scfs_roadmap_area'])) : '');
         update_post_meta($post_id, '_scfs_github_issue_url', isset($_POST['scfs_github_issue_url']) ? esc_url_raw(wp_unslash($_POST['scfs_github_issue_url'])) : '');
         update_post_meta($post_id, '_scfs_admin_notes', isset($_POST['scfs_admin_notes']) ? sanitize_textarea_field(wp_unslash($_POST['scfs_admin_notes'])) : '');
+        $this->ensure_submission_uuid($post_id);
+        $this->publish_event('feedback.reviewed', $post_id, array('previous_review_status' => $old_review_status));
+        if ($old_review_status !== $review_status) {
+            $this->publish_event('feedback.status_changed', $post_id, array(
+                'previous_review_status' => $old_review_status,
+                'review_status' => $review_status,
+            ));
+        }
     }
 
     private function settings_capability() {
@@ -1012,6 +1088,22 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             $settings_capability,
             'scfs-settings-standalone',
             array($this, 'render_settings_page')
+        );
+        add_submenu_page(
+            'edit.php?post_type=' . self::POST_TYPE,
+            __('Feedback Intelligence Dashboard', 'sustainable-catalyst-feature-suggestions'),
+            __('Intelligence', 'sustainable-catalyst-feature-suggestions'),
+            'edit_posts',
+            'scfs-intelligence',
+            array($this, 'render_intelligence_page')
+        );
+        add_submenu_page(
+            'edit.php?post_type=' . self::POST_TYPE,
+            __('Integration Status', 'sustainable-catalyst-feature-suggestions'),
+            __('Integration', 'sustainable-catalyst-feature-suggestions'),
+            $settings_capability,
+            'scfs-integration',
+            array($this, 'render_integration_page')
         );
         add_submenu_page(
             'edit.php?post_type=' . self::POST_TYPE,
@@ -1122,6 +1214,28 @@ final class Sustainable_Catalyst_Feature_Suggestions {
                         <?php $this->number_input('min_suggestion_length', __('Minimum suggestion length', 'sustainable-catalyst-feature-suggestions'), $settings, 0, 1000); ?>
                         <?php $this->textarea_input('blocked_terms', __('Blocked terms, one per line', 'sustainable-catalyst-feature-suggestions'), $settings, 6); ?>
                     </section>
+
+                    <section class="scfs-settings-card">
+                        <h2><?php esc_html_e('REST API and Shared Events', 'sustainable-catalyst-feature-suggestions'); ?></h2>
+                        <?php $this->checkbox_input('enable_rest_submissions', __('Enable public REST submissions', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
+                        <?php $this->checkbox_input('rest_require_api_key', __('Require API key for REST submissions', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
+                        <?php $this->text_input('rest_api_key', __('REST submission API key', 'sustainable-catalyst-feature-suggestions'), $settings, 'password'); ?>
+                        <?php $this->checkbox_input('enable_shared_events', __('Publish WordPress shared events', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
+                        <?php $this->checkbox_input('enable_webhooks', __('Send signed event webhooks', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
+                        <?php $this->text_input('webhook_url', __('Webhook URL', 'sustainable-catalyst-feature-suggestions'), $settings, 'url'); ?>
+                        <?php $this->text_input('webhook_secret', __('Webhook signing secret', 'sustainable-catalyst-feature-suggestions'), $settings, 'password'); ?>
+                        <?php $this->number_input('webhook_timeout', __('Webhook timeout, seconds', 'sustainable-catalyst-feature-suggestions'), $settings, 2, 30); ?>
+                        <?php $this->number_input('webhook_max_attempts', __('Webhook maximum attempts', 'sustainable-catalyst-feature-suggestions'), $settings, 1, 10); ?>
+                        <p class="description"><?php esc_html_e('Webhooks contain privacy-minimized event records. Names, email addresses, IP hashes, and free-text submission bodies are excluded.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+                        <hr>
+                        <h3><?php esc_html_e('Python AI Triage', 'sustainable-catalyst-feature-suggestions'); ?></h3>
+                        <?php $this->text_input('ai_backend_url', __('AI backend URL', 'sustainable-catalyst-feature-suggestions'), $settings, 'url'); ?>
+                        <?php $this->text_input('ai_backend_api_key', __('AI backend API key', 'sustainable-catalyst-feature-suggestions'), $settings, 'password'); ?>
+                        <?php $this->checkbox_input('ai_auto_analyze', __('Automatically analyze new submissions', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
+                        <?php $this->number_input('ai_timeout', __('AI request timeout, seconds', 'sustainable-catalyst-feature-suggestions'), $settings, 5, 60); ?>
+                        <p class="description"><?php esc_html_e('AI output is advisory and requires human review. Original submissions are never overwritten.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+
+                    </section>
                 </div>
 
                 <?php submit_button(__('Save Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions')); ?>
@@ -1180,10 +1294,14 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $settings = array();
 
         foreach ($defaults as $key => $default) {
-            if (in_array($key, array('show_priority', 'show_beneficiaries', 'show_success_criteria', 'show_implementation_notes', 'show_relevant_url', 'show_contact', 'show_follow_up', 'enable_email_notifications', 'collect_user_agent', 'collect_referrer', 'require_nonce'), true)) {
+            if (in_array($key, array('show_priority', 'show_beneficiaries', 'show_success_criteria', 'show_implementation_notes', 'show_relevant_url', 'show_contact', 'show_follow_up', 'enable_email_notifications', 'collect_user_agent', 'collect_referrer', 'require_nonce', 'enable_rest_submissions', 'rest_require_api_key', 'enable_shared_events', 'enable_webhooks', 'ai_auto_analyze'), true)) {
                 $settings[$key] = isset($incoming[$key]) ? '1' : '';
-            } elseif (in_array($key, array('max_submissions_per_hour', 'max_submissions_per_day', 'min_seconds_before_submit', 'duplicate_window_hours', 'max_links', 'min_problem_length', 'min_suggestion_length'), true)) {
+            } elseif (in_array($key, array('max_submissions_per_hour', 'max_submissions_per_day', 'min_seconds_before_submit', 'duplicate_window_hours', 'max_links', 'min_problem_length', 'min_suggestion_length', 'webhook_timeout', 'webhook_max_attempts', 'ai_timeout'), true)) {
                 $settings[$key] = (string) max(0, absint(isset($incoming[$key]) ? $incoming[$key] : $default));
+            } elseif (in_array($key, array('webhook_url', 'ai_backend_url'), true)) {
+                $settings[$key] = esc_url_raw(isset($incoming[$key]) ? $incoming[$key] : $default);
+            } elseif (in_array($key, array('rest_api_key', 'webhook_secret', 'ai_backend_api_key'), true)) {
+                $settings[$key] = sanitize_text_field(isset($incoming[$key]) ? $incoming[$key] : $default);
             } elseif ($key === 'notification_email') {
                 $email = sanitize_email(isset($incoming[$key]) ? $incoming[$key] : $default);
                 $settings[$key] = is_email($email) ? $email : get_option('admin_email');
@@ -1211,6 +1329,620 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         return min($max, max($min, $value));
     }
 
+    public function cron_schedules($schedules) {
+        if (!isset($schedules['scfs_five_minutes'])) {
+            $schedules['scfs_five_minutes'] = array(
+                'interval' => 300,
+                'display' => __('Every five minutes', 'sustainable-catalyst-feature-suggestions'),
+            );
+        }
+        return $schedules;
+    }
+
+    public function register_rest_routes() {
+        register_rest_route(self::REST_NAMESPACE, '/health', array(
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => array($this, 'rest_health'),
+            'permission_callback' => '__return_true',
+        ));
+        register_rest_route(self::REST_NAMESPACE, '/schema', array(
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => array($this, 'rest_schema'),
+            'permission_callback' => '__return_true',
+        ));
+        register_rest_route(self::REST_NAMESPACE, '/suggestions', array(
+            array(
+                'methods' => WP_REST_Server::CREATABLE,
+                'callback' => array($this, 'rest_create_suggestion'),
+                'permission_callback' => array($this, 'rest_submission_permission'),
+            ),
+            array(
+                'methods' => WP_REST_Server::READABLE,
+                'callback' => array($this, 'rest_list_suggestions'),
+                'permission_callback' => array($this, 'rest_admin_permission'),
+            ),
+        ));
+        register_rest_route(self::REST_NAMESPACE, '/suggestions/(?P<id>\d+)', array(
+            array(
+                'methods' => WP_REST_Server::READABLE,
+                'callback' => array($this, 'rest_get_suggestion'),
+                'permission_callback' => array($this, 'rest_admin_permission'),
+            ),
+            array(
+                'methods' => WP_REST_Server::EDITABLE,
+                'callback' => array($this, 'rest_update_suggestion'),
+                'permission_callback' => array($this, 'rest_admin_permission'),
+            ),
+        ));
+
+        register_rest_route(self::REST_NAMESPACE, '/suggestions/(?P<id>\d+)/analysis', array(
+            array('methods' => WP_REST_Server::CREATABLE, 'callback' => array($this, 'rest_analyze_suggestion'), 'permission_callback' => array($this, 'rest_admin_permission')),
+            array('methods' => WP_REST_Server::READABLE, 'callback' => array($this, 'rest_get_analysis'), 'permission_callback' => array($this, 'rest_admin_permission')),
+        ));
+        register_rest_route(self::REST_NAMESPACE, '/ai/status', array(
+            'methods' => WP_REST_Server::READABLE, 'callback' => array($this, 'rest_ai_status'), 'permission_callback' => array($this, 'rest_admin_permission'),
+        ));
+
+    }
+
+    public function rest_submission_permission($request) {
+        $settings = $this->settings();
+        if ($settings['enable_rest_submissions'] !== '1') {
+            return new WP_Error('scfs_rest_disabled', __('REST submissions are disabled.', 'sustainable-catalyst-feature-suggestions'), array('status' => 403));
+        }
+        if ($settings['rest_require_api_key'] !== '1') {
+            return true;
+        }
+        $provided = (string) $request->get_header('x-scfs-api-key');
+        $expected = (string) $settings['rest_api_key'];
+        if ($expected === '' || $provided === '' || !hash_equals($expected, $provided)) {
+            return new WP_Error('scfs_invalid_api_key', __('A valid feature suggestion API key is required.', 'sustainable-catalyst-feature-suggestions'), array('status' => 401));
+        }
+        return true;
+    }
+
+    public function rest_admin_permission() {
+        return current_user_can('edit_posts');
+    }
+
+    public function rest_health() {
+        $settings = $this->settings();
+        $queue = get_option(self::WEBHOOK_QUEUE_KEY, array());
+        return rest_ensure_response(array(
+            'ok' => true,
+            'plugin' => 'sustainable-catalyst-feature-suggestions',
+            'version' => self::VERSION,
+            'schema_version' => self::EVENT_SCHEMA_VERSION,
+            'rest_submissions_enabled' => $settings['enable_rest_submissions'] === '1',
+            'shared_events_enabled' => $settings['enable_shared_events'] === '1',
+            'webhooks_enabled' => $settings['enable_webhooks'] === '1',
+            'queued_webhooks' => is_array($queue) ? count($queue) : 0,
+            'timestamp' => gmdate('c'),
+        ));
+    }
+
+    public function rest_schema() {
+        return rest_ensure_response(array(
+            'schema_version' => self::EVENT_SCHEMA_VERSION,
+            'namespace' => self::REST_NAMESPACE,
+            'categories' => $this->categories(),
+            'priorities' => $this->priorities(),
+            'review_statuses' => array_keys($this->review_statuses()),
+            'required_submission_fields' => array('title', 'category', 'problem', 'suggestion', 'consent'),
+            'event_types' => array('feedback.submitted', 'feedback.reviewed', 'feedback.status_changed', 'feedback.classified'),
+        ));
+    }
+
+    private function rest_values($request) {
+        $values = $this->empty_values();
+        $text_fields = array('title', 'category', 'relevant_url', 'priority', 'name');
+        $textarea_fields = array('problem', 'beneficiaries', 'suggestion', 'success_criteria', 'implementation_notes');
+        foreach ($text_fields as $field) {
+            if ($request->has_param($field)) {
+                $values[$field] = sanitize_text_field($request->get_param($field));
+            }
+        }
+        foreach ($textarea_fields as $field) {
+            if ($request->has_param($field)) {
+                $values[$field] = sanitize_textarea_field($request->get_param($field));
+            }
+        }
+        $values['email'] = sanitize_email($request->get_param('email'));
+        $values['follow_up'] = rest_sanitize_boolean($request->get_param('follow_up')) ? '1' : '';
+        $values['consent'] = rest_sanitize_boolean($request->get_param('consent')) ? '1' : '';
+        return $values;
+    }
+
+    public function rest_create_suggestion($request) {
+        $settings = $this->settings();
+        $values = $this->rest_values($request);
+        $errors = $this->validate_values($values, $settings);
+        if (!empty($errors)) {
+            return new WP_Error('scfs_validation_failed', implode(' ', $errors), array('status' => 400, 'errors' => $errors));
+        }
+        $spam = $this->passes_spam_controls($settings, $values);
+        if (is_wp_error($spam)) {
+            return $spam;
+        }
+        if (!in_array($values['priority'], $this->priorities(), true)) {
+            $priorities = $this->priorities();
+            $values['priority'] = isset($priorities[0]) ? $priorities[0] : 'Medium';
+        }
+        $fingerprint = $this->submission_fingerprint($values);
+        $duplicate_key = 'scfs_dup_' . substr($fingerprint, 0, 32);
+        if ($this->int_setting($settings, 'duplicate_window_hours', 24, 0, 168) > 0 && get_transient($duplicate_key)) {
+            return new WP_Error('scfs_duplicate', __('This looks like a duplicate submission.', 'sustainable-catalyst-feature-suggestions'), array('status' => 409));
+        }
+        $post_id = wp_insert_post(wp_slash(array(
+            'post_type' => self::POST_TYPE,
+            'post_status' => $this->allowed_post_status($settings['submission_status']),
+            'post_title' => $values['title'],
+            'post_content' => $this->build_post_content($values),
+            'post_author' => $this->default_author_id(),
+            'comment_status' => 'closed',
+            'ping_status' => 'closed',
+        )), true);
+        if (is_wp_error($post_id)) {
+            return $post_id;
+        }
+        foreach ($values as $key => $value) {
+            update_post_meta($post_id, '_scfs_' . $key, $value);
+        }
+        $source = sanitize_key($request->get_param('source'));
+        if ($source === '') {
+            $source = 'rest_api';
+        }
+        $correlation_id = sanitize_text_field($request->get_param('correlation_id'));
+        update_post_meta($post_id, '_scfs_fingerprint', $fingerprint);
+        update_post_meta($post_id, '_scfs_review_status', 'new');
+        update_post_meta($post_id, '_scfs_impact_score', '0');
+        update_post_meta($post_id, '_scfs_effort_score', '0');
+        update_post_meta($post_id, '_scfs_ip_hash', $this->ip_hash());
+        update_post_meta($post_id, '_scfs_source', $source);
+        update_post_meta($post_id, '_scfs_schema_version', self::EVENT_SCHEMA_VERSION);
+        update_post_meta($post_id, '_scfs_correlation_id', $correlation_id);
+        $uuid = $this->ensure_submission_uuid($post_id);
+        if ($this->int_setting($settings, 'duplicate_window_hours', 24, 0, 168) > 0) {
+            set_transient($duplicate_key, '1', HOUR_IN_SECONDS * $this->int_setting($settings, 'duplicate_window_hours', 24, 0, 168));
+        }
+        $this->increment_rate_limits($settings);
+        $this->publish_event('feedback.submitted', $post_id, array('source' => $source, 'correlation_id' => $correlation_id));
+        if ($settings['ai_auto_analyze'] === '1') {
+            $this->request_ai_analysis($post_id);
+        }
+        return new WP_REST_Response(array(
+            'ok' => true,
+            'id' => $post_id,
+            'submission_uuid' => $uuid,
+            'review_status' => 'new',
+            'message' => $settings['success_message'],
+        ), 201);
+    }
+
+    public function rest_list_suggestions($request) {
+        $per_page = min(100, max(1, absint($request->get_param('per_page') ?: 20)));
+        $page = max(1, absint($request->get_param('page') ?: 1));
+        $args = array(
+            'post_type' => self::POST_TYPE,
+            'post_status' => array('private', 'publish', 'draft', 'pending'),
+            'posts_per_page' => $per_page,
+            'paged' => $page,
+            'orderby' => 'date',
+            'order' => 'DESC',
+        );
+        $review_status = sanitize_key($request->get_param('review_status'));
+        if ($review_status !== '' && isset($this->review_statuses()[$review_status])) {
+            $args['meta_query'] = array(array('key' => '_scfs_review_status', 'value' => $review_status));
+        }
+        $query = new WP_Query($args);
+        $items = array_map(array($this, 'suggestion_record'), $query->posts);
+        $response = rest_ensure_response(array('items' => $items, 'page' => $page, 'per_page' => $per_page, 'total' => (int) $query->found_posts));
+        return $response;
+    }
+
+    public function rest_get_suggestion($request) {
+        $post = get_post(absint($request['id']));
+        if (!$post || $post->post_type !== self::POST_TYPE) {
+            return new WP_Error('scfs_not_found', __('Feature suggestion not found.', 'sustainable-catalyst-feature-suggestions'), array('status' => 404));
+        }
+        return rest_ensure_response($this->suggestion_record($post, true));
+    }
+
+    public function rest_update_suggestion($request) {
+        $post_id = absint($request['id']);
+        $post = get_post($post_id);
+        if (!$post || $post->post_type !== self::POST_TYPE) {
+            return new WP_Error('scfs_not_found', __('Feature suggestion not found.', 'sustainable-catalyst-feature-suggestions'), array('status' => 404));
+        }
+        $old = get_post_meta($post_id, '_scfs_review_status', true);
+        $status = sanitize_key($request->get_param('review_status'));
+        if ($status !== '') {
+            if (!isset($this->review_statuses()[$status])) {
+                return new WP_Error('scfs_invalid_status', __('Invalid review status.', 'sustainable-catalyst-feature-suggestions'), array('status' => 400));
+            }
+            update_post_meta($post_id, '_scfs_review_status', $status);
+        } else {
+            $status = $old;
+        }
+        foreach (array('roadmap_area', 'admin_notes') as $field) {
+            if ($request->has_param($field)) {
+                $value = $field === 'admin_notes' ? sanitize_textarea_field($request->get_param($field)) : sanitize_text_field($request->get_param($field));
+                update_post_meta($post_id, '_scfs_' . $field, $value);
+            }
+        }
+        if ($request->has_param('github_issue_url')) {
+            update_post_meta($post_id, '_scfs_github_issue_url', esc_url_raw($request->get_param('github_issue_url')));
+        }
+        foreach (array('impact_score', 'effort_score') as $field) {
+            if ($request->has_param($field)) {
+                update_post_meta($post_id, '_scfs_' . $field, min(5, max(0, absint($request->get_param($field)))));
+            }
+        }
+        $this->publish_event('feedback.reviewed', $post_id, array('previous_review_status' => $old));
+        if ($old !== $status) {
+            $this->publish_event('feedback.status_changed', $post_id, array('previous_review_status' => $old, 'review_status' => $status));
+        }
+        return rest_ensure_response($this->suggestion_record(get_post($post_id), true));
+    }
+
+    private function suggestion_record($post, $include_private = false) {
+        $record = array(
+            'id' => (int) $post->ID,
+            'submission_uuid' => $this->ensure_submission_uuid($post->ID),
+            'created_at' => get_post_time('c', true, $post),
+            'title' => $post->post_title,
+            'category' => get_post_meta($post->ID, '_scfs_category', true),
+            'priority' => get_post_meta($post->ID, '_scfs_priority', true),
+            'review_status' => get_post_meta($post->ID, '_scfs_review_status', true),
+            'source' => get_post_meta($post->ID, '_scfs_source', true),
+            'correlation_id' => get_post_meta($post->ID, '_scfs_correlation_id', true),
+            'impact_score' => (int) get_post_meta($post->ID, '_scfs_impact_score', true),
+            'effort_score' => (int) get_post_meta($post->ID, '_scfs_effort_score', true),
+            'roadmap_area' => get_post_meta($post->ID, '_scfs_roadmap_area', true),
+            'github_issue_url' => get_post_meta($post->ID, '_scfs_github_issue_url', true),
+            'ai_analysis_status' => get_post_meta($post->ID, '_scfs_ai_analysis_status', true),
+            'ai_analysis' => get_post_meta($post->ID, '_scfs_ai_analysis', true),
+        );
+        if ($include_private) {
+            foreach (array('problem', 'suggestion', 'success_criteria', 'beneficiaries', 'implementation_notes', 'relevant_url', 'name', 'email', 'follow_up', 'admin_notes') as $field) {
+                $record[$field] = get_post_meta($post->ID, '_scfs_' . $field, true);
+            }
+        }
+        return $record;
+    }
+
+    private function ensure_submission_uuid($post_id) {
+        $uuid = get_post_meta($post_id, '_scfs_submission_uuid', true);
+        if ($uuid === '') {
+            $uuid = wp_generate_uuid4();
+            update_post_meta($post_id, '_scfs_submission_uuid', $uuid);
+        }
+        return $uuid;
+    }
+
+    private function event_payload($event_type, $post_id, $context = array()) {
+        $post = get_post($post_id);
+        return array(
+            'event_id' => wp_generate_uuid4(),
+            'event_type' => sanitize_key(str_replace('.', '_', $event_type)) === '' ? $event_type : $event_type,
+            'schema_version' => self::EVENT_SCHEMA_VERSION,
+            'source_plugin' => 'feature_suggestions',
+            'source_version' => self::VERSION,
+            'occurred_at' => gmdate('c'),
+            'site_url' => home_url('/'),
+            'submission' => array(
+                'id' => (int) $post_id,
+                'uuid' => $this->ensure_submission_uuid($post_id),
+                'title' => $post ? $post->post_title : '',
+                'category' => get_post_meta($post_id, '_scfs_category', true),
+                'priority' => get_post_meta($post_id, '_scfs_priority', true),
+                'review_status' => get_post_meta($post_id, '_scfs_review_status', true),
+                'source' => get_post_meta($post_id, '_scfs_source', true),
+                'correlation_id' => get_post_meta($post_id, '_scfs_correlation_id', true),
+                'roadmap_area' => get_post_meta($post_id, '_scfs_roadmap_area', true),
+                'impact_score' => (int) get_post_meta($post_id, '_scfs_impact_score', true),
+                'effort_score' => (int) get_post_meta($post_id, '_scfs_effort_score', true),
+            ),
+            'context' => is_array($context) ? $context : array(),
+        );
+    }
+
+    private function publish_event($event_type, $post_id, $context = array()) {
+        $settings = $this->settings();
+        if ($settings['enable_shared_events'] !== '1' && $settings['enable_webhooks'] !== '1') {
+            return;
+        }
+        $event = $this->event_payload($event_type, $post_id, $context);
+        if ($settings['enable_shared_events'] === '1') {
+            do_action('scfs_event', $event_type, $event);
+            do_action('sc_platform_event', $event);
+        }
+        if ($settings['enable_webhooks'] === '1') {
+            do_action('scfs_dispatch_event', $event);
+        }
+    }
+
+    public function dispatch_event_webhook($event) {
+        $settings = $this->settings();
+        if ($settings['enable_webhooks'] !== '1' || empty($settings['webhook_url'])) {
+            return false;
+        }
+        $result = $this->send_webhook($event, $settings);
+        if (is_wp_error($result)) {
+            $this->queue_webhook($event, 1, $result->get_error_message());
+            return false;
+        }
+        return true;
+    }
+
+    private function send_webhook($event, $settings) {
+        $body = wp_json_encode($event);
+        $headers = array(
+            'Content-Type' => 'application/json',
+            'X-SCFS-Event' => isset($event['event_type']) ? $event['event_type'] : '',
+            'X-SCFS-Delivery' => isset($event['event_id']) ? $event['event_id'] : wp_generate_uuid4(),
+            'X-SCFS-Schema' => self::EVENT_SCHEMA_VERSION,
+        );
+        if (!empty($settings['webhook_secret'])) {
+            $headers['X-SCFS-Signature'] = 'sha256=' . hash_hmac('sha256', $body, $settings['webhook_secret']);
+        }
+        $response = wp_remote_post($settings['webhook_url'], array(
+            'timeout' => $this->int_setting($settings, 'webhook_timeout', 8, 2, 30),
+            'headers' => $headers,
+            'body' => $body,
+            'data_format' => 'body',
+        ));
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        $code = wp_remote_retrieve_response_code($response);
+        if ($code < 200 || $code >= 300) {
+            return new WP_Error('scfs_webhook_http_error', sprintf(__('Webhook returned HTTP %d.', 'sustainable-catalyst-feature-suggestions'), $code));
+        }
+        return true;
+    }
+
+    private function queue_webhook($event, $attempts = 1, $last_error = '') {
+        $queue = get_option(self::WEBHOOK_QUEUE_KEY, array());
+        if (!is_array($queue)) {
+            $queue = array();
+        }
+        $queue[] = array(
+            'event' => $event,
+            'attempts' => absint($attempts),
+            'last_error' => sanitize_text_field($last_error),
+            'next_attempt_at' => time() + min(HOUR_IN_SECONDS, 60 * max(1, absint($attempts))),
+        );
+        if (count($queue) > 500) {
+            $queue = array_slice($queue, -500);
+        }
+        update_option(self::WEBHOOK_QUEUE_KEY, $queue, false);
+    }
+
+    public function process_webhook_queue() {
+        $queue = get_option(self::WEBHOOK_QUEUE_KEY, array());
+        if (!is_array($queue) || empty($queue)) {
+            return;
+        }
+        $settings = $this->settings();
+        $remaining = array();
+        $max_attempts = $this->int_setting($settings, 'webhook_max_attempts', 5, 1, 10);
+        foreach ($queue as $item) {
+            if (empty($item['event']) || !is_array($item['event'])) {
+                continue;
+            }
+            if (!empty($item['next_attempt_at']) && absint($item['next_attempt_at']) > time()) {
+                $remaining[] = $item;
+                continue;
+            }
+            $result = $this->send_webhook($item['event'], $settings);
+            if (is_wp_error($result)) {
+                $attempts = absint(isset($item['attempts']) ? $item['attempts'] : 0) + 1;
+                if ($attempts < $max_attempts) {
+                    $item['attempts'] = $attempts;
+                    $item['last_error'] = $result->get_error_message();
+                    $item['next_attempt_at'] = time() + min(DAY_IN_SECONDS, 300 * (2 ** min(6, $attempts - 1)));
+                    $remaining[] = $item;
+                }
+            }
+        }
+        update_option(self::WEBHOOK_QUEUE_KEY, $remaining, false);
+    }
+
+    public function render_integration_page() {
+        if (!$this->can_manage_settings()) {
+            wp_die(__('You do not have permission to view integration status.', 'sustainable-catalyst-feature-suggestions'));
+        }
+        $settings = $this->settings();
+        $queue = get_option(self::WEBHOOK_QUEUE_KEY, array());
+        ?>
+        <div class="wrap scfs-settings-page">
+            <h1><?php esc_html_e('Feature Suggestions Integration', 'sustainable-catalyst-feature-suggestions'); ?></h1>
+            <div class="scfs-settings-grid">
+                <section class="scfs-settings-card">
+                    <h2><?php esc_html_e('REST API', 'sustainable-catalyst-feature-suggestions'); ?></h2>
+                    <p><strong><?php esc_html_e('Health:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <code><?php echo esc_html(rest_url(self::REST_NAMESPACE . '/health')); ?></code></p>
+                    <p><strong><?php esc_html_e('Schema:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <code><?php echo esc_html(rest_url(self::REST_NAMESPACE . '/schema')); ?></code></p>
+                    <p><strong><?php esc_html_e('Suggestions:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <code><?php echo esc_html(rest_url(self::REST_NAMESPACE . '/suggestions')); ?></code></p>
+                    <p><?php echo $settings['enable_rest_submissions'] === '1' ? esc_html__('Public submission endpoint enabled.', 'sustainable-catalyst-feature-suggestions') : esc_html__('Public submission endpoint disabled.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+                </section>
+                <section class="scfs-settings-card">
+                    <h2><?php esc_html_e('Shared Events', 'sustainable-catalyst-feature-suggestions'); ?></h2>
+                    <p><code>scfs_event</code></p>
+                    <p><code>sc_platform_event</code></p>
+                    <p><?php echo $settings['enable_shared_events'] === '1' ? esc_html__('WordPress shared events enabled.', 'sustainable-catalyst-feature-suggestions') : esc_html__('WordPress shared events disabled.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+                </section>
+                <section class="scfs-settings-card">
+                    <h2><?php esc_html_e('Webhook Delivery', 'sustainable-catalyst-feature-suggestions'); ?></h2>
+                    <p><strong><?php esc_html_e('Destination:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <?php echo $settings['webhook_url'] ? '<code>' . esc_html($settings['webhook_url']) . '</code>' : esc_html__('Not configured', 'sustainable-catalyst-feature-suggestions'); ?></p>
+                    <p><strong><?php esc_html_e('Queued deliveries:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <?php echo esc_html((string) (is_array($queue) ? count($queue) : 0)); ?></p>
+                    <p><?php echo $settings['enable_webhooks'] === '1' ? esc_html__('Signed webhook delivery enabled.', 'sustainable-catalyst-feature-suggestions') : esc_html__('Webhook delivery disabled.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+                </section>
+            </div>
+        </div>
+        <?php
+    }
+
+
+    private function ai_payload($post_id) {
+        $post = get_post($post_id);
+        return array(
+            'submission_id' => $this->ensure_submission_uuid($post_id),
+            'wordpress_id' => (int) $post_id,
+            'title' => $post ? $post->post_title : '',
+            'category' => get_post_meta($post_id, '_scfs_category', true),
+            'priority' => get_post_meta($post_id, '_scfs_priority', true),
+            'problem' => get_post_meta($post_id, '_scfs_problem', true),
+            'suggestion' => get_post_meta($post_id, '_scfs_suggestion', true),
+            'success_criteria' => get_post_meta($post_id, '_scfs_success_criteria', true),
+            'beneficiaries' => get_post_meta($post_id, '_scfs_beneficiaries', true),
+            'implementation_notes' => get_post_meta($post_id, '_scfs_implementation_notes', true),
+            'source' => get_post_meta($post_id, '_scfs_source', true),
+        );
+    }
+
+    private function request_ai_analysis($post_id) {
+        $settings = $this->settings();
+        $base = untrailingslashit((string) $settings['ai_backend_url']);
+        if ($base === '') return new WP_Error('scfs_ai_not_configured', __('AI backend URL is not configured.', 'sustainable-catalyst-feature-suggestions'));
+        update_post_meta($post_id, '_scfs_ai_analysis_status', 'processing');
+        $headers = array('Content-Type' => 'application/json');
+        if (!empty($settings['ai_backend_api_key'])) $headers['X-SCFS-AI-Key'] = $settings['ai_backend_api_key'];
+        $response = wp_remote_post($base . '/v1/analyze', array(
+            'timeout' => max(5, min(60, absint($settings['ai_timeout']))),
+            'headers' => $headers,
+            'body' => wp_json_encode($this->ai_payload($post_id)),
+            'data_format' => 'body',
+        ));
+        if (is_wp_error($response)) { update_post_meta($post_id, '_scfs_ai_analysis_status', 'failed'); update_post_meta($post_id, '_scfs_ai_analysis_error', $response->get_error_message()); return $response; }
+        $code = wp_remote_retrieve_response_code($response);
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        if ($code < 200 || $code >= 300 || !is_array($data)) { $err = new WP_Error('scfs_ai_http_error', sprintf(__('AI backend returned HTTP %d.', 'sustainable-catalyst-feature-suggestions'), $code)); update_post_meta($post_id, '_scfs_ai_analysis_status', 'failed'); update_post_meta($post_id, '_scfs_ai_analysis_error', $err->get_error_message()); return $err; }
+        update_post_meta($post_id, '_scfs_ai_analysis', $data);
+        update_post_meta($post_id, '_scfs_ai_analysis_status', 'complete');
+        update_post_meta($post_id, '_scfs_ai_analysis_version', isset($data['analysis_version']) ? sanitize_text_field($data['analysis_version']) : '');
+        update_post_meta($post_id, '_scfs_ai_analyzed_at', gmdate('c'));
+        delete_post_meta($post_id, '_scfs_ai_analysis_error');
+        $this->publish_event('feedback.classified', $post_id, array('analysis_version' => isset($data['analysis_version']) ? $data['analysis_version'] : '', 'confidence' => isset($data['confidence']) ? $data['confidence'] : null));
+        return $data;
+    }
+
+    public function rest_analyze_suggestion($request) {
+        $id = absint($request['id']); $post = get_post($id);
+        if (!$post || $post->post_type !== self::POST_TYPE) return new WP_Error('scfs_not_found', __('Feature suggestion not found.', 'sustainable-catalyst-feature-suggestions'), array('status'=>404));
+        $result = $this->request_ai_analysis($id); if (is_wp_error($result)) return $result; return rest_ensure_response($result);
+    }
+    public function rest_get_analysis($request) {
+        $id=absint($request['id']); return rest_ensure_response(array('status'=>get_post_meta($id,'_scfs_ai_analysis_status',true),'analysis'=>get_post_meta($id,'_scfs_ai_analysis',true),'error'=>get_post_meta($id,'_scfs_ai_analysis_error',true),'analyzed_at'=>get_post_meta($id,'_scfs_ai_analyzed_at',true)));
+    }
+    public function rest_ai_status() {
+        $settings=$this->settings(); $base=untrailingslashit((string)$settings['ai_backend_url']);
+        if ($base==='') return rest_ensure_response(array('ok'=>false,'configured'=>false));
+        $headers=array(); if(!empty($settings['ai_backend_api_key'])) $headers['X-SCFS-AI-Key']=$settings['ai_backend_api_key'];
+        $r=wp_remote_get($base.'/health',array('timeout'=>8,'headers'=>$headers));
+        if(is_wp_error($r)) return rest_ensure_response(array('ok'=>false,'configured'=>true,'error'=>$r->get_error_message()));
+        return rest_ensure_response(array('ok'=>wp_remote_retrieve_response_code($r)===200,'configured'=>true,'backend'=>json_decode(wp_remote_retrieve_body($r),true)));
+    }
+    public function analyze_suggestion_action() {
+        if(!current_user_can('edit_posts')) wp_die(__('Permission denied.','sustainable-catalyst-feature-suggestions'));
+        $id=isset($_GET['post_id'])?absint($_GET['post_id']):0; check_admin_referer('scfs_analyze_'.$id); $this->request_ai_analysis($id); wp_safe_redirect(get_edit_post_link($id,'url')); exit;
+    }
+    public function analyze_batch_action() {
+        if(!current_user_can('edit_posts')) wp_die(__('Permission denied.','sustainable-catalyst-feature-suggestions'));
+        check_admin_referer('scfs_analyze_batch'); $q=new WP_Query(array('post_type'=>self::POST_TYPE,'post_status'=>array('pending','private','publish','draft'),'posts_per_page'=>25,'meta_query'=>array(array('key'=>'_scfs_ai_analysis_status','compare'=>'NOT EXISTS'))));
+        foreach($q->posts as $p){$this->request_ai_analysis($p->ID);} wp_safe_redirect(admin_url('edit.php?post_type='.self::POST_TYPE)); exit;
+    }
+
+    private function intelligence_filters() {
+        $allowed_statuses = array_keys($this->review_statuses());
+        $status = isset($_GET['review_status']) ? sanitize_key(wp_unslash($_GET['review_status'])) : '';
+        if ($status && !in_array($status, $allowed_statuses, true)) $status = '';
+        return array(
+            'days' => isset($_GET['days']) ? min(3650, max(0, absint($_GET['days']))) : 90,
+            'review_status' => $status,
+            'category' => isset($_GET['category']) ? sanitize_text_field(wp_unslash($_GET['category'])) : '',
+            'platform_area' => isset($_GET['platform_area']) ? sanitize_key(wp_unslash($_GET['platform_area'])) : '',
+            'feature_type' => isset($_GET['feature_type']) ? sanitize_key(wp_unslash($_GET['feature_type'])) : '',
+        );
+    }
+
+    private function intelligence_data($filters = array()) {
+        $filters = wp_parse_args($filters, array('days'=>90,'review_status'=>'','category'=>'','platform_area'=>'','feature_type'=>''));
+        $args = array('post_type'=>self::POST_TYPE,'post_status'=>array('publish','pending','draft','private'),'posts_per_page'=>-1,'fields'=>'ids','orderby'=>'date','order'=>'DESC');
+        if (!empty($filters['days'])) $args['date_query'] = array(array('after'=>gmdate('Y-m-d', time() - DAY_IN_SECONDS * absint($filters['days'])),'inclusive'=>true));
+        if (!empty($filters['review_status'])) $args['meta_query'][] = array('key'=>'_scfs_review_status','value'=>$filters['review_status']);
+        if (!empty($filters['category'])) $args['meta_query'][] = array('key'=>'_scfs_category','value'=>$filters['category']);
+        $ids = get_posts($args);
+        $data = array('total'=>0,'analyzed'=>0,'unanalyzed'=>0,'average_confidence'=>0,'average_impact'=>0,'average_effort'=>0,'roadmap_ready'=>0,'safety_flagged'=>0,'statuses'=>array(),'categories'=>array(),'platform_areas'=>array(),'feature_types'=>array(),'topics'=>array(),'sentiment'=>array(),'actions'=>array(),'monthly'=>array(),'opportunities'=>array());
+        $confidence_total=0; $impact_total=0; $effort_total=0; $score_count=0;
+        foreach ($ids as $id) {
+            $analysis = get_post_meta($id, '_scfs_ai_analysis', true);
+            $area = is_array($analysis) ? sanitize_key($analysis['platform_area'] ?? '') : '';
+            $type = is_array($analysis) ? sanitize_key($analysis['feature_type'] ?? '') : '';
+            if ($filters['platform_area'] && $area !== $filters['platform_area']) continue;
+            if ($filters['feature_type'] && $type !== $filters['feature_type']) continue;
+            $data['total']++;
+            $status=get_post_meta($id,'_scfs_review_status',true) ?: 'new';
+            $category=get_post_meta($id,'_scfs_category',true) ?: 'Uncategorized';
+            $this->intelligence_increment($data['statuses'],$status);
+            $this->intelligence_increment($data['categories'],$category);
+            $month=get_the_date('Y-m',$id); $this->intelligence_increment($data['monthly'],$month);
+            $impact=(int)get_post_meta($id,'_scfs_impact_score',true); $effort=(int)get_post_meta($id,'_scfs_effort_score',true);
+            if ($impact || $effort) { $impact_total += $impact; $effort_total += $effort; $score_count++; }
+            if (is_array($analysis)) {
+                $data['analyzed']++; $confidence=(float)($analysis['confidence'] ?? 0); $confidence_total += $confidence;
+                $this->intelligence_increment($data['platform_areas'],$area ?: 'unclassified');
+                $this->intelligence_increment($data['feature_types'],$type ?: 'unclassified');
+                $this->intelligence_increment($data['sentiment'],sanitize_key($analysis['sentiment'] ?? 'unknown'));
+                $this->intelligence_increment($data['actions'],sanitize_key($analysis['suggested_action'] ?? 'review'));
+                foreach ((array)($analysis['topics'] ?? array()) as $topic) $this->intelligence_increment($data['topics'],sanitize_text_field($topic));
+                if (!empty($analysis['safety_flags'])) $data['safety_flagged']++;
+                if (($analysis['suggested_action'] ?? '') === 'evaluate_for_roadmap') $data['roadmap_ready']++;
+                $scores=(array)($analysis['scores'] ?? array());
+                $priority=((float)($scores['impact'] ?? 0) * 2 + (float)($scores['urgency'] ?? 0) + (float)($scores['strategic_alignment'] ?? 0) * 5 - (float)($scores['effort'] ?? 0)) * max(.25,$confidence);
+                $data['opportunities'][]=array('id'=>$id,'title'=>get_the_title($id),'summary'=>sanitize_text_field($analysis['summary'] ?? ''),'platform_area'=>$area,'feature_type'=>$type,'confidence'=>$confidence,'priority_score'=>round($priority,2),'edit_url'=>get_edit_post_link($id,'raw'));
+            } else $data['unanalyzed']++;
+        }
+        $data['average_confidence']=$data['analyzed'] ? round($confidence_total/$data['analyzed'],2) : 0;
+        $data['average_impact']=$score_count ? round($impact_total/$score_count,1) : 0;
+        $data['average_effort']=$score_count ? round($effort_total/$score_count,1) : 0;
+        foreach (array('statuses','categories','platform_areas','feature_types','topics','sentiment','actions') as $key) arsort($data[$key]);
+        ksort($data['monthly']); usort($data['opportunities'],fn($a,$b)=>$b['priority_score']<=>$a['priority_score']); $data['opportunities']=array_slice($data['opportunities'],0,12);
+        return $data;
+    }
+
+    private function intelligence_increment(&$bucket,$key) { $key=$key ?: 'unknown'; $bucket[$key]=isset($bucket[$key]) ? $bucket[$key]+1 : 1; }
+    private function render_intelligence_bars($items,$total,$limit=8) {
+        if (!$items) { echo '<p class="description">No data in this view.</p>'; return; }
+        $i=0; echo '<div class="scfs-intel-bars">'; foreach ($items as $label=>$count) { if ($i++ >= $limit) break; $pct=$total ? min(100,round($count/$total*100)) : 0; echo '<div class="scfs-intel-bar"><div><span>'.esc_html(ucwords(str_replace('_',' ',$label))).'</span><strong>'.esc_html((string)$count).'</strong></div><span class="scfs-intel-track"><span style="width:'.esc_attr((string)$pct).'%"></span></span></div>'; } echo '</div>';
+    }
+
+    public function render_intelligence_page() {
+        if (!current_user_can('edit_posts')) wp_die(__('You do not have permission to view intelligence.','sustainable-catalyst-feature-suggestions'));
+        $f=$this->intelligence_filters(); $d=$this->intelligence_data($f); $export=wp_nonce_url(admin_url('admin-post.php?action=scfs_export_intelligence_csv&'.http_build_query($f)),'scfs_export_intelligence_csv');
+        ?>
+        <div class="wrap scfs-intelligence"><h1><?php esc_html_e('Feedback Intelligence Dashboard','sustainable-catalyst-feature-suggestions'); ?></h1>
+        <p><?php esc_html_e('Aggregate, privacy-conscious signals from submissions, workflow records, and advisory AI triage. AI classifications remain subject to human review.','sustainable-catalyst-feature-suggestions'); ?></p>
+        <form method="get" class="scfs-intel-filters"><input type="hidden" name="post_type" value="<?php echo esc_attr(self::POST_TYPE); ?>"><input type="hidden" name="page" value="scfs-intelligence">
+        <label>Period <select name="days"><?php foreach(array(30=>'30 days',90=>'90 days',180=>'180 days',365=>'1 year',0=>'All time') as $v=>$l) echo '<option value="'.esc_attr($v).'" '.selected($f['days'],$v,false).'>'.esc_html($l).'</option>'; ?></select></label>
+        <label>Status <select name="review_status"><option value="">All</option><?php foreach($this->review_statuses() as $v=>$l) echo '<option value="'.esc_attr($v).'" '.selected($f['review_status'],$v,false).'>'.esc_html($l).'</option>'; ?></select></label>
+        <label>Category <select name="category"><option value="">All</option><?php foreach($this->categories() as $v) echo '<option value="'.esc_attr($v).'" '.selected($f['category'],$v,false).'>'.esc_html($v).'</option>'; ?></select></label>
+        <label>Platform <input name="platform_area" value="<?php echo esc_attr($f['platform_area']); ?>" placeholder="workbench"></label><label>Type <input name="feature_type" value="<?php echo esc_attr($f['feature_type']); ?>" placeholder="feature_request"></label><button class="button button-primary">Apply</button><a class="button" href="<?php echo esc_url($export); ?>">Export intelligence CSV</a></form>
+        <div class="scfs-intel-cards"><?php foreach(array('total'=>'Suggestions','analyzed'=>'AI analyzed','unanalyzed'=>'Awaiting analysis','roadmap_ready'=>'Roadmap candidates','safety_flagged'=>'Safety flagged','average_confidence'=>'Avg. confidence','average_impact'=>'Avg. impact','average_effort'=>'Avg. effort') as $k=>$l) echo '<div class="scfs-intel-card"><span>'.esc_html($l).'</span><strong>'.esc_html((string)$d[$k]).'</strong></div>'; ?></div>
+        <div class="scfs-intel-grid"><section><h2>Workflow status</h2><?php $this->render_intelligence_bars($d['statuses'],$d['total']); ?></section><section><h2>Platform areas</h2><?php $this->render_intelligence_bars($d['platform_areas'],max(1,$d['analyzed'])); ?></section><section><h2>Feature types</h2><?php $this->render_intelligence_bars($d['feature_types'],max(1,$d['analyzed'])); ?></section><section><h2>Top topics</h2><?php $this->render_intelligence_bars($d['topics'],max(1,array_sum($d['topics']))); ?></section><section><h2>Categories</h2><?php $this->render_intelligence_bars($d['categories'],$d['total']); ?></section><section><h2>Suggested actions</h2><?php $this->render_intelligence_bars($d['actions'],max(1,$d['analyzed'])); ?></section></div>
+        <section class="scfs-intel-opportunities"><h2>Highest-priority opportunities</h2><table class="widefat striped"><thead><tr><th>Suggestion</th><th>Platform</th><th>Type</th><th>Confidence</th><th>Advisory score</th></tr></thead><tbody><?php if(!$d['opportunities']) echo '<tr><td colspan="5">No analyzed opportunities in this view.</td></tr>'; foreach($d['opportunities'] as $o) echo '<tr><td><a href="'.esc_url($o['edit_url']).'"><strong>'.esc_html($o['title']).'</strong></a><br><span>'.esc_html($o['summary']).'</span></td><td>'.esc_html($o['platform_area']).'</td><td>'.esc_html($o['feature_type']).'</td><td>'.esc_html((string)$o['confidence']).'</td><td>'.esc_html((string)$o['priority_score']).'</td></tr>'; ?></tbody></table><p class="description">The advisory score combines AI impact, urgency, strategic alignment, effort, and confidence. It is not an automatic roadmap decision.</p></section></div><?php
+    }
+
+    public function rest_intelligence($request) { return rest_ensure_response(array('ok'=>true,'version'=>self::VERSION,'filters'=>$this->intelligence_filters(),'data'=>$this->intelligence_data($request->get_params()))); }
+
+    public function export_intelligence_csv() {
+        if (!current_user_can('edit_posts')) wp_die(__('You do not have permission to export intelligence.','sustainable-catalyst-feature-suggestions'));
+        check_admin_referer('scfs_export_intelligence_csv'); $d=$this->intelligence_data($this->intelligence_filters());
+        header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename=scfs-feedback-intelligence-'.gmdate('Y-m-d').'.csv'); $out=fopen('php://output','w');
+        fputcsv($out,array('Metric','Key','Value')); foreach(array('total','analyzed','unanalyzed','roadmap_ready','safety_flagged','average_confidence','average_impact','average_effort') as $k) fputcsv($out,array('summary',$k,$d[$k]));
+        foreach(array('statuses','categories','platform_areas','feature_types','topics','sentiment','actions','monthly') as $group) foreach($d[$group] as $key=>$value) fputcsv($out,array($group,$key,$value)); fclose($out); exit;
+    }
+
     public function render_export_page() {
         $url = wp_nonce_url(admin_url('admin-post.php?action=scfs_export_csv'), 'scfs_export_csv');
         ?>
@@ -1236,7 +1968,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
 
         $out = fopen('php://output', 'w');
         fputcsv($out, array(
-            'ID', 'Date', 'Post Status', 'Title', 'Category', 'Priority', 'Review Status', 'Impact Score', 'Effort Score', 'Roadmap Area', 'GitHub Issue URL', 'Problem', 'Suggestion', 'Success Criteria', 'Beneficiaries', 'Implementation Notes', 'Relevant URL', 'Name', 'Email', 'Follow Up Allowed', 'Consent Confirmed', 'Referrer', 'IP Hash', 'Admin Notes'
+            'ID', 'Submission UUID', 'Source', 'Schema Version', 'Date', 'Post Status', 'Title', 'Category', 'Priority', 'Review Status', 'Impact Score', 'Effort Score', 'Roadmap Area', 'GitHub Issue URL', 'Problem', 'Suggestion', 'Success Criteria', 'Beneficiaries', 'Implementation Notes', 'Relevant URL', 'Name', 'Email', 'Follow Up Allowed', 'Consent Confirmed', 'Referrer', 'IP Hash', 'Admin Notes'
         ));
 
         $query = new WP_Query(array(
@@ -1251,6 +1983,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         foreach ($query->posts as $post) {
             fputcsv($out, array(
                 $post->ID,
+                $this->ensure_submission_uuid($post->ID),
+                get_post_meta($post->ID, '_scfs_source', true),
+                get_post_meta($post->ID, '_scfs_schema_version', true),
                 $post->post_date,
                 $post->post_status,
                 $post->post_title,

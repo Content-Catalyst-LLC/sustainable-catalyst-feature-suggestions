@@ -1,0 +1,23 @@
+{
+  "event_id": "6a108244-5902-4e25-8ec7-d6d29ea3fe30",
+  "event_type": "feedback.submitted",
+  "schema_version": "1.0",
+  "source_plugin": "feature_suggestions",
+  "source_version": "2.1.0",
+  "occurred_at": "2026-07-10T09:00:00Z",
+  "site_url": "https://sustainablecatalyst.com/",
+  "submission": {
+    "id": 123,
+    "uuid": "40aa0876-320b-41cc-b09d-d2ea1f4a068e",
+    "title": "Add a public source comparison view",
+    "category": "Data or export feature",
+    "priority": "High",
+    "review_status": "new",
+    "source": "site_intelligence",
+    "correlation_id": "opaque-cross-product-id",
+    "roadmap_area": "",
+    "impact_score": 0,
+    "effort_score": 0
+  },
+  "context": {}
+}

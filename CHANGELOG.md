@@ -1,5 +1,46 @@
 # Changelog
 
+## 2.3.0
+
+- Added Feedback Intelligence Dashboard.
+- Added aggregate workflow, category, platform, feature-type, topic, sentiment, and suggested-action views.
+- Added filtered opportunity ranking with explicit human-review boundaries.
+- Added privacy-conscious intelligence CSV export.
+- Added protected `/scfs/v1/intelligence` REST endpoint.
+- Updated backend and plugin versions.
+
+
+## 2.2.0 - 2026-07-10
+
+- Added a Python/FastAPI AI triage and classification service.
+- Added deterministic local classification so the service remains useful without a paid AI provider.
+- Added optional Gemini, DeepSeek, and OpenAI provider adapters with structured JSON validation and safe fallback.
+- Added topic, feature-type, platform-area, sentiment, urgency, impact, effort, and strategic-alignment analysis.
+- Added sensitive-information, possible-secret, medical-information, and abuse flags.
+- Added duplicate keys for later near-duplicate clustering.
+- Added confidence, rationale, provider, model, analysis version, and mandatory human-review metadata.
+- Added WordPress backend URL, service key, timeout, and automatic-analysis settings.
+- Added per-submission AI Triage review panel and analyze/reanalyze action.
+- Added protected WordPress analysis and AI-status REST endpoints.
+- Added `feedback.classified` shared events after successful analysis.
+- Added Render deployment blueprint, environment template, backend documentation, and automated tests.
+- Preserved original submissions and prohibited automatic roadmap or workflow decisions.
+
+## 2.1.0 - 2026-07-10
+
+- Added REST namespace `scfs/v1` with public health and schema endpoints.
+- Added optional public REST feature suggestion submissions with configurable API-key protection.
+- Added authenticated administrator endpoints for suggestion listing, detail retrieval, and workflow updates.
+- Added stable submission UUIDs, source labels, correlation IDs, and schema-version metadata.
+- Added shared `scfs_event` and `sc_platform_event` WordPress event hooks.
+- Added privacy-minimized event payloads that exclude names, email addresses, IP hashes, and submission free text.
+- Added optional HMAC-SHA256 signed webhook delivery.
+- Added a bounded retry queue with exponential backoff and five-minute WordPress cron processing.
+- Added a Feature Suggestions → Integration status screen.
+- Added REST and webhook settings to the plugin settings page.
+- Added integration fields to CSV exports.
+- Preserved standalone shortcode, email, moderation, anti-spam, and export behavior when integrations are disabled.
+
 ## 2.0.3 - 2026-07-06
 
 - Fixed the invalid submissions page by changing the custom post type slug from `sc_feature_suggestion` to `sc_feature_suggest`, which stays within WordPress's 20-character post type limit.

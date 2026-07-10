@@ -2,11 +2,11 @@
   "name": "Sustainable Catalyst Feature Suggestions",
   "slug": "sustainable-catalyst-feature-suggestions",
   "repository": "Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions",
-  "type": "wordpress-plugin-and-page-package",
+  "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "2.0.3",
-  "updated": "2026-07-06",
+  "version": "2.3.0",
+  "updated": "2026-07-10",
   "capabilities": [
     "configurable WordPress settings screen",
     "standalone settings access fallback",
@@ -28,7 +28,27 @@
     "page HTML",
     "site CSS",
     "documentation",
-    "examples"
+    "examples",
+    "public REST submission endpoint",
+    "public REST health and schema endpoints",
+    "authenticated REST review endpoints",
+    "stable submission UUIDs",
+    "correlation and source metadata",
+    "shared WordPress event hooks",
+    "privacy-minimized signed webhooks",
+    "webhook retry queue and integration status screen",
+    "FastAPI AI triage backend",
+    "deterministic offline classification fallback",
+    "optional Gemini, DeepSeek, and OpenAI providers",
+    "topic, feature-type, and platform-area classification",
+    "advisory urgency, impact, effort, and alignment scores",
+    "safety and sensitive-information flags",
+    "duplicate keys for later clustering",
+    "manual and automatic WordPress analysis",
+    "versioned analysis records with confidence",
+    "mandatory human-review boundary",
+    "backend health and provider status endpoints",
+    "Render deployment blueprint"
   ],
   "boundaries": [
     "no confidential information",
@@ -38,5 +58,6 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 2.0.3 fixes the invalid-post-type bug by using a <=20 character custom post type slug and adds notification test-email diagnostics."
+  "notes": "Version 2.3.0 adds the Feedback Intelligence Dashboard with filtered aggregate analytics, advisory opportunity ranking, protected REST intelligence output, and privacy-conscious CSV export.",
+  "release_name": "Feedback Intelligence Dashboard"
 }

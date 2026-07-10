@@ -27,9 +27,21 @@ Optional category preselection:
 [sustainable_catalyst_feature_suggestions category="Research Librarian feature"]
 ```
 
-## Version 2 highlights
+## Version 2.2 highlights
 
+
+- Python/FastAPI advisory triage service with deterministic fallback.
+- Optional Gemini, DeepSeek, and OpenAI structured-analysis adapters.
+- Topic, feature-type, platform-area, urgency, impact, effort, and strategic-alignment analysis.
+- Sensitive-information and abuse flags, duplicate keys, confidence, rationale, and version metadata.
+- Manual per-submission analysis and optional automatic analysis in WordPress.
+- Human review remains mandatory; AI never changes workflow or roadmap status automatically.
 - Real **Feature Suggestions → Settings** screen.
+- Public REST health, schema, and feature-suggestion submission endpoints.
+- Protected REST listing, detail, and workflow-update endpoints for authenticated administrators.
+- Stable UUIDs, source labels, correlation IDs, and schema-version metadata.
+- Shared `scfs_event` and `sc_platform_event` WordPress hooks.
+- Optional HMAC-signed webhooks with exponential retry and an integration-status screen.
 - Configurable categories, priorities, messages, visible fields, notification email, and saved post status.
 - Saves new submissions as **Pending Review** by default to avoid front-end private-post save failures.
 - Strict WordPress nonce validation is configurable and off by default because cached public pages often break nonce-based forms.
@@ -44,6 +56,7 @@ Optional category preselection:
 
 ```text
 wordpress/sustainable-catalyst-feature-suggestions/   WordPress plugin source
+backend/                                             FastAPI AI triage service and Render blueprint
 docs/                                                Page HTML, site CSS, workflows, and boundaries
 examples/                                            Example suggestion payloads
 exports/                                             Placeholder for local exports, not production data
@@ -60,7 +73,8 @@ feature_suggestions_manifest.json                    Repository manifest
 4. Go to **Feature Suggestions → Settings** and configure the form.
 5. Create a page at `/platform/feature-suggestions/`.
 6. Add the shortcode: `[sustainable_catalyst_feature_suggestions]`.
-7. Optionally paste the surrounding page HTML from `docs/feature-suggestions-page.html` and site CSS from `docs/feature-suggestions-site.css`.
+7. Review **Feature Suggestions → Integration** and configure REST/API-key or webhook settings as needed.
+8. Optionally paste the surrounding page HTML from `docs/feature-suggestions-page.html` and site CSS from `docs/feature-suggestions-site.css`.
 
 ## Important v2 save fix
 
@@ -77,3 +91,8 @@ Suggestions may inform future development, but submission does not guarantee imp
 ## License
 
 GPL-2.0-or-later for WordPress compatibility unless otherwise stated.
+
+
+## Feedback Intelligence Dashboard
+
+Version 2.3.0 adds an administrator dashboard with date, status, category, platform, and feature-type filters; aggregate AI triage signals; roadmap-candidate ranking; privacy-conscious CSV export; and a protected REST intelligence endpoint. Scores and classifications remain advisory and require human review.

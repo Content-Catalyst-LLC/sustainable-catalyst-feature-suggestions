@@ -1,0 +1,128 @@
+import json, os, re, hashlib
+from datetime import datetime, timezone
+from typing import List, Optional, Literal
+from urllib import request, error
+from fastapi import FastAPI, Header, HTTPException
+from pydantic import BaseModel, Field
+
+VERSION='2.3.0'
+ANALYSIS_VERSION='2.3.0-1'
+app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
+
+class Submission(BaseModel):
+    submission_id:str
+    wordpress_id:Optional[int]=None
+    title:str=Field(min_length=1,max_length=300)
+    category:str='Other'
+    priority:str='Medium'
+    problem:str=''
+    suggestion:str=''
+    success_criteria:str=''
+    beneficiaries:str=''
+    implementation_notes:str=''
+    source:str='wordpress'
+
+class Scores(BaseModel):
+    urgency:int=Field(ge=1,le=5)
+    impact:int=Field(ge=1,le=5)
+    effort:int=Field(ge=1,le=5)
+    strategic_alignment:float=Field(ge=0,le=1)
+
+class Analysis(BaseModel):
+    submission_id:str
+    analysis_id:str
+    analysis_version:str=ANALYSIS_VERSION
+    provider:str
+    model:str
+    generated_at:str
+    summary:str
+    feature_type:str
+    platform_area:str
+    topics:List[str]
+    sentiment:Literal['positive','neutral','mixed','negative']
+    safety_flags:List[str]
+    duplicate_keys:List[str]
+    suggested_roadmap_destination:str
+    suggested_action:Literal['review','evaluate_for_roadmap','request_clarification','possible_duplicate','reject_as_abuse']
+    scores:Scores
+    confidence:float=Field(ge=0,le=1)
+    human_review_required:bool=True
+    rationale:List[str]
+
+PLATFORM_RULES={
+ 'research_librarian':['research librarian','source card','research route','librarian','citation','source ranking'],
+ 'site_intelligence':['site intelligence','dashboard','indicator','analytics','source status','brief export'],
+ 'workbench':['workbench','calculator','equation','graph','model','simulation'],
+ 'decision_studio':['decision studio','decision brief','tradeoff','scenario brief'],
+ 'research_library':['article map','research library','library','article','content gap'],
+ 'platform_core':['accessibility','navigation','search','login','api','export','performance','mobile'],
+}
+TYPE_RULES={
+ 'bug_report':['bug','broken','error','does not work','not working','fails'],
+ 'calculator_request':['calculator','calculate','equation','simulation','modeling tool'],
+ 'data_source_request':['api source','dataset','data source','connector','indicator'],
+ 'content_request':['article','coverage','topic','research path','article map'],
+ 'integration_request':['integrate','integration','connect','handoff','deep link'],
+ 'ux_accessibility':['accessibility','screen reader','contrast','keyboard','mobile','navigation','usability'],
+ 'export_request':['export','pdf','csv','download','report'],
+ 'feature_request':['feature','add','support','ability','could you'],
+}
+TOPICS=['sustainability','governance','infrastructure','artificial intelligence','economics','risk','resilience','climate','energy','environment','psychology','mathematics','engineering','law','human rights','education','accessibility','data','research']
+SENSITIVE=[('possible_personal_data',r'\b\d{3}-\d{2}-\d{4}\b|\b(?:\d[ -]*?){13,16}\b'),('possible_medical_information',r'\b(diagnosed|medication|patient|medical record)\b'),('possible_secret',r'\b(api[_ -]?key|password|secret token)\b')]
+ABUSE=re.compile(r'\b(kill yourself|racial slur|spam spam spam)\b',re.I)
+
+def auth(x_scfs_ai_key:Optional[str]):
+    expected=os.getenv('SCFS_AI_API_KEY','')
+    if expected and x_scfs_ai_key!=expected: raise HTTPException(401,'Invalid AI service key')
+
+def text(s:Submission): return ' '.join([s.title,s.category,s.problem,s.suggestion,s.success_criteria,s.beneficiaries,s.implementation_notes]).lower()
+def choose(rules,t,default):
+    ranked=sorted(((sum(1 for k in keys if k in t),name) for name,keys in rules.items()),reverse=True)
+    return ranked[0][1] if ranked and ranked[0][0] else default
+
+def deterministic(s:Submission)->Analysis:
+    t=text(s); area=choose(PLATFORM_RULES,t,'platform_core'); ftype=choose(TYPE_RULES,t,'feature_request')
+    topics=[x for x in TOPICS if x in t][:8] or ['platform development']
+    flags=[name for name,pat in SENSITIVE if re.search(pat,t,re.I)]
+    if ABUSE.search(t): flags.append('possible_abuse')
+    urgency=5 if any(x in t for x in ['urgent','security','data loss','site down']) else 4 if any(x in t for x in ['broken','cannot','fails']) else 3
+    impact=5 if any(x in t for x in ['all users','site-wide','critical','accessibility']) else 4 if len(s.beneficiaries)>20 else 3
+    effort=5 if any(x in t for x in ['new platform','machine learning','real-time','complex survey']) else 4 if ftype in ['integration_request','calculator_request','data_source_request'] else 3
+    action='reject_as_abuse' if 'possible_abuse' in flags else 'request_clarification' if len(s.problem.strip())<12 or len(s.suggestion.strip())<12 else 'evaluate_for_roadmap'
+    digest=hashlib.sha256(re.sub(r'\W+',' ',t).encode()).hexdigest()[:16]
+    words=re.findall(r'[a-z0-9]+',t); dup=[' '.join(sorted(set(words))[:12]),digest]
+    summary=(s.suggestion or s.problem or s.title).strip(); summary=re.sub(r'\s+',' ',summary)[:320]
+    confidence=min(.92,.58 + .05*sum(bool(x.strip()) for x in [s.problem,s.suggestion,s.success_criteria,s.beneficiaries]))
+    return Analysis(submission_id=s.submission_id,analysis_id=hashlib.sha256((s.submission_id+ANALYSIS_VERSION).encode()).hexdigest()[:24],provider='deterministic',model='rules-v1',generated_at=datetime.now(timezone.utc).isoformat(),summary=summary,feature_type=ftype,platform_area=area,topics=topics,sentiment='negative' if any(x in t for x in ['frustrating','bad','broken']) else 'positive' if any(x in t for x in ['love','great','helpful']) else 'neutral',safety_flags=flags,duplicate_keys=dup,suggested_roadmap_destination=area,suggested_action=action,scores=Scores(urgency=urgency,impact=impact,effort=effort,strategic_alignment=.88 if area!='platform_core' else .72),confidence=confidence,rationale=[f'Classified as {ftype} from submission language.',f'Routed to {area} using platform terminology.','Scores are advisory and require human review.'])
+
+def call_json(url,headers,payload):
+    req=request.Request(url,data=json.dumps(payload).encode(),headers={'Content-Type':'application/json',**headers},method='POST')
+    try:
+        with request.urlopen(req,timeout=float(os.getenv('SCFS_AI_PROVIDER_TIMEOUT','25'))) as r:return json.loads(r.read())
+    except (error.URLError,error.HTTPError,TimeoutError,json.JSONDecodeError) as e: raise RuntimeError(str(e))
+
+def llm(s:Submission,base:Analysis)->Analysis:
+    provider=os.getenv('SCFS_AI_PROVIDER','disabled').lower(); model=os.getenv('SCFS_AI_MODEL','')
+    if provider in ('','disabled','deterministic'): return base
+    prompt='Return only JSON matching this schema: '+json.dumps(Analysis.model_json_schema())+'\nSubmission:'+s.model_dump_json()+'\nDeterministic baseline:'+base.model_dump_json()
+    try:
+        if provider=='gemini':
+            key=os.getenv('SCFS_GEMINI_API_KEY',''); model=model or 'gemini-2.5-flash'; data=call_json(f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}',{}, {'contents':[{'parts':[{'text':prompt}]}],'generationConfig':{'responseMimeType':'application/json','temperature':.1}}); raw=data['candidates'][0]['content']['parts'][0]['text']
+        elif provider in ('openai','deepseek'):
+            key=os.getenv('SCFS_OPENAI_API_KEY' if provider=='openai' else 'SCFS_DEEPSEEK_API_KEY',''); model=model or ('gpt-4.1-mini' if provider=='openai' else 'deepseek-chat'); baseurl='https://api.openai.com/v1' if provider=='openai' else 'https://api.deepseek.com'; data=call_json(baseurl+'/chat/completions',{'Authorization':'Bearer '+key},{'model':model,'messages':[{'role':'system','content':'You classify feature feedback. Return JSON only.'},{'role':'user','content':prompt}],'temperature':.1,'response_format':{'type':'json_object'}}); raw=data['choices'][0]['message']['content']
+        else:return base
+        obj=json.loads(raw); obj.update({'submission_id':s.submission_id,'analysis_id':base.analysis_id,'analysis_version':ANALYSIS_VERSION,'provider':provider,'model':model,'generated_at':datetime.now(timezone.utc).isoformat(),'human_review_required':True})
+        return Analysis.model_validate(obj)
+    except Exception:
+        base.rationale.append(f'{provider} provider was unavailable or invalid; deterministic fallback used.')
+        return base
+
+@app.get('/health')
+def health():
+    return {'ok':True,'service':'scfs-ai-triage','version':VERSION,'provider':os.getenv('SCFS_AI_PROVIDER','disabled'),'human_review_required':True}
+@app.get('/v1/status')
+def status(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key); p=os.getenv('SCFS_AI_PROVIDER','disabled'); return {'ok':True,'version':VERSION,'provider':p,'model':os.getenv('SCFS_AI_MODEL',''),'configured':p in ('disabled','deterministic') or bool(os.getenv({'gemini':'SCFS_GEMINI_API_KEY','deepseek':'SCFS_DEEPSEEK_API_KEY','openai':'SCFS_OPENAI_API_KEY'}.get(p,'')))}
+@app.post('/v1/analyze',response_model=Analysis)
+def analyze(s:Submission,x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key); return llm(s,deterministic(s))

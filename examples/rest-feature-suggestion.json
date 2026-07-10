@@ -1,0 +1,12 @@
+{
+  "title": "Add a public source comparison view",
+  "category": "Data or export feature",
+  "problem": "Readers cannot easily compare indicator provenance across public sources.",
+  "suggestion": "Add a source comparison panel with coverage, refresh status, and licensing metadata.",
+  "success_criteria": "Users can compare at least three sources and export the comparison.",
+  "beneficiaries": "Researchers, public-interest analysts, and sustainability teams.",
+  "priority": "High",
+  "consent": true,
+  "source": "site_intelligence",
+  "correlation_id": "opaque-cross-product-id"
+}

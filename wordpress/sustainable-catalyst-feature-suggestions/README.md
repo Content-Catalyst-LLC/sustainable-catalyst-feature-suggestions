@@ -1,6 +1,6 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 2.0.3 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 2.1.0 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
 
 ## Shortcode
 
@@ -14,9 +14,14 @@ Optional category preselection:
 [sustainable_catalyst_feature_suggestions category="Research Librarian feature"]
 ```
 
-## What v2 does
+## What v2.1 does
 
 - Renders a configurable public feature suggestion form.
+- Exposes public REST health, schema, and optional submission endpoints.
+- Exposes authenticated administrator endpoints for listing, reading, and updating suggestions.
+- Publishes privacy-minimized shared events through `scfs_event` and `sc_platform_event`.
+- Supports optional HMAC-signed webhooks with retry delivery and integration diagnostics.
+- Assigns stable submission UUIDs and accepts source and correlation metadata.
 - Saves submissions as WordPress Feature Suggestion records.
 - Adds a real **Feature Suggestions → Settings** screen, plus a standalone fallback settings route for hosts with unusual admin capabilities.
 - Lets you configure categories, priorities, messages, visible fields, notification email, saved post status, rate limits, duplicate detection, link limits, blocked terms, and nonce behavior.
@@ -69,3 +74,8 @@ The form is for non-confidential suggestions only. Visitors should not submit co
 ## Where submissions and settings appear
 
 Submitted ideas are stored as the `sc_feature_suggest` custom post type. Review them in WordPress Admin → Feature Suggestions. Configure the plugin from Feature Suggestions → Settings, Settings → Feature Suggestions, the plugin-row Settings link on the Installed Plugins screen, or `/wp-admin/admin.php?page=scfs-settings-standalone`.
+
+
+## Feedback Intelligence Dashboard
+
+Version 2.3.0 adds an administrator dashboard with date, status, category, platform, and feature-type filters; aggregate AI triage signals; roadmap-candidate ranking; privacy-conscious CSV export; and a protected REST intelligence endpoint. Scores and classifications remain advisory and require human review.
