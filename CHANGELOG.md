@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.0.0 — Sustainable Catalyst Feedback and Participation Platform
+
+- Added the unified Platform Command Center.
+- Added module health and release-readiness checks.
+- Added privacy-oriented governance and retention settings.
+- Added contact anonymization and dry-run retention reporting.
+- Added platform governance audit history.
+- Added administrator-only platform snapshot exports and REST endpoints.
+- Added backend platform-capabilities endpoint.
+- Consolidated the v2.x feedback, survey, intelligence, participation, and roadmap layers into a stable major release.
+- Preserved human approval boundaries for AI, public voting, roadmap states, and retention actions.
+
+
 ## 2.9.0 — Opportunity Scoring and Roadmap Workflow
 
 - Added configurable evidence-weighted opportunity scoring.

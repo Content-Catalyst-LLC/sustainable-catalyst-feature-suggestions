@@ -6,8 +6,8 @@ from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 from .survey_intelligence import SurveyAnalysisRequest, SurveyAnalysisResult, analyze_survey
 
-VERSION='2.6.0'
-ANALYSIS_VERSION='2.6.0-1'
+VERSION='3.0.0'
+ANALYSIS_VERSION='3.0.0-1'
 app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
 
 class Submission(BaseModel):
@@ -137,4 +137,19 @@ def survey_analyze(payload: SurveyAnalysisRequest, x_scfs_ai_key:Optional[str]=H
 @app.get('/v1/surveys/methodology')
 def survey_methodology(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {'ok':True,'analysis_version':'2.6.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+    return {'ok':True,'analysis_version':'3.0.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+
+
+@app.get('/v1/platform/capabilities')
+def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'service': 'scfs-feedback-research-intelligence',
+        'capabilities': ['feature_triage','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
+        'providers': ['deterministic','gemini','deepseek','openai'],
+        'human_review_required': True,
+        'statistical_significance': False,
+        'causal_inference': False,
+    }

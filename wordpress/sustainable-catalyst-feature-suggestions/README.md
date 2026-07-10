@@ -95,4 +95,4 @@ Use `[sc_public_ideas]` to publish moderator-approved ideas with advisory suppor
 
 ## Opportunity scoring and roadmap workflow
 
-Version 2.9.0 adds configurable evidence-weighted opportunity scoring, minimum-evidence gates, human-controlled roadmap states, owners, target releases, decision rationales, audit history, and protected JSON handoffs for GitHub, Decision Studio, and Site Intelligence. Scores and public support remain advisory.
+Version 3.0.0 adds configurable evidence-weighted opportunity scoring, minimum-evidence gates, human-controlled roadmap states, owners, target releases, decision rationales, audit history, and protected JSON handoffs for GitHub, Decision Studio, and Site Intelligence. Scores and public support remain advisory.

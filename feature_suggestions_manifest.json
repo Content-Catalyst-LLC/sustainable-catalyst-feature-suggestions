@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "2.9.0",
+  "version": "3.0.0",
   "updated": "2026-07-10",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -81,7 +81,14 @@
     "decision rationale and audit history",
     "protected GitHub and Decision Studio handoff exports",
     "authenticated opportunity REST API",
-    "opportunity.scored and opportunity.status_changed events"
+    "opportunity.scored and opportunity.status_changed events",
+    "unified platform command center",
+    "module health and release-readiness checks",
+    "governance and retention controls",
+    "contact anonymization and dry-run retention",
+    "platform governance audit log",
+    "platform snapshot JSON export",
+    "protected platform status and snapshot REST endpoints"
   ],
   "boundaries": [
     "no confidential information",
@@ -91,14 +98,14 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 2.9.0 adds configurable evidence-weighted opportunity scoring, minimum-evidence gates, human-controlled roadmap states, audit history, and protected cross-product handoff exports.",
-  "release_name": "Opportunity Scoring and Roadmap Workflow",
-  "release": "Opportunity Scoring and Roadmap Workflow",
+  "notes": "Version 3.0.0 consolidates feature intake, AI triage, forms, surveys, research intelligence, contextual feedback, public participation, roadmap governance, privacy controls, and operational readiness into a stable platform release.",
+  "release_name": "Sustainable Catalyst Feedback and Participation Platform",
+  "release": "Sustainable Catalyst Feedback and Participation Platform",
   "features": [
-    "Evidence-weighted opportunity scoring",
-    "Minimum-evidence and candidate-threshold controls",
-    "Human-controlled roadmap states and audit history",
-    "Versioned JSON handoffs for GitHub, Decision Studio, and Site Intelligence",
-    "Protected opportunity REST endpoints and shared events"
+    "Unified platform command center",
+    "Module health and release-readiness checks",
+    "Privacy-oriented retention and contact anonymization",
+    "Platform governance audit history",
+    "Versioned platform snapshot exports and protected REST endpoints"
   ]
 }
