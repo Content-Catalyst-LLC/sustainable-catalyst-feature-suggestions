@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "updated": "2026-07-10",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -48,7 +48,12 @@
     "versioned analysis records with confidence",
     "mandatory human-review boundary",
     "backend health and provider status endpoints",
-    "Render deployment blueprint"
+    "Render deployment blueprint",
+    "form-survey-builder",
+    "private-response-storage",
+    "form-response-rest-api",
+    "form-response-csv-export",
+    "form-response-shared-events"
   ],
   "boundaries": [
     "no confidential information",
@@ -59,5 +64,5 @@
   ],
   "wordpress_post_type": "sc_feature_suggest",
   "notes": "Version 2.3.0 adds the Feedback Intelligence Dashboard with filtered aggregate analytics, advisory opportunity ranking, protected REST intelligence output, and privacy-conscious CSV export.",
-  "release_name": "Feedback Intelligence Dashboard"
+  "release_name": "Form and Survey Builder Foundation"
 }

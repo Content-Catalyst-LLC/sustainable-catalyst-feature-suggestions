@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.4.0 — Form and Survey Builder Foundation
+
+- Added reusable form and survey custom post types.
+- Added an ordered field builder with 13 foundational field types.
+- Added `[sc_feedback_form]` accessible public embeds.
+- Added private response storage and per-instrument CSV exports.
+- Added published schema and response REST endpoints.
+- Added stable response UUIDs, schema versions, and shared platform events.
+- Preserved separation between feature suggestions and general form responses.
+
 ## 2.3.0
 
 - Added Feedback Intelligence Dashboard.

@@ -1,0 +1,1 @@
+document.addEventListener('submit',function(e){if(!e.target.classList.contains('scfs-form'))return;var first=e.target.querySelector(':invalid');if(first){e.preventDefault();first.focus();first.setAttribute('aria-invalid','true');}});

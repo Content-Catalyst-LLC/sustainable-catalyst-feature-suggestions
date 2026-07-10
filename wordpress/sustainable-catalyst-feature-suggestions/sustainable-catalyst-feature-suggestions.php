@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Advanced feature suggestion intake, triage, settings, workflow metadata, spam controls, notifications, and CSV export for Sustainable Catalyst.
- * Version: 2.3.0
+ * Version: 2.4.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '2.3.0';
+    const VERSION = '2.4.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -2015,6 +2015,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         exit;
     }
 }
+
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-forms.php';
+SCFS_Forms_Foundation::instance();
 
 Sustainable_Catalyst_Feature_Suggestions::instance();
 register_activation_hook(__FILE__, array('Sustainable_Catalyst_Feature_Suggestions', 'activate'));
