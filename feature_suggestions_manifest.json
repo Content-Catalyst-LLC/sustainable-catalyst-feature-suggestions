@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "updated": "2026-07-10",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -72,7 +72,16 @@
     "official public responses",
     "public roadmap states",
     "release and roadmap links",
-    "participatory prioritization events"
+    "participatory prioritization events",
+    "configurable opportunity scoring weights",
+    "minimum evidence gate",
+    "roadmap candidate threshold",
+    "human-controlled roadmap workflow states",
+    "opportunity ownership and target releases",
+    "decision rationale and audit history",
+    "protected GitHub and Decision Studio handoff exports",
+    "authenticated opportunity REST API",
+    "opportunity.scored and opportunity.status_changed events"
   ],
   "boundaries": [
     "no confidential information",
@@ -82,14 +91,14 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 2.8.0 adds a moderation-controlled public ideas directory, advisory support voting, duplicate merging, official responses, roadmap states, and release links.",
-  "release_name": "Public Ideas, Voting, and Participatory Prioritization",
-  "release": "Public Ideas, Voting, and Participatory Prioritization",
+  "notes": "Version 2.9.0 adds configurable evidence-weighted opportunity scoring, minimum-evidence gates, human-controlled roadmap states, audit history, and protected cross-product handoff exports.",
+  "release_name": "Opportunity Scoring and Roadmap Workflow",
+  "release": "Opportunity Scoring and Roadmap Workflow",
   "features": [
-    "Moderated public idea publication",
-    "Advisory one-browser support voting",
-    "Duplicate-to-canonical idea merging",
-    "Official responses and roadmap states",
-    "Public REST directory and idea.supported shared events"
+    "Evidence-weighted opportunity scoring",
+    "Minimum-evidence and candidate-threshold controls",
+    "Human-controlled roadmap states and audit history",
+    "Versioned JSON handoffs for GitHub, Decision Studio, and Site Intelligence",
+    "Protected opportunity REST endpoints and shared events"
   ]
 }

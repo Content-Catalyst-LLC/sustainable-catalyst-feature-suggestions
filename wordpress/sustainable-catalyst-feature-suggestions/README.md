@@ -78,17 +78,21 @@ Submitted ideas are stored as the `sc_feature_suggest` custom post type. Review 
 
 ## Feedback Intelligence Dashboard
 
-Version 2.8.0 adds an administrator dashboard with date, status, category, platform, and feature-type filters; aggregate AI triage signals; roadmap-candidate ranking; privacy-conscious CSV export; and a protected REST intelligence endpoint. Scores and classifications remain advisory and require human review.
+Version 2.3.0 adds an administrator dashboard with date, status, category, platform, and feature-type filters; aggregate AI triage signals; roadmap-candidate ranking; privacy-conscious CSV export; and a protected REST intelligence endpoint. Scores and classifications remain advisory and require human review.
 
 
-## v2.8.0 Advanced Surveys and Conditional Logic
+## v2.5.0 Advanced Surveys and Conditional Logic
 
 Create reusable forms and surveys, embed them with `[sc_feedback_form id="slug"]`, store private responses, expose public schemas and response endpoints, export CSV files, and publish shared response events. See `docs/form-survey-builder.md`.
 
 
-Version 2.8.0 adds Survey Intelligence under the Feature Suggestions administration menu.
+Version 2.6.0 adds Survey Intelligence under the Feature Suggestions administration menu.
 
 
 ## Public ideas
 
 Use `[sc_public_ideas]` to publish moderator-approved ideas with advisory support voting, official responses, roadmap states, duplicate merging, and release links.
+
+## Opportunity scoring and roadmap workflow
+
+Version 2.9.0 adds configurable evidence-weighted opportunity scoring, minimum-evidence gates, human-controlled roadmap states, owners, target releases, decision rationales, audit history, and protected JSON handoffs for GitHub, Decision Studio, and Site Intelligence. Scores and public support remain advisory.

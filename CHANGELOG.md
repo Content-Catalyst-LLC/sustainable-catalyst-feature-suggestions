@@ -1,3 +1,16 @@
+# Changelog
+
+## 2.9.0 — Opportunity Scoring and Roadmap Workflow
+
+- Added configurable evidence-weighted opportunity scoring.
+- Added demand, impact, alignment, evidence, public-interest, readiness, and effort dimensions.
+- Added minimum-evidence gates and configurable roadmap-candidate thresholds.
+- Added administrator-controlled roadmap states, owners, target releases, and decision rationales.
+- Added versioned score records and per-opportunity audit histories.
+- Added protected JSON handoff exports for GitHub, Decision Studio, and Site Intelligence.
+- Added authenticated opportunity REST endpoints and shared platform events.
+- Preserved mandatory human approval for all roadmap decisions.
+
 ## 2.8.0 — Public Ideas, Voting, and Participatory Prioritization
 
 - Added moderation-controlled public idea publication.

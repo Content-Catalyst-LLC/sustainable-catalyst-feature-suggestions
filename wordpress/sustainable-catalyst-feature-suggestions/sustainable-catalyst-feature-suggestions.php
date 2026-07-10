@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
- * Description: Advanced feature suggestion intake, triage, settings, workflow metadata, spam controls, notifications, and CSV export for Sustainable Catalyst.
- * Version: 2.8.0
+ * Description: Feedback intelligence, advanced surveys, public participation, opportunity scoring, roadmap workflow, and shared platform integration for Sustainable Catalyst.
+ * Version: 2.9.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '2.8.0';
+    const VERSION = '2.9.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -2020,10 +2020,12 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-forms.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-survey-intelligence.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-research-librarian-feedback.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-public-ideas.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-opportunity-workflow.php';
 SCFS_Forms_Foundation::instance();
 SCFS_Survey_Intelligence::instance();
 SCFS_Research_Librarian_Feedback::instance();
 SCFS_Public_Ideas::instance();
+SCFS_Opportunity_Workflow::instance();
 
 Sustainable_Catalyst_Feature_Suggestions::instance();
 register_activation_hook(__FILE__, array('Sustainable_Catalyst_Feature_Suggestions', 'activate'));
