@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.4.0 — Form and Survey Builder Foundation
+## 2.5.0 — Advanced Surveys and Conditional Logic
 
 - Added reusable form and survey custom post types.
 - Added an ordered field builder with 13 foundational field types.

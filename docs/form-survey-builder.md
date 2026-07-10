@@ -1,6 +1,6 @@
-# Form and Survey Builder Foundation
+# Advanced Surveys and Conditional Logic
 
-Feature Suggestions v2.4.0 adds reusable WordPress forms and surveys without merging response records into feature suggestions.
+Feature Suggestions v2.5.0 adds reusable WordPress forms and surveys without merging response records into feature suggestions.
 
 ## Create an instrument
 

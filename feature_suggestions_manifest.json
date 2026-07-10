@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "updated": "2026-07-10",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -53,7 +53,14 @@
     "private-response-storage",
     "form-response-rest-api",
     "form-response-csv-export",
-    "form-response-shared-events"
+    "form-response-shared-events",
+    "multi-step-surveys",
+    "conditional-field-logic",
+    "response-quotas",
+    "question-randomization",
+    "option-randomization",
+    "browser-save-and-resume",
+    "survey-schema-revisions"
   ],
   "boundaries": [
     "no confidential information",
@@ -63,6 +70,6 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 2.3.0 adds the Feedback Intelligence Dashboard with filtered aggregate analytics, advisory opportunity ranking, protected REST intelligence output, and privacy-conscious CSV export.",
-  "release_name": "Form and Survey Builder Foundation"
+  "notes": "Version 2.5.0 adds multi-step surveys, branching and conditional visibility, quotas, question and option randomization, browser save-and-resume, schema revisions, and advanced public survey controls.",
+  "release_name": "Advanced Surveys and Conditional Logic"
 }
