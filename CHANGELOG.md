@@ -1,4 +1,14 @@
-# 2.6.0 — Survey Analysis and Python Research Intelligence
+# Changelog
+
+## 2.7.0 — Research Librarian Contextual Feedback Integration
+
+- Added contextual route, source-card, grounding, missing-topic, missing-source, and missing-tool feedback.
+- Added the `[sc_librarian_feedback]` shortcode and accessible public form.
+- Added typed REST schema, submission, handoff, and receipt-protected status endpoints.
+- Added a direct WordPress action contract for Research Librarian.
+- Added privacy-minimized `librarian.feedback_submitted` shared events.
+- Added duplicate protection, stable UUIDs, receipt tokens, context metadata, and administrator review panels.
+- Preserved independent plugin operation and mandatory human review.
 
 - Added deterministic survey statistics and completion analysis.
 - Added descriptive cross-tabs and scale reliability estimates.

@@ -95,14 +95,18 @@ GPL-2.0-or-later for WordPress compatibility unless otherwise stated.
 
 ## Feedback Intelligence Dashboard
 
-Version 2.6.0 adds an administrator dashboard with date, status, category, platform, and feature-type filters; aggregate AI triage signals; roadmap-candidate ranking; privacy-conscious CSV export; and a protected REST intelligence endpoint. Scores and classifications remain advisory and require human review.
+Version 2.7.0 adds an administrator dashboard with date, status, category, platform, and feature-type filters; aggregate AI triage signals; roadmap-candidate ranking; privacy-conscious CSV export; and a protected REST intelligence endpoint. Scores and classifications remain advisory and require human review.
 
 
-## v2.6.0 Advanced Surveys and Conditional Logic
+## v2.7.0 Advanced Surveys and Conditional Logic
 
 Create reusable forms and surveys, embed them with `[sc_feedback_form id="slug"]`, store private responses, expose public schemas and response endpoints, export CSV files, and publish shared response events. See `docs/form-survey-builder.md`.
 
 
-## Survey Research Intelligence (v2.6.0)
+## Survey Research Intelligence (v2.7.0)
 
 The Python service now produces descriptive survey summaries, completion analysis, cross-tabs, scale reliability estimates, open-text themes, warnings, and administrator-reviewed JSON exports.
+
+## Research Librarian contextual feedback
+
+Version 2.7.0 adds a privacy-limited adapter for route ratings, source-card relevance, grounding issues, missing research coverage, and missing tools. Use `[sc_librarian_feedback]`, the `/scfs/v1/librarian/*` REST routes, or the `scfs_research_librarian_feedback` WordPress action.
