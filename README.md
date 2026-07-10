@@ -93,6 +93,10 @@ Suggestions may inform future development, but submission does not guarantee imp
 GPL-2.0-or-later for WordPress compatibility unless otherwise stated.
 
 
+## Version 2.8.0 — Public Ideas, Voting, and Participatory Prioritization
+
+Publish approved ideas with `[sc_public_ideas]`, collect advisory support votes, merge duplicates into canonical records, publish official responses, and link roadmap or release updates. Public participation never changes workflow or roadmap status automatically.
+
 ## Feedback Intelligence Dashboard
 
 Version 2.7.0 adds an administrator dashboard with date, status, category, platform, and feature-type filters; aggregate AI triage signals; roadmap-candidate ranking; privacy-conscious CSV export; and a protected REST intelligence endpoint. Scores and classifications remain advisory and require human review.

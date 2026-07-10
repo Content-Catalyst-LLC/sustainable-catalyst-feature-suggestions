@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "updated": "2026-07-10",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -65,7 +65,14 @@
     "cross-tabulation",
     "scale reliability",
     "open-text theme coding",
-    "survey analysis dashboard"
+    "survey analysis dashboard",
+    "moderated public ideas directory",
+    "advisory support voting",
+    "duplicate idea merging",
+    "official public responses",
+    "public roadmap states",
+    "release and roadmap links",
+    "participatory prioritization events"
   ],
   "boundaries": [
     "no confidential information",
@@ -75,14 +82,14 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 2.6.0 adds multi-step surveys, branching and conditional visibility, quotas, question and option randomization, browser save-and-resume, schema revisions, and advanced public survey controls.",
-  "release_name": "Survey Analysis and Python Research Intelligence",
-  "release": "Research Librarian Contextual Feedback Integration",
+  "notes": "Version 2.8.0 adds a moderation-controlled public ideas directory, advisory support voting, duplicate merging, official responses, roadmap states, and release links.",
+  "release_name": "Public Ideas, Voting, and Participatory Prioritization",
+  "release": "Public Ideas, Voting, and Participatory Prioritization",
   "features": [
-    "Research Librarian contextual feedback adapter",
-    "Route and source-card ratings",
-    "Missing topic, source, and tool reports",
-    "Receipt-protected public status lookup",
-    "Privacy-minimized librarian.feedback_submitted events"
+    "Moderated public idea publication",
+    "Advisory one-browser support voting",
+    "Duplicate-to-canonical idea merging",
+    "Official responses and roadmap states",
+    "Public REST directory and idea.supported shared events"
   ]
 }

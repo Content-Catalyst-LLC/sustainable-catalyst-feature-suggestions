@@ -1,3 +1,12 @@
+## 2.8.0 — Public Ideas, Voting, and Participatory Prioritization
+
+- Added moderation-controlled public idea publication.
+- Added advisory support voting with browser/session duplicate protection.
+- Added duplicate merging into canonical public ideas.
+- Added official responses, roadmap states, and release links.
+- Added public ideas REST endpoints and `idea.supported` shared events.
+- Preserved human control over publication and prioritization.
+
 # Changelog
 
 ## 2.7.0 — Research Librarian Contextual Feedback Integration
