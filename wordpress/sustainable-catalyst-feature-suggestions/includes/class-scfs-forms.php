@@ -42,15 +42,15 @@ final class SCFS_Forms_Foundation {
     }
 
     public function register_assets() {
-        wp_register_style('scfs-forms', plugins_url('../assets/forms.css', __FILE__), array(), '2.5.0');
-        wp_register_script('scfs-forms', plugins_url('../assets/forms.js', __FILE__), array(), '2.5.0', true);
+        wp_register_style('scfs-forms', plugins_url('../assets/forms.css', __FILE__), array(), '2.6.0');
+        wp_register_script('scfs-forms', plugins_url('../assets/forms.js', __FILE__), array(), '2.6.0', true);
     }
 
     public function admin_assets($hook) {
         $screen = function_exists('get_current_screen') ? get_current_screen() : null;
         if (!$screen || $screen->post_type !== self::FORM_TYPE) { return; }
-        wp_enqueue_style('scfs-forms-admin', plugins_url('../assets/forms-admin.css', __FILE__), array(), '2.5.0');
-        wp_enqueue_script('scfs-forms-admin', plugins_url('../assets/forms-admin.js', __FILE__), array(), '2.5.0', true);
+        wp_enqueue_style('scfs-forms-admin', plugins_url('../assets/forms-admin.css', __FILE__), array(), '2.6.0');
+        wp_enqueue_script('scfs-forms-admin', plugins_url('../assets/forms-admin.js', __FILE__), array(), '2.6.0', true);
     }
 
     public function meta_boxes() {
@@ -80,7 +80,7 @@ final class SCFS_Forms_Foundation {
     }
 
     private function field_row($i,$field) {
-        $f=wp_parse_args($field,array('key'=>'','label'=>'','type'=>'text','required'=>false,'help'=>'','placeholder'=>'','options'=>array(),'validation'=>array(),'page'=>1,'condition_field'=>'','condition_operator'=>'equals','condition_value'=>'','randomize_options'=>false));
+        $f=wp_parse_args($field,array('key'=>'','label'=>'','type'=>'text','required'=>false,'help'=>'','placeholder'=>'','options'=>array(),'validation'=>array(),'page'=>1,'condition_field'=>'','condition_operator'=>'equals','condition_value'=>'','randomize_options'=>false,'scale_group'=>''));
         $options=is_array($f['options'])?implode("\n",$f['options']):(string)$f['options'];
         ?>
         <section class="scfs-field-row" data-index="<?php echo esc_attr($i); ?>">
@@ -98,6 +98,7 @@ final class SCFS_Forms_Foundation {
             <label>Condition<select name="scfs_fields[<?php echo esc_attr($i); ?>][condition_operator]"><option value="equals" <?php selected($f['condition_operator'],'equals'); ?>>equals</option><option value="not_equals" <?php selected($f['condition_operator'],'not_equals'); ?>>does not equal</option><option value="contains" <?php selected($f['condition_operator'],'contains'); ?>>contains</option><option value="answered" <?php selected($f['condition_operator'],'answered'); ?>>is answered</option></select></label>
             <label>Condition value<input type="text" name="scfs_fields[<?php echo esc_attr($i); ?>][condition_value]" value="<?php echo esc_attr($f['condition_value']); ?>"></label>
             <label class="scfs-check"><input type="checkbox" name="scfs_fields[<?php echo esc_attr($i); ?>][randomize_options]" value="1" <?php checked(!empty($f['randomize_options'])); ?>> Randomize options</label>
+            <label>Scale group (optional)<input type="text" name="scfs_fields[<?php echo esc_attr($i); ?>][scale_group]" value="<?php echo esc_attr($f['scale_group']); ?>" placeholder="e.g. trust_scale"></label>
           </div>
         </section>
         <?php
@@ -133,7 +134,7 @@ final class SCFS_Forms_Foundation {
             $key=sanitize_key($row['key']??''); if($key==='')$key=sanitize_key($label); if(isset($keys[$key]))$key.='_'.(count($keys)+1); $keys[$key]=true;
             $type=sanitize_key($row['type']??'text'); if(!isset($this->field_types()[$type]))$type='text';
             $opts=array_values(array_filter(array_map('sanitize_text_field',preg_split('/\r\n|\r|\n/',(string)($row['options']??'')))));
-            $fields[]=array('key'=>$key,'label'=>$label,'type'=>$type,'required'=>!empty($row['required']),'help'=>sanitize_textarea_field($row['help']??''),'placeholder'=>sanitize_text_field($row['placeholder']??''),'options'=>$opts,'page'=>max(1,absint($row['page']??1)),'condition_field'=>sanitize_key($row['condition_field']??''),'condition_operator'=>in_array(($row['condition_operator']??'equals'),array('equals','not_equals','contains','answered'),true)?sanitize_key($row['condition_operator']):'equals','condition_value'=>sanitize_text_field($row['condition_value']??''),'randomize_options'=>!empty($row['randomize_options']));
+            $fields[]=array('key'=>$key,'label'=>$label,'type'=>$type,'required'=>!empty($row['required']),'help'=>sanitize_textarea_field($row['help']??''),'placeholder'=>sanitize_text_field($row['placeholder']??''),'options'=>$opts,'page'=>max(1,absint($row['page']??1)),'condition_field'=>sanitize_key($row['condition_field']??''),'condition_operator'=>in_array(($row['condition_operator']??'equals'),array('equals','not_equals','contains','answered'),true)?sanitize_key($row['condition_operator']):'equals','condition_value'=>sanitize_text_field($row['condition_value']??''),'randomize_options'=>!empty($row['randomize_options']),'scale_group'=>sanitize_key($row['scale_group']??''));
         }
         update_post_meta($post_id,'_scfs_form_schema',array('schema_version'=>self::SCHEMA_VERSION,'fields'=>$fields));
         update_post_meta($post_id,'_scfs_form_mode',in_array($_POST['scfs_form_mode']??'',array('form','survey'),true)?sanitize_key($_POST['scfs_form_mode']):'form');
@@ -202,7 +203,7 @@ final class SCFS_Forms_Foundation {
         $uuid=wp_generate_uuid4(); $response_id=wp_insert_post(array('post_type'=>self::RESPONSE_TYPE,'post_status'=>'private','post_title'=>$form->post_title.' response '.substr($uuid,0,8)));
         if(is_wp_error($response_id)||!$response_id){wp_safe_redirect(add_query_arg('scfs_form_status','error',$redirect));exit;}
         update_post_meta($response_id,'_scfs_response_uuid',$uuid); update_post_meta($response_id,'_scfs_form_id',$form_id); update_post_meta($response_id,'_scfs_form_schema_version',$schema['schema_version']??self::SCHEMA_VERSION); update_post_meta($response_id,'_scfs_response_answers',$answers); update_post_meta($response_id,'_scfs_response_submitted_at',gmdate('c'));
-        do_action('scfs_event',array('event_id'=>wp_generate_uuid4(),'event_type'=>'form.response_submitted','schema_version'=>'1.0','source'=>'feature_suggestions','source_version'=>'2.5.0','occurred_at'=>gmdate('c'),'data'=>array('response_uuid'=>$uuid,'form_id'=>$form_id,'form_slug'=>$form->post_name,'instrument_type'=>get_post_meta($form_id,'_scfs_form_mode',true),'field_count'=>count($answers),'schema_revision'=>absint(get_post_meta($form_id,'_scfs_schema_revision',true)))));
+        do_action('scfs_event',array('event_id'=>wp_generate_uuid4(),'event_type'=>'form.response_submitted','schema_version'=>'1.0','source'=>'feature_suggestions','source_version'=>'2.6.0','occurred_at'=>gmdate('c'),'data'=>array('response_uuid'=>$uuid,'form_id'=>$form_id,'form_slug'=>$form->post_name,'instrument_type'=>get_post_meta($form_id,'_scfs_form_mode',true),'field_count'=>count($answers),'schema_revision'=>absint(get_post_meta($form_id,'_scfs_schema_revision',true)))));
         do_action('sc_platform_event',array('event_type'=>'form.response_submitted','source'=>'feature_suggestions','form_id'=>$form_id,'response_uuid'=>$uuid));
         wp_safe_redirect(add_query_arg('scfs_form_status','success',$redirect));exit;
     }

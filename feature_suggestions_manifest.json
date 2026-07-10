@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "updated": "2026-07-10",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -60,7 +60,12 @@
     "question-randomization",
     "option-randomization",
     "browser-save-and-resume",
-    "survey-schema-revisions"
+    "survey-schema-revisions",
+    "survey descriptive statistics",
+    "cross-tabulation",
+    "scale reliability",
+    "open-text theme coding",
+    "survey analysis dashboard"
   ],
   "boundaries": [
     "no confidential information",
@@ -70,6 +75,6 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 2.5.0 adds multi-step surveys, branching and conditional visibility, quotas, question and option randomization, browser save-and-resume, schema revisions, and advanced public survey controls.",
-  "release_name": "Advanced Surveys and Conditional Logic"
+  "notes": "Version 2.6.0 adds multi-step surveys, branching and conditional visibility, quotas, question and option randomization, browser save-and-resume, schema revisions, and advanced public survey controls.",
+  "release_name": "Survey Analysis and Python Research Intelligence"
 }

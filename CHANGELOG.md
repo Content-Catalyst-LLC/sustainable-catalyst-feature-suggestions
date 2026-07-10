@@ -1,3 +1,13 @@
+# 2.6.0 — Survey Analysis and Python Research Intelligence
+
+- Added deterministic survey statistics and completion analysis.
+- Added descriptive cross-tabs and scale reliability estimates.
+- Added open-text theme coding with confidence and methodology labels.
+- Added WordPress Survey Intelligence dashboard, protected REST actions, and JSON exports.
+- Added sample-size, missingness, and sparse-cell warnings.
+- Added `survey.analysis_completed` shared events.
+- Preserved human review and non-inferential research boundaries.
+
 # Changelog
 
 ## 2.5.0 — Advanced Surveys and Conditional Logic

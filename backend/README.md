@@ -13,3 +13,6 @@ uvicorn app.main:app --reload
 ```
 
 Configure WordPress with the deployed base URL and the same `SCFS_AI_API_KEY` value.
+
+
+Survey endpoints: `POST /v1/surveys/analyze` and `GET /v1/surveys/methodology`.
