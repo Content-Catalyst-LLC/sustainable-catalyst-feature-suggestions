@@ -1,0 +1,28 @@
+FEATURE SUGGESTIONS v3.3.0 — INSTALL, VALIDATE, COMMIT, AND PUSH
+
+1. Download these two files into ~/Downloads:
+   - sustainable-catalyst-feature-suggestions-v3.3.0-repo.zip
+   - install_and_push_sustainable_catalyst_feature_suggestions_v3_3_0.sh
+
+2. Run:
+
+cd ~/Downloads
+
+SCRIPT="$(ls -t install_and_push_sustainable_catalyst_feature_suggestions_v3_3_0*.sh | head -1)"
+
+chmod +x "$SCRIPT"
+bash "$SCRIPT"
+
+The installer:
+- selects Python 3.12 or 3.13 and refuses Python 3.14;
+- installs backend/requirements.txt, pytest, and the pinned httpx dependency;
+- starts from a fresh clone of the current GitHub main branch;
+- applies the full v3.3.0 repository;
+- validates PHP, WordPress contracts, deterministic ranking, JSON, FastAPI, and ZIP integrity;
+- commits and pushes the release.
+
+If Python 3.12 or 3.13 is not installed:
+
+brew install python@3.13
+
+Then rerun the command block above.

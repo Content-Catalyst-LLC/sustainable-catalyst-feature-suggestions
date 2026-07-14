@@ -1,0 +1,20 @@
+{
+  "schema": "scfs-guided-resolution-result/1.0",
+  "query": "Research Librarian endpoint unavailable",
+  "product_context": {
+    "product": "research-librarian",
+    "product_version": "v6-2-1",
+    "component": "rest-api"
+  },
+  "result_count": 3,
+  "top_score": 131,
+  "confidence": 0.9357,
+  "resolution_state": "strong_match",
+  "human_review_required": true,
+  "groups": {
+    "known_issues": [],
+    "support_articles": [],
+    "releases": [],
+    "public_suggestions": []
+  }
+}

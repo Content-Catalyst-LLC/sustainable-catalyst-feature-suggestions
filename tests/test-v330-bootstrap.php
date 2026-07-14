@@ -15,9 +15,10 @@ require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/
 
 $checks = array(
     'main class loaded' => class_exists('Sustainable_Catalyst_Feature_Suggestions'),
-    'version is 3.2.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '3.2.0',
+    'version is 3.3.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '3.3.0',
     'product integration loaded' => class_exists('SCFS_Product_Integration'),
     'knowledge base loaded' => class_exists('SCFS_Knowledge_Base_Foundation'),
+    'guided resolution loaded' => class_exists('SCFS_Guided_Resolution'),
     'forms loaded' => class_exists('SCFS_Forms_Foundation'),
     'governance loaded' => class_exists('SCFS_Platform_Governance'),
 );
@@ -25,13 +26,13 @@ foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";
     if (!$passed) exit(1);
 }
-$schema = SCFS_Knowledge_Base_Foundation::instance()->schema_record();
-if (($schema['schema'] ?? '') !== 'scfs-support-knowledge-base/1.0') {
-    fwrite(STDERR, "FAIL - knowledge base schema\n");
+$schema = SCFS_Guided_Resolution::instance()->schema_record();
+if (($schema['schema'] ?? '') !== 'scfs-guided-resolution/1.0') {
+    fwrite(STDERR, "FAIL - guided resolution schema\n");
     exit(1);
 }
-if (($schema['post_types']['support_article'] ?? '') !== 'sc_support_article') {
-    fwrite(STDERR, "FAIL - support article schema\n");
+if (!in_array('known_issues', $schema['result_groups'] ?? array(), true)) {
+    fwrite(STDERR, "FAIL - known issue result group\n");
     exit(1);
 }
-echo "PASS - knowledge base schema\nPASS - support article schema\n8 checks passed.\n";
+echo "PASS - guided resolution schema\nPASS - known issue result group\n9 checks passed.\n";

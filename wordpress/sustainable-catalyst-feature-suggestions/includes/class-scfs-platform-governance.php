@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class SCFS_Platform_Governance {
-    const VERSION = '3.2.0';
+    const VERSION = '3.3.0';
     const OPTION_KEY = 'scfs_platform_governance';
     const AUDIT_KEY = 'scfs_platform_audit';
     const NONCE = 'scfs_platform_governance';
@@ -60,6 +60,7 @@ final class SCFS_Platform_Governance {
             'roadmap_workflow' => array('label'=>'Roadmap workflow','ready'=>class_exists('SCFS_Opportunity_Workflow'),'detail'=>'Evidence-weighted scoring and human-controlled states'),
             'product_taxonomy' => array('label'=>'Product taxonomy','ready'=>class_exists('SCFS_Product_Integration') && taxonomy_exists('scfs_product'),'detail'=>'Shared products, versions, components, issue types, releases, and migration'),
             'knowledge_base' => array('label'=>'Support Knowledge Base','ready'=>class_exists('SCFS_Knowledge_Base_Foundation') && post_type_exists(SCFS_Knowledge_Base_Foundation::ARTICLE_POST_TYPE) && shortcode_exists(SCFS_Knowledge_Base_Foundation::SHORTCODE),'detail'=>'Support Articles, collections, templates, public search, and REST records'),
+            'guided_resolution' => array('label'=>'Guided resolution','ready'=>class_exists('SCFS_Guided_Resolution') && shortcode_exists(SCFS_Guided_Resolution::SHORTCODE),'detail'=>'Product-aware search, error matching, known-issue prioritization, and unresolved support handoff'),
             'known_issues' => array('label'=>'Known issues','ready'=>class_exists('SCFS_Knowledge_Base_Foundation') && post_type_exists(SCFS_Knowledge_Base_Foundation::ISSUE_POST_TYPE),'detail'=>'Public issue status, severity, symptoms, workarounds, resolutions, and releases'),
             'contact_handoff' => array('label'=>'Contact and Engagement handoff','ready'=>class_exists('SCFS_Product_Integration'),'detail'=>'Typed private support handoff contract; automatic case creation remains disabled'),
             'shared_events' => array('label'=>'Shared events','ready'=>!empty($settings['enable_shared_events']),'detail'=>!empty($settings['enable_shared_events'])?'Platform events enabled':'Enable in Feature Suggestions settings'),
@@ -81,6 +82,7 @@ final class SCFS_Platform_Governance {
             'public_ideas'=>(int) count(get_posts(array('post_type'=>Sustainable_Catalyst_Feature_Suggestions::POST_TYPE,'post_status'=>array('publish','pending','draft','private'),'posts_per_page'=>-1,'fields'=>'ids','meta_key'=>'_scfs_public_visibility','meta_value'=>'1'))),
             'support_articles'=>post_type_exists('sc_support_article')?$this->count_posts('sc_support_article'):0,
             'known_issues'=>post_type_exists('sc_known_issue')?$this->count_posts('sc_known_issue'):0,
+            'resolution_searches'=>class_exists('SCFS_Guided_Resolution')?(int)(SCFS_Guided_Resolution::instance()->analytics_summary()['total_searches']??0):0,
             'roadmap_states'=>$op_states,
         );
     }
@@ -200,7 +202,7 @@ final class SCFS_Platform_Governance {
     }
 
     private function snapshot() {
-        return array('ok'=>true,'platform'=>'Sustainable Catalyst Product Support and Feedback Platform','version'=>self::VERSION,'generated_at'=>gmdate('c'),'counts'=>$this->counts(),'readiness'=>$this->readiness(),'governance'=>array_diff_key($this->settings(),array('enable_retention_actions'=>true)),'event_schema_version'=>Sustainable_Catalyst_Feature_Suggestions::EVENT_SCHEMA_VERSION,'product_taxonomy'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->taxonomy_schema():array(),'product_coverage'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->coverage():array(),'knowledge_base'=>class_exists('SCFS_Knowledge_Base_Foundation')?SCFS_Knowledge_Base_Foundation::instance()->schema_record():array(),'contact_engagement_handoff'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->handoff_schema():array(),'human_review_required'=>true);
+        return array('ok'=>true,'platform'=>'Sustainable Catalyst Product Support and Feedback Platform','version'=>self::VERSION,'generated_at'=>gmdate('c'),'counts'=>$this->counts(),'readiness'=>$this->readiness(),'governance'=>array_diff_key($this->settings(),array('enable_retention_actions'=>true)),'event_schema_version'=>Sustainable_Catalyst_Feature_Suggestions::EVENT_SCHEMA_VERSION,'product_taxonomy'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->taxonomy_schema():array(),'product_coverage'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->coverage():array(),'knowledge_base'=>class_exists('SCFS_Knowledge_Base_Foundation')?SCFS_Knowledge_Base_Foundation::instance()->schema_record():array(),'guided_resolution'=>class_exists('SCFS_Guided_Resolution')?SCFS_Guided_Resolution::instance()->schema_record():array(),'guided_resolution_handoff'=>class_exists('SCFS_Guided_Resolution')?SCFS_Guided_Resolution::instance()->handoff_schema():array(),'contact_engagement_handoff'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->handoff_schema():array(),'human_review_required'=>true);
     }
 
     public function export_snapshot() {

@@ -1,6 +1,6 @@
-# Sustainable Catalyst Product Support and Feedback Platform v3.2.0
+# Sustainable Catalyst Product Support and Feedback Platform v3.3.0
 
-Version 3.2.0 extends the v3.1.0 product-taxonomy foundation into a public Product Support and Feedback Platform with support documentation and known issues.
+Version 3.3.0 extends the Support Knowledge Base foundation into a guided product-support workflow with error matching, known-issue prioritization, search analytics, and private support handoffs.
 
 ## Support Knowledge Base
 

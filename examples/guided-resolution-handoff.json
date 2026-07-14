@@ -1,0 +1,33 @@
+{
+  "schema": "sc-contact-engagement-resolution-handoff/1.0",
+  "handoff_type": "unresolved_product_support",
+  "source": {
+    "system": "sustainable-catalyst-feature-suggestions",
+    "version": "3.3.0",
+    "workflow": "guided_resolution"
+  },
+  "product_context": {
+    "product": "research-librarian",
+    "product_version": "v6-2-1",
+    "component": "rest-api"
+  },
+  "resolution_context": {
+    "original_query": "Research Librarian endpoint unavailable",
+    "records_viewed": [],
+    "search_confidence": 0.31,
+    "resolution_state": "low_confidence",
+    "unresolved_reason": "The suggested article did not address the WordPress endpoint failure."
+  },
+  "privacy": {
+    "classification": "private",
+    "consent_confirmed": true,
+    "contains_contact_details": false,
+    "contact_details_collected_at_destination": true
+  },
+  "routing": {
+    "destination": "contact_and_engagement",
+    "queue": "product_support",
+    "create_case": false,
+    "human_review_required": true
+  }
+}

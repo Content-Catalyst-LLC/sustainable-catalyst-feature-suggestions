@@ -27,6 +27,12 @@ Optional category preselection:
 [sustainable_catalyst_feature_suggestions category="Research Librarian feature"]
 ```
 
+## Version 3.3.0 — Search and Guided Resolution
+
+Version 3.3.0 turns the Support Knowledge Base into an actionable support-resolution environment. Visitors can describe a task or problem, add an exact non-sensitive error fragment, narrow the request by product, version, and component, and receive ranked known issues, support articles, releases, and related public ideas. Current known issues receive deliberate priority.
+
+The public archive now uses `[scfs_guided_resolution]`. The v3.2.0 `[scfs_support_knowledge_base]` shortcode remains available for conventional documentation browsing. Unresolved searches can be transferred through a short-lived, consent-gated token to Contact and Engagement; Feature Suggestions does not create or retain a private support case.
+
 ## Version 3.2.0 — Support Knowledge Base Foundation
 
 Version 3.2.0 adds the first-party Sustainable Catalyst Support Knowledge Base directly to Feature Suggestions. The release introduces public Support Articles, Known Issue records, product documentation collections, article types, non-destructive editor templates, a responsive public archive, current-issue notices, and published-content REST APIs.

@@ -1,0 +1,7 @@
+{
+  "query": "Research Librarian endpoint unavailable",
+  "error_message": "connection refused",
+  "product": "research-librarian",
+  "product_version": "v6-2-1",
+  "component": "rest-api"
+}

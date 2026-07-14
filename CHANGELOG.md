@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.3.0 — Search and Guided Resolution
+
+- Added a product-aware guided-resolution workflow with product, version, and component filters.
+- Added deterministic error-message, symptom, alias, and exact-phrase matching.
+- Prioritized current known issues using lifecycle status, severity, taxonomy context, and editorial controls.
+- Grouped results across known issues, support articles, releases, and explicitly public feature suggestions.
+- Added global synonym mappings plus per-record aliases, error signatures, promotion, and editorial priority.
+- Added privacy-minimized search analytics, failed-search intelligence, and result-view tracking without IP storage.
+- Added consent-gated unresolved-search handoff tokens for the private Contact and Engagement workflow.
+- Added guided-resolution REST schema, search, handoff, and protected analytics endpoints.
+- Added deterministic FastAPI ranking and pinned httpx for reliable TestClient validation.
+- Preserved the v3.2.0 Knowledge Base shortcode while upgrading the default archive to Guided Resolution.
+
 ## 3.2.0 — Support Knowledge Base Foundation
 
 - Added the public `sc_support_article` Support Article post type.

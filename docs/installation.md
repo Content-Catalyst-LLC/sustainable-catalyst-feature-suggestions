@@ -83,3 +83,10 @@ Known Issues use:
 ```
 
 If either archive returns a 404 after a manual server-side plugin replacement, open **Settings → Permalinks** and save the current permalink structure once.
+
+
+## Search and Guided Resolution v3.3.0
+
+After upgrading, visit **Feature Suggestions → Guided Resolution** and configure the Contact and Engagement destination URL. The activation routine creates the privacy-minimized search analytics table. Add `[scfs_guided_resolution]` to a page or use the default `/support-knowledge-base/` archive.
+
+The Python validation environment must use Python 3.12 or 3.13 and install `backend/requirements.txt`, which now pins `httpx` for FastAPI TestClient compatibility.

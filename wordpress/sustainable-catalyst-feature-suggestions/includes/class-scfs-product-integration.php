@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Integration {
-    const VERSION = '3.2.0';
+    const VERSION = '3.3.0';
     const TAXONOMY_SCHEMA_VERSION = '1.0';
     const HANDOFF_SCHEMA_VERSION = '1.0';
     const MIGRATION_OPTION = 'scfs_product_taxonomy_migration';

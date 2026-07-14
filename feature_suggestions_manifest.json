@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "updated": "2026-07-14",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -116,7 +116,21 @@
     "documentation collection and template REST APIs",
     "related release relationships",
     "privacy-safe related suggestion relationships",
-    "Knowledge Base administration dashboard"
+    "Knowledge Base administration dashboard",
+    "product-aware guided-resolution search",
+    "product-version and component search filters",
+    "deterministic error-message and symptom matching",
+    "known-issue status and severity prioritization",
+    "support article, release, and public-suggestion result groups",
+    "global synonym and alias administration",
+    "per-record search aliases and error signatures",
+    "editorially promoted resolution records",
+    "privacy-minimized failed-search analytics",
+    "result-view tracking without IP storage",
+    "consent-gated Contact and Engagement handoff tokens",
+    "guided-resolution schema, search, handoff, and analytics REST endpoints",
+    "deterministic FastAPI guided-resolution ranking endpoint",
+    "httpx-pinned backend test dependency"
   ],
   "boundaries": [
     "no confidential information",
@@ -126,19 +140,24 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 3.2.0 adds the first-party Support Knowledge Base foundation: public Support Articles, documentation collections, reusable article templates, Known Issue records, public archives and shortcode rendering, REST APIs, and privacy-safe relationships to suggestions and releases.",
-  "release_name": "Support Knowledge Base Foundation",
-  "release": "Feature Suggestions v3.2.0 — Support Knowledge Base Foundation",
+  "notes": "Version 3.3.0 turns the Support Knowledge Base into a guided-resolution workflow with product-aware search, version and component filtering, error matching, known-issue prioritization, privacy-minimized search analytics, editorial search controls, and a consent-gated private support handoff to Contact and Engagement.",
+  "release_name": "Search and Guided Resolution",
+  "release": "Feature Suggestions v3.3.0 \u2014 Search and Guided Resolution",
   "features": [
-    "Support Article and Known Issue content models",
-    "Product documentation collections and article types",
-    "Reusable article templates with non-destructive insertion",
-    "Public Knowledge Base archive, filters, shortcode, and known-issue notices",
-    "Published-content REST APIs and privacy-safe suggestion/release relationships"
+    "Product-aware guided support search with version and component context",
+    "Error-signature matching and current known-issue prioritization",
+    "Grouped results for known issues, support articles, releases, and public suggestions",
+    "Synonym, alias, editorial promotion, and relevance controls",
+    "Privacy-minimized failed-search analytics and result-view signals",
+    "Consent-gated unresolved-support handoff to Contact and Engagement"
   ],
   "wordpress_post_types": [
     "sc_feature_suggest",
     "sc_support_article",
     "sc_known_issue"
+  ],
+  "shortcodes": [
+    "[scfs_support_knowledge_base]",
+    "[scfs_guided_resolution]"
   ]
 }

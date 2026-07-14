@@ -1,4 +1,4 @@
-# Feature Suggestions Intelligence Backend v3.2.0
+# Feature Suggestions Intelligence Backend v3.3.0
 
 FastAPI service for advisory classification of Feature Suggestions. It supports deterministic local classification and optional Gemini, DeepSeek, or OpenAI structured analysis. AI output never changes roadmap status automatically and always requires human review.
 
@@ -18,3 +18,8 @@ Configure WordPress with the deployed base URL and the same `SCFS_AI_API_KEY` va
 Survey endpoints: `POST /v1/surveys/analyze` and `GET /v1/surveys/methodology`.
 
 Knowledge Base capability contract: `GET /v1/knowledge-base/capabilities`. WordPress remains the source of truth for Support Articles and Known Issues.
+
+
+## Guided-resolution ranking
+
+`POST /v1/guided-resolution/rank` applies the same deterministic relevance signals used by the WordPress workflow to supplied public candidates. WordPress remains the content and analytics source of truth.
