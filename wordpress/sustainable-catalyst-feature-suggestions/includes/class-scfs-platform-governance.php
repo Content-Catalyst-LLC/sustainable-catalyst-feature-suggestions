@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class SCFS_Platform_Governance {
-    const VERSION = '3.3.0';
+    const VERSION = '3.4.0';
     const OPTION_KEY = 'scfs_platform_governance';
     const AUDIT_KEY = 'scfs_platform_audit';
     const NONCE = 'scfs_platform_governance';
@@ -60,6 +60,7 @@ final class SCFS_Platform_Governance {
             'roadmap_workflow' => array('label'=>'Roadmap workflow','ready'=>class_exists('SCFS_Opportunity_Workflow'),'detail'=>'Evidence-weighted scoring and human-controlled states'),
             'product_taxonomy' => array('label'=>'Product taxonomy','ready'=>class_exists('SCFS_Product_Integration') && taxonomy_exists('scfs_product'),'detail'=>'Shared products, versions, components, issue types, releases, and migration'),
             'knowledge_base' => array('label'=>'Support Knowledge Base','ready'=>class_exists('SCFS_Knowledge_Base_Foundation') && post_type_exists(SCFS_Knowledge_Base_Foundation::ARTICLE_POST_TYPE) && shortcode_exists(SCFS_Knowledge_Base_Foundation::SHORTCODE),'detail'=>'Support Articles, collections, templates, public search, and REST records'),
+            'documentation_intelligence' => array('label'=>'Documentation intelligence','ready'=>class_exists('SCFS_Documentation_Feature_Intelligence') && post_type_exists(SCFS_Documentation_Feature_Intelligence::GAP_POST_TYPE),'detail'=>'Article feedback, failed-search gaps, case relationships, and support-demand signals'),
             'guided_resolution' => array('label'=>'Guided resolution','ready'=>class_exists('SCFS_Guided_Resolution') && shortcode_exists(SCFS_Guided_Resolution::SHORTCODE),'detail'=>'Product-aware search, error matching, known-issue prioritization, and unresolved support handoff'),
             'known_issues' => array('label'=>'Known issues','ready'=>class_exists('SCFS_Knowledge_Base_Foundation') && post_type_exists(SCFS_Knowledge_Base_Foundation::ISSUE_POST_TYPE),'detail'=>'Public issue status, severity, symptoms, workarounds, resolutions, and releases'),
             'contact_handoff' => array('label'=>'Contact and Engagement handoff','ready'=>class_exists('SCFS_Product_Integration'),'detail'=>'Typed private support handoff contract; automatic case creation remains disabled'),
@@ -83,6 +84,9 @@ final class SCFS_Platform_Governance {
             'support_articles'=>post_type_exists('sc_support_article')?$this->count_posts('sc_support_article'):0,
             'known_issues'=>post_type_exists('sc_known_issue')?$this->count_posts('sc_known_issue'):0,
             'resolution_searches'=>class_exists('SCFS_Guided_Resolution')?(int)(SCFS_Guided_Resolution::instance()->analytics_summary()['total_searches']??0):0,
+            'documentation_gaps'=>post_type_exists('sc_doc_gap')?$this->count_posts('sc_doc_gap'):0,
+            'article_feedback'=>class_exists('SCFS_Documentation_Feature_Intelligence')?(int)(SCFS_Documentation_Feature_Intelligence::instance()->analytics_summary()['feedback_total']??0):0,
+            'case_relationships'=>class_exists('SCFS_Documentation_Feature_Intelligence')?(int)(SCFS_Documentation_Feature_Intelligence::instance()->analytics_summary()['case_relationships']??0):0,
             'roadmap_states'=>$op_states,
         );
     }
@@ -101,6 +105,8 @@ final class SCFS_Platform_Governance {
             array('label'=>'Support Knowledge Base registered','pass'=>class_exists('SCFS_Knowledge_Base_Foundation') && post_type_exists('sc_support_article')),
             array('label'=>'Known Issues registered','pass'=>class_exists('SCFS_Knowledge_Base_Foundation') && post_type_exists('sc_known_issue')),
             array('label'=>'Knowledge Base shortcode registered','pass'=>shortcode_exists('scfs_support_knowledge_base')),
+            array('label'=>'Documentation intelligence registered','pass'=>class_exists('SCFS_Documentation_Feature_Intelligence') && post_type_exists('sc_doc_gap')),
+            array('label'=>'Support relationship contract available','pass'=>class_exists('SCFS_Documentation_Feature_Intelligence')),
             array('label'=>'Contact and Engagement contract available','pass'=>class_exists('SCFS_Product_Integration')),
         );
         foreach($tests as $t) if($t['pass']) $passed++;
@@ -115,7 +121,7 @@ final class SCFS_Platform_Governance {
         echo '<p>'.esc_html__('Unified operational view across support documentation, known issues, feature intake, forms, surveys, research intelligence, public participation, and roadmap governance.','sustainable-catalyst-feature-suggestions').'</p>';
         echo '<p><a class="button button-primary" href="'.esc_url($snapshot).'">'.esc_html__('Export platform snapshot','sustainable-catalyst-feature-suggestions').'</a> <a class="button" href="'.esc_url(admin_url('edit.php?post_type='.Sustainable_Catalyst_Feature_Suggestions::POST_TYPE.'&page=scfs-platform-governance')).'">'.esc_html__('Governance settings','sustainable-catalyst-feature-suggestions').'</a></p>';
         echo '<div class="scfs-intel-cards">';
-        foreach(array('suggestions'=>'Suggestions','support_articles'=>'Support articles','known_issues'=>'Known issues','forms'=>'Forms & surveys','responses'=>'Responses','public_ideas'=>'Public ideas') as $k=>$label) echo '<div class="scfs-intel-card"><span>'.esc_html($label).'</span><strong>'.esc_html((string)$c[$k]).'</strong></div>';
+        foreach(array('suggestions'=>'Suggestions','support_articles'=>'Support articles','known_issues'=>'Known issues','documentation_gaps'=>'Documentation gaps','article_feedback'=>'Article feedback','case_relationships'=>'Case relationships','forms'=>'Forms & surveys','responses'=>'Responses','public_ideas'=>'Public ideas') as $k=>$label) echo '<div class="scfs-intel-card"><span>'.esc_html($label).'</span><strong>'.esc_html((string)$c[$k]).'</strong></div>';
         echo '<div class="scfs-intel-card"><span>'.esc_html__('Release readiness','sustainable-catalyst-feature-suggestions').'</span><strong>'.esc_html($r['passed'].' / '.$r['total']).'</strong></div></div>';
         echo '<h2>'.esc_html__('Module health','sustainable-catalyst-feature-suggestions').'</h2><table class="widefat striped"><thead><tr><th>Module</th><th>Status</th><th>Operational note</th></tr></thead><tbody>';
         foreach($r['modules'] as $m) echo '<tr><td><strong>'.esc_html($m['label']).'</strong></td><td>'.($m['ready']?'<span class="scfs-status scfs-status--ok">Ready</span>':'<span class="scfs-status">Optional / needs configuration</span>').'</td><td>'.esc_html($m['detail']).'</td></tr>';

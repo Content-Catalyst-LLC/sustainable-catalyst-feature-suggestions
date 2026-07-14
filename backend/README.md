@@ -1,4 +1,4 @@
-# Feature Suggestions Intelligence Backend v3.3.0
+# Feature Suggestions Intelligence Backend v3.4.0
 
 FastAPI service for advisory classification of Feature Suggestions. It supports deterministic local classification and optional Gemini, DeepSeek, or OpenAI structured analysis. AI output never changes roadmap status automatically and always requires human review.
 
@@ -23,3 +23,12 @@ Knowledge Base capability contract: `GET /v1/knowledge-base/capabilities`. WordP
 ## Guided-resolution ranking
 
 `POST /v1/guided-resolution/rank` applies the same deterministic relevance signals used by the WordPress workflow to supplied public candidates. WordPress remains the content and analytics source of truth.
+
+
+## Documentation intelligence endpoints
+
+- `GET /v1/documentation-intelligence/capabilities`
+- `POST /v1/documentation-intelligence/gaps/score`
+- `POST /v1/documentation-intelligence/support-demand/score`
+
+These deterministic endpoints mirror the WordPress scoring methods. WordPress remains the source of truth for feedback, documentation gaps, case relationships, and roadmap records.

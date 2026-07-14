@@ -1,0 +1,14 @@
+{
+  "schema": "scfs-article-feedback/1.0",
+  "feedback_uuid": "9302d4b4-1663-4b08-9ca2-518ed192220e",
+  "article_id": 812,
+  "helpful": false,
+  "reason": "missing_steps",
+  "comment": "The recovery step should explain how to verify the WordPress endpoint.",
+  "search_id": 204,
+  "privacy": {
+    "ip_address_stored": false,
+    "contact_details_stored": false,
+    "common_secret_patterns_redacted": true
+  }
+}

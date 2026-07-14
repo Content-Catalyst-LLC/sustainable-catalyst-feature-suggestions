@@ -74,3 +74,8 @@ X-SCFS-Signature: sha256=<hex HMAC digest>
 ```
 
 The digest is HMAC-SHA256 over the exact JSON request body. Failed deliveries enter a bounded retry queue and are retried by WordPress cron with exponential backoff.
+
+
+## Documentation intelligence relationships
+
+Contact and Engagement can create or update privacy-safe case relationships through `POST /wp-json/scfs/v1/documentation-intelligence/relationships`. The caller must have `edit_posts`. Use only an opaque case reference, `case_article` or `case_suggestion`, the public object ID, product context, outcome, and optional evidence weight.

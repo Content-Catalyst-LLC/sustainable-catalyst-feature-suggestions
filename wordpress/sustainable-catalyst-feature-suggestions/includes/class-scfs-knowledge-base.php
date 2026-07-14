@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Knowledge_Base_Foundation {
-    const VERSION = '3.3.0';
+    const VERSION = '3.4.0';
     const SCHEMA_VERSION = '1.0';
     const ARTICLE_POST_TYPE = 'sc_support_article';
     const ISSUE_POST_TYPE = 'sc_known_issue';
@@ -444,7 +444,7 @@ final class SCFS_Knowledge_Base_Foundation {
         echo '<p><label for="scfs_kb_summary"><strong>' . esc_html__('Support summary', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><textarea class="widefat" rows="3" id="scfs_kb_summary" name="scfs_kb_summary">' . esc_textarea($summary) . '</textarea></p>';
         echo '<div class="scfs-admin-grid"><p><label for="scfs_article_audience"><strong>' . esc_html__('Audience', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><input class="widefat" id="scfs_article_audience" name="scfs_article_audience" value="' . esc_attr($audience) . '"></p>';
         echo '<p><label for="scfs_estimated_minutes"><strong>' . esc_html__('Estimated minutes', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><input class="small-text" type="number" min="0" max="999" id="scfs_estimated_minutes" name="scfs_estimated_minutes" value="' . esc_attr((string) $minutes) . '"></p>';
-        echo '<p><label for="scfs_last_verified_version"><strong>' . esc_html__('Last verified version', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><input class="widefat" id="scfs_last_verified_version" name="scfs_last_verified_version" value="' . esc_attr($verified) . '" placeholder="v3.3.0"></p></div>';
+        echo '<p><label for="scfs_last_verified_version"><strong>' . esc_html__('Last verified version', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><input class="widefat" id="scfs_last_verified_version" name="scfs_last_verified_version" value="' . esc_attr($verified) . '" placeholder="v3.4.0"></p></div>';
         echo '<p><label for="scfs_article_prerequisites"><strong>' . esc_html__('Prerequisites', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><textarea class="widefat" rows="3" id="scfs_article_prerequisites" name="scfs_article_prerequisites">' . esc_textarea($prerequisites) . '</textarea></p>';
     }
 
@@ -1154,6 +1154,11 @@ final class SCFS_Knowledge_Base_Foundation {
         $related = $this->related_suggestions($post->ID, $include_private);
         $record['related_suggestions'] = $related;
         $record['related_suggestion_count'] = count($related);
+        if (class_exists('SCFS_Documentation_Feature_Intelligence')) {
+            $intelligence = SCFS_Documentation_Feature_Intelligence::instance();
+            $record['article_feedback'] = $intelligence->article_feedback_summary($post->ID);
+            $record['private_support_relationship_count'] = $intelligence->relationship_count('case_article', $post->ID);
+        }
         if ($include_private) {
             $record['total_related_suggestion_count'] = count((array) get_post_meta($post->ID, '_scfs_related_suggestions', true));
         }

@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.4.0 — Documentation and Feature Intelligence
+
+- Added Support Article helpfulness feedback with privacy redaction and aggregate metrics.
+- Added Documentation Gap records generated from failed searches and negative article feedback.
+- Added deterministic documentation-gap scoring and human-controlled gap workflow states.
+- Added protected case-to-article and case-to-suggestion relationship records for Contact and Engagement.
+- Added a Support Demand dimension to opportunity scoring.
+- Added documentation intelligence REST endpoints, CSV export, dashboard, and FastAPI scoring models.
+- Preserved Contact and Engagement as the private support-case system of record.
+
 ## 3.3.0 — Search and Guided Resolution
 
 - Added a product-aware guided-resolution workflow with product, version, and component filters.

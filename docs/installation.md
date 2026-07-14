@@ -90,3 +90,8 @@ If either archive returns a 404 after a manual server-side plugin replacement, o
 After upgrading, visit **Feature Suggestions → Guided Resolution** and configure the Contact and Engagement destination URL. The activation routine creates the privacy-minimized search analytics table. Add `[scfs_guided_resolution]` to a page or use the default `/support-knowledge-base/` archive.
 
 The Python validation environment must use Python 3.12 or 3.13 and install `backend/requirements.txt`, which now pins `httpx` for FastAPI TestClient compatibility.
+
+
+## Documentation and Feature Intelligence v3.4.0
+
+After upgrading, open **Feature Suggestions → Documentation Intelligence**. The plugin creates the article-feedback and support-relationship tables during activation or the first administrator request. Use **Refresh documentation gaps** after Guided Resolution has collected unresolved-search evidence.

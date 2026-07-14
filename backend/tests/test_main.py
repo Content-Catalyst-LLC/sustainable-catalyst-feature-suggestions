@@ -11,7 +11,7 @@ def test_platform_capabilities():
     response = c.get('/v1/platform/capabilities')
     assert response.status_code == 200
     data = response.json()
-    assert data['version'] == '3.3.0'
+    assert data['version'] == '3.4.0'
     assert data['human_review_required'] is True
     assert 'survey_descriptive_analysis' in data['capabilities']
 
@@ -21,7 +21,7 @@ def test_analyze_with_product_context():
     payload.update({'product':['Knowledge Library'],'product_version':['v2.5.0'],'component':['Search and Discovery'],'issue_type':['Feature Request'],'release':['v3.2.0']})
     response = c.post('/v1/analyze', json=payload)
     assert response.status_code == 200
-    assert response.json()['analysis_version'] == '3.3.0-1'
+    assert response.json()['analysis_version'] == '3.4.0-1'
 
 
 
@@ -29,7 +29,7 @@ def test_knowledge_base_capabilities():
     response = c.get('/v1/knowledge-base/capabilities')
     assert response.status_code == 200
     data = response.json()
-    assert data['version'] == '3.3.0'
+    assert data['version'] == '3.4.0'
     assert data['schema'] == 'scfs-support-knowledge-base/1.0'
     assert data['public_content_only'] is True
     assert data['private_suggestion_text_exposed'] is False
@@ -39,7 +39,7 @@ def test_guided_resolution_capabilities():
     response = c.get('/v1/guided-resolution/capabilities')
     assert response.status_code == 200
     data = response.json()
-    assert data['version'] == '3.3.0'
+    assert data['version'] == '3.4.0'
     assert data['private_case_storage'] is False
 
 def test_guided_resolution_ranking_prioritizes_current_issue():

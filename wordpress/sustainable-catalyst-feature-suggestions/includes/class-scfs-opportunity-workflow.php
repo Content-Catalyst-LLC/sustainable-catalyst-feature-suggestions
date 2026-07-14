@@ -1,13 +1,13 @@
 <?php
 /**
- * Opportunity scoring and roadmap workflow for Feature Suggestions v2.9.0.
+ * Opportunity scoring and roadmap workflow with support-demand intelligence for Feature Suggestions v3.4.0.
  */
 if (!defined('ABSPATH')) { exit; }
 
 final class SCFS_Opportunity_Workflow {
     const OPTION_KEY = 'scfs_opportunity_settings';
     const NONCE = 'scfs_opportunity_workflow';
-    const VERSION = '1.0';
+    const VERSION = '2.0';
     private static $instance = null;
 
     public static function instance() {
@@ -31,6 +31,7 @@ final class SCFS_Opportunity_Workflow {
     private function defaults() {
         return array(
             'weight_demand' => 15,
+            'weight_support_demand' => 15,
             'weight_impact' => 20,
             'weight_alignment' => 20,
             'weight_evidence' => 15,
@@ -83,6 +84,10 @@ final class SCFS_Opportunity_Workflow {
         $impact = $reviewer_impact > 0 ? $reviewer_impact : $ai_impact;
         $effort = $reviewer_effort > 0 ? $reviewer_effort : $ai_effort;
         $demand = $this->clamp(log(1 + $votes + ($duplicate_count * 2), 2));
+        $support_evidence = class_exists('SCFS_Documentation_Feature_Intelligence')
+            ? SCFS_Documentation_Feature_Intelligence::instance()->support_demand_for_suggestion($post_id)
+            : array('score' => 0, 'evidence_count' => 0, 'case_relationships' => 0, 'gap_count' => 0, 'unresolved_searches' => 0, 'guided_views' => 0);
+        $support_demand = $this->clamp(isset($support_evidence['score']) ? $support_evidence['score'] : 0);
         $evidence_count = 0;
         if ($votes > 0) $evidence_count++;
         if ($duplicate_count > 0) $evidence_count++;
@@ -90,7 +95,8 @@ final class SCFS_Opportunity_Workflow {
         if (get_post_meta($post_id, '_scfs_librarian_feedback_type', true)) $evidence_count++;
         if (get_post_meta($post_id, '_scfs_relevant_url', true)) $evidence_count++;
         if (get_post_meta($post_id, '_scfs_success_criteria', true)) $evidence_count++;
-        $evidence = $this->clamp(($evidence_count / 6) * 5);
+        if (!empty($support_evidence['evidence_count'])) $evidence_count++;
+        $evidence = $this->clamp(($evidence_count / 7) * 5);
         $public_interest = $this->clamp(get_post_meta($post_id, '_scfs_public_interest_score', true));
         if (!$public_interest) $public_interest = $this->clamp(($impact + $alignment) / 2);
         $readiness_count = 0;
@@ -100,9 +106,10 @@ final class SCFS_Opportunity_Workflow {
         if (get_post_meta($post_id, '_scfs_github_issue_url', true)) $readiness_count++;
         $readiness = $this->clamp(($readiness_count / 4) * 5);
 
-        $dimensions = compact('demand','impact','alignment','evidence','public_interest','readiness','effort');
+        $dimensions = compact('demand','support_demand','impact','alignment','evidence','public_interest','readiness','effort');
         $weights = array(
             'demand' => absint($settings['weight_demand']),
+            'support_demand' => absint($settings['weight_support_demand']),
             'impact' => absint($settings['weight_impact']),
             'alignment' => absint($settings['weight_alignment']),
             'evidence' => absint($settings['weight_evidence']),
@@ -112,7 +119,7 @@ final class SCFS_Opportunity_Workflow {
         );
         $weight_total = max(1, array_sum($weights));
         $positive = 0;
-        foreach (array('demand','impact','alignment','evidence','public_interest','readiness') as $key) $positive += ($dimensions[$key] / 5) * $weights[$key];
+        foreach (array('demand','support_demand','impact','alignment','evidence','public_interest','readiness') as $key) $positive += ($dimensions[$key] / 5) * $weights[$key];
         $effort_penalty = ($effort / 5) * $weights['effort'];
         $score = max(0, min(100, (($positive - $effort_penalty) / $weight_total) * 100));
         $minimum_met = $evidence_count >= absint($settings['minimum_evidence']);
@@ -124,8 +131,9 @@ final class SCFS_Opportunity_Workflow {
             'evidence_count' => $evidence_count,
             'minimum_evidence_met' => $minimum_met,
             'confidence' => round($confidence / 5, 2),
+            'support_demand_evidence' => $support_evidence,
             'calculated_at' => gmdate('c'),
-            'explanation' => $minimum_met ? 'Score combines demand, impact, strategic alignment, evidence, public-interest value, implementation readiness, and an effort penalty.' : 'Score is provisional because the configured minimum evidence threshold has not been met.',
+            'explanation' => $minimum_met ? 'Score combines public demand, support demand, impact, strategic alignment, evidence, public-interest value, implementation readiness, and an effort penalty.' : 'Score is provisional because the configured minimum evidence threshold has not been met.',
         );
         update_post_meta($post_id, '_scfs_opportunity_score', $result);
         $state = get_post_meta($post_id, '_scfs_opportunity_state', true) ?: 'unscored';
@@ -178,7 +186,7 @@ final class SCFS_Opportunity_Workflow {
         echo '</select></label></p>';
         echo '<p><label><strong>'.esc_html__('Public-interest value (0–5)','sustainable-catalyst-feature-suggestions').'</strong><br><select class="widefat" name="scfs_public_interest_score">'; for($i=0;$i<=5;$i++) echo '<option value="'.$i.'" '.selected((string)$public_interest,(string)$i,false).'>'.$i.'</option>'; echo '</select></label></p>';
         echo '<p><label><strong>'.esc_html__('Owner','sustainable-catalyst-feature-suggestions').'</strong><br><input class="widefat" name="scfs_roadmap_owner" value="'.esc_attr($owner).'"></label></p>';
-        echo '<p><label><strong>'.esc_html__('Target release','sustainable-catalyst-feature-suggestions').'</strong><br><input class="widefat" name="scfs_target_release" value="'.esc_attr($target).'" placeholder="v3.3.0"></label></p>';
+        echo '<p><label><strong>'.esc_html__('Target release','sustainable-catalyst-feature-suggestions').'</strong><br><input class="widefat" name="scfs_target_release" value="'.esc_attr($target).'" placeholder="v3.4.0"></label></p>';
         echo '<p><label><strong>'.esc_html__('Decision rationale','sustainable-catalyst-feature-suggestions').'</strong><br><textarea class="widefat" rows="4" name="scfs_roadmap_decision_reason">'.esc_textarea($decision).'</textarea></label></p>';
         $recalc = wp_nonce_url(admin_url('admin-post.php?action=scfs_opportunity_recalculate&post_id='.$post->ID), self::NONCE.'_'.$post->ID);
         $export = wp_nonce_url(admin_url('admin-post.php?action=scfs_opportunity_export&post_id='.$post->ID), self::NONCE.'_export_'.$post->ID);
@@ -226,13 +234,13 @@ final class SCFS_Opportunity_Workflow {
         if(!current_user_can('edit_posts'))wp_die(__('Permission denied.','sustainable-catalyst-feature-suggestions'));
         $items=$this->roadmap_items(); echo '<div class="wrap"><h1>'.esc_html__('Opportunity Scoring and Roadmap Workflow','sustainable-catalyst-feature-suggestions').'</h1><p>'.esc_html__('Prioritize evidence-linked opportunities while retaining explicit human approval and an auditable decision history.','sustainable-catalyst-feature-suggestions').'</p><table class="widefat striped"><thead><tr><th>Opportunity</th><th>Score</th><th>Evidence</th><th>State</th><th>Owner</th><th>Target</th></tr></thead><tbody>';
         foreach($items as $i) echo '<tr><td><a href="'.esc_url($i['edit']).'"><strong>'.esc_html($i['title']).'</strong></a></td><td>'.esc_html((string)$i['score']).'</td><td>'.esc_html((string)$i['evidence']).'</td><td>'.esc_html($this->states()[$i['state']]??$i['state']).'</td><td>'.esc_html($i['owner']).'</td><td>'.esc_html($i['target']).'</td></tr>';
-        echo '</tbody></table><p class="description">'.esc_html__('Support counts are only one demand signal. Scores also include impact, alignment, evidence, public-interest value, readiness, and effort.','sustainable-catalyst-feature-suggestions').'</p></div>';
+        echo '</tbody></table><p class="description">'.esc_html__('Public votes and private support demand are separate evidence signals. Scores also include impact, alignment, evidence, public-interest value, readiness, and effort.','sustainable-catalyst-feature-suggestions').'</p></div>';
     }
 
     public function render_settings() {
         if(!current_user_can('manage_options'))wp_die(__('Permission denied.','sustainable-catalyst-feature-suggestions')); $s=$this->settings();
         echo '<div class="wrap"><h1>'.esc_html__('Opportunity Scoring Settings','sustainable-catalyst-feature-suggestions').'</h1><form method="post" action="'.esc_url(admin_url('admin-post.php')).'"><input type="hidden" name="action" value="scfs_opportunity_save_settings">'; wp_nonce_field(self::NONCE.'_settings');
-        echo '<table class="form-table"><tbody>'; foreach(array('weight_demand'=>'Demand weight','weight_impact'=>'Impact weight','weight_alignment'=>'Strategic alignment weight','weight_evidence'=>'Evidence weight','weight_public_interest'=>'Public-interest weight','weight_readiness'=>'Readiness weight','weight_effort'=>'Effort penalty weight','minimum_evidence'=>'Minimum evidence signals','candidate_threshold'=>'Candidate threshold (0–100)') as $key=>$label) echo '<tr><th><label for="'.$key.'">'.esc_html($label).'</label></th><td><input type="number" min="0" max="100" id="'.$key.'" name="'.$key.'" value="'.esc_attr($s[$key]).'"></td></tr>';
+        echo '<table class="form-table"><tbody>'; foreach(array('weight_demand'=>'Public demand weight','weight_support_demand'=>'Support demand weight','weight_impact'=>'Impact weight','weight_alignment'=>'Strategic alignment weight','weight_evidence'=>'Evidence weight','weight_public_interest'=>'Public-interest weight','weight_readiness'=>'Readiness weight','weight_effort'=>'Effort penalty weight','minimum_evidence'=>'Minimum evidence signals','candidate_threshold'=>'Candidate threshold (0–100)') as $key=>$label) echo '<tr><th><label for="'.$key.'">'.esc_html($label).'</label></th><td><input type="number" min="0" max="100" id="'.$key.'" name="'.$key.'" value="'.esc_attr($s[$key]).'"></td></tr>';
         echo '<tr><th>GitHub repository</th><td><input class="regular-text" name="github_repository" value="'.esc_attr($s['github_repository']).'" placeholder="Owner/repository"></td></tr><tr><th>Decision Studio URL</th><td><input class="regular-text" type="url" name="decision_studio_url" value="'.esc_attr($s['decision_studio_url']).'"></td></tr></tbody></table>'; submit_button(__('Save scoring settings','sustainable-catalyst-feature-suggestions')); echo '</form><p class="description">'.esc_html__('Changing weights does not silently change roadmap decisions. Recalculate opportunities and review the results.','sustainable-catalyst-feature-suggestions').'</p></div>';
     }
 
@@ -242,7 +250,7 @@ final class SCFS_Opportunity_Workflow {
 
     private function handoff($id) {
         $post=get_post($id); $score=get_post_meta($id,'_scfs_opportunity_score',true); if(!is_array($score))$score=$this->calculate($id); $analysis=get_post_meta($id,'_scfs_ai_analysis',true);
-        return array('schema_version'=>'1.0','type'=>'scfs.opportunity_handoff','submission_uuid'=>get_post_meta($id,'_scfs_submission_uuid',true),'title'=>$post?$post->post_title:'','problem'=>get_post_meta($id,'_scfs_problem',true),'proposal'=>get_post_meta($id,'_scfs_suggestion',true),'success_criteria'=>get_post_meta($id,'_scfs_success_criteria',true),'roadmap_area'=>get_post_meta($id,'_scfs_roadmap_area',true),'opportunity_state'=>get_post_meta($id,'_scfs_opportunity_state',true)?:'unscored','opportunity_score'=>$score,'ai_analysis'=>is_array($analysis)?$analysis:array(),'public_supports'=>absint(get_post_meta($id,'_scfs_support_votes',true)),'owner'=>get_post_meta($id,'_scfs_roadmap_owner',true),'target_release'=>get_post_meta($id,'_scfs_target_release',true),'decision_rationale'=>get_post_meta($id,'_scfs_roadmap_decision_reason',true),'github_issue_url'=>get_post_meta($id,'_scfs_github_issue_url',true),'generated_at'=>gmdate('c'));
+        return array('schema_version'=>'1.0','type'=>'scfs.opportunity_handoff','submission_uuid'=>get_post_meta($id,'_scfs_submission_uuid',true),'title'=>$post?$post->post_title:'','problem'=>get_post_meta($id,'_scfs_problem',true),'proposal'=>get_post_meta($id,'_scfs_suggestion',true),'success_criteria'=>get_post_meta($id,'_scfs_success_criteria',true),'roadmap_area'=>get_post_meta($id,'_scfs_roadmap_area',true),'opportunity_state'=>get_post_meta($id,'_scfs_opportunity_state',true)?:'unscored','opportunity_score'=>$score,'ai_analysis'=>is_array($analysis)?$analysis:array(),'public_supports'=>absint(get_post_meta($id,'_scfs_support_votes',true)),'support_demand'=>class_exists('SCFS_Documentation_Feature_Intelligence')?SCFS_Documentation_Feature_Intelligence::instance()->support_demand_for_suggestion($id):array(),'owner'=>get_post_meta($id,'_scfs_roadmap_owner',true),'target_release'=>get_post_meta($id,'_scfs_target_release',true),'decision_rationale'=>get_post_meta($id,'_scfs_roadmap_decision_reason',true),'github_issue_url'=>get_post_meta($id,'_scfs_github_issue_url',true),'generated_at'=>gmdate('c'));
     }
     public function export_action(){ $id=absint($_GET['post_id']??0);check_admin_referer(self::NONCE.'_export_'.$id);if(!current_user_can('edit_post',$id))wp_die('Permission denied.');$payload=$this->handoff($id);$this->audit($id,'handoff_exported',array('format'=>'json'));header('Content-Type: application/json; charset=utf-8');header('Content-Disposition: attachment; filename=scfs-opportunity-'.$id.'.json');echo wp_json_encode($payload,JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);exit; }
 

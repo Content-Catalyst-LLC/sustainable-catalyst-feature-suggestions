@@ -27,6 +27,12 @@ Optional category preselection:
 [sustainable_catalyst_feature_suggestions category="Research Librarian feature"]
 ```
 
+## Version 3.4.0 — Documentation and Feature Intelligence
+
+Version 3.4.0 adds Support Article feedback, privacy-minimized documentation-gap detection, protected case-to-article and case-to-suggestion relationships, and a distinct Support Demand signal in opportunity scoring. Contact and Engagement remains the private case-management system; Feature Suggestions stores only public-record relationships and opaque case references.
+
+Administration: **Feature Suggestions → Documentation Intelligence**.
+
 ## Version 3.3.0 — Search and Guided Resolution
 
 Version 3.3.0 turns the Support Knowledge Base into an actionable support-resolution environment. Visitors can describe a task or problem, add an exact non-sensitive error fragment, narrow the request by product, version, and component, and receive ranked known issues, support articles, releases, and related public ideas. Current known issues receive deliberate priority.

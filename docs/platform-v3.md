@@ -1,6 +1,6 @@
-# Sustainable Catalyst Product Support and Feedback Platform v3.3.0
+# Sustainable Catalyst Product Support and Feedback Platform v3.4.0
 
-Version 3.3.0 extends the Support Knowledge Base foundation into a guided product-support workflow with error matching, known-issue prioritization, search analytics, and private support handoffs.
+Version 3.4.0 adds documentation feedback, gap intelligence, privacy-safe support relationships, and support-demand-informed opportunity scoring on top of the guided product-support workflow.
 
 ## Support Knowledge Base
 
@@ -27,3 +27,8 @@ An administrator-only JSON snapshot provides versioned counts, module status, go
 ## Safety and decision boundaries
 
 AI and voting remain advisory. Publishing, roadmap state changes, release decisions, retention execution, and official responses require authorized human action.
+
+
+## v3.4.0 Documentation and Feature Intelligence
+
+The platform now treats article feedback, failed searches, documentation gaps, and privacy-safe support relationships as reviewable evidence. The Support Demand scoring dimension informs feature prioritization without exposing private case content or automating roadmap decisions.

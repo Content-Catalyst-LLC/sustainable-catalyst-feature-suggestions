@@ -37,3 +37,8 @@ Authenticated administrators can use:
 ## Governance boundary
 
 Popularity is only one demand signal. AI classifications, scores, thresholds, and automatic candidate recommendations cannot approve, reject, schedule, publish, or release a feature. Human review remains mandatory.
+
+
+## Support Demand dimension
+
+Version 3.4.0 adds a separate Support Demand dimension based on privacy-safe case-to-suggestion relationships, linked documentation gaps, unresolved-search counts, and Guided Resolution result views. It complements public votes and duplicate suggestions; it does not replace reviewer judgment or automatically change roadmap state.

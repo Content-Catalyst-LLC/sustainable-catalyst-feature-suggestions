@@ -1,6 +1,6 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 3.3.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 3.4.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
 
 ## Support Knowledge Base Foundation
 

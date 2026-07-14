@@ -1,0 +1,19 @@
+{
+  "schema": "scfs-support-relationship/1.0",
+  "case_reference": "support:CASE-2026-0042",
+  "relationship_type": "case_article",
+  "object_id": 812,
+  "source_system": "contact_and_engagement",
+  "outcome": "resolved",
+  "evidence_weight": 1.5,
+  "product_context": {
+    "product": "research-librarian",
+    "product_version": "v7-0-0",
+    "component": "wordpress-endpoint"
+  },
+  "privacy": {
+    "opaque_case_reference": true,
+    "contact_details_included": false,
+    "case_content_included": false
+  }
+}

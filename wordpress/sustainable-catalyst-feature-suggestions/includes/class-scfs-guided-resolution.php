@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Guided_Resolution {
-    const VERSION = '3.3.0';
+    const VERSION = '3.4.0';
     const SCHEMA_VERSION = '1.0';
     const SHORTCODE = 'scfs_guided_resolution';
     const LEGACY_SHORTCODE = 'sustainable_catalyst_guided_resolution';
@@ -722,7 +722,9 @@ final class SCFS_Guided_Resolution {
             'source' => sanitize_key($context['source']),
             'created_at' => current_time('mysql', true),
         ), array('%s', '%s', '%s', '%s', '%s', '%d', '%f', '%f', '%s', '%s', '%s', '%s'));
-        return isset($wpdb->insert_id) ? absint($wpdb->insert_id) : 0;
+        $search_id = isset($wpdb->insert_id) ? absint($wpdb->insert_id) : 0;
+        do_action('scfs_guided_resolution_search_recorded', $search_id, $context, $result);
+        return $search_id;
     }
 
     public function handle_result_view() {
@@ -741,6 +743,9 @@ final class SCFS_Guided_Resolution {
                 $wpdb->update($this->table_name(), array('viewed_json' => wp_json_encode(array_slice($viewed, -25))), array('id' => $search_id), array('%s'), array('%d'));
             }
         }
+        if ($search_id && $kind === 'support_article') {
+            $destination = add_query_arg('scfs_search_id', $search_id, $destination);
+        }
         wp_safe_redirect(wp_validate_redirect($destination, home_url('/')));
         exit;
     }
@@ -751,6 +756,7 @@ final class SCFS_Guided_Resolution {
             'direction' => 'feature_suggestions_guided_resolution_to_contact_and_engagement',
             'purpose' => 'Carry unresolved public support-search context into a private support workflow after explicit consent.',
             'context_fields' => array('original_query', 'product', 'product_version', 'component', 'records_viewed', 'search_confidence', 'unresolved_reason'),
+            'relationship_callback' => '/wp-json/' . Sustainable_Catalyst_Feature_Suggestions::REST_NAMESPACE . '/documentation-intelligence/relationships',
             'privacy' => array('classification' => 'private', 'contact_details_collected_at_destination' => true, 'automatic_case_creation' => false, 'consent_required' => true),
         );
     }
@@ -791,7 +797,7 @@ final class SCFS_Guided_Resolution {
                 'unresolved_reason' => sanitize_textarea_field(isset($data['unresolved_reason']) ? $data['unresolved_reason'] : ''),
             ),
             'privacy' => array('classification' => 'private', 'consent_confirmed' => !empty($data['consent']), 'contains_contact_details' => false, 'contact_details_collected_at_destination' => true),
-            'routing' => array('destination' => 'contact_and_engagement', 'queue' => 'product_support', 'create_case' => false, 'human_review_required' => true),
+            'routing' => array('destination' => 'contact_and_engagement', 'queue' => 'product_support', 'create_case' => false, 'human_review_required' => true, 'relationship_callback' => '/wp-json/' . Sustainable_Catalyst_Feature_Suggestions::REST_NAMESPACE . '/documentation-intelligence/relationships'),
         );
     }
 

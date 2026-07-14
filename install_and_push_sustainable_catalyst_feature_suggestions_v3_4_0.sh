@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-VERSION="3.3.0"
+VERSION="3.4.0"
 REPO_URL="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${1:-$HOME/Downloads}"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v330.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v340.XXXXXX")"
 CLONE_DIR="$WORK_DIR/repo"
 STAGE_DIR="$WORK_DIR/stage"
 VENV_DIR="$WORK_DIR/venv"
 
-cleanup() {
-  rm -rf "$WORK_DIR"
+cleanup_on_failure() {
+  local status=$?
+  if [[ $status -ne 0 ]]; then
+    echo
+    echo "The v3.4.0 release was not committed or pushed."
+    echo "Temporary validation workspace: $WORK_DIR"
+    echo "It has been retained for inspection."
+    trap - EXIT
+  fi
+  exit "$status"
 }
-trap cleanup EXIT
+trap cleanup_on_failure EXIT
 
 find_python() {
   local candidate version
@@ -47,45 +55,58 @@ fi
 
 echo "Using Python: $PYTHON_BIN ($($PYTHON_BIN --version 2>&1))"
 
-shopt -s nullglob
-ARCHIVE_CANDIDATES=(
-  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v3.3.0-repo*.zip
-  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v3.3.0-release-bundle*.zip
-)
-shopt -u nullglob
-REPO_ZIP=""
-if (( ${#ARCHIVE_CANDIDATES[@]} > 0 )); then
-  REPO_ZIP="$(ls -t "${ARCHIVE_CANDIDATES[@]}" | head -1)"
+if ! command -v git >/dev/null 2>&1; then
+  echo "ERROR: Git is required."
+  exit 1
 fi
-
-if [[ -z "$REPO_ZIP" ]]; then
-  echo "ERROR: Could not find the v3.3.0 repository ZIP in $DOWNLOADS_DIR."
-  echo "Download sustainable-catalyst-feature-suggestions-v3.3.0-repo.zip and run again."
+if ! command -v unzip >/dev/null 2>&1; then
+  echo "ERROR: unzip is required."
+  exit 1
+fi
+if ! command -v rsync >/dev/null 2>&1; then
+  echo "ERROR: rsync is required."
+  exit 1
+fi
+if ! command -v php >/dev/null 2>&1; then
+  echo "ERROR: PHP is required for plugin validation."
   exit 1
 fi
 
-echo "Using release archive: $REPO_ZIP"
-mkdir -p "$STAGE_DIR"
-unzip -q "$REPO_ZIP" -d "$STAGE_DIR"
+shopt -s nullglob
+ARCHIVE_CANDIDATES=(
+  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v3.4.0-repo*.zip
+  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v3.4.0-release-bundle*.zip
+)
+shopt -u nullglob
 
-SOURCE_DIR="$(find "$STAGE_DIR" -maxdepth 4 -type f -name feature_suggestions_manifest.json -print -quit | xargs -I{} dirname "{}")"
-if [[ -z "$SOURCE_DIR" || ! -f "$SOURCE_DIR/feature_suggestions_manifest.json" ]]; then
-  # A release bundle contains the repository ZIP rather than the extracted repository.
-  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 3 -type f -name 'sustainable-catalyst-feature-suggestions-v3.3.0-repo*.zip' -print -quit)"
+if (( ${#ARCHIVE_CANDIDATES[@]} == 0 )); then
+  echo "ERROR: Could not find the v3.4.0 repository ZIP or release bundle in $DOWNLOADS_DIR."
+  echo "Download sustainable-catalyst-feature-suggestions-v3.4.0-repo.zip and run again."
+  exit 1
+fi
+
+RELEASE_ARCHIVE="$(ls -t "${ARCHIVE_CANDIDATES[@]}" | head -1)"
+echo "Using release archive: $RELEASE_ARCHIVE"
+mkdir -p "$STAGE_DIR"
+unzip -q "$RELEASE_ARCHIVE" -d "$STAGE_DIR"
+
+MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 5 -type f -name feature_suggestions_manifest.json -print -quit)"
+if [[ -z "$MANIFEST_PATH" ]]; then
+  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 4 -type f -name 'sustainable-catalyst-feature-suggestions-v3.4.0-repo*.zip' -print -quit)"
   if [[ -n "$INNER_ZIP" ]]; then
-    rm -rf "$STAGE_DIR/repository"
     mkdir -p "$STAGE_DIR/repository"
     unzip -q "$INNER_ZIP" -d "$STAGE_DIR/repository"
-    SOURCE_DIR="$(find "$STAGE_DIR/repository" -maxdepth 4 -type f -name feature_suggestions_manifest.json -print -quit | xargs -I{} dirname "{}")"
+    MANIFEST_PATH="$(find "$STAGE_DIR/repository" -maxdepth 5 -type f -name feature_suggestions_manifest.json -print -quit)"
   fi
 fi
 
-if [[ -z "$SOURCE_DIR" || ! -f "$SOURCE_DIR/feature_suggestions_manifest.json" ]]; then
+if [[ -z "$MANIFEST_PATH" || ! -f "$MANIFEST_PATH" ]]; then
   echo "ERROR: The selected archive does not contain the Feature Suggestions repository."
   exit 1
 fi
+SOURCE_DIR="$(dirname "$MANIFEST_PATH")"
 
-MANIFEST_VERSION="$($PYTHON_BIN - "$SOURCE_DIR/feature_suggestions_manifest.json" <<'PY'
+MANIFEST_VERSION="$($PYTHON_BIN - "$MANIFEST_PATH" <<'PY'
 import json, sys
 with open(sys.argv[1], encoding='utf-8') as fh:
     print(json.load(fh).get('version', ''))
@@ -96,26 +117,27 @@ if [[ "$MANIFEST_VERSION" != "$VERSION" ]]; then
   exit 1
 fi
 
+if [[ ! -d "$SOURCE_DIR/wordpress/sustainable-catalyst-feature-suggestions" || ! -d "$SOURCE_DIR/backend" ]]; then
+  echo "ERROR: The archive is missing the WordPress or backend source tree."
+  exit 1
+fi
+
 echo "Cloning the latest GitHub main branch..."
 git clone "$REPO_URL" "$CLONE_DIR"
 cd "$CLONE_DIR"
 git checkout main
 
-echo "Applying the complete v3.3.0 repository over the fresh clone..."
+echo "Applying the complete v3.4.0 repository over the fresh clone..."
 rsync -a --delete --exclude='.git/' "$SOURCE_DIR/" "$CLONE_DIR/"
-
-if ! command -v php >/dev/null 2>&1; then
-  echo "ERROR: PHP is required for plugin validation."
-  exit 1
-fi
 
 echo "Running PHP syntax checks..."
 while IFS= read -r -d '' file; do
   php -l "$file" >/dev/null
-done < <(find wordpress/sustainable-catalyst-feature-suggestions -type f -name '*.php' -print0)
+done < <(find wordpress/sustainable-catalyst-feature-suggestions tests -type f -name '*.php' -print0)
+echo "PASS - PHP syntax"
 
-echo "Running WordPress contract and ranking tests..."
-for test_file in tests/test-v330-*.php; do
+echo "Running WordPress contract, rendering, and scoring tests..."
+for test_file in tests/test-v340-*.php; do
   php "$test_file"
 done
 
@@ -131,10 +153,11 @@ echo "Validating JSON records..."
 "$VENV_DIR/bin/python" - <<'PY'
 import json
 from pathlib import Path
-for path in [Path('feature_suggestions_manifest.json'), *Path('examples').glob('*.json')]:
+paths = [Path('feature_suggestions_manifest.json'), *sorted(Path('examples').glob('*.json'))]
+for path in paths:
     with path.open(encoding='utf-8') as fh:
         json.load(fh)
-    print(f"PASS - {path}")
+print(f"PASS - {len(paths)} JSON files")
 PY
 
 if [[ ! -f dist/sustainable-catalyst-feature-suggestions.zip ]]; then
@@ -142,17 +165,19 @@ if [[ ! -f dist/sustainable-catalyst-feature-suggestions.zip ]]; then
   exit 1
 fi
 unzip -tq dist/sustainable-catalyst-feature-suggestions.zip >/dev/null
+echo "PASS - WordPress distribution ZIP"
 
-if grep -RInE --exclude='*.zip' --exclude='*.md' \
+if grep -RInE --exclude='*.zip' --exclude='*.md' --exclude-dir='.git' --exclude-dir='venv' \
   '(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{30,}|gh[pousr]_[A-Za-z0-9_]{30,})' .; then
   echo "ERROR: A potential secret was found. Nothing was committed or pushed."
   exit 1
 fi
+echo "PASS - secret scan"
 
 echo "Validation passed. Preparing Git commit..."
 git add -A
 if git diff --cached --quiet; then
-  echo "No uncommitted v3.3.0 changes were found. The remote may already contain this release."
+  echo "No uncommitted v3.4.0 changes were found. The remote may already contain this release."
 else
   if ! git config user.name >/dev/null; then
     git config user.name "$(git log -1 --format='%an' 2>/dev/null || echo 'Content Catalyst LLC')"
@@ -160,19 +185,17 @@ else
   if ! git config user.email >/dev/null; then
     git config user.email "$(git log -1 --format='%ae' 2>/dev/null || echo 'release@users.noreply.github.com')"
   fi
-  git commit -m "Release Feature Suggestions v3.3.0 search and guided resolution"
+  git commit -m "Release Feature Suggestions v3.4.0 documentation and feature intelligence"
 fi
 
-echo "Checking for any GitHub changes that arrived during validation..."
+echo "Checking for GitHub changes that arrived during validation..."
 git pull --rebase origin main
 
-echo "Pushing Feature Suggestions v3.3.0..."
+echo "Pushing Feature Suggestions v3.4.0..."
 git push origin main
 
 echo
-echo "Feature Suggestions v3.3.0 was validated, installed, committed, and pushed successfully."
-echo "Recovery clone: $CLONE_DIR"
-# Preserve the validated clone for recovery instead of deleting it.
-trap - EXIT
-rm -rf "$VENV_DIR" "$STAGE_DIR"
+echo "Feature Suggestions v3.4.0 was validated, installed, committed, and pushed successfully."
 echo "Validated repository retained at: $CLONE_DIR"
+rm -rf "$VENV_DIR" "$STAGE_DIR"
+trap - EXIT

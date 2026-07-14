@@ -1,0 +1,22 @@
+{
+  "schema": "scfs-documentation-gap/1.0",
+  "id": 931,
+  "title": "Research Librarian endpoint unavailable",
+  "product_context": {
+    "product": "research-librarian",
+    "product_version": "v7-0-0",
+    "component": "wordpress-endpoint"
+  },
+  "score": 78.5,
+  "status": "open",
+  "evidence": {
+    "search_count": 12,
+    "no_match_count": 9,
+    "low_confidence_count": 3,
+    "negative_feedback_count": 2,
+    "case_count": 2
+  },
+  "linked_article_id": 0,
+  "linked_suggestion_id": 447,
+  "human_review_required": true
+}
