@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "updated": "2026-07-14",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -102,7 +102,21 @@
     "product taxonomy schema and term REST endpoints",
     "Contact and Engagement private support handoff contract",
     "review-gated protected support handoff endpoint",
-    "WP-CLI taxonomy migration command"
+    "WP-CLI taxonomy migration command",
+    "public Support Article post type",
+    "public Known Issue post type",
+    "hierarchical documentation collections",
+    "support article type taxonomy",
+    "reusable getting-started, how-to, troubleshooting, reference, and known-issue templates",
+    "public Support Knowledge Base archive",
+    "scfs_support_knowledge_base shortcode",
+    "product, component, collection, and article-type filters",
+    "active known-issue notices",
+    "support article and known-issue REST APIs",
+    "documentation collection and template REST APIs",
+    "related release relationships",
+    "privacy-safe related suggestion relationships",
+    "Knowledge Base administration dashboard"
   ],
   "boundaries": [
     "no confidential information",
@@ -112,14 +126,19 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 3.1.0 establishes shared product, version, component, issue, and release taxonomies; migrates existing suggestions safely; adds product-aware analytics; and defines the review-gated Contact and Engagement support handoff contract.",
-  "release_name": "Product Taxonomy and Platform Integration",
-  "release": "Feature Suggestions v3.1.0 \u2014 Product Taxonomy and Platform Integration",
+  "notes": "Version 3.2.0 adds the first-party Support Knowledge Base foundation: public Support Articles, documentation collections, reusable article templates, Known Issue records, public archives and shortcode rendering, REST APIs, and privacy-safe relationships to suggestions and releases.",
+  "release_name": "Support Knowledge Base Foundation",
+  "release": "Feature Suggestions v3.2.0 — Support Knowledge Base Foundation",
   "features": [
-    "Shared product, version, component, issue, and release taxonomies",
-    "Idempotent existing suggestion migration",
-    "Product-aware analytics, REST, events, AI context, and exports",
-    "Contact and Engagement private support handoff contract",
-    "Upgrade-safe migration dashboard and WP-CLI command"
+    "Support Article and Known Issue content models",
+    "Product documentation collections and article types",
+    "Reusable article templates with non-destructive insertion",
+    "Public Knowledge Base archive, filters, shortcode, and known-issue notices",
+    "Published-content REST APIs and privacy-safe suggestion/release relationships"
+  ],
+  "wordpress_post_types": [
+    "sc_feature_suggest",
+    "sc_support_article",
+    "sc_known_issue"
   ]
 }

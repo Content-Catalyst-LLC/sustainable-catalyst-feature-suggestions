@@ -6,8 +6,8 @@ from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 from .survey_intelligence import SurveyAnalysisRequest, SurveyAnalysisResult, analyze_survey
 
-VERSION='3.1.0'
-ANALYSIS_VERSION='3.1.0-1'
+VERSION='3.2.0'
+ANALYSIS_VERSION='3.2.0-1'
 app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
 
 class Submission(BaseModel):
@@ -142,7 +142,7 @@ def survey_analyze(payload: SurveyAnalysisRequest, x_scfs_ai_key:Optional[str]=H
 @app.get('/v1/surveys/methodology')
 def survey_methodology(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {'ok':True,'analysis_version':'3.1.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+    return {'ok':True,'analysis_version':'3.2.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
 
 
 @app.get('/v1/platform/capabilities')
@@ -152,9 +152,25 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['feature_triage','product_taxonomy_context','component_and_issue_context','release_context','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
+        'capabilities': ['feature_triage','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
         'causal_inference': False,
+    }
+
+
+@app.get('/v1/knowledge-base/capabilities')
+def knowledge_base_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-support-knowledge-base/1.0',
+        'wordpress_source_of_truth': True,
+        'content_types': ['support_article', 'known_issue'],
+        'taxonomies': ['product', 'product_version', 'component', 'issue_type', 'release', 'documentation_collection', 'article_type'],
+        'relationships': ['related_suggestions', 'related_releases'],
+        'public_content_only': True,
+        'private_suggestion_text_exposed': False,
     }

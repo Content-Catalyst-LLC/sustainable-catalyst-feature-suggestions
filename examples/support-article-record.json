@@ -1,0 +1,24 @@
+{
+  "schema": "scfs-support-article/1.0",
+  "kind": "support_article",
+  "id": 3201,
+  "publication_status": "publish",
+  "title": "Install and validate Feature Suggestions",
+  "slug": "install-and-validate-feature-suggestions",
+  "url": "https://example.org/support/install-and-validate-feature-suggestions/",
+  "summary": "Install the plugin, validate the release, and confirm the public form and REST health endpoint.",
+  "article_template": "how-to",
+  "audience": "WordPress administrators",
+  "estimated_minutes": 10,
+  "last_verified_version": "v3.2.0",
+  "product_context": {
+    "products": [{"name": "Feature Suggestions", "slug": "feature-suggestions"}],
+    "product_versions": [{"name": "v3.2.0", "slug": "v3-2-0"}],
+    "components": [{"name": "WordPress Administration", "slug": "wordpress-admin"}],
+    "issue_types": [],
+    "releases": [{"name": "v3.2.0", "slug": "v3-2-0"}]
+  },
+  "collections": [{"name": "Installation and Upgrades", "slug": "installation-upgrades"}],
+  "related_suggestions": [],
+  "related_suggestion_count": 0
+}

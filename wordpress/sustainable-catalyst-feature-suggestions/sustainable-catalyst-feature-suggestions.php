@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
- * Description: Feedback, surveys, research intelligence, public participation, roadmap governance, privacy controls, and shared platform integration for Sustainable Catalyst.
- * Version: 3.1.0
+ * Description: Product support documentation, known issues, feature suggestions, surveys, public participation, roadmap governance, privacy controls, and shared platform integration for Sustainable Catalyst.
+ * Version: 3.2.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '3.1.0';
+    const VERSION = '3.2.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -71,6 +71,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $instance->register_post_type();
         if (class_exists('SCFS_Product_Integration')) {
             SCFS_Product_Integration::activate();
+        }
+        if (class_exists('SCFS_Knowledge_Base_Foundation')) {
+            SCFS_Knowledge_Base_Foundation::activate();
         }
         $instance->migrate_legacy_post_type();
         flush_rewrite_rules();
@@ -2105,6 +2108,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
 }
 
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-product-integration.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-knowledge-base.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-forms.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-survey-intelligence.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-research-librarian-feedback.php';
@@ -2112,6 +2116,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-public-ideas.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-opportunity-workflow.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-platform-governance.php';
 SCFS_Product_Integration::instance();
+SCFS_Knowledge_Base_Foundation::instance();
 SCFS_Forms_Foundation::instance();
 SCFS_Survey_Intelligence::instance();
 SCFS_Research_Librarian_Feedback::instance();

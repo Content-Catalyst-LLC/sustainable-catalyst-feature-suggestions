@@ -1,6 +1,21 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 3.1.0 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 3.2.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+
+## Support Knowledge Base Foundation
+
+Version 3.2.0 adds:
+
+- public `sc_support_article` Support Articles;
+- public `sc_known_issue` Known Issue records;
+- product documentation collections and article types;
+- Getting Started, How-to, Troubleshooting, Technical Reference, and Known Issue Companion templates;
+- `[scfs_support_knowledge_base]`;
+- `/support-knowledge-base/` and `/known-issues/` archives;
+- published-content REST endpoints under `/wp-json/scfs/v1/knowledge-base/*`;
+- related release and privacy-safe feature-suggestion relationships.
+
+Manage these records under **Feature Suggestions → Knowledge Base**, **Support Articles**, and **Known Issues**.
 
 ## Shortcode
 

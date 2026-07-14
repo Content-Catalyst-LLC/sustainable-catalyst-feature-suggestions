@@ -1,6 +1,16 @@
-# Sustainable Catalyst Feedback and Participation Platform v3.1.0
+# Sustainable Catalyst Product Support and Feedback Platform v3.2.0
 
-Version 3.1.0 consolidates the v2.x feature-intelligence sequence into a stable platform release.
+Version 3.2.0 extends the v3.1.0 product-taxonomy foundation into a public Product Support and Feedback Platform with support documentation and known issues.
+
+## Support Knowledge Base
+
+Support Articles and Known Issues are first-class public records that share product, version, component, issue, and release context with Feature Suggestions. Documentation collections and article types provide the public information architecture.
+
+The Knowledge Base exposes a responsive archive and `[scfs_support_knowledge_base]` shortcode, plus published-content REST endpoints under `/scfs/v1/knowledge-base/*`.
+
+## Platform boundary
+
+The Product Support and Feedback Platform owns public documentation, known issues, feature suggestions, voting, surveys, release relationships, and product intelligence. Contact and Engagement continues to own private support cases, sender communication, documents, and lifecycle management.
 
 ## Platform command center
 

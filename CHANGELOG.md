@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.2.0 — Support Knowledge Base Foundation
+
+- Added the public `sc_support_article` Support Article post type.
+- Added hierarchical product documentation collections and support article types.
+- Added non-destructive Getting Started, How-to, Troubleshooting, Technical Reference, and Known Issue Companion templates.
+- Added the public `sc_known_issue` Known Issue post type with status, severity, symptom, workaround, resolution, and lifecycle dates.
+- Added the `[scfs_support_knowledge_base]` public search and filtering interface.
+- Added public Knowledge Base and Known Issues archive templates.
+- Added active known-issue notices and responsive documentation cards.
+- Added Support Article, Known Issue, collection, template, and schema REST endpoints.
+- Added shared Product, Product Version, Component, Issue Type, and Release relationships to documentation records.
+- Added privacy-safe relationships to reviewed feature suggestions; private text and contact data remain protected.
+- Added a Knowledge Base administration dashboard and list-table filters.
+- Added backend Knowledge Base capability metadata.
+- Preserved Contact and Engagement as the private support-case, communication, document, and lifecycle platform.
+
 ## 3.1.0 — Product Taxonomy and Platform Integration
 
 - Added shared Product, Product Version, Component, Issue Type, and Release taxonomies.

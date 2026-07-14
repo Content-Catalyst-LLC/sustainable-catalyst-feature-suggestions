@@ -1,0 +1,16 @@
+{
+  "schema": "scfs-known-issue/1.0",
+  "kind": "known_issue",
+  "id": 3202,
+  "publication_status": "publish",
+  "title": "Knowledge Base archive returns a 404 after upgrade",
+  "status": {"key": "workaround_available", "label": "Workaround available"},
+  "severity": {"key": "minor", "label": "Minor"},
+  "symptom": "The /support-knowledge-base/ archive returns a not-found response immediately after plugin replacement.",
+  "workaround": "Open Settings → Permalinks and save the current permalink structure once.",
+  "resolution": "The activation routine refreshes rewrite rules during a normal WordPress plugin activation.",
+  "first_observed": "2026-07-14",
+  "resolved_at": "",
+  "related_suggestions": [],
+  "related_suggestion_count": 0
+}

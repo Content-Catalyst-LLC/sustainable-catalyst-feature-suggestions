@@ -55,3 +55,31 @@ docs/feature-suggestions-site.css
 ```
 
 to the end of the site CSS if you are using the provided page wrapper.
+
+## Support Knowledge Base v3.2.0
+
+After activation, open:
+
+```text
+Feature Suggestions → Knowledge Base
+```
+
+You can use the automatic archive at:
+
+```text
+/support-knowledge-base/
+```
+
+or create a normal WordPress page and add:
+
+```text
+[scfs_support_knowledge_base]
+```
+
+Known Issues use:
+
+```text
+/known-issues/
+```
+
+If either archive returns a 404 after a manual server-side plugin replacement, open **Settings → Permalinks** and save the current permalink structure once.

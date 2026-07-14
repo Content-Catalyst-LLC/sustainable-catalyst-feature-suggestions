@@ -1,6 +1,6 @@
 # Sustainable Catalyst Feature Suggestions
 
-An advanced WordPress plugin and page package for collecting, storing, reviewing, triaging, and exporting Sustainable Catalyst platform feature suggestions.
+A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
 This repository supports the public feature suggestion workflow at:
 
@@ -26,6 +26,27 @@ Optional category preselection:
 ```text
 [sustainable_catalyst_feature_suggestions category="Research Librarian feature"]
 ```
+
+## Version 3.2.0 — Support Knowledge Base Foundation
+
+Version 3.2.0 adds the first-party Sustainable Catalyst Support Knowledge Base directly to Feature Suggestions. The release introduces public Support Articles, Known Issue records, product documentation collections, article types, non-destructive editor templates, a responsive public archive, current-issue notices, and published-content REST APIs.
+
+Public Knowledge Base shortcode:
+
+```text
+[scfs_support_knowledge_base]
+```
+
+Default archive routes:
+
+```text
+/support-knowledge-base/
+/known-issues/
+```
+
+Support Articles and Known Issues reuse the shared Product, Product Version, Component, Issue Type, and Release taxonomies from v3.1.0. They may be connected to reviewed feature suggestions, but private suggestion text and contact information are never exposed publicly. Contact and Engagement remains the private support-case and communication platform.
+
+Manage the foundation under **Feature Suggestions → Knowledge Base**. See `docs/support-knowledge-base-foundation.md`.
 
 ## Version 2.2 highlights
 
