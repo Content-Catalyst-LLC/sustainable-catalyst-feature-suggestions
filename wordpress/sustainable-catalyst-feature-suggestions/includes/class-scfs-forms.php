@@ -42,15 +42,15 @@ final class SCFS_Forms_Foundation {
     }
 
     public function register_assets() {
-        wp_register_style('scfs-forms', plugins_url('../assets/forms.css', __FILE__), array(), '3.0.0');
-        wp_register_script('scfs-forms', plugins_url('../assets/forms.js', __FILE__), array(), '3.0.0', true);
+        wp_register_style('scfs-forms', plugins_url('../assets/forms.css', __FILE__), array(), Sustainable_Catalyst_Feature_Suggestions::VERSION);
+        wp_register_script('scfs-forms', plugins_url('../assets/forms.js', __FILE__), array(), Sustainable_Catalyst_Feature_Suggestions::VERSION, true);
     }
 
     public function admin_assets($hook) {
         $screen = function_exists('get_current_screen') ? get_current_screen() : null;
         if (!$screen || $screen->post_type !== self::FORM_TYPE) { return; }
-        wp_enqueue_style('scfs-forms-admin', plugins_url('../assets/forms-admin.css', __FILE__), array(), '3.0.0');
-        wp_enqueue_script('scfs-forms-admin', plugins_url('../assets/forms-admin.js', __FILE__), array(), '3.0.0', true);
+        wp_enqueue_style('scfs-forms-admin', plugins_url('../assets/forms-admin.css', __FILE__), array(), Sustainable_Catalyst_Feature_Suggestions::VERSION);
+        wp_enqueue_script('scfs-forms-admin', plugins_url('../assets/forms-admin.js', __FILE__), array(), Sustainable_Catalyst_Feature_Suggestions::VERSION, true);
     }
 
     public function meta_boxes() {
@@ -203,7 +203,7 @@ final class SCFS_Forms_Foundation {
         $uuid=wp_generate_uuid4(); $response_id=wp_insert_post(array('post_type'=>self::RESPONSE_TYPE,'post_status'=>'private','post_title'=>$form->post_title.' response '.substr($uuid,0,8)));
         if(is_wp_error($response_id)||!$response_id){wp_safe_redirect(add_query_arg('scfs_form_status','error',$redirect));exit;}
         update_post_meta($response_id,'_scfs_response_uuid',$uuid); update_post_meta($response_id,'_scfs_form_id',$form_id); update_post_meta($response_id,'_scfs_form_schema_version',$schema['schema_version']??self::SCHEMA_VERSION); update_post_meta($response_id,'_scfs_response_answers',$answers); update_post_meta($response_id,'_scfs_response_submitted_at',gmdate('c'));
-        do_action('scfs_event',array('event_id'=>wp_generate_uuid4(),'event_type'=>'form.response_submitted','schema_version'=>'1.0','source'=>'feature_suggestions','source_version'=>'3.0.0','occurred_at'=>gmdate('c'),'data'=>array('response_uuid'=>$uuid,'form_id'=>$form_id,'form_slug'=>$form->post_name,'instrument_type'=>get_post_meta($form_id,'_scfs_form_mode',true),'field_count'=>count($answers),'schema_revision'=>absint(get_post_meta($form_id,'_scfs_schema_revision',true)))));
+        do_action('scfs_event',array('event_id'=>wp_generate_uuid4(),'event_type'=>'form.response_submitted','schema_version'=>'1.0','source'=>'feature_suggestions','source_version'=>Sustainable_Catalyst_Feature_Suggestions::VERSION,'occurred_at'=>gmdate('c'),'data'=>array('response_uuid'=>$uuid,'form_id'=>$form_id,'form_slug'=>$form->post_name,'instrument_type'=>get_post_meta($form_id,'_scfs_form_mode',true),'field_count'=>count($answers),'schema_revision'=>absint(get_post_meta($form_id,'_scfs_schema_revision',true)))));
         do_action('sc_platform_event',array('event_type'=>'form.response_submitted','source'=>'feature_suggestions','form_id'=>$form_id,'response_uuid'=>$uuid));
         wp_safe_redirect(add_query_arg('scfs_form_status','success',$redirect));exit;
     }

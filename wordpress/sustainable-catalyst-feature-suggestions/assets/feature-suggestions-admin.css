@@ -74,3 +74,20 @@
 .scfs-intel-filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;background:#fff;border:1px solid #dcdcde;padding:16px;margin:18px 0}.scfs-intel-filters label{display:flex;flex-direction:column;gap:5px;font-weight:600}.scfs-intel-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.scfs-intel-card{background:#fff;border:1px solid #dcdcde;border-top:4px solid #b40000;padding:16px}.scfs-intel-card span{display:block;color:#50575e}.scfs-intel-card strong{display:block;font-size:28px;margin-top:7px}.scfs-intel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}.scfs-intel-grid section,.scfs-intel-opportunities{background:#fff;border:1px solid #dcdcde;padding:18px}.scfs-intel-grid h2,.scfs-intel-opportunities h2{margin-top:0}.scfs-intel-bar{margin:12px 0}.scfs-intel-bar>div{display:flex;justify-content:space-between;gap:12px}.scfs-intel-track{display:block;height:8px;background:#e8e8e8;margin-top:5px}.scfs-intel-track>span{display:block;height:100%;background:#b40000}.scfs-intel-opportunities{margin-top:16px}.scfs-intel-opportunities td span{color:#50575e}@media(max-width:782px){.scfs-intel-filters{display:block}.scfs-intel-filters label{margin-bottom:12px}.scfs-intel-grid{grid-template-columns:1fr}}
 
 .scfs-platform-center .scfs-status{display:inline-block;padding:3px 8px;border-radius:999px;background:#eee;font-weight:600}.scfs-platform-center .scfs-status--ok{background:#dff3e4}.scfs-readiness-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px;padding:0}.scfs-readiness-list li{list-style:none;background:#fff;border:1px solid #dcdcde;padding:10px 12px}
+
+/* v3.1.0 product integration */
+.scfs-product-integration pre {
+  max-width: 1200px;
+  padding: 16px;
+  overflow: auto;
+  background: #111;
+  color: #d8ffd8;
+  border-left: 4px solid #8b0000;
+  white-space: pre-wrap;
+}
+
+.scfs-product-integration .scfs-intel-card small {
+  display: block;
+  margin-top: 6px;
+  color: #50575e;
+}

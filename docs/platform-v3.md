@@ -1,6 +1,6 @@
-# Sustainable Catalyst Feedback and Participation Platform v3.0.0
+# Sustainable Catalyst Feedback and Participation Platform v3.1.0
 
-Version 3.0.0 consolidates the v2.x feature-intelligence sequence into a stable platform release.
+Version 3.1.0 consolidates the v2.x feature-intelligence sequence into a stable platform release.
 
 ## Platform command center
 

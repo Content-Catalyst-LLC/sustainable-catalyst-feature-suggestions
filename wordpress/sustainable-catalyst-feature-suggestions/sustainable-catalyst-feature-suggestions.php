@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Feedback, surveys, research intelligence, public participation, roadmap governance, privacy controls, and shared platform integration for Sustainable Catalyst.
- * Version: 3.0.0
+ * Version: 3.1.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '3.0.0';
+    const VERSION = '3.1.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -69,6 +69,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
     public static function activate() {
         $instance = self::instance();
         $instance->register_post_type();
+        if (class_exists('SCFS_Product_Integration')) {
+            SCFS_Product_Integration::activate();
+        }
         $instance->migrate_legacy_post_type();
         flush_rewrite_rules();
         if (!get_option(self::OPTION_KEY)) {
@@ -171,6 +174,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             'submission_status' => 'pending',
             'require_nonce' => '',
             'show_priority' => '1',
+            'show_product_context' => '1',
             'show_beneficiaries' => '1',
             'show_success_criteria' => '1',
             'show_implementation_notes' => '1',
@@ -344,6 +348,10 @@ final class Sustainable_Catalyst_Feature_Suggestions {
                     </p>
                 </div>
 
+                <?php if ($settings['show_product_context'] === '1' && class_exists('SCFS_Product_Integration')) : ?>
+                    <?php SCFS_Product_Integration::instance()->render_public_context_fields($values); ?>
+                <?php endif; ?>
+
                 <p class="scfs-field">
                     <label for="scfs_problem"><?php esc_html_e('What problem would this solve?', 'sustainable-catalyst-feature-suggestions'); ?> <span aria-hidden="true">*</span></label>
                     <textarea id="scfs_problem" name="scfs_problem" required rows="4" maxlength="2400" placeholder="<?php esc_attr_e('Describe the friction, missing capability, or user need.', 'sustainable-catalyst-feature-suggestions'); ?>"><?php echo esc_textarea($values['problem']); ?></textarea>
@@ -435,6 +443,10 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         return array(
             'title' => '',
             'category' => '',
+            'product' => '',
+            'product_version' => '',
+            'component' => '',
+            'issue_type' => '',
             'problem' => '',
             'beneficiaries' => '',
             'suggestion' => '',
@@ -453,6 +465,10 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $values = $this->empty_values();
         $values['title'] = isset($_POST['scfs_title']) ? sanitize_text_field(wp_unslash($_POST['scfs_title'])) : '';
         $values['category'] = isset($_POST['scfs_category']) ? sanitize_text_field(wp_unslash($_POST['scfs_category'])) : '';
+        $values['product'] = isset($_POST['scfs_product']) ? sanitize_title(wp_unslash($_POST['scfs_product'])) : '';
+        $values['product_version'] = isset($_POST['scfs_product_version']) ? sanitize_title(wp_unslash($_POST['scfs_product_version'])) : '';
+        $values['component'] = isset($_POST['scfs_component']) ? sanitize_title(wp_unslash($_POST['scfs_component'])) : '';
+        $values['issue_type'] = isset($_POST['scfs_issue_type']) ? sanitize_title(wp_unslash($_POST['scfs_issue_type'])) : '';
         $values['problem'] = isset($_POST['scfs_problem']) ? sanitize_textarea_field(wp_unslash($_POST['scfs_problem'])) : '';
         $values['beneficiaries'] = isset($_POST['scfs_beneficiaries']) ? sanitize_textarea_field(wp_unslash($_POST['scfs_beneficiaries'])) : '';
         $values['suggestion'] = isset($_POST['scfs_suggestion']) ? sanitize_textarea_field(wp_unslash($_POST['scfs_suggestion'])) : '';
@@ -557,6 +573,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $submission_uuid = $this->ensure_submission_uuid($post_id);
         update_post_meta($post_id, '_scfs_source', 'shortcode_form');
         update_post_meta($post_id, '_scfs_schema_version', self::EVENT_SCHEMA_VERSION);
+        if (class_exists('SCFS_Product_Integration')) {
+            SCFS_Product_Integration::instance()->assign_context($post_id, $values);
+        }
 
         if ($settings['collect_user_agent'] === '1') {
             update_post_meta($post_id, '_scfs_user_agent', isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '');
@@ -766,6 +785,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $new = array();
         $new['cb'] = isset($columns['cb']) ? $columns['cb'] : '<input type="checkbox" />';
         $new['title'] = __('Suggestion', 'sustainable-catalyst-feature-suggestions');
+        $new['scfs_product'] = __('Product', 'sustainable-catalyst-feature-suggestions');
         $new['scfs_category'] = __('Category', 'sustainable-catalyst-feature-suggestions');
         $new['scfs_priority'] = __('Priority', 'sustainable-catalyst-feature-suggestions');
         $new['scfs_workflow'] = __('Workflow', 'sustainable-catalyst-feature-suggestions');
@@ -775,7 +795,10 @@ final class Sustainable_Catalyst_Feature_Suggestions {
     }
 
     public function admin_column_content($column, $post_id) {
-        if ($column === 'scfs_category') {
+        if ($column === 'scfs_product') {
+            $terms = get_the_terms($post_id, 'scfs_product');
+            echo esc_html(($terms && !is_wp_error($terms)) ? implode(', ', wp_list_pluck($terms, 'name')) : '—');
+        } elseif ($column === 'scfs_category') {
             echo esc_html(get_post_meta($post_id, '_scfs_category', true));
         } elseif ($column === 'scfs_priority') {
             echo esc_html(get_post_meta($post_id, '_scfs_priority', true));
@@ -810,6 +833,10 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $this->render_filter_select('scfs_filter_category', __('All categories', 'sustainable-catalyst-feature-suggestions'), $this->categories(), isset($_GET['scfs_filter_category']) ? sanitize_text_field(wp_unslash($_GET['scfs_filter_category'])) : '');
         $this->render_filter_select('scfs_filter_priority', __('All priorities', 'sustainable-catalyst-feature-suggestions'), $this->priorities(), isset($_GET['scfs_filter_priority']) ? sanitize_text_field(wp_unslash($_GET['scfs_filter_priority'])) : '');
         $this->render_filter_select('scfs_filter_review_status', __('All workflow statuses', 'sustainable-catalyst-feature-suggestions'), $this->review_statuses(), isset($_GET['scfs_filter_review_status']) ? sanitize_text_field(wp_unslash($_GET['scfs_filter_review_status'])) : '');
+        foreach (array('scfs_product' => __('All products', 'sustainable-catalyst-feature-suggestions'), 'scfs_component' => __('All components', 'sustainable-catalyst-feature-suggestions'), 'scfs_issue_type' => __('All issue types', 'sustainable-catalyst-feature-suggestions'), 'scfs_release' => __('All releases', 'sustainable-catalyst-feature-suggestions')) as $taxonomy => $label) {
+            $selected = isset($_GET[$taxonomy]) ? sanitize_title(wp_unslash($_GET[$taxonomy])) : '';
+            wp_dropdown_categories(array('show_option_all' => $label, 'taxonomy' => $taxonomy, 'name' => $taxonomy, 'orderby' => 'name', 'selected' => $selected, 'hierarchical' => true, 'hide_empty' => false, 'value_field' => 'slug'));
+        }
     }
 
     private function render_filter_select($name, $all_label, $options, $selected) {
@@ -850,6 +877,15 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
         if (!empty($meta_query)) {
             $query->set('meta_query', $meta_query);
+        }
+        $tax_query = array();
+        foreach (array('scfs_product', 'scfs_component', 'scfs_issue_type', 'scfs_release') as $taxonomy) {
+            if (!empty($_GET[$taxonomy])) {
+                $tax_query[] = array('taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => sanitize_title(wp_unslash($_GET[$taxonomy])));
+            }
+        }
+        if ($tax_query) {
+            $query->set('tax_query', $tax_query);
         }
 
         $orderby = $query->get('orderby');
@@ -1170,7 +1206,8 @@ final class Sustainable_Catalyst_Feature_Suggestions {
 
                     <section class="scfs-settings-card">
                         <h2><?php esc_html_e('Fields and Taxonomy', 'sustainable-catalyst-feature-suggestions'); ?></h2>
-                        <?php $this->checkbox_input('show_priority', __('Show priority field', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
+                        <?php $this->checkbox_input('show_priority', __('Show priority field', 'sustainable-catalyst-feature-suggestions'), $settings);
+                    $this->checkbox_input('show_product_context', __('Show product context fields', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
                         <?php $this->checkbox_input('show_beneficiaries', __('Show beneficiaries field', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
                         <?php $this->checkbox_input('show_success_criteria', __('Show success criteria field', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
                         <?php $this->checkbox_input('show_implementation_notes', __('Show implementation notes field', 'sustainable-catalyst-feature-suggestions'), $settings); ?>
@@ -1294,7 +1331,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $settings = array();
 
         foreach ($defaults as $key => $default) {
-            if (in_array($key, array('show_priority', 'show_beneficiaries', 'show_success_criteria', 'show_implementation_notes', 'show_relevant_url', 'show_contact', 'show_follow_up', 'enable_email_notifications', 'collect_user_agent', 'collect_referrer', 'require_nonce', 'enable_rest_submissions', 'rest_require_api_key', 'enable_shared_events', 'enable_webhooks', 'ai_auto_analyze'), true)) {
+            if (in_array($key, array('show_priority', 'show_product_context', 'show_beneficiaries', 'show_success_criteria', 'show_implementation_notes', 'show_relevant_url', 'show_contact', 'show_follow_up', 'enable_email_notifications', 'collect_user_agent', 'collect_referrer', 'require_nonce', 'enable_rest_submissions', 'rest_require_api_key', 'enable_shared_events', 'enable_webhooks', 'ai_auto_analyze'), true)) {
                 $settings[$key] = isset($incoming[$key]) ? '1' : '';
             } elseif (in_array($key, array('max_submissions_per_hour', 'max_submissions_per_day', 'min_seconds_before_submit', 'duplicate_window_hours', 'max_links', 'min_problem_length', 'min_suggestion_length', 'webhook_timeout', 'webhook_max_attempts', 'ai_timeout'), true)) {
                 $settings[$key] = (string) max(0, absint(isset($incoming[$key]) ? $incoming[$key] : $default));
@@ -1430,16 +1467,25 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             'review_statuses' => array_keys($this->review_statuses()),
             'required_submission_fields' => array('title', 'category', 'problem', 'suggestion', 'consent'),
             'event_types' => array('feedback.submitted', 'feedback.reviewed', 'feedback.status_changed', 'feedback.classified', 'librarian.feedback_submitted'),
+            'product_taxonomy' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->taxonomy_schema() : array(),
+            'contact_engagement_handoff' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->handoff_schema() : array(),
         ));
     }
 
     private function rest_values($request) {
         $values = $this->empty_values();
         $text_fields = array('title', 'category', 'relevant_url', 'priority', 'name');
+        $taxonomy_fields = array('product', 'product_version', 'component', 'issue_type', 'release');
         $textarea_fields = array('problem', 'beneficiaries', 'suggestion', 'success_criteria', 'implementation_notes');
         foreach ($text_fields as $field) {
             if ($request->has_param($field)) {
                 $values[$field] = sanitize_text_field($request->get_param($field));
+            }
+        }
+        foreach ($taxonomy_fields as $field) {
+            if ($request->has_param($field)) {
+                $raw = $request->get_param($field);
+                $values[$field] = is_array($raw) ? array_values(array_filter(array_map('sanitize_title', $raw))) : sanitize_title($raw);
             }
         }
         foreach ($textarea_fields as $field) {
@@ -1501,6 +1547,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         update_post_meta($post_id, '_scfs_source', $source);
         update_post_meta($post_id, '_scfs_schema_version', self::EVENT_SCHEMA_VERSION);
         update_post_meta($post_id, '_scfs_correlation_id', $correlation_id);
+        if (class_exists('SCFS_Product_Integration')) {
+            SCFS_Product_Integration::instance()->assign_context($post_id, $values, current_user_can('edit_posts'));
+        }
         $uuid = $this->ensure_submission_uuid($post_id);
         if ($this->int_setting($settings, 'duplicate_window_hours', 24, 0, 168) > 0) {
             set_transient($duplicate_key, '1', HOUR_IN_SECONDS * $this->int_setting($settings, 'duplicate_window_hours', 24, 0, 168));
@@ -1533,6 +1582,12 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $review_status = sanitize_key($request->get_param('review_status'));
         if ($review_status !== '' && isset($this->review_statuses()[$review_status])) {
             $args['meta_query'] = array(array('key' => '_scfs_review_status', 'value' => $review_status));
+        }
+        foreach (array('product' => 'scfs_product', 'product_version' => 'scfs_product_version', 'component' => 'scfs_component', 'issue_type' => 'scfs_issue_type', 'release' => 'scfs_release') as $parameter => $taxonomy) {
+            $value = sanitize_title($request->get_param($parameter));
+            if ($value !== '') {
+                $args['tax_query'][] = array('taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $value);
+            }
         }
         $query = new WP_Query($args);
         $items = array_map(array($this, 'suggestion_record'), $query->posts);
@@ -1578,6 +1633,12 @@ final class Sustainable_Catalyst_Feature_Suggestions {
                 update_post_meta($post_id, '_scfs_' . $field, min(5, max(0, absint($request->get_param($field)))));
             }
         }
+        if (class_exists('SCFS_Product_Integration')) {
+            $context = $request->get_param('product_context');
+            if (is_array($context)) {
+                SCFS_Product_Integration::instance()->assign_context($post_id, $context, true);
+            }
+        }
         $this->publish_event('feedback.reviewed', $post_id, array('previous_review_status' => $old));
         if ($old !== $status) {
             $this->publish_event('feedback.status_changed', $post_id, array('previous_review_status' => $old, 'review_status' => $status));
@@ -1602,6 +1663,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             'github_issue_url' => get_post_meta($post->ID, '_scfs_github_issue_url', true),
             'ai_analysis_status' => get_post_meta($post->ID, '_scfs_ai_analysis_status', true),
             'ai_analysis' => get_post_meta($post->ID, '_scfs_ai_analysis', true),
+            'product_context' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->product_context($post->ID) : array(),
         );
         if ($include_private) {
             foreach (array('problem', 'suggestion', 'success_criteria', 'beneficiaries', 'implementation_notes', 'relevant_url', 'name', 'email', 'follow_up', 'admin_notes') as $field) {
@@ -1642,6 +1704,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
                 'roadmap_area' => get_post_meta($post_id, '_scfs_roadmap_area', true),
                 'impact_score' => (int) get_post_meta($post_id, '_scfs_impact_score', true),
                 'effort_score' => (int) get_post_meta($post_id, '_scfs_effort_score', true),
+                'product_context' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->product_context($post_id) : array(),
             ),
             'context' => is_array($context) ? $context : array(),
         );
@@ -1764,6 +1827,8 @@ final class Sustainable_Catalyst_Feature_Suggestions {
                     <p><strong><?php esc_html_e('Health:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <code><?php echo esc_html(rest_url(self::REST_NAMESPACE . '/health')); ?></code></p>
                     <p><strong><?php esc_html_e('Schema:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <code><?php echo esc_html(rest_url(self::REST_NAMESPACE . '/schema')); ?></code></p>
                     <p><strong><?php esc_html_e('Suggestions:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <code><?php echo esc_html(rest_url(self::REST_NAMESPACE . '/suggestions')); ?></code></p>
+                    <p><strong><?php esc_html_e('Product taxonomy:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <code><?php echo esc_html(rest_url(self::REST_NAMESPACE . '/taxonomy/schema')); ?></code></p>
+                    <p><strong><?php esc_html_e('Handoff contract:', 'sustainable-catalyst-feature-suggestions'); ?></strong> <code><?php echo esc_html(rest_url(self::REST_NAMESPACE . '/contact-engagement/handoff-schema')); ?></code></p>
                     <p><?php echo $settings['enable_rest_submissions'] === '1' ? esc_html__('Public submission endpoint enabled.', 'sustainable-catalyst-feature-suggestions') : esc_html__('Public submission endpoint disabled.', 'sustainable-catalyst-feature-suggestions'); ?></p>
                 </section>
                 <section class="scfs-settings-card">
@@ -1797,6 +1862,11 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             'success_criteria' => get_post_meta($post_id, '_scfs_success_criteria', true),
             'beneficiaries' => get_post_meta($post_id, '_scfs_beneficiaries', true),
             'implementation_notes' => get_post_meta($post_id, '_scfs_implementation_notes', true),
+            'product' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->flat_term_names($post_id, 'scfs_product') : array(),
+            'product_version' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->flat_term_names($post_id, 'scfs_product_version') : array(),
+            'component' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->flat_term_names($post_id, 'scfs_component') : array(),
+            'issue_type' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->flat_term_names($post_id, 'scfs_issue_type') : array(),
+            'release' => class_exists('SCFS_Product_Integration') ? SCFS_Product_Integration::instance()->flat_term_names($post_id, 'scfs_release') : array(),
             'source' => get_post_meta($post_id, '_scfs_source', true),
         );
     }
@@ -1863,17 +1933,24 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             'category' => isset($_GET['category']) ? sanitize_text_field(wp_unslash($_GET['category'])) : '',
             'platform_area' => isset($_GET['platform_area']) ? sanitize_key(wp_unslash($_GET['platform_area'])) : '',
             'feature_type' => isset($_GET['feature_type']) ? sanitize_key(wp_unslash($_GET['feature_type'])) : '',
+            'product' => isset($_GET['product']) ? sanitize_title(wp_unslash($_GET['product'])) : '',
+            'component' => isset($_GET['component']) ? sanitize_title(wp_unslash($_GET['component'])) : '',
+            'issue_type' => isset($_GET['issue_type']) ? sanitize_title(wp_unslash($_GET['issue_type'])) : '',
+            'release' => isset($_GET['release']) ? sanitize_title(wp_unslash($_GET['release'])) : '',
         );
     }
 
     private function intelligence_data($filters = array()) {
-        $filters = wp_parse_args($filters, array('days'=>90,'review_status'=>'','category'=>'','platform_area'=>'','feature_type'=>''));
+        $filters = wp_parse_args($filters, array('days'=>90,'review_status'=>'','category'=>'','platform_area'=>'','feature_type'=>'','product'=>'','component'=>'','issue_type'=>'','release'=>''));
         $args = array('post_type'=>self::POST_TYPE,'post_status'=>array('publish','pending','draft','private'),'posts_per_page'=>-1,'fields'=>'ids','orderby'=>'date','order'=>'DESC');
         if (!empty($filters['days'])) $args['date_query'] = array(array('after'=>gmdate('Y-m-d', time() - DAY_IN_SECONDS * absint($filters['days'])),'inclusive'=>true));
         if (!empty($filters['review_status'])) $args['meta_query'][] = array('key'=>'_scfs_review_status','value'=>$filters['review_status']);
         if (!empty($filters['category'])) $args['meta_query'][] = array('key'=>'_scfs_category','value'=>$filters['category']);
+        foreach (array('product'=>'scfs_product','component'=>'scfs_component','issue_type'=>'scfs_issue_type','release'=>'scfs_release') as $filter_key=>$taxonomy) {
+            if (!empty($filters[$filter_key])) $args['tax_query'][] = array('taxonomy'=>$taxonomy,'field'=>'slug','terms'=>$filters[$filter_key]);
+        }
         $ids = get_posts($args);
-        $data = array('total'=>0,'analyzed'=>0,'unanalyzed'=>0,'average_confidence'=>0,'average_impact'=>0,'average_effort'=>0,'roadmap_ready'=>0,'safety_flagged'=>0,'statuses'=>array(),'categories'=>array(),'platform_areas'=>array(),'feature_types'=>array(),'topics'=>array(),'sentiment'=>array(),'actions'=>array(),'monthly'=>array(),'opportunities'=>array());
+        $data = array('total'=>0,'analyzed'=>0,'unanalyzed'=>0,'average_confidence'=>0,'average_impact'=>0,'average_effort'=>0,'roadmap_ready'=>0,'safety_flagged'=>0,'statuses'=>array(),'categories'=>array(),'products'=>array(),'versions'=>array(),'components'=>array(),'issue_types'=>array(),'releases'=>array(),'platform_areas'=>array(),'feature_types'=>array(),'topics'=>array(),'sentiment'=>array(),'actions'=>array(),'monthly'=>array(),'opportunities'=>array());
         $confidence_total=0; $impact_total=0; $effort_total=0; $score_count=0;
         foreach ($ids as $id) {
             $analysis = get_post_meta($id, '_scfs_ai_analysis', true);
@@ -1886,6 +1963,12 @@ final class Sustainable_Catalyst_Feature_Suggestions {
             $category=get_post_meta($id,'_scfs_category',true) ?: 'Uncategorized';
             $this->intelligence_increment($data['statuses'],$status);
             $this->intelligence_increment($data['categories'],$category);
+            if (class_exists('SCFS_Product_Integration')) {
+                $integration = SCFS_Product_Integration::instance();
+                foreach (array('products'=>'scfs_product','versions'=>'scfs_product_version','components'=>'scfs_component','issue_types'=>'scfs_issue_type','releases'=>'scfs_release') as $bucket=>$taxonomy) {
+                    foreach ($integration->flat_term_names($id, $taxonomy) as $term_name) $this->intelligence_increment($data[$bucket], $term_name);
+                }
+            }
             $month=get_the_date('Y-m',$id); $this->intelligence_increment($data['monthly'],$month);
             $impact=(int)get_post_meta($id,'_scfs_impact_score',true); $effort=(int)get_post_meta($id,'_scfs_effort_score',true);
             if ($impact || $effort) { $impact_total += $impact; $effort_total += $effort; $score_count++; }
@@ -1906,7 +1989,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $data['average_confidence']=$data['analyzed'] ? round($confidence_total/$data['analyzed'],2) : 0;
         $data['average_impact']=$score_count ? round($impact_total/$score_count,1) : 0;
         $data['average_effort']=$score_count ? round($effort_total/$score_count,1) : 0;
-        foreach (array('statuses','categories','platform_areas','feature_types','topics','sentiment','actions') as $key) arsort($data[$key]);
+        foreach (array('statuses','categories','products','versions','components','issue_types','releases','platform_areas','feature_types','topics','sentiment','actions') as $key) arsort($data[$key]);
         ksort($data['monthly']); usort($data['opportunities'],fn($a,$b)=>$b['priority_score']<=>$a['priority_score']); $data['opportunities']=array_slice($data['opportunities'],0,12);
         return $data;
     }
@@ -1927,9 +2010,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         <label>Period <select name="days"><?php foreach(array(30=>'30 days',90=>'90 days',180=>'180 days',365=>'1 year',0=>'All time') as $v=>$l) echo '<option value="'.esc_attr($v).'" '.selected($f['days'],$v,false).'>'.esc_html($l).'</option>'; ?></select></label>
         <label>Status <select name="review_status"><option value="">All</option><?php foreach($this->review_statuses() as $v=>$l) echo '<option value="'.esc_attr($v).'" '.selected($f['review_status'],$v,false).'>'.esc_html($l).'</option>'; ?></select></label>
         <label>Category <select name="category"><option value="">All</option><?php foreach($this->categories() as $v) echo '<option value="'.esc_attr($v).'" '.selected($f['category'],$v,false).'>'.esc_html($v).'</option>'; ?></select></label>
-        <label>Platform <input name="platform_area" value="<?php echo esc_attr($f['platform_area']); ?>" placeholder="workbench"></label><label>Type <input name="feature_type" value="<?php echo esc_attr($f['feature_type']); ?>" placeholder="feature_request"></label><button class="button button-primary">Apply</button><a class="button" href="<?php echo esc_url($export); ?>">Export intelligence CSV</a></form>
+        <label>Product <input name="product" value="<?php echo esc_attr($f['product']); ?>" placeholder="workbench"></label><label>Component <input name="component" value="<?php echo esc_attr($f['component']); ?>" placeholder="rest-api"></label><label>Issue <input name="issue_type" value="<?php echo esc_attr($f['issue_type']); ?>" placeholder="bug-defect"></label><label>Release <input name="release" value="<?php echo esc_attr($f['release']); ?>" placeholder="v3-1-0"></label><label>Platform <input name="platform_area" value="<?php echo esc_attr($f['platform_area']); ?>" placeholder="workbench"></label><label>Type <input name="feature_type" value="<?php echo esc_attr($f['feature_type']); ?>" placeholder="feature_request"></label><button class="button button-primary">Apply</button><a class="button" href="<?php echo esc_url($export); ?>">Export intelligence CSV</a></form>
         <div class="scfs-intel-cards"><?php foreach(array('total'=>'Suggestions','analyzed'=>'AI analyzed','unanalyzed'=>'Awaiting analysis','roadmap_ready'=>'Roadmap candidates','safety_flagged'=>'Safety flagged','average_confidence'=>'Avg. confidence','average_impact'=>'Avg. impact','average_effort'=>'Avg. effort') as $k=>$l) echo '<div class="scfs-intel-card"><span>'.esc_html($l).'</span><strong>'.esc_html((string)$d[$k]).'</strong></div>'; ?></div>
-        <div class="scfs-intel-grid"><section><h2>Workflow status</h2><?php $this->render_intelligence_bars($d['statuses'],$d['total']); ?></section><section><h2>Platform areas</h2><?php $this->render_intelligence_bars($d['platform_areas'],max(1,$d['analyzed'])); ?></section><section><h2>Feature types</h2><?php $this->render_intelligence_bars($d['feature_types'],max(1,$d['analyzed'])); ?></section><section><h2>Top topics</h2><?php $this->render_intelligence_bars($d['topics'],max(1,array_sum($d['topics']))); ?></section><section><h2>Categories</h2><?php $this->render_intelligence_bars($d['categories'],$d['total']); ?></section><section><h2>Suggested actions</h2><?php $this->render_intelligence_bars($d['actions'],max(1,$d['analyzed'])); ?></section></div>
+        <div class="scfs-intel-grid"><section><h2>Workflow status</h2><?php $this->render_intelligence_bars($d['statuses'],$d['total']); ?></section><section><h2>Products</h2><?php $this->render_intelligence_bars($d['products'],max(1,$d['total'])); ?></section><section><h2>Components</h2><?php $this->render_intelligence_bars($d['components'],max(1,$d['total'])); ?></section><section><h2>Issue types</h2><?php $this->render_intelligence_bars($d['issue_types'],max(1,$d['total'])); ?></section><section><h2>Releases</h2><?php $this->render_intelligence_bars($d['releases'],max(1,$d['total'])); ?></section><section><h2>Platform areas</h2><?php $this->render_intelligence_bars($d['platform_areas'],max(1,$d['analyzed'])); ?></section><section><h2>Feature types</h2><?php $this->render_intelligence_bars($d['feature_types'],max(1,$d['analyzed'])); ?></section><section><h2>Top topics</h2><?php $this->render_intelligence_bars($d['topics'],max(1,array_sum($d['topics']))); ?></section><section><h2>Categories</h2><?php $this->render_intelligence_bars($d['categories'],$d['total']); ?></section><section><h2>Suggested actions</h2><?php $this->render_intelligence_bars($d['actions'],max(1,$d['analyzed'])); ?></section></div>
         <section class="scfs-intel-opportunities"><h2>Highest-priority opportunities</h2><table class="widefat striped"><thead><tr><th>Suggestion</th><th>Platform</th><th>Type</th><th>Confidence</th><th>Advisory score</th></tr></thead><tbody><?php if(!$d['opportunities']) echo '<tr><td colspan="5">No analyzed opportunities in this view.</td></tr>'; foreach($d['opportunities'] as $o) echo '<tr><td><a href="'.esc_url($o['edit_url']).'"><strong>'.esc_html($o['title']).'</strong></a><br><span>'.esc_html($o['summary']).'</span></td><td>'.esc_html($o['platform_area']).'</td><td>'.esc_html($o['feature_type']).'</td><td>'.esc_html((string)$o['confidence']).'</td><td>'.esc_html((string)$o['priority_score']).'</td></tr>'; ?></tbody></table><p class="description">The advisory score combines AI impact, urgency, strategic alignment, effort, and confidence. It is not an automatic roadmap decision.</p></section></div><?php
     }
 
@@ -1940,7 +2023,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         check_admin_referer('scfs_export_intelligence_csv'); $d=$this->intelligence_data($this->intelligence_filters());
         header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename=scfs-feedback-intelligence-'.gmdate('Y-m-d').'.csv'); $out=fopen('php://output','w');
         fputcsv($out,array('Metric','Key','Value')); foreach(array('total','analyzed','unanalyzed','roadmap_ready','safety_flagged','average_confidence','average_impact','average_effort') as $k) fputcsv($out,array('summary',$k,$d[$k]));
-        foreach(array('statuses','categories','platform_areas','feature_types','topics','sentiment','actions','monthly') as $group) foreach($d[$group] as $key=>$value) fputcsv($out,array($group,$key,$value)); fclose($out); exit;
+        foreach(array('statuses','categories','products','versions','components','issue_types','releases','platform_areas','feature_types','topics','sentiment','actions','monthly') as $group) foreach($d[$group] as $key=>$value) fputcsv($out,array($group,$key,$value)); fclose($out); exit;
     }
 
     public function render_export_page() {
@@ -1968,7 +2051,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
 
         $out = fopen('php://output', 'w');
         fputcsv($out, array(
-            'ID', 'Submission UUID', 'Source', 'Schema Version', 'Date', 'Post Status', 'Title', 'Category', 'Priority', 'Review Status', 'Impact Score', 'Effort Score', 'Roadmap Area', 'GitHub Issue URL', 'Problem', 'Suggestion', 'Success Criteria', 'Beneficiaries', 'Implementation Notes', 'Relevant URL', 'Name', 'Email', 'Follow Up Allowed', 'Consent Confirmed', 'Referrer', 'IP Hash', 'Admin Notes'
+            'ID', 'Submission UUID', 'Source', 'Schema Version', 'Date', 'Post Status', 'Title', 'Products', 'Product Versions', 'Components', 'Issue Types', 'Releases', 'Category', 'Priority', 'Review Status', 'Impact Score', 'Effort Score', 'Roadmap Area', 'GitHub Issue URL', 'Problem', 'Suggestion', 'Success Criteria', 'Beneficiaries', 'Implementation Notes', 'Relevant URL', 'Name', 'Email', 'Follow Up Allowed', 'Consent Confirmed', 'Referrer', 'IP Hash', 'Admin Notes'
         ));
 
         $query = new WP_Query(array(
@@ -1989,6 +2072,11 @@ final class Sustainable_Catalyst_Feature_Suggestions {
                 $post->post_date,
                 $post->post_status,
                 $post->post_title,
+                class_exists('SCFS_Product_Integration') ? implode(' | ', SCFS_Product_Integration::instance()->flat_term_names($post->ID, 'scfs_product')) : '',
+                class_exists('SCFS_Product_Integration') ? implode(' | ', SCFS_Product_Integration::instance()->flat_term_names($post->ID, 'scfs_product_version')) : '',
+                class_exists('SCFS_Product_Integration') ? implode(' | ', SCFS_Product_Integration::instance()->flat_term_names($post->ID, 'scfs_component')) : '',
+                class_exists('SCFS_Product_Integration') ? implode(' | ', SCFS_Product_Integration::instance()->flat_term_names($post->ID, 'scfs_issue_type')) : '',
+                class_exists('SCFS_Product_Integration') ? implode(' | ', SCFS_Product_Integration::instance()->flat_term_names($post->ID, 'scfs_release')) : '',
                 get_post_meta($post->ID, '_scfs_category', true),
                 get_post_meta($post->ID, '_scfs_priority', true),
                 get_post_meta($post->ID, '_scfs_review_status', true),
@@ -2016,12 +2104,14 @@ final class Sustainable_Catalyst_Feature_Suggestions {
     }
 }
 
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-product-integration.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-forms.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-survey-intelligence.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-research-librarian-feedback.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-public-ideas.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-opportunity-workflow.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-platform-governance.php';
+SCFS_Product_Integration::instance();
 SCFS_Forms_Foundation::instance();
 SCFS_Survey_Intelligence::instance();
 SCFS_Research_Librarian_Feedback::instance();

@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.1.0 — Product Taxonomy and Platform Integration
+
+- Added shared Product, Product Version, Component, Issue Type, and Release taxonomies.
+- Seeded canonical Sustainable Catalyst products, reusable components, and issue classifications.
+- Added stable term identifiers, lifecycle status metadata, and product relationship metadata.
+- Added idempotent migration of existing suggestions from roadmap, category, AI triage, version, and release metadata.
+- Added incremental upgrade-safe migration scheduling, a migration dashboard, coverage reporting, and a WP-CLI migration command.
+- Added optional product-context fields to the public suggestion form.
+- Added product context to REST records, shared events, AI triage payloads, intelligence filters, dashboards, and CSV exports.
+- Added public taxonomy schema and term endpoints.
+- Added the `sc-contact-engagement-handoff/1.0` private support handoff contract.
+- Added a protected, human-review-gated Contact and Engagement handoff endpoint.
+- Preserved the boundary between public product feedback and private support case lifecycle management.
+
 ## 3.0.0 — Sustainable Catalyst Feedback and Participation Platform
 
 - Added the unified Platform Command Center.

@@ -1,6 +1,6 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 2.1.0 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 3.1.0 is an advanced WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
 
 ## Shortcode
 
@@ -96,3 +96,8 @@ Use `[sc_public_ideas]` to publish moderator-approved ideas with advisory suppor
 ## Opportunity scoring and roadmap workflow
 
 Version 3.0.0 adds configurable evidence-weighted opportunity scoring, minimum-evidence gates, human-controlled roadmap states, owners, target releases, decision rationales, audit history, and protected JSON handoffs for GitHub, Decision Studio, and Site Intelligence. Scores and public support remain advisory.
+
+
+## Product taxonomy and platform integration
+
+Version 3.1.0 registers shared Product, Product Version, Component, Issue Type, and Release taxonomies; migrates existing suggestions; adds product-aware analytics and exports; and defines a protected Contact and Engagement support handoff contract. Manage the layer from **Feature Suggestions → Products & Integration**.

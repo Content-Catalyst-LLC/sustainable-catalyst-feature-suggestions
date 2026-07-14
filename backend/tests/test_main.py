@@ -11,6 +11,14 @@ def test_platform_capabilities():
     response = c.get('/v1/platform/capabilities')
     assert response.status_code == 200
     data = response.json()
-    assert data['version'] == '3.0.0'
+    assert data['version'] == '3.1.0'
     assert data['human_review_required'] is True
     assert 'survey_descriptive_analysis' in data['capabilities']
+
+
+def test_analyze_with_product_context():
+    payload = sample()
+    payload.update({'product':['Knowledge Library'],'product_version':['v2.5.0'],'component':['Search and Discovery'],'issue_type':['Feature Request'],'release':['v3.2.0']})
+    response = c.post('/v1/analyze', json=payload)
+    assert response.status_code == 200
+    assert response.json()['analysis_version'] == '3.1.0-1'

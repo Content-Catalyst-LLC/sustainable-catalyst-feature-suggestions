@@ -5,8 +5,8 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[sustainable_catalyst_feature_suggestions]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "3.0.0",
-  "updated": "2026-07-10",
+  "version": "3.1.0",
+  "updated": "2026-07-14",
   "capabilities": [
     "configurable WordPress settings screen",
     "standalone settings access fallback",
@@ -88,7 +88,21 @@
     "contact anonymization and dry-run retention",
     "platform governance audit log",
     "platform snapshot JSON export",
-    "protected platform status and snapshot REST endpoints"
+    "protected platform status and snapshot REST endpoints",
+    "shared product taxonomy",
+    "shared product-version taxonomy",
+    "shared component taxonomy",
+    "shared issue-type taxonomy",
+    "shared release taxonomy",
+    "canonical term identifiers and product relationships",
+    "idempotent existing-suggestion taxonomy migration",
+    "incremental upgrade-safe migration scheduling",
+    "product-aware public suggestion fields",
+    "product-aware REST records, events, AI payloads, analytics, and CSV exports",
+    "product taxonomy schema and term REST endpoints",
+    "Contact and Engagement private support handoff contract",
+    "review-gated protected support handoff endpoint",
+    "WP-CLI taxonomy migration command"
   ],
   "boundaries": [
     "no confidential information",
@@ -98,14 +112,14 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 3.0.0 consolidates feature intake, AI triage, forms, surveys, research intelligence, contextual feedback, public participation, roadmap governance, privacy controls, and operational readiness into a stable platform release.",
-  "release_name": "Sustainable Catalyst Feedback and Participation Platform",
-  "release": "Sustainable Catalyst Feedback and Participation Platform",
+  "notes": "Version 3.1.0 establishes shared product, version, component, issue, and release taxonomies; migrates existing suggestions safely; adds product-aware analytics; and defines the review-gated Contact and Engagement support handoff contract.",
+  "release_name": "Product Taxonomy and Platform Integration",
+  "release": "Feature Suggestions v3.1.0 \u2014 Product Taxonomy and Platform Integration",
   "features": [
-    "Unified platform command center",
-    "Module health and release-readiness checks",
-    "Privacy-oriented retention and contact anonymization",
-    "Platform governance audit history",
-    "Versioned platform snapshot exports and protected REST endpoints"
+    "Shared product, version, component, issue, and release taxonomies",
+    "Idempotent existing suggestion migration",
+    "Product-aware analytics, REST, events, AI context, and exports",
+    "Contact and Engagement private support handoff contract",
+    "Upgrade-safe migration dashboard and WP-CLI command"
   ]
 }

@@ -118,3 +118,17 @@ Version 2.7.0 adds a privacy-limited adapter for route ratings, source-card rele
 ## Opportunity scoring and roadmap workflow
 
 Version 3.0.0 adds configurable evidence-weighted opportunity scoring, minimum-evidence gates, human-controlled roadmap states, owners, target releases, decision rationales, audit history, and protected JSON handoffs for GitHub, Decision Studio, and Site Intelligence. Scores and public support remain advisory.
+
+## Version 3.1.0 — Product Taxonomy and Platform Integration
+
+Version 3.1.0 adds shared Product, Product Version, Component, Issue Type, and Release taxonomies for Feature Suggestions and the future Support Knowledge Base, Known Issues, and Release Intelligence layers.
+
+Existing suggestions are migrated idempotently from their current category, roadmap area, AI triage, product-version, and target-release metadata. Product context now appears in the public form, authenticated suggestion records, events, AI triage payloads, intelligence filters and charts, and CSV exports.
+
+Administration is available under **Feature Suggestions → Products & Integration**. A complete migration can also be run with:
+
+```bash
+wp scfs migrate-product-taxonomies --batch=200
+```
+
+The release also defines the private, review-gated `sc-contact-engagement-handoff/1.0` contract. It allows an authorized integration to create or enrich a Contact and Engagement support case without merging private case management into the public feedback platform. See `docs/product-taxonomy-platform-integration.md` and `docs/contact-engagement-handoff-contract.md`.

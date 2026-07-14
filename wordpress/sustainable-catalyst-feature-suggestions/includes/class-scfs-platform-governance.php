@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class SCFS_Platform_Governance {
-    const VERSION = '3.0.0';
+    const VERSION = '3.1.0';
     const OPTION_KEY = 'scfs_platform_governance';
     const AUDIT_KEY = 'scfs_platform_audit';
     const NONCE = 'scfs_platform_governance';
@@ -58,6 +58,8 @@ final class SCFS_Platform_Governance {
             'librarian_feedback' => array('label'=>'Research Librarian bridge','ready'=>shortcode_exists('sc_librarian_feedback'),'detail'=>'Contextual route, source, topic, and tool feedback'),
             'public_participation' => array('label'=>'Public participation','ready'=>shortcode_exists('sc_public_ideas'),'detail'=>'Moderated ideas, advisory support voting, and official responses'),
             'roadmap_workflow' => array('label'=>'Roadmap workflow','ready'=>class_exists('SCFS_Opportunity_Workflow'),'detail'=>'Evidence-weighted scoring and human-controlled states'),
+            'product_taxonomy' => array('label'=>'Product taxonomy','ready'=>class_exists('SCFS_Product_Integration') && taxonomy_exists('scfs_product'),'detail'=>'Shared products, versions, components, issue types, releases, and migration'),
+            'contact_handoff' => array('label'=>'Contact and Engagement handoff','ready'=>class_exists('SCFS_Product_Integration'),'detail'=>'Typed private support handoff contract; automatic case creation remains disabled'),
             'shared_events' => array('label'=>'Shared events','ready'=>!empty($settings['enable_shared_events']),'detail'=>!empty($settings['enable_shared_events'])?'Platform events enabled':'Enable in Feature Suggestions settings'),
             'webhooks' => array('label'=>'Signed webhooks','ready'=>!empty($settings['enable_webhooks']) && !empty($settings['webhook_url']),'detail'=>!empty($settings['enable_webhooks'])?'Configured for external delivery':'Optional; local hooks remain active'),
         );
@@ -89,6 +91,8 @@ final class SCFS_Platform_Governance {
             array('label'=>'Research Librarian feedback shortcode registered','pass'=>shortcode_exists('sc_librarian_feedback')),
             array('label'=>'Opportunity workflow loaded','pass'=>class_exists('SCFS_Opportunity_Workflow')),
             array('label'=>'Shared event schema available','pass'=>defined('Sustainable_Catalyst_Feature_Suggestions::EVENT_SCHEMA_VERSION')),
+            array('label'=>'Product taxonomy schema available','pass'=>class_exists('SCFS_Product_Integration') && taxonomy_exists('scfs_product')),
+            array('label'=>'Contact and Engagement contract available','pass'=>class_exists('SCFS_Product_Integration')),
         );
         foreach($tests as $t) if($t['pass']) $passed++;
         return array('passed'=>$passed,'total'=>count($modules)+count($tests),'modules'=>$modules,'tests'=>$tests);
@@ -189,7 +193,7 @@ final class SCFS_Platform_Governance {
     }
 
     private function snapshot() {
-        return array('ok'=>true,'platform'=>'Sustainable Catalyst Feedback and Participation Platform','version'=>self::VERSION,'generated_at'=>gmdate('c'),'counts'=>$this->counts(),'readiness'=>$this->readiness(),'governance'=>array_diff_key($this->settings(),array('enable_retention_actions'=>true)),'event_schema_version'=>Sustainable_Catalyst_Feature_Suggestions::EVENT_SCHEMA_VERSION,'human_review_required'=>true);
+        return array('ok'=>true,'platform'=>'Sustainable Catalyst Feedback and Participation Platform','version'=>self::VERSION,'generated_at'=>gmdate('c'),'counts'=>$this->counts(),'readiness'=>$this->readiness(),'governance'=>array_diff_key($this->settings(),array('enable_retention_actions'=>true)),'event_schema_version'=>Sustainable_Catalyst_Feature_Suggestions::EVENT_SCHEMA_VERSION,'product_taxonomy'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->taxonomy_schema():array(),'product_coverage'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->coverage():array(),'contact_engagement_handoff'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->handoff_schema():array(),'human_review_required'=>true);
     }
 
     public function export_snapshot() {

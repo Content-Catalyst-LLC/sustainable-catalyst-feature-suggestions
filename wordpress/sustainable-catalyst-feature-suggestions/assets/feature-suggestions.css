@@ -182,3 +182,24 @@
     gap: 0;
   }
 }
+
+/* v3.1.0 Product Taxonomy and Platform Integration */
+.scfs-product-context {
+  margin: 0 0 20px;
+  padding: 18px;
+  border: 1px solid var(--scfs-border);
+  background: var(--scfs-cream-soft);
+}
+
+.scfs-product-context legend {
+  padding: 0 8px;
+  color: var(--scfs-black);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.scfs-product-context-intro {
+  margin: 0 0 16px;
+  color: var(--scfs-muted);
+  line-height: 1.6;
+}

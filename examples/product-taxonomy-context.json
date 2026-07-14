@@ -1,0 +1,7 @@
+{
+  "product": ["workbench"],
+  "product_version": ["v5.0.0"],
+  "component": ["exports-reports"],
+  "issue_type": ["feature-request"],
+  "release": ["v5.1.0"]
+}
