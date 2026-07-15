@@ -1,14 +1,19 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 4.1.1 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 4.2.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
 
-Version 4.1.1 hardens product onboarding and content operations with recoverable import batches, malformed-source validation, duplicate refinements, starter recovery, scheduled integrity checks, checksummed exports, accessibility improvements, and administrator capability boundaries.
+Version 4.2.0 adds documentation workflow and editorial governance with author, reviewer, and approver assignments; controlled review states; documentation standards; version-specific approval; scheduled publication; expiration and review reminders; private editorial comments; and internal audit history.
 
 Recommended integration:
 
 ```text
 [scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve" anchor="support-center"]
 ```
+
+
+## Documentation Workflow and Editorial Governance
+
+Use **Feature Suggestions → Editorial Governance** to assign authors, reviewers, and approvers; manage review queues; require approval before publication; assess documentation standards; approve product versions; schedule publication; manage expiration and review dates; add private editorial comments; and export governance audit history.
 
 
 ## Support Content Operations

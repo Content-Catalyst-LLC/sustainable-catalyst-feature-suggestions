@@ -1,4 +1,4 @@
-# Feature Suggestions Intelligence Backend v4.1.1
+# Feature Suggestions Intelligence Backend v4.2.0
 
 FastAPI service for advisory classification of Feature Suggestions. It supports deterministic local classification and optional Gemini, DeepSeek, or OpenAI structured analysis. AI output never changes roadmap status automatically and always requires human review.
 
@@ -41,6 +41,11 @@ These deterministic endpoints mirror the WordPress scoring methods. WordPress re
 
 These deterministic endpoints summarize public support signals and release readiness. They do not store private cases or make automatic release or roadmap decisions.
 
+
+
+## v4.2.0 editorial governance
+
+Deterministic endpoints evaluate editorial transitions, documentation standards, and governance queue summaries. These endpoints never approve or publish content; WordPress remains the source of truth and human review is required.
 
 ## v4.1.1 content-operations reliability
 

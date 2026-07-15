@@ -1,0 +1,11 @@
+{
+  "schema": "scfs-editorial-transition-decision/1.0",
+  "version": "4.2.0",
+  "allowed": true,
+  "current_state": "in_review",
+  "target_state": "approved",
+  "blockers": [],
+  "required_actions": [],
+  "human_review_required": true,
+  "automatic_approval": false
+}

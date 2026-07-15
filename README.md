@@ -2,6 +2,14 @@
 
 A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
+## Version 4.2.0 — Documentation Workflow and Editorial Governance
+
+Version 4.2.0 adds a controlled editorial lifecycle for Support Articles, Known Issues, and Release Records. Assign authors, reviewers, and approvers; submit records into a review queue; request changes; approve version-specific documentation; schedule publication; expire outdated records; and maintain private editorial comments and an internal audit history.
+
+Open **Feature Suggestions → Editorial Governance** to review workflow queues, overdue reviews, expiring records, documentation-standards blockers, assignments, governance settings, and audit events. Publication can be blocked until the configured review and documentation standards are satisfied. Human approval remains mandatory.
+
+See `docs/documentation-workflow-editorial-governance.md`.
+
 ## Version 4.1.1 — Content Operations Reliability Patch
 
 Version 4.1.1 hardens **Feature Suggestions → Content Operations** with recoverable import batches, malformed-source inspection, refined duplicate detection, restored starter drafts, product-context integrity checks, operation progress, scheduled validation health, checksummed exports, accessibility improvements, and administrator capability controls.

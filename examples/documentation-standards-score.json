@@ -1,0 +1,13 @@
+{
+  "schema": "scfs-documentation-standards/1.0",
+  "version": "4.2.0",
+  "score": 95,
+  "state": "ready",
+  "blockers": [],
+  "warnings": [
+    "provenance_unverified"
+  ],
+  "matched_sections": 4,
+  "required_sections": 4,
+  "human_review_required": true
+}

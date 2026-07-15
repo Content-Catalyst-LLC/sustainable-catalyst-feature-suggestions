@@ -1,0 +1,20 @@
+{
+  "schema": "scfs-editorial-governance-summary/1.0",
+  "version": "4.2.0",
+  "total": 38,
+  "states": {
+    "draft": 8,
+    "submitted": 4,
+    "in_review": 5,
+    "changes_requested": 2,
+    "approved": 3,
+    "scheduled": 2,
+    "published": 12,
+    "expired": 1,
+    "archived": 1
+  },
+  "overdue_reviews": 3,
+  "expiring_records": 2,
+  "standards_blocked": 4,
+  "human_review_required": true
+}

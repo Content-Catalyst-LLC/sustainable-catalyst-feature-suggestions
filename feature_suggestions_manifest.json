@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "updated": "2026-07-15",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -220,7 +220,21 @@
     "SHA-256 export integrity metadata",
     "accessible content-operations controls and tables",
     "manage-options capability boundary with multisite override",
-    "FastAPI source inspection, recovery planning, and export verification"
+    "FastAPI source inspection, recovery planning, and export verification",
+    "author reviewer and approver assignments",
+    "controlled editorial workflow transitions",
+    "required review before publication",
+    "scheduled editorial publication",
+    "content expiration and review reminders",
+    "version-specific documentation approval",
+    "editorial change summaries",
+    "private editorial comments",
+    "internal editorial audit history",
+    "documentation standards scoring",
+    "editorial governance dashboard",
+    "protected editorial governance REST API",
+    "WP-CLI editorial queue and transition operations",
+    "FastAPI transition evaluation, standards scoring, and queue summarization"
   ],
   "boundaries": [
     "no confidential information",
@@ -230,26 +244,27 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 4.1.1 hardens support content operations with recoverable import batches, malformed-source validation, duplicate refinements, starter recovery, product-context integrity checks, operation progress, scheduled validation health, checksummed exports, accessibility improvements, and administrator capability boundaries.",
-  "release_name": "Content Operations Reliability Patch",
-  "release": "Feature Suggestions v4.1.1 — Content Operations Reliability Patch",
+  "notes": "Version 4.2.0 adds assigned authors, reviewers, and approvers; controlled editorial transitions; version-specific approval; documentation standards; scheduled publication; expiration and review reminders; private editorial comments; audit history; governance dashboards; protected REST operations; and deterministic FastAPI governance evaluation.",
+  "release_name": "Documentation Workflow and Editorial Governance",
+  "release": "Feature Suggestions v4.2.0 \u2014 Documentation Workflow and Editorial Governance",
   "features": [
-    "Product-by-product onboarding profiles for repository, documentation, support URL, version, owner, and component context",
-    "Deterministic 0–100 support-readiness scoring with explicit blockers and human review",
-    "Idempotent creation of Getting Started, configuration, workflow, troubleshooting, reference, and release drafts",
-    "Safe import of README, Markdown/text documentation, CHANGELOG, release notes, and structured JSON records",
-    "Lifecycle, source provenance, version, verification, review-due, supersession, and fingerprint metadata",
-    "Duplicate, stale-content, missing-context, supersession, and lifecycle validation",
-    "Product-scoped JSON export and protected REST operations",
-    "Automatic hiding of empty public support sections until records are published",
-    "Preserved v4.0.2 navigation, v4.0.1 branding, and v4.0.0 public/private governance boundaries"
+    "Author, reviewer, and approver assignments for Support Articles, Known Issues, and Release Records",
+    "Explicit Draft, Submitted, In Review, Changes Requested, Approved, Scheduled, Published, Expired, and Archived states",
+    "Configurable separation of author and approver responsibilities",
+    "Version-specific approval tied to shared Product Version terms",
+    "Change summaries, private editorial comments, and bounded internal audit history",
+    "Documentation standards scoring with product-aware section requirements and publication blockers",
+    "Scheduled publication, content expiration, review-due reminders, and cron health reporting",
+    "Editorial governance dashboard, protected REST endpoints, CSV audit export, and WP-CLI operations",
+    "Preserved v4.1.1 import reliability, v4.0.2 navigation, v4.0.1 branding, and the public/private platform boundary"
   ],
   "wordpress_post_types": [
     "sc_feature_suggest",
     "sc_support_article",
     "sc_known_issue",
     "sc_doc_gap",
-    "sc_release_record"
+    "sc_release_record",
+    "sc_editorial_note"
   ],
   "shortcodes": [
     "[scfs_product_support_center]",

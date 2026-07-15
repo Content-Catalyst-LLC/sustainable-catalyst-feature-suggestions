@@ -38,7 +38,7 @@ class RankedResolutionCandidate(BaseModel):
 
 class ResolutionRankResult(BaseModel):
     schema_id: str = Field(default="scfs-guided-resolution-ranking/1.0", alias="schema")
-    version: str = "4.1.1"
+    version: str = "4.2.0"
     results: List[RankedResolutionCandidate]
     result_count: int
     confidence: float

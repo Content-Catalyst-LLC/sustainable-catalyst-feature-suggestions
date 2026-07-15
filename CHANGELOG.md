@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.2.0 — Documentation Workflow and Editorial Governance
+
+- Added accountable author, reviewer, and approver assignments for Support Articles, Known Issues, and Release Records.
+- Added Draft, Submitted, In Review, Changes Requested, Approved, Scheduled, Published, Expired, and Archived workflow states.
+- Added configurable separation of author and approver responsibilities.
+- Added publication gating so unapproved public records return to Pending Review.
+- Added version-specific approval using shared Product Version terms.
+- Added change summaries, private editorial comments, and bounded internal audit history.
+- Added documentation standards scoring for titles, content, summaries, product context, required sections, provenance, and change summaries.
+- Added scheduled publication, content expiration, review-due reminders, and cron health reporting.
+- Added an Editorial Governance dashboard, protected REST operations, CSV audit export, and WP-CLI editorial commands.
+- Added deterministic FastAPI transition evaluation, standards scoring, and queue summarization.
+- Preserved v4.1.1 import reliability and the public/private Contact and Engagement boundary.
+
 ## 4.1.1 — Content Operations Reliability Patch
 
 - Added time-limited import-batch rollback that moves created records to WordPress Trash.

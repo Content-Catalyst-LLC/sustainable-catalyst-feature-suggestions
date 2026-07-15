@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Guided_Resolution {
-    const VERSION = '4.1.1';
+    const VERSION = '4.2.0';
     const SCHEMA_VERSION = '1.0';
     const SHORTCODE = 'scfs_guided_resolution';
     const LEGACY_SHORTCODE = 'sustainable_catalyst_guided_resolution';

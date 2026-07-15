@@ -9,9 +9,10 @@ from .guided_resolution import ResolutionRankRequest, ResolutionRankResult, rank
 from .documentation_intelligence import DocumentationGapEvidence, DocumentationGapScore, SupportDemandEvidence, SupportDemandScore, score_documentation_gap, score_support_demand
 from .product_support_platform import ProductSupportEvidence, ProductSupportOverview, ReleaseReadinessEvidence, ReleaseReadinessScore, summarize_product_support, score_release_readiness
 from .support_content_operations import ProductOnboardingEvidence, ProductSupportReadiness, SourceDocument, ImportPlan, ImportSourceInspection, ImportBatchEvidence, ImportRecoveryPlan, ExportIntegrityEvidence, ExportIntegrityResult, score_product_readiness, plan_source_import, inspect_source_document, plan_import_recovery, verify_export_integrity
+from .editorial_governance import EditorialTransitionEvidence, EditorialTransitionDecision, DocumentationStandardsEvidence, DocumentationStandardsScore, EditorialQueueEvidence, EditorialGovernanceSummary, evaluate_editorial_transition, score_documentation_standards, summarize_editorial_queue
 
-VERSION='4.1.1'
-ANALYSIS_VERSION='4.1.1-1'
+VERSION='4.2.0'
+ANALYSIS_VERSION='4.2.0-1'
 app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
 
 class Submission(BaseModel):
@@ -146,7 +147,7 @@ def survey_analyze(payload: SurveyAnalysisRequest, x_scfs_ai_key:Optional[str]=H
 @app.get('/v1/surveys/methodology')
 def survey_methodology(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {'ok':True,'analysis_version':'4.1.1-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+    return {'ok':True,'analysis_version':'4.2.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
 
 
 @app.get('/v1/platform/capabilities')
@@ -156,7 +157,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','error_signature_matching','known_issue_prioritization','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','error_signature_matching','known_issue_prioritization','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','documentation_standards_scoring','controlled_publication_workflow','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -304,3 +305,44 @@ def support_content_import_recovery(payload: ImportBatchEvidence, x_scfs_ai_key:
 def support_content_export_verify(payload: ExportIntegrityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_export_integrity(payload)
+
+@app.get('/v1/editorial-governance/capabilities')
+def editorial_governance_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-editorial-governance/1.0',
+        'capabilities': [
+            'author_reviewer_approver_assignments',
+            'controlled_workflow_transitions',
+            'documentation_standards_scoring',
+            'version_specific_approval',
+            'scheduled_publication',
+            'expiration_and_review_reminders',
+            'editorial_audit_history',
+        ],
+        'wordpress_source_of_truth': True,
+        'automatic_approval': False,
+        'private_editorial_comments_publicly_exposed': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/editorial-governance/transitions/evaluate', response_model=EditorialTransitionDecision)
+def editorial_transition_evaluate(payload: EditorialTransitionEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_editorial_transition(payload)
+
+
+@app.post('/v1/editorial-governance/standards/score', response_model=DocumentationStandardsScore)
+def editorial_standards_score(payload: DocumentationStandardsEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return score_documentation_standards(payload)
+
+
+@app.post('/v1/editorial-governance/queue/summarize', response_model=EditorialGovernanceSummary)
+def editorial_queue_summary(payload: EditorialQueueEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return summarize_editorial_queue(payload)
+

@@ -23,7 +23,7 @@ $ops->register_rest_routes();
 $schema = $ops->schema_record();
 $checks = array(
     'operations schema' => ($schema['schema'] ?? '') === 'scfs-support-content-operations/1.1',
-    'operations version' => ($schema['version'] ?? '') === '4.1.1',
+    'operations version' => ($schema['version'] ?? '') === '4.2.0',
     'product onboarding capability' => in_array('product_onboarding_profiles', $schema['capabilities'] ?? array(), true),
     'readiness scoring capability' => in_array('support_readiness_scoring', $schema['capabilities'] ?? array(), true),
     'starter content capability' => in_array('idempotent_starter_content', $schema['capabilities'] ?? array(), true),
