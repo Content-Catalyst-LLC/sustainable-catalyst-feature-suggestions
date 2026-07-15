@@ -8,10 +8,17 @@ $governance = file_get_contents($plugin . '/includes/class-scfs-platform-governa
 $backend = file_get_contents($root . '/backend/app/main.py');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version' => strpos($main, 'Version: 4.0.0') !== false,
-    'runtime version' => strpos($main, "const VERSION = '4.0.0';") !== false,
+    'plugin version' => strpos($main, 'Version: 4.0.2') !== false,
+    'runtime version' => strpos($main, "const VERSION = '4.0.2';") !== false,
     'platform class file' => file_exists($plugin . '/includes/class-scfs-product-support-platform.php'),
     'platform stylesheet' => file_exists($plugin . '/assets/product-support-platform.css'),
+    'platform navigation script' => file_exists($plugin . '/assets/product-support-platform.js'),
+    'public view route' => strpos($platform, "'/product-support/view'") !== false,
+    'client side view data' => strpos($platform, 'data-scfs-support-view') !== false,
+    'anchored direct links' => strpos($platform, 'rawurlencode($anchor)') !== false,
+    'browser history implementation' => strpos(file_get_contents($plugin . '/assets/product-support-platform.js'), 'history.pushState') !== false && strpos(file_get_contents($plugin . '/assets/product-support-platform.js'), 'popstate') !== false,
+    'product context preservation' => strpos(file_get_contents($plugin . '/assets/product-support-platform.js'), 'scfs_support_product') !== false,
+    'pathway wrapping protection' => strpos(file_get_contents($plugin . '/assets/product-support-platform.css'), 'scfs-support-platform__pathway-card') !== false && strpos(file_get_contents($plugin . '/assets/product-support-platform.css'), 'word-break: normal') !== false,
     'platform bootstrap' => strpos($main, 'SCFS_Product_Support_Platform::instance();') !== false,
     'platform activation' => strpos($main, 'SCFS_Product_Support_Platform::activate();') !== false,
     'release post type' => strpos($platform, "const RELEASE_POST_TYPE = 'sc_release_record';") !== false,
@@ -43,8 +50,16 @@ $checks = array(
     'backend release score' => strpos($backend, '/v1/product-support/releases/score') !== false,
     'backend platform module' => file_exists($root . '/backend/app/product_support_platform.py'),
     'backend platform tests' => file_exists($root . '/backend/tests/test_product_support_platform.py'),
-    'manifest version' => is_array($manifest) && ($manifest['version'] ?? '') === '4.0.0',
-    'manifest release name' => is_array($manifest) && ($manifest['release_name'] ?? '') === 'Product Support and Feedback Platform',
+    'manifest version' => is_array($manifest) && ($manifest['version'] ?? '') === '4.0.2',
+    'manifest release name' => is_array($manifest) && ($manifest['release_name'] ?? '') === 'Navigation and Embedded Pathway Reliability Patch',
+    'embedded mode option' => strpos($platform, "'default_mode' => 'standalone'") !== false && strpos($platform, "'embedded_default_view' => 'resolve'") !== false,
+    'branding presets' => strpos($platform, "'sustainable-catalyst'") !== false && strpos($platform, "'inherit'") !== false && strpos($platform, "'custom'") !== false,
+    'branding token filter' => strpos($platform, 'scfs_support_branding_tokens') !== false,
+    'shortcode attribute filter' => strpos($platform, 'scfs_product_support_center_atts') !== false,
+    'cache safe asset versioning' => strpos($platform, 'filemtime($style_path)') !== false && strpos($platform, 'filemtime($script_path)') !== false,
+    'scoped token stylesheet' => strpos(file_get_contents($plugin . '/assets/product-support-platform.css'), '--scfs-token-accent') !== false,
+    'embedded reliability stylesheet' => strpos(file_get_contents($plugin . '/assets/product-support-platform.css'), 'scfs-support-platform--mode-embedded') !== false,
+    'child module branding' => strpos(file_get_contents($plugin . '/assets/product-support-platform.css'), '.scfs-support-platform .scfs-resolution') !== false && strpos(file_get_contents($plugin . '/assets/product-support-platform.css'), '.scfs-support-platform .scfs-kb') !== false,
 );
 $failed = array();
 foreach ($checks as $label => $passed) {

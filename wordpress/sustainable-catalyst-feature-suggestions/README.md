@@ -1,6 +1,25 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 4.0.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 4.0.2 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+
+Version 4.0.2 adds in-place Support Center navigation, browser history, direct links, anchored fallbacks, preserved product context, dynamic survey initialization, and repaired embedded pathway cards.
+
+Recommended integration:
+
+```text
+[scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve" anchor="support-center"]
+```
+
+
+## Embedded Support Center and branding
+
+Version 4.0.2 adds a reliable embedded mode and configurable design tokens for matching the Support Center to the surrounding site. Recommended Sustainable Catalyst page integration:
+
+```text
+[scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve"]
+```
+
+Branding presets, custom colors, typography, shape, width, navigation density, and embedded-layout controls are available under **Feature Suggestions → Support Platform**. Theme inheritance and shortcode-level overrides are supported.
 
 ## Unified Product Support Center
 

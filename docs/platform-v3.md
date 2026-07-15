@@ -1,6 +1,10 @@
-# Sustainable Catalyst Product Support and Feedback Platform v4.0.0
+# Sustainable Catalyst Product Support and Feedback Platform v4.0.2
 
-Version 4.0.0 unifies Guided Resolution, documentation, Known Issues, Release Intelligence, feature suggestions, public voting, surveys, and privacy-bounded private support handoff in one product-aware public Support Center.
+Version 4.0.2 preserves the v4.0.0 unified platform and adds embedded rendering, configurable branding, theme inheritance, responsive safeguards, and cache-safe assets. The platform unifies Guided Resolution, documentation, Known Issues, Release Intelligence, feature suggestions, public voting, surveys, and privacy-bounded private support handoff in one product-aware public Support Center.
+
+## Embedded integration
+
+Use `[scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve"]` inside a page that already provides its own hero, pathways, and explanatory content. Branding and layout defaults are managed under **Feature Suggestions → Support Platform**.
 
 ## Unified Support Center
 

@@ -106,3 +106,27 @@ Create or update the public support page with:
 ```
 
 The `/support-knowledge-base/` archive also renders the unified Support Center. Configure the Contact and Engagement destination and visible modules under **Feature Suggestions → Support Platform**. Add public release records under **Feature Suggestions → Releases**.
+
+
+## Embedded Support Center and branding v4.0.2
+
+For the Sustainable Catalyst Support page, use:
+
+```text
+[scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve"]
+```
+
+Then open **Feature Suggestions → Support Platform** and configure:
+
+- Default rendering mode: **Embedded**;
+- Embedded default view: **Find a resolution**;
+- Branding preset: **Sustainable Catalyst**, **Inherit active theme**, or **Custom**;
+- embedded header, status, navigation-description, pathway, and page-width behavior;
+- colors, fonts, radius, shadow, maximum width, and navigation columns.
+
+After upgrading, clear any WordPress, optimization-plugin, CDN, and browser caches once. Version 4.0.2 uses source-file modification times for future public CSS cache invalidation.
+
+
+## v4.0.2 navigation validation
+
+After upgrading, clear page/CDN caches once and confirm that selecting Knowledge Base, Known Issues, Releases, Public Ideas, Suggest a Feature, Surveys, and Private Support updates the embedded workspace without jumping to the page top. Browser back and forward should restore prior views. With JavaScript disabled, the same links should reload at `#support-center`.

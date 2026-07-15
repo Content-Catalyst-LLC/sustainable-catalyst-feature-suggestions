@@ -13,7 +13,7 @@ function __($text) { return $text; }
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
 $checks = array(
     'main class loaded' => class_exists('Sustainable_Catalyst_Feature_Suggestions'),
-    'version is 4.0.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '4.0.0',
+    'version is 4.0.2' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '4.0.2',
     'product integration loaded' => class_exists('SCFS_Product_Integration'),
     'knowledge base loaded' => class_exists('SCFS_Knowledge_Base_Foundation'),
     'guided resolution loaded' => class_exists('SCFS_Guided_Resolution'),
@@ -33,10 +33,16 @@ $schema = SCFS_Product_Support_Platform::instance()->schema_record();
 if (($schema['schema'] ?? '') !== 'scfs-product-support-platform/1.0') {
     fwrite(STDERR, "FAIL - product support schema\n"); exit(1);
 }
+if (!in_array('embedded', $schema['rendering_modes'] ?? array(), true)) {
+    fwrite(STDERR, "FAIL - embedded rendering mode\n"); exit(1);
+}
+if (!in_array('custom', $schema['branding_presets'] ?? array(), true)) {
+    fwrite(STDERR, "FAIL - custom branding preset\n"); exit(1);
+}
 if (!in_array('release_intelligence', $schema['public_modules'] ?? array(), true)) {
     fwrite(STDERR, "FAIL - release intelligence module\n"); exit(1);
 }
 if (($schema['governance']['automatic_case_creation'] ?? true) !== false) {
     fwrite(STDERR, "FAIL - automatic case boundary\n"); exit(1);
 }
-echo "PASS - product support schema\nPASS - release intelligence module\nPASS - automatic case boundary\n15 checks passed.\n";
+echo "PASS - product support schema\nPASS - embedded rendering mode\nPASS - custom branding preset\nPASS - release intelligence module\nPASS - automatic case boundary\n17 checks passed.\n";

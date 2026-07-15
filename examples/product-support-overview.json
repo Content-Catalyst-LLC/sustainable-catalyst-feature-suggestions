@@ -1,6 +1,6 @@
 {
   "schema": "scfs-product-support-overview/1.0",
-  "version": "4.0.0",
+  "version": "4.0.2",
   "generated_at": "2026-07-14T00:00:00Z",
   "product": "workbench",
   "counts": {

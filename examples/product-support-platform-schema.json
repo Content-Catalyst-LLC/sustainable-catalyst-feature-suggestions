@@ -1,6 +1,6 @@
 {
   "schema": "scfs-product-support-platform/1.0",
-  "version": "4.0.0",
+  "version": "4.0.2",
   "platform": "Sustainable Catalyst Product Support and Feedback Platform",
   "public_modules": [
     "guided_resolution",

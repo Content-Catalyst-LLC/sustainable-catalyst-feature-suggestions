@@ -1,6 +1,6 @@
-# Product Support and Feedback Platform v4.0.0
+# Product Support and Feedback Platform v4.0.2
 
-Feature Suggestions v4.0.0 is the unified public product-support layer for Sustainable Catalyst.
+Feature Suggestions v4.0.2 is the unified public product-support layer for Sustainable Catalyst, with a site-native embedded mode and configurable branding.
 
 ## Public responsibilities
 
@@ -22,6 +22,32 @@ Use the public Support Center shortcode:
 ```
 
 The legacy alias `[scfs_support_center]` is also supported. The `/support-knowledge-base/` archive now renders the unified Support Center.
+
+
+## Embedded Support Center and branding
+
+For a designed page that already supplies its own hero and introduction, use:
+
+```text
+[scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve"]
+```
+
+Embedded mode defaults to Guided Resolution, suppresses duplicate application chrome, hides all-zero status metrics, shortens internal navigation, and lets the containing page own the outer width and spacing.
+
+Branding presets:
+
+- `platform` — neutral Product Support Platform defaults;
+- `sustainable-catalyst` — black, white, maroon, cream, Spartan, and Montserrat;
+- `inherit` — uses active-theme/Astra and WordPress preset variables where available;
+- `custom` — uses saved or shortcode-supplied design tokens.
+
+Custom shortcode example:
+
+```text
+[scfs_product_support_center mode="embedded" branding="custom" default_view="resolve" accent="#9b1111" accent_contrast="#ffffff" ink="#000000" muted="#555555" surface="#ffffff" soft="#f7f3ea" line="#d9d2c4" radius="0" shadow="none" nav_columns="3"]
+```
+
+Configure defaults under **Feature Suggestions → Support Platform**. See `embedded-support-center-branding.md` for all attributes and extension filters.
 
 ## Private responsibilities
 

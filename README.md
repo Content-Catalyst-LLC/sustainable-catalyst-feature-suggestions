@@ -2,6 +2,18 @@
 
 A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
+## Version 4.0.2 — Navigation and Embedded Pathway Reliability Patch
+
+Version 4.0.2 makes the embedded Support Center behave like one application. Internal navigation changes the workspace without returning visitors to the top of the page, updates browser history and direct URLs, preserves product context, and falls back to anchored full-page links when JavaScript or the REST endpoint is unavailable.
+
+Recommended Support page shortcode:
+
+```text
+[scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve" anchor="support-center"]
+```
+
+The optional “Choose another support pathway” cards now use protected horizontal typography and responsive card widths, so page or theme CSS cannot collapse headings into letter-by-letter columns.
+
 This repository supports the public feature suggestion workflow at:
 
 ```text
@@ -26,6 +38,18 @@ Optional category preselection:
 ```text
 [sustainable_catalyst_feature_suggestions category="Research Librarian feature"]
 ```
+
+## Version 4.0.2 — Embedded Support Center Interface Reliability Patch
+
+Version 4.0.2 adds a site-native embedded mode and a configurable branding system for the unified Support Center. The recommended shortcode for the Sustainable Catalyst Support page is:
+
+```text
+[scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve"]
+```
+
+Administrators can select **Platform**, **Sustainable Catalyst**, **Inherit active theme**, or **Custom** branding under **Feature Suggestions → Support Platform**. Custom controls cover colors, typography, border radius, shadow, maximum width, navigation columns, embedded chrome, and zero-value status visibility. The same scoped tokens flow into Guided Resolution, Knowledge Base, Known Issues, releases, public ideas, suggestion forms, and surveys.
+
+Embedded mode removes duplicate application chrome, uses the containing page width, preserves product/view context, and includes CSS safeguards against broad Astra or page-level link and button rules. See `docs/embedded-support-center-branding.md`.
 
 ## Version 4.0.0 — Product Support and Feedback Platform
 

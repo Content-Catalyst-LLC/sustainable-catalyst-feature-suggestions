@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Support_Platform {
-    const VERSION = '4.0.0';
+    const VERSION = '4.0.2';
     const SCHEMA_VERSION = '1.0';
     const RELEASE_POST_TYPE = 'sc_release_record';
     const SHORTCODE = 'scfs_product_support_center';
@@ -25,6 +25,10 @@ final class SCFS_Product_Support_Platform {
     const NONCE_NAME = 'scfs_release_intelligence_nonce';
 
     private static $instance = null;
+    private static $render_count = 0;
+    private $active_base_url = '';
+    private $active_anchor = 'support-center';
+    private $active_show_overview_pathways = true;
 
     public static function instance() {
         if (self::$instance === null) {
@@ -65,16 +69,171 @@ final class SCFS_Product_Support_Platform {
             'support_center_title' => 'Sustainable Catalyst Product Support',
             'support_center_intro' => 'Find documentation, check known issues, review releases, support public ideas, participate in surveys, suggest improvements, or continue to private support when public guidance is not enough.',
             'default_view' => 'overview',
+            'default_mode' => 'standalone',
+            'embedded_default_view' => 'resolve',
             'contact_engagement_url' => home_url('/contact/'),
             'show_surveys' => '1',
             'show_public_ideas' => '1',
             'show_release_intelligence' => '1',
             'featured_release_limit' => '4',
+            'branding_preset' => 'platform',
+            'brand_accent' => '#6f1225',
+            'brand_accent_contrast' => '#ffffff',
+            'brand_ink' => '#131313',
+            'brand_muted' => '#5e6268',
+            'brand_surface' => '#ffffff',
+            'brand_soft' => '#f6f7f8',
+            'brand_line' => '#d9dde2',
+            'brand_success' => '#176b3a',
+            'brand_warning' => '#8a5a00',
+            'brand_danger' => '#9b1111',
+            'brand_radius' => '0',
+            'brand_shadow' => 'subtle',
+            'brand_max_width' => '1180',
+            'brand_font_family' => 'inherit',
+            'brand_heading_font_family' => 'inherit',
+            'embedded_hide_header' => '1',
+            'embedded_hide_status' => '1',
+            'embedded_hide_nav_descriptions' => '1',
+            'embedded_hide_overview_pathways' => '1',
+            'embedded_use_page_width' => '1',
+            'hide_zero_status' => '1',
+            'nav_columns' => '3',
         );
     }
 
     private function settings() {
         return wp_parse_args((array) get_option(self::OPTION_KEY, array()), $this->default_settings());
+    }
+
+    private function choice($value, $allowed, $default) {
+        $value = sanitize_key((string) $value);
+        return in_array($value, $allowed, true) ? $value : $default;
+    }
+
+    private function bool_value($value, $default = false) {
+        if ($value === null || $value === '') {
+            return (bool) $default;
+        }
+        if (is_bool($value)) {
+            return $value;
+        }
+        return in_array(strtolower((string) $value), array('1', 'true', 'yes', 'on', 'show'), true);
+    }
+
+    private function color($value, $default) {
+        $value = trim((string) $value);
+        return preg_match('/^#[0-9a-fA-F]{6}$/', $value) ? strtolower($value) : $default;
+    }
+
+    private function font_stack($value, $default = 'inherit') {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return $default;
+        }
+        $value = preg_replace("/[^a-zA-Z0-9,\\- _\"]/", '', $value);
+        return $value !== '' ? $value : $default;
+    }
+
+    private function branding_presets() {
+        return array(
+            'platform' => array(
+                'accent' => '#6f1225', 'accent_contrast' => '#ffffff', 'ink' => '#131313',
+                'muted' => '#5e6268', 'surface' => '#ffffff', 'soft' => '#f6f7f8',
+                'line' => '#d9dde2', 'success' => '#176b3a', 'warning' => '#8a5a00',
+                'danger' => '#9b1111', 'font_family' => 'inherit', 'heading_font_family' => 'inherit',
+            ),
+            'sustainable-catalyst' => array(
+                'accent' => '#9b1111', 'accent_contrast' => '#ffffff', 'ink' => '#000000',
+                'muted' => '#555555', 'surface' => '#ffffff', 'soft' => '#f7f3ea',
+                'line' => '#d9d2c4', 'success' => '#176b3a', 'warning' => '#8a5a00',
+                'danger' => '#9b1111', 'font_family' => 'Montserrat, Arial, sans-serif',
+                'heading_font_family' => 'Spartan, Montserrat, Arial, sans-serif',
+            ),
+        );
+    }
+
+    private function branding_context($settings, $atts, $raw_atts = array()) {
+        $preset = $this->choice($atts['branding'], array('platform', 'sustainable-catalyst', 'inherit', 'custom'), $settings['branding_preset']);
+        $presets = $this->branding_presets();
+        $custom = array(
+            'accent' => $this->color($atts['accent'], $this->color($settings['brand_accent'], '#6f1225')),
+            'accent_contrast' => $this->color($atts['accent_contrast'], $this->color($settings['brand_accent_contrast'], '#ffffff')),
+            'ink' => $this->color($atts['ink'], $this->color($settings['brand_ink'], '#131313')),
+            'muted' => $this->color($atts['muted'], $this->color($settings['brand_muted'], '#5e6268')),
+            'surface' => $this->color($atts['surface'], $this->color($settings['brand_surface'], '#ffffff')),
+            'soft' => $this->color($atts['soft'], $this->color($settings['brand_soft'], '#f6f7f8')),
+            'line' => $this->color($atts['line'], $this->color($settings['brand_line'], '#d9dde2')),
+            'success' => $this->color($atts['success'], $this->color($settings['brand_success'], '#176b3a')),
+            'warning' => $this->color($atts['warning'], $this->color($settings['brand_warning'], '#8a5a00')),
+            'danger' => $this->color($atts['danger'], $this->color($settings['brand_danger'], '#9b1111')),
+            'font_family' => $this->font_stack($atts['font_family'], $this->font_stack($settings['brand_font_family'], 'inherit')),
+            'heading_font_family' => $this->font_stack($atts['heading_font_family'], $this->font_stack($settings['brand_heading_font_family'], 'inherit')),
+        );
+        if ($preset === 'inherit') {
+            $tokens = array();
+        } elseif ($preset === 'custom') {
+            $tokens = $custom;
+        } else {
+            $tokens = $presets[$preset] ?? $presets['platform'];
+            foreach ($custom as $key => $value) {
+                if (array_key_exists($key, $raw_atts) && trim((string) $atts[$key]) !== '') {
+                    $tokens[$key] = $value;
+                }
+            }
+        }
+        $radius = min(24, max(0, absint($atts['radius'] !== '' ? $atts['radius'] : $settings['brand_radius'])));
+        $max_width = min(1800, max(680, absint($atts['max_width'] !== '' ? $atts['max_width'] : $settings['brand_max_width'])));
+        $shadow_choice = $this->choice($atts['shadow'] !== '' ? $atts['shadow'] : $settings['brand_shadow'], array('none', 'subtle', 'raised'), 'subtle');
+        $shadows = array('none' => 'none', 'subtle' => '0 10px 28px rgba(0,0,0,.055)', 'raised' => '0 18px 48px rgba(0,0,0,.12)');
+        $tokens['radius'] = $radius . 'px';
+        $tokens['max_width'] = $max_width . 'px';
+        $tokens['shadow'] = $shadows[$shadow_choice];
+        $tokens = apply_filters('scfs_support_branding_tokens', $tokens, $preset, $settings, $atts);
+        return array('preset' => $preset, 'tokens' => is_array($tokens) ? $tokens : array());
+    }
+
+    private function branding_style($tokens) {
+        $map = array(
+            'accent' => '--scfs-token-accent', 'accent_contrast' => '--scfs-token-accent-contrast', 'ink' => '--scfs-token-ink',
+            'muted' => '--scfs-token-muted', 'surface' => '--scfs-token-surface', 'soft' => '--scfs-token-soft',
+            'line' => '--scfs-token-line', 'success' => '--scfs-token-success', 'warning' => '--scfs-token-warning',
+            'danger' => '--scfs-token-danger', 'radius' => '--scfs-token-radius', 'shadow' => '--scfs-token-shadow',
+            'max_width' => '--scfs-token-max-width', 'font_family' => '--scfs-token-font-family',
+            'heading_font_family' => '--scfs-token-heading-font-family',
+        );
+        $rules = array();
+        foreach ($map as $key => $property) {
+            if (isset($tokens[$key]) && $tokens[$key] !== '') {
+                $rules[] = $property . ':' . str_replace(array(';', '{', '}'), '', (string) $tokens[$key]);
+            }
+        }
+        return implode(';', $rules);
+    }
+
+    private function display_context($settings, $raw_atts, $atts) {
+        $mode = $this->choice($atts['mode'], array('standalone', 'embedded'), $settings['default_mode']);
+        if (!array_key_exists('mode', $raw_atts) && ($atts['compact'] ?? '0') === '1') {
+            $mode = 'embedded';
+        }
+        $embedded = $mode === 'embedded';
+        $default_view = array_key_exists('default_view', $raw_atts)
+            ? $atts['default_view']
+            : ($embedded ? $settings['embedded_default_view'] : $settings['default_view']);
+        return array(
+            'mode' => $mode,
+            'embedded' => $embedded,
+            'default_view' => $this->choice($default_view, array_keys($this->navigation_items($settings)), 'overview'),
+            'show_header' => $this->bool_value($atts['show_header'], !$embedded || empty($settings['embedded_hide_header'])),
+            'show_status' => $this->bool_value($atts['show_status'], !$embedded || empty($settings['embedded_hide_status'])),
+            'show_product_filter' => $this->bool_value($atts['show_product_filter'], true),
+            'show_navigation' => $this->bool_value($atts['show_navigation'], true),
+            'show_nav_descriptions' => $this->bool_value($atts['show_nav_descriptions'], !$embedded || empty($settings['embedded_hide_nav_descriptions'])),
+            'show_overview_pathways' => $this->bool_value($atts['show_overview_pathways'], !$embedded || empty($settings['embedded_hide_overview_pathways'])),
+            'hide_zero_status' => $this->bool_value($atts['hide_zero_status'], !empty($settings['hide_zero_status'])),
+            'use_page_width' => $this->bool_value($atts['use_page_width'], $embedded && !empty($settings['embedded_use_page_width'])),
+            'nav_columns' => min(4, max(1, absint($atts['nav_columns'] !== '' ? $atts['nav_columns'] : $settings['nav_columns']))),
+        );
     }
 
     public function release_statuses() {
@@ -173,12 +332,36 @@ final class SCFS_Product_Support_Platform {
     }
 
     public function register_assets() {
+        $style_path = dirname(__DIR__) . '/assets/product-support-platform.css';
+        $script_path = dirname(__DIR__) . '/assets/product-support-platform.js';
+        $style_version = is_readable($style_path) ? (string) filemtime($style_path) : self::VERSION;
+        $script_version = is_readable($script_path) ? (string) filemtime($script_path) : self::VERSION;
         wp_register_style(
             'scfs-product-support-platform',
             plugins_url('../assets/product-support-platform.css', __FILE__),
             array('scfs-guided-resolution', 'scfs-knowledge-base'),
-            self::VERSION
+            $style_version
         );
+        wp_register_script(
+            'scfs-product-support-platform',
+            plugins_url('../assets/product-support-platform.js', __FILE__),
+            array(),
+            $script_version,
+            true
+        );
+    }
+
+    private function enqueue_child_assets() {
+        if (function_exists('wp_enqueue_style')) {
+            wp_enqueue_style('scfs-feature-suggestions');
+            wp_enqueue_style('scfs-forms');
+        }
+        if (function_exists('wp_enqueue_script')) {
+            wp_enqueue_script('scfs-forms');
+        }
+        if (class_exists('SCFS_Public_Ideas') && method_exists(SCFS_Public_Ideas::instance(), 'enqueue_public_assets')) {
+            SCFS_Public_Ideas::instance()->enqueue_public_assets();
+        }
     }
 
     public function admin_assets($hook) {
@@ -296,11 +479,22 @@ final class SCFS_Product_Support_Platform {
             'private_integrations' => array('contact_and_engagement'),
             'shared_context' => array('product', 'product_version', 'component', 'issue_type', 'release'),
             'shortcodes' => array(self::SHORTCODE, self::LEGACY_SHORTCODE),
+            'rendering_modes' => array('standalone', 'embedded'),
+            'branding_presets' => array('platform', 'sustainable-catalyst', 'inherit', 'custom'),
+            'branding_tokens' => array('accent', 'accent_contrast', 'ink', 'muted', 'surface', 'soft', 'line', 'success', 'warning', 'danger', 'radius', 'shadow', 'max_width', 'font_family', 'heading_font_family'),
+            'navigation' => array(
+                'client_side_view_switching' => true,
+                'browser_history' => true,
+                'direct_links' => true,
+                'anchored_fallback' => true,
+                'product_context_preserved' => true,
+            ),
             'routes' => array(
                 '/product-support/schema',
                 '/product-support/overview',
                 '/product-support/releases',
                 '/product-support/products',
+                '/product-support/view',
                 '/product-support/handoff-schema',
                 '/product-support/snapshot',
             ),
@@ -571,9 +765,14 @@ final class SCFS_Product_Support_Platform {
         return $record;
     }
 
+    private function allowed_views($settings = null) {
+        $settings = is_array($settings) ? $settings : $this->settings();
+        return array_keys($this->navigation_items($settings));
+    }
+
     private function current_context() {
         $settings = $this->settings();
-        $allowed = array('overview', 'resolve', 'documentation', 'issues', 'releases', 'ideas', 'suggest', 'surveys', 'private-support');
+        $allowed = $this->allowed_views($settings);
         $view = isset($_GET['scfs_support_view']) ? sanitize_key(wp_unslash($_GET['scfs_support_view'])) : sanitize_key($settings['default_view']);
         if (!in_array($view, $allowed, true)) {
             $view = 'overview';
@@ -585,21 +784,68 @@ final class SCFS_Product_Support_Platform {
         );
     }
 
-    private function view_url($view, $product = '', $extra = array()) {
+    private function support_base_url($candidate = '') {
+        $candidate = trim((string) $candidate);
+        if ($candidate === '' && function_exists('is_singular') && is_singular() && function_exists('get_permalink')) {
+            $candidate = (string) get_permalink();
+        }
+        if ($candidate === '') {
+            $candidate = function_exists('remove_query_arg')
+                ? (string) remove_query_arg(array('scfs_support_view', 'scfs_support_product', 'scfs_support_survey'))
+                : home_url('/');
+        }
+        if (function_exists('esc_url_raw')) {
+            $candidate = esc_url_raw($candidate);
+        }
+        $parse = function_exists('wp_parse_url') ? 'wp_parse_url' : 'parse_url';
+        $home_parts = call_user_func($parse, home_url('/'));
+        $candidate_parts = call_user_func($parse, $candidate);
+        if (!is_array($candidate_parts) || !empty($candidate_parts['host']) && is_array($home_parts) && !empty($home_parts['host']) && strtolower($candidate_parts['host']) !== strtolower($home_parts['host'])) {
+            $candidate = home_url('/');
+        }
+        return function_exists('remove_query_arg')
+            ? (string) remove_query_arg(array('scfs_support_view', 'scfs_support_product', 'scfs_support_survey'), $candidate)
+            : $candidate;
+    }
+
+    private function normalized_anchor($anchor) {
+        $anchor = sanitize_title((string) $anchor);
+        return $anchor !== '' ? $anchor : 'support-center';
+    }
+
+    private function view_url($view, $product = '', $extra = array(), $anchor = null) {
         $args = array_merge(array('scfs_support_view' => $view), $extra);
         if ($product !== '') {
             $args['scfs_support_product'] = $product;
         }
-        return add_query_arg($args, remove_query_arg(array('scfs_support_view', 'scfs_support_product', 'scfs_support_survey')));
+        $base = $this->active_base_url !== '' ? $this->active_base_url : $this->support_base_url();
+        $url = add_query_arg($args, $base);
+        $anchor = $anchor === null ? $this->active_anchor : $this->normalized_anchor($anchor);
+        return $anchor !== '' ? $url . '#' . rawurlencode($anchor) : $url;
     }
 
-    private function render_product_select($selected) {
+    private function view_link_attributes($view, $product = '', $extra = array()) {
+        $parts = array(
+            'data-scfs-support-view="' . esc_attr($view) . '"',
+            'data-scfs-support-product="' . esc_attr($product) . '"',
+        );
+        if (!empty($extra['scfs_support_survey'])) {
+            $parts[] = 'data-scfs-support-survey="' . esc_attr(absint($extra['scfs_support_survey'])) . '"';
+        }
+        return implode(' ', $parts);
+    }
+
+    private function render_product_select($selected, $view = 'overview') {
         $terms = get_terms(array('taxonomy' => SCFS_Product_Integration::PRODUCT_TAXONOMY, 'hide_empty' => false, 'orderby' => 'name'));
         if (is_wp_error($terms)) {
             $terms = array();
         }
-        echo '<form class="scfs-support-product-filter" method="get">';
-        echo '<input type="hidden" name="scfs_support_view" value="overview">';
+        $action = $this->active_base_url !== '' ? $this->active_base_url : $this->support_base_url();
+        if ($this->active_anchor !== '') {
+            $action .= '#' . rawurlencode($this->active_anchor);
+        }
+        echo '<form class="scfs-support-product-filter" method="get" action="' . esc_url($action) . '" data-scfs-support-filter data-scfs-current-view="' . esc_attr($view) . '">';
+        echo '<input type="hidden" name="scfs_support_view" value="' . esc_attr($view) . '">';
         echo '<label><span>' . esc_html__('Support context', 'sustainable-catalyst-feature-suggestions') . '</span><select name="scfs_support_product"><option value="">' . esc_html__('All Sustainable Catalyst products', 'sustainable-catalyst-feature-suggestions') . '</option>';
         foreach ($terms as $term) {
             echo '<option value="' . esc_attr($term->slug) . '" ' . selected($selected, $term->slug, false) . '>' . esc_html($term->name) . '</option>';
@@ -633,42 +879,145 @@ final class SCFS_Product_Support_Platform {
 
     public function render_shortcode($atts = array()) {
         $settings = $this->settings();
+        $raw_atts = is_array($atts) ? $atts : array();
         $atts = shortcode_atts(array(
             'title' => $settings['support_center_title'],
             'intro' => $settings['support_center_intro'],
-            'default_view' => $settings['default_view'],
+            'default_view' => '',
             'compact' => '0',
-        ), $atts, self::SHORTCODE);
+            'mode' => $settings['default_mode'],
+            'branding' => $settings['branding_preset'],
+            'show_header' => '',
+            'show_status' => '',
+            'show_product_filter' => '1',
+            'show_navigation' => '1',
+            'show_nav_descriptions' => '',
+            'show_overview_pathways' => '',
+            'hide_zero_status' => '',
+            'use_page_width' => '',
+            'nav_columns' => '',
+            'accent' => '',
+            'accent_contrast' => '',
+            'ink' => '',
+            'muted' => '',
+            'surface' => '',
+            'soft' => '',
+            'line' => '',
+            'success' => '',
+            'warning' => '',
+            'danger' => '',
+            'radius' => '',
+            'shadow' => '',
+            'max_width' => '',
+            'font_family' => '',
+            'heading_font_family' => '',
+            'class' => '',
+            'anchor' => 'support-center',
+            'interactive' => '1',
+        ), $raw_atts, self::SHORTCODE);
+        $atts = apply_filters('scfs_product_support_center_atts', $atts, $raw_atts, $settings);
         wp_enqueue_style('scfs-product-support-platform');
+        if (function_exists('wp_enqueue_script')) {
+            wp_enqueue_script('scfs-product-support-platform');
+        }
+        $this->enqueue_child_assets();
+        $display = $this->display_context($settings, $raw_atts, $atts);
+        $branding = $this->branding_context($settings, $atts, $raw_atts);
         $context = $this->current_context();
-        if (!isset($_GET['scfs_support_view']) && in_array(sanitize_key($atts['default_view']), array_keys($this->navigation_items($settings)), true)) {
-            $context['view'] = sanitize_key($atts['default_view']);
+        if (!isset($_GET['scfs_support_view'])) {
+            $context['view'] = $display['default_view'];
         }
         $overview = $this->overview_record($context['product']);
+        self::$render_count++;
+        $instance_id = 'scfs-support-platform-' . self::$render_count;
+        $base_url = $this->support_base_url();
+        $anchor = $this->normalized_anchor($atts['anchor']);
+        $interactive = $this->bool_value($atts['interactive'], true);
+        $previous_base_url = $this->active_base_url;
+        $previous_anchor = $this->active_anchor;
+        $previous_pathways = $this->active_show_overview_pathways;
+        $this->active_base_url = $base_url;
+        $this->active_anchor = $anchor;
+        $this->active_show_overview_pathways = $display['show_overview_pathways'];
+        $classes = array(
+            'scfs-support-platform',
+            'scfs-support-platform--mode-' . $display['mode'],
+            'scfs-support-platform--brand-' . $branding['preset'],
+            'scfs-support-platform--nav-' . $display['nav_columns'],
+        );
+        if (($atts['compact'] ?? '0') === '1') {
+            $classes[] = 'scfs-support-platform--compact';
+        }
+        if ($display['use_page_width']) {
+            $classes[] = 'scfs-support-platform--page-width';
+        }
+        if (!$display['show_nav_descriptions']) {
+            $classes[] = 'scfs-support-platform--nav-labels-only';
+        }
+        $custom_classes = preg_split('/\s+/', trim((string) $atts['class']));
+        foreach ($custom_classes as $custom_class) {
+            $custom_class = preg_replace('/[^a-zA-Z0-9_-]/', '', $custom_class);
+            if ($custom_class !== '') {
+                $classes[] = $custom_class;
+            }
+        }
+        $style = $this->branding_style($branding['tokens']);
+        $aria = $display['show_header']
+            ? ' aria-labelledby="' . esc_attr($instance_id . '-title') . '"'
+            : ' aria-label="' . esc_attr($atts['title']) . '"';
         ob_start();
-        echo '<section class="scfs-support-platform' . ($atts['compact'] === '1' ? ' scfs-support-platform--compact' : '') . '" aria-labelledby="scfs-support-platform-title">';
-        echo '<header class="scfs-support-platform__hero"><p class="scfs-support-platform__eyebrow">' . esc_html__('Product Support and Feedback Platform', 'sustainable-catalyst-feature-suggestions') . '</p><h2 id="scfs-support-platform-title">' . esc_html($atts['title']) . '</h2><p>' . esc_html($atts['intro']) . '</p>';
-        echo '<div class="scfs-support-platform__boundary"><strong>' . esc_html__('Public support center:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html__('Documentation, known issues, releases, feature ideas, voting, and surveys live here. Private cases, messages, contact details, and documents remain in Contact and Engagement.', 'sustainable-catalyst-feature-suggestions') . '</div></header>';
-        $this->render_product_select($context['product']);
-        echo '<div class="scfs-support-platform__status" aria-label="' . esc_attr__('Support status summary', 'sustainable-catalyst-feature-suggestions') . '">';
-        foreach (array(
-            'support_articles' => __('Support articles', 'sustainable-catalyst-feature-suggestions'),
-            'active_known_issues' => __('Active known issues', 'sustainable-catalyst-feature-suggestions'),
-            'release_records' => __('Release records', 'sustainable-catalyst-feature-suggestions'),
-            'public_ideas' => __('Public ideas', 'sustainable-catalyst-feature-suggestions'),
-            'open_surveys' => __('Open surveys', 'sustainable-catalyst-feature-suggestions'),
-        ) as $key => $label) {
-            echo '<div><strong>' . esc_html((string) $overview['counts'][$key]) . '</strong><span>' . esc_html($label) . '</span></div>';
+        $endpoint = function_exists('rest_url') ? rest_url(Sustainable_Catalyst_Feature_Suggestions::REST_NAMESPACE . '/product-support/view') : '';
+        echo '<section id="' . esc_attr($instance_id) . '" class="' . esc_attr(implode(' ', array_unique($classes))) . '" data-scfs-mode="' . esc_attr($display['mode']) . '" data-scfs-branding="' . esc_attr($branding['preset']) . '" data-scfs-interactive="' . ($interactive ? '1' : '0') . '" data-scfs-endpoint="' . esc_url($endpoint) . '" data-scfs-base-url="' . esc_url($base_url) . '" data-scfs-anchor="' . esc_attr($anchor) . '" data-scfs-current-view="' . esc_attr($context['view']) . '" data-scfs-show-overview-pathways="' . ($display['show_overview_pathways'] ? '1' : '0') . '" style="' . esc_attr($style) . '"' . $aria . '>';
+        if ($display['show_header']) {
+            echo '<header class="scfs-support-platform__hero"><p class="scfs-support-platform__eyebrow">' . esc_html__('Product Support and Feedback Platform', 'sustainable-catalyst-feature-suggestions') . '</p><h2 id="' . esc_attr($instance_id . '-title') . '">' . esc_html($atts['title']) . '</h2><p>' . esc_html($atts['intro']) . '</p>';
+            echo '<div class="scfs-support-platform__boundary"><strong>' . esc_html__('Public support center:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html__('Documentation, known issues, releases, feature ideas, voting, and surveys live here. Private cases, messages, contact details, and documents remain in Contact and Engagement.', 'sustainable-catalyst-feature-suggestions') . '</div></header>';
+        } else {
+            echo '<h2 class="scfs-support-platform__sr-only">' . esc_html($atts['title']) . '</h2>';
         }
-        echo '</div>';
-        echo '<nav class="scfs-support-platform__nav" aria-label="' . esc_attr__('Product support sections', 'sustainable-catalyst-feature-suggestions') . '">';
-        foreach ($this->navigation_items($settings) as $key => $item) {
-            echo '<a class="' . ($context['view'] === $key ? 'is-active' : '') . '" href="' . esc_url($this->view_url($key, $context['product'])) . '"><strong>' . esc_html($item['label']) . '</strong><span>' . esc_html($item['description']) . '</span></a>';
+        if ($display['show_product_filter']) {
+            $this->render_product_select($context['product'], $context['view']);
         }
-        echo '</nav><div class="scfs-support-platform__workspace">';
-        $this->render_view($context, $overview, $settings);
+        if ($display['show_status']) {
+            $status_items = array(
+                'support_articles' => __('Support articles', 'sustainable-catalyst-feature-suggestions'),
+                'active_known_issues' => __('Active known issues', 'sustainable-catalyst-feature-suggestions'),
+                'release_records' => __('Release records', 'sustainable-catalyst-feature-suggestions'),
+                'public_ideas' => __('Public ideas', 'sustainable-catalyst-feature-suggestions'),
+                'open_surveys' => __('Open surveys', 'sustainable-catalyst-feature-suggestions'),
+            );
+            if ($display['hide_zero_status']) {
+                $status_items = array_filter($status_items, function ($label, $key) use ($overview) {
+                    return !empty($overview['counts'][$key]);
+                }, ARRAY_FILTER_USE_BOTH);
+            }
+            if ($status_items) {
+                echo '<div class="scfs-support-platform__status" aria-label="' . esc_attr__('Support status summary', 'sustainable-catalyst-feature-suggestions') . '">';
+                foreach ($status_items as $key => $label) {
+                    echo '<div><strong>' . esc_html((string) $overview['counts'][$key]) . '</strong><span>' . esc_html($label) . '</span></div>';
+                }
+                echo '</div>';
+            }
+        }
+        if ($display['show_navigation']) {
+            echo '<nav class="scfs-support-platform__nav" aria-label="' . esc_attr__('Product support sections', 'sustainable-catalyst-feature-suggestions') . '">';
+            foreach ($this->navigation_items($settings) as $key => $item) {
+                $active = $context['view'] === $key;
+                echo '<a class="' . ($active ? 'is-active' : '') . '" href="' . esc_url($this->view_url($key, $context['product'])) . '" ' . $this->view_link_attributes($key, $context['product']) . ($active ? ' aria-current="page"' : '') . '><strong>' . esc_html($item['label']) . '</strong>';
+                if ($display['show_nav_descriptions']) {
+                    echo '<span>' . esc_html($item['description']) . '</span>';
+                }
+                echo '</a>';
+            }
+            echo '</nav>';
+        }
+        echo '<div class="scfs-support-platform__workspace" data-scfs-view="' . esc_attr($context['view']) . '" aria-live="polite" aria-busy="false">';
+        $this->render_view($context, $overview, $settings, $display);
         echo '</div></section>';
-        return ob_get_clean();
+        $html = ob_get_clean();
+        $this->active_base_url = $previous_base_url;
+        $this->active_anchor = $previous_anchor;
+        $this->active_show_overview_pathways = $previous_pathways;
+        return $html;
     }
 
     private function with_request_value($key, $value, $callback) {
@@ -686,7 +1035,7 @@ final class SCFS_Product_Support_Platform {
         return $result;
     }
 
-    private function render_view($context, $overview, $settings) {
+    private function render_view($context, $overview, $settings, $display = array()) {
         switch ($context['view']) {
             case 'resolve':
                 echo $this->with_request_value('scfs_resolution_product', $context['product'], function () {
@@ -718,17 +1067,19 @@ final class SCFS_Product_Support_Platform {
                 break;
             case 'overview':
             default:
-                $this->render_overview($overview, $context['product'], $settings);
+                $this->render_overview($overview, $context['product'], $settings, $display);
                 break;
         }
     }
 
-    private function render_overview($overview, $product, $settings) {
+    private function render_overview($overview, $product, $settings, $display = array()) {
         echo '<div class="scfs-support-platform__overview"><section><h3>' . esc_html__('Start with guided resolution', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Describe the task, symptom, or exact error fragment. Current known issues are prioritized before general documentation.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         echo $this->with_request_value('scfs_resolution_product', $product, function () {
             return SCFS_Guided_Resolution::instance()->render_shortcode(array('title' => __('Search product support', 'sustainable-catalyst-feature-suggestions'), 'compact' => '1', 'show_handoff' => '1'));
         }); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-        echo '</section><section class="scfs-support-platform__pathways"><h3>' . esc_html__('Choose another support pathway', 'sustainable-catalyst-feature-suggestions') . '</h3><div class="scfs-support-platform__cards">';
+        echo '</section>';
+        if (!isset($display['show_overview_pathways']) || $display['show_overview_pathways']) {
+            echo '<section class="scfs-support-platform__pathways"><h3>' . esc_html__('Choose another support pathway', 'sustainable-catalyst-feature-suggestions') . '</h3><div class="scfs-support-platform__cards">';
         $cards = array(
             'documentation' => array(__('Browse documentation', 'sustainable-catalyst-feature-suggestions'), __('Read task-based guidance, troubleshooting, technical references, and product collections.', 'sustainable-catalyst-feature-suggestions')),
             'issues' => array(__('Check known issues', 'sustainable-catalyst-feature-suggestions'), __('Review verified problems, current status, workarounds, and planned resolutions.', 'sustainable-catalyst-feature-suggestions')),
@@ -741,11 +1092,12 @@ final class SCFS_Product_Support_Platform {
             if (($view === 'surveys' && empty($settings['show_surveys'])) || ($view === 'ideas' && empty($settings['show_public_ideas']))) {
                 continue;
             }
-            echo '<a href="' . esc_url($this->view_url($view, $product)) . '"><h4>' . esc_html($card[0]) . '</h4><p>' . esc_html($card[1]) . '</p><span>' . esc_html__('Open pathway', 'sustainable-catalyst-feature-suggestions') . ' →</span></a>';
+            echo '<a class="scfs-support-platform__pathway-card" href="' . esc_url($this->view_url($view, $product)) . '" ' . $this->view_link_attributes($view, $product) . '><h4>' . esc_html($card[0]) . '</h4><p>' . esc_html($card[1]) . '</p><span class="scfs-support-platform__pathway-action">' . esc_html__('Open pathway', 'sustainable-catalyst-feature-suggestions') . ' →</span></a>';
         }
-        echo '</div></section>';
+            echo '</div></section>';
+        }
         if (!empty($settings['show_release_intelligence'])) {
-            echo '<section><div class="scfs-support-platform__section-head"><div><h3>' . esc_html__('Release intelligence', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Current, planned, maintenance, and retired releases with documentation and known-issue relationships.', 'sustainable-catalyst-feature-suggestions') . '</p></div><a href="' . esc_url($this->view_url('releases', $product)) . '">' . esc_html__('View all releases', 'sustainable-catalyst-feature-suggestions') . '</a></div>';
+            echo '<section><div class="scfs-support-platform__section-head"><div><h3>' . esc_html__('Release intelligence', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Current, planned, maintenance, and retired releases with documentation and known-issue relationships.', 'sustainable-catalyst-feature-suggestions') . '</p></div><a href="' . esc_url($this->view_url('releases', $product)) . '" ' . $this->view_link_attributes('releases', $product) . '>' . esc_html__('View all releases', 'sustainable-catalyst-feature-suggestions') . '</a></div>';
             $this->render_releases($product, absint($settings['featured_release_limit']), true);
             echo '</section>';
         }
@@ -827,7 +1179,7 @@ final class SCFS_Product_Support_Platform {
         if ($selected_id) {
             $form = get_post($selected_id);
             if ($form && $form->post_type === SCFS_Forms_Foundation::FORM_TYPE && $form->post_status === 'publish' && get_post_meta($form->ID, '_scfs_form_mode', true) === 'survey') {
-                echo '<p><a href="' . esc_url($this->view_url('surveys', $product)) . '">← ' . esc_html__('Back to surveys', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+                echo '<p><a href="' . esc_url($this->view_url('surveys', $product)) . '" ' . $this->view_link_attributes('surveys', $product) . '>← ' . esc_html__('Back to surveys', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
                 echo SCFS_Forms_Foundation::instance()->render_shortcode(array('id' => (string) $form->ID, 'class' => 'scfs-support-platform-survey')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 return;
             }
@@ -848,7 +1200,7 @@ final class SCFS_Product_Support_Platform {
             echo '<div class="scfs-support-platform__empty"><h4>' . esc_html__('No surveys are currently open', 'sustainable-catalyst-feature-suggestions') . '</h4></div>';
         }
         foreach ($query->posts as $survey) {
-            echo '<article><h4>' . esc_html(get_the_title($survey)) . '</h4><p>' . esc_html(wp_trim_words(wp_strip_all_tags($survey->post_content), 35)) . '</p><a href="' . esc_url($this->view_url('surveys', $product, array('scfs_support_survey' => $survey->ID))) . '">' . esc_html__('Take survey', 'sustainable-catalyst-feature-suggestions') . ' →</a></article>';
+            echo '<article><h4>' . esc_html(get_the_title($survey)) . '</h4><p>' . esc_html(wp_trim_words(wp_strip_all_tags($survey->post_content), 35)) . '</p><a href="' . esc_url($this->view_url('surveys', $product, array('scfs_support_survey' => $survey->ID))) . '" ' . $this->view_link_attributes('surveys', $product, array('scfs_support_survey' => $survey->ID)) . '>' . esc_html__('Take survey', 'sustainable-catalyst-feature-suggestions') . ' →</a></article>';
         }
         echo '</div></section>';
     }
@@ -970,24 +1322,42 @@ final class SCFS_Product_Support_Platform {
         }
         $settings = $this->settings();
         $overview = $this->overview_record('');
-        echo '<div class="wrap scfs-platform-center"><h1>' . esc_html__('Product Support and Feedback Platform', 'sustainable-catalyst-feature-suggestions') . '</h1><p>' . esc_html__('Unified public support, documentation, known issues, release intelligence, suggestions, voting, surveys, and privacy-bounded Contact and Engagement integration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<div class="wrap scfs-platform-center"><h1>' . esc_html__('Product Support and Feedback Platform', 'sustainable-catalyst-feature-suggestions') . '</h1><p>' . esc_html__('Unified public support with embedded-mode reliability and configurable site branding.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         echo '<div class="scfs-intel-cards">';
         foreach ($overview['counts'] as $key => $value) {
             echo '<div class="scfs-intel-card"><span>' . esc_html(ucwords(str_replace('_', ' ', $key))) . '</span><strong>' . esc_html((string) $value) . '</strong></div>';
         }
         echo '</div><p><a class="button button-primary" href="' . esc_url(admin_url('post-new.php?post_type=' . self::RELEASE_POST_TYPE)) . '">' . esc_html__('Add Release Record', 'sustainable-catalyst-feature-suggestions') . '</a> <a class="button" href="' . esc_url(admin_url('edit.php?post_type=' . self::RELEASE_POST_TYPE)) . '">' . esc_html__('Manage Releases', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
-        echo '<h2>' . esc_html__('Public shortcode', 'sustainable-catalyst-feature-suggestions') . '</h2><p><code>[' . esc_html(self::SHORTCODE) . ']</code></p>';
+        echo '<h2>' . esc_html__('Public shortcodes', 'sustainable-catalyst-feature-suggestions') . '</h2><p><code>[' . esc_html(self::SHORTCODE) . ']</code></p><p><code>[' . esc_html(self::SHORTCODE) . ' mode="embedded" default_view="resolve"]</code></p>';
         echo '<h2>' . esc_html__('Platform settings', 'sustainable-catalyst-feature-suggestions') . '</h2><form method="post" action="' . esc_url(admin_url('admin-post.php')) . '"><input type="hidden" name="action" value="scfs_save_product_support_settings">';
         wp_nonce_field('scfs_save_product_support_settings', 'scfs_product_support_nonce');
         echo '<table class="form-table"><tr><th>' . esc_html__('Support center title', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="support_center_title" value="' . esc_attr($settings['support_center_title']) . '"></td></tr>';
         echo '<tr><th>' . esc_html__('Intro', 'sustainable-catalyst-feature-suggestions') . '</th><td><textarea class="large-text" rows="4" name="support_center_intro">' . esc_textarea($settings['support_center_intro']) . '</textarea></td></tr>';
-        echo '<tr><th>' . esc_html__('Default section', 'sustainable-catalyst-feature-suggestions') . '</th><td><select name="default_view">';
+        echo '<tr><th>' . esc_html__('Default rendering mode', 'sustainable-catalyst-feature-suggestions') . '</th><td><select name="default_mode"><option value="standalone" ' . selected($settings['default_mode'], 'standalone', false) . '>' . esc_html__('Standalone application', 'sustainable-catalyst-feature-suggestions') . '</option><option value="embedded" ' . selected($settings['default_mode'], 'embedded', false) . '>' . esc_html__('Embedded in a designed page', 'sustainable-catalyst-feature-suggestions') . '</option></select><p class="description">' . esc_html__('Embedded mode removes duplicate application chrome and inherits the page width.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+        echo '<tr><th>' . esc_html__('Default standalone section', 'sustainable-catalyst-feature-suggestions') . '</th><td><select name="default_view">';
         foreach ($this->navigation_items($settings) as $key => $item) {
             echo '<option value="' . esc_attr($key) . '" ' . selected($settings['default_view'], $key, false) . '>' . esc_html($item['label']) . '</option>';
         }
+        echo '</select></td></tr><tr><th>' . esc_html__('Default embedded section', 'sustainable-catalyst-feature-suggestions') . '</th><td><select name="embedded_default_view">';
+        foreach ($this->navigation_items($settings) as $key => $item) {
+            echo '<option value="' . esc_attr($key) . '" ' . selected($settings['embedded_default_view'], $key, false) . '>' . esc_html($item['label']) . '</option>';
+        }
         echo '</select></td></tr><tr><th>' . esc_html__('Contact and Engagement URL', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" type="url" name="contact_engagement_url" value="' . esc_attr($settings['contact_engagement_url']) . '"><p class="description">' . esc_html__('Private support case intake destination. Automatic case creation remains disabled.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
         echo '<tr><th>' . esc_html__('Visible modules', 'sustainable-catalyst-feature-suggestions') . '</th><td><label><input type="checkbox" name="show_surveys" value="1" ' . checked($settings['show_surveys'], '1', false) . '> ' . esc_html__('Surveys', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="show_public_ideas" value="1" ' . checked($settings['show_public_ideas'], '1', false) . '> ' . esc_html__('Public ideas and voting', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="show_release_intelligence" value="1" ' . checked($settings['show_release_intelligence'], '1', false) . '> ' . esc_html__('Release intelligence', 'sustainable-catalyst-feature-suggestions') . '</label></td></tr>';
-        echo '<tr><th>' . esc_html__('Featured release limit', 'sustainable-catalyst-feature-suggestions') . '</th><td><input type="number" min="1" max="12" name="featured_release_limit" value="' . esc_attr($settings['featured_release_limit']) . '"></td></tr></table><p><button class="button button-primary">' . esc_html__('Save support platform settings', 'sustainable-catalyst-feature-suggestions') . '</button></p></form>';
+        echo '<tr><th>' . esc_html__('Featured release limit', 'sustainable-catalyst-feature-suggestions') . '</th><td><input type="number" min="1" max="12" name="featured_release_limit" value="' . esc_attr($settings['featured_release_limit']) . '"></td></tr></table>';
+        echo '<h2>' . esc_html__('Branding and site integration', 'sustainable-catalyst-feature-suggestions') . '</h2><p>' . esc_html__('Use a preset, inherit Astra/WordPress theme variables, or define a custom scoped brand. These tokens also restyle Guided Resolution, the Knowledge Base, forms, surveys, and public ideas when they appear inside the Support Center.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<table class="form-table"><tr><th>' . esc_html__('Branding preset', 'sustainable-catalyst-feature-suggestions') . '</th><td><select name="branding_preset"><option value="platform" ' . selected($settings['branding_preset'], 'platform', false) . '>' . esc_html__('Platform default', 'sustainable-catalyst-feature-suggestions') . '</option><option value="sustainable-catalyst" ' . selected($settings['branding_preset'], 'sustainable-catalyst', false) . '>' . esc_html__('Sustainable Catalyst: red, black, white, cream', 'sustainable-catalyst-feature-suggestions') . '</option><option value="inherit" ' . selected($settings['branding_preset'], 'inherit', false) . '>' . esc_html__('Inherit active site theme', 'sustainable-catalyst-feature-suggestions') . '</option><option value="custom" ' . selected($settings['branding_preset'], 'custom', false) . '>' . esc_html__('Custom tokens below', 'sustainable-catalyst-feature-suggestions') . '</option></select></td></tr>';
+        $colors = array('brand_accent' => __('Accent', 'sustainable-catalyst-feature-suggestions'), 'brand_accent_contrast' => __('Accent text', 'sustainable-catalyst-feature-suggestions'), 'brand_ink' => __('Text', 'sustainable-catalyst-feature-suggestions'), 'brand_muted' => __('Muted text', 'sustainable-catalyst-feature-suggestions'), 'brand_surface' => __('Surface', 'sustainable-catalyst-feature-suggestions'), 'brand_soft' => __('Soft background', 'sustainable-catalyst-feature-suggestions'), 'brand_line' => __('Borders', 'sustainable-catalyst-feature-suggestions'), 'brand_success' => __('Success', 'sustainable-catalyst-feature-suggestions'), 'brand_warning' => __('Warning', 'sustainable-catalyst-feature-suggestions'), 'brand_danger' => __('Danger', 'sustainable-catalyst-feature-suggestions'));
+        echo '<tr><th>' . esc_html__('Custom color tokens', 'sustainable-catalyst-feature-suggestions') . '</th><td><div class="scfs-brand-token-grid">';
+        foreach ($colors as $key => $label) {
+            echo '<label><span>' . esc_html($label) . '</span><input type="color" name="' . esc_attr($key) . '" value="' . esc_attr($settings[$key]) . '"><code>' . esc_html($settings[$key]) . '</code></label>';
+        }
+        echo '</div></td></tr>';
+        echo '<tr><th>' . esc_html__('Typography', 'sustainable-catalyst-feature-suggestions') . '</th><td><p><label>' . esc_html__('Body font stack', 'sustainable-catalyst-feature-suggestions') . '<br><input class="regular-text" name="brand_font_family" value="' . esc_attr($settings['brand_font_family']) . '" placeholder="inherit"></label></p><p><label>' . esc_html__('Heading font stack', 'sustainable-catalyst-feature-suggestions') . '<br><input class="regular-text" name="brand_heading_font_family" value="' . esc_attr($settings['brand_heading_font_family']) . '" placeholder="inherit"></label></p></td></tr>';
+        echo '<tr><th>' . esc_html__('Shape and spacing', 'sustainable-catalyst-feature-suggestions') . '</th><td><label>' . esc_html__('Corner radius', 'sustainable-catalyst-feature-suggestions') . ' <input type="number" min="0" max="24" name="brand_radius" value="' . esc_attr($settings['brand_radius']) . '"> px</label><br><label>' . esc_html__('Maximum width', 'sustainable-catalyst-feature-suggestions') . ' <input type="number" min="680" max="1800" name="brand_max_width" value="' . esc_attr($settings['brand_max_width']) . '"> px</label><br><label>' . esc_html__('Shadow', 'sustainable-catalyst-feature-suggestions') . ' <select name="brand_shadow"><option value="none" ' . selected($settings['brand_shadow'], 'none', false) . '>' . esc_html__('None', 'sustainable-catalyst-feature-suggestions') . '</option><option value="subtle" ' . selected($settings['brand_shadow'], 'subtle', false) . '>' . esc_html__('Subtle', 'sustainable-catalyst-feature-suggestions') . '</option><option value="raised" ' . selected($settings['brand_shadow'], 'raised', false) . '>' . esc_html__('Raised', 'sustainable-catalyst-feature-suggestions') . '</option></select></label><br><label>' . esc_html__('Navigation columns', 'sustainable-catalyst-feature-suggestions') . ' <input type="number" min="1" max="4" name="nav_columns" value="' . esc_attr($settings['nav_columns']) . '"></label></td></tr>';
+        echo '<tr><th>' . esc_html__('Embedded-mode defaults', 'sustainable-catalyst-feature-suggestions') . '</th><td><label><input type="checkbox" name="embedded_hide_header" value="1" ' . checked($settings['embedded_hide_header'], '1', false) . '> ' . esc_html__('Hide duplicate application header', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="embedded_hide_status" value="1" ' . checked($settings['embedded_hide_status'], '1', false) . '> ' . esc_html__('Hide status counters', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="embedded_hide_nav_descriptions" value="1" ' . checked($settings['embedded_hide_nav_descriptions'], '1', false) . '> ' . esc_html__('Use compact navigation labels', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="embedded_hide_overview_pathways" value="1" ' . checked($settings['embedded_hide_overview_pathways'], '1', false) . '> ' . esc_html__('Suppress duplicate overview pathway cards', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="embedded_use_page_width" value="1" ' . checked($settings['embedded_use_page_width'], '1', false) . '> ' . esc_html__('Use the containing page width', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="hide_zero_status" value="1" ' . checked($settings['hide_zero_status'], '1', false) . '> ' . esc_html__('Hide empty status metrics', 'sustainable-catalyst-feature-suggestions') . '</label></td></tr></table>';
+        echo '<div class="scfs-brand-preview" style="--preview-accent:' . esc_attr($settings['brand_accent']) . ';--preview-ink:' . esc_attr($settings['brand_ink']) . ';--preview-surface:' . esc_attr($settings['brand_surface']) . ';--preview-soft:' . esc_attr($settings['brand_soft']) . ';--preview-line:' . esc_attr($settings['brand_line']) . '"><p class="scfs-brand-preview__eyebrow">' . esc_html__('Brand preview', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html__('Embedded Support Center', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Scoped design tokens prevent broad page styles from turning every application control into the same button or card.', 'sustainable-catalyst-feature-suggestions') . '</p><span>' . esc_html__('Active navigation', 'sustainable-catalyst-feature-suggestions') . '</span></div>';
+        echo '<p><button class="button button-primary">' . esc_html__('Save support platform and branding settings', 'sustainable-catalyst-feature-suggestions') . '</button></p></form>';
         echo '<h2>' . esc_html__('Integration boundary', 'sustainable-catalyst-feature-suggestions') . '</h2><pre>' . esc_html(wp_json_encode($this->handoff_schema(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) . '</pre></div>';
     }
 
@@ -998,18 +1368,48 @@ final class SCFS_Product_Support_Platform {
         check_admin_referer('scfs_save_product_support_settings', 'scfs_product_support_nonce');
         $allowed_views = array_keys($this->navigation_items($this->settings()));
         $default_view = sanitize_key($_POST['default_view'] ?? 'overview');
+        $embedded_default_view = sanitize_key($_POST['embedded_default_view'] ?? 'resolve');
         if (!in_array($default_view, $allowed_views, true)) {
             $default_view = 'overview';
         }
+        if (!in_array($embedded_default_view, $allowed_views, true)) {
+            $embedded_default_view = 'resolve';
+        }
+        $defaults = $this->default_settings();
         update_option(self::OPTION_KEY, array(
             'support_center_title' => sanitize_text_field(wp_unslash($_POST['support_center_title'] ?? '')),
             'support_center_intro' => sanitize_textarea_field(wp_unslash($_POST['support_center_intro'] ?? '')),
             'default_view' => $default_view,
+            'default_mode' => $this->choice($_POST['default_mode'] ?? 'standalone', array('standalone', 'embedded'), 'standalone'),
+            'embedded_default_view' => $embedded_default_view,
             'contact_engagement_url' => esc_url_raw(wp_unslash($_POST['contact_engagement_url'] ?? '')),
             'show_surveys' => isset($_POST['show_surveys']) ? '1' : '',
             'show_public_ideas' => isset($_POST['show_public_ideas']) ? '1' : '',
             'show_release_intelligence' => isset($_POST['show_release_intelligence']) ? '1' : '',
             'featured_release_limit' => min(12, max(1, absint($_POST['featured_release_limit'] ?? 4))),
+            'branding_preset' => $this->choice($_POST['branding_preset'] ?? 'platform', array('platform', 'sustainable-catalyst', 'inherit', 'custom'), 'platform'),
+            'brand_accent' => $this->color($_POST['brand_accent'] ?? '', $defaults['brand_accent']),
+            'brand_accent_contrast' => $this->color($_POST['brand_accent_contrast'] ?? '', $defaults['brand_accent_contrast']),
+            'brand_ink' => $this->color($_POST['brand_ink'] ?? '', $defaults['brand_ink']),
+            'brand_muted' => $this->color($_POST['brand_muted'] ?? '', $defaults['brand_muted']),
+            'brand_surface' => $this->color($_POST['brand_surface'] ?? '', $defaults['brand_surface']),
+            'brand_soft' => $this->color($_POST['brand_soft'] ?? '', $defaults['brand_soft']),
+            'brand_line' => $this->color($_POST['brand_line'] ?? '', $defaults['brand_line']),
+            'brand_success' => $this->color($_POST['brand_success'] ?? '', $defaults['brand_success']),
+            'brand_warning' => $this->color($_POST['brand_warning'] ?? '', $defaults['brand_warning']),
+            'brand_danger' => $this->color($_POST['brand_danger'] ?? '', $defaults['brand_danger']),
+            'brand_radius' => (string) min(24, max(0, absint($_POST['brand_radius'] ?? 0))),
+            'brand_shadow' => $this->choice($_POST['brand_shadow'] ?? 'subtle', array('none', 'subtle', 'raised'), 'subtle'),
+            'brand_max_width' => (string) min(1800, max(680, absint($_POST['brand_max_width'] ?? 1180))),
+            'brand_font_family' => $this->font_stack(wp_unslash($_POST['brand_font_family'] ?? 'inherit'), 'inherit'),
+            'brand_heading_font_family' => $this->font_stack(wp_unslash($_POST['brand_heading_font_family'] ?? 'inherit'), 'inherit'),
+            'embedded_hide_header' => isset($_POST['embedded_hide_header']) ? '1' : '',
+            'embedded_hide_status' => isset($_POST['embedded_hide_status']) ? '1' : '',
+            'embedded_hide_nav_descriptions' => isset($_POST['embedded_hide_nav_descriptions']) ? '1' : '',
+            'embedded_hide_overview_pathways' => isset($_POST['embedded_hide_overview_pathways']) ? '1' : '',
+            'embedded_use_page_width' => isset($_POST['embedded_use_page_width']) ? '1' : '',
+            'hide_zero_status' => isset($_POST['hide_zero_status']) ? '1' : '',
+            'nav_columns' => (string) min(4, max(1, absint($_POST['nav_columns'] ?? 3))),
         ), false);
         wp_safe_redirect(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=scfs-product-support-platform&updated=1'));
         exit;
@@ -1053,6 +1453,18 @@ final class SCFS_Product_Support_Platform {
             'methods' => WP_REST_Server::READABLE,
             'callback' => array($this, 'rest_products'),
             'permission_callback' => '__return_true',
+        ));
+        register_rest_route($namespace, '/product-support/view', array(
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => array($this, 'rest_view'),
+            'permission_callback' => '__return_true',
+            'args' => array(
+                'view' => array('sanitize_callback' => 'sanitize_key'),
+                'product' => array('sanitize_callback' => 'sanitize_title'),
+                'survey' => array('sanitize_callback' => 'absint'),
+                'base_url' => array('sanitize_callback' => 'esc_url_raw'),
+                'anchor' => array('sanitize_callback' => 'sanitize_title'),
+            ),
         ));
         register_rest_route($namespace, '/product-support/handoff-schema', array(
             'methods' => WP_REST_Server::READABLE,
@@ -1102,6 +1514,41 @@ final class SCFS_Product_Support_Platform {
             );
         }
         return rest_ensure_response(array('schema' => 'scfs-product-support-products/' . self::SCHEMA_VERSION, 'items' => $items));
+    }
+
+    public function rest_view($request) {
+        $settings = $this->settings();
+        $view = $this->choice($request->get_param('view'), $this->allowed_views($settings), 'overview');
+        $product = sanitize_title($request->get_param('product'));
+        $survey = absint($request->get_param('survey'));
+        $base_url = $this->support_base_url($request->get_param('base_url'));
+        $anchor = $this->normalized_anchor($request->get_param('anchor'));
+        $show_pathways = $this->bool_value($request->get_param('show_overview_pathways'), $this->active_show_overview_pathways);
+        $context = array('view' => $view, 'product' => $product, 'survey' => $survey);
+        $display = array('show_overview_pathways' => $show_pathways);
+        $previous_base_url = $this->active_base_url;
+        $previous_anchor = $this->active_anchor;
+        $previous_pathways = $this->active_show_overview_pathways;
+        $this->active_base_url = $base_url;
+        $this->active_anchor = $anchor;
+        $this->active_show_overview_pathways = $show_pathways;
+        ob_start();
+        $this->render_view($context, $this->overview_record($product), $settings, $display);
+        $html = ob_get_clean();
+        $url = $this->view_url($view, $product, $survey ? array('scfs_support_survey' => $survey) : array());
+        $this->active_base_url = $previous_base_url;
+        $this->active_anchor = $previous_anchor;
+        $this->active_show_overview_pathways = $previous_pathways;
+        return rest_ensure_response(array(
+            'schema' => 'scfs-product-support-view/' . self::SCHEMA_VERSION,
+            'version' => self::VERSION,
+            'view' => $view,
+            'product' => $product,
+            'survey' => $survey,
+            'url' => $url,
+            'html' => $html,
+            'private_case_content_exposed' => false,
+        ));
     }
 
     public function rest_handoff_schema() {

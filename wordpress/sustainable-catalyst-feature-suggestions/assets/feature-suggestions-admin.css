@@ -91,3 +91,65 @@
   margin-top: 6px;
   color: #50575e;
 }
+
+/* v4.0.1 Support Center branding controls */
+.scfs-brand-token-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  max-width: 920px;
+}
+
+.scfs-brand-token-grid label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #dcdcde;
+}
+
+.scfs-brand-token-grid label span {
+  grid-column: 1 / -1;
+  font-weight: 700;
+}
+
+.scfs-brand-token-grid input[type="color"] {
+  width: 52px;
+  min-height: 36px;
+  padding: 2px;
+}
+
+.scfs-brand-preview {
+  max-width: 920px;
+  margin: 24px 0;
+  padding: 24px;
+  color: var(--preview-ink, #171717);
+  background: var(--preview-surface, #fff);
+  border: 1px solid var(--preview-line, #d9dde2);
+  border-top: 5px solid var(--preview-accent, #6f1225);
+}
+
+.scfs-brand-preview__eyebrow {
+  margin: 0 0 6px;
+  color: var(--preview-accent, #6f1225);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.scfs-brand-preview h3 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.scfs-brand-preview span {
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 8px 12px;
+  color: #fff;
+  background: var(--preview-accent, #6f1225);
+  font-weight: 700;
+}

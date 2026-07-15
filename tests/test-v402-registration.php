@@ -37,6 +37,7 @@ $checks = array(
     'overview route' => isset($GLOBALS['scfs_routes']['scfs/v1/product-support/overview']),
     'releases route' => isset($GLOBALS['scfs_routes']['scfs/v1/product-support/releases']),
     'products route' => isset($GLOBALS['scfs_routes']['scfs/v1/product-support/products']),
+    'view route' => isset($GLOBALS['scfs_routes']['scfs/v1/product-support/view']),
     'handoff route' => isset($GLOBALS['scfs_routes']['scfs/v1/product-support/handoff-schema']),
     'snapshot route' => isset($GLOBALS['scfs_routes']['scfs/v1/product-support/snapshot']),
 );

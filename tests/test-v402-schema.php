@@ -16,7 +16,14 @@ $schema = $platform->schema_record();
 $handoff = $platform->handoff_schema();
 $checks = array(
     'platform schema version' => ($schema['schema'] ?? '') === 'scfs-product-support-platform/1.0',
-    'platform release version' => ($schema['version'] ?? '') === '4.0.0',
+    'platform release version' => ($schema['version'] ?? '') === '4.0.2',
+    'embedded rendering mode' => in_array('embedded', $schema['rendering_modes'] ?? array(), true),
+    'client-side navigation' => ($schema['navigation']['client_side_view_switching'] ?? false) === true,
+    'browser history navigation' => ($schema['navigation']['browser_history'] ?? false) === true,
+    'anchored fallback navigation' => ($schema['navigation']['anchored_fallback'] ?? false) === true,
+    'product context navigation' => ($schema['navigation']['product_context_preserved'] ?? false) === true,
+    'custom branding preset' => in_array('custom', $schema['branding_presets'] ?? array(), true),
+    'branding token contract' => in_array('accent', $schema['branding_tokens'] ?? array(), true) && in_array('heading_font_family', $schema['branding_tokens'] ?? array(), true),
     'guided resolution module' => in_array('guided_resolution', $schema['public_modules'] ?? array(), true),
     'knowledge base module' => in_array('support_knowledge_base', $schema['public_modules'] ?? array(), true),
     'known issue module' => in_array('known_issues', $schema['public_modules'] ?? array(), true),

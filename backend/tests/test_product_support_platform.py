@@ -13,7 +13,7 @@ def test_critical_issue_prioritizes_known_issues():
         critical_known_issues=1,
         release_records=4,
     ))
-    assert result.version == '4.0.0'
+    assert result.version == '4.0.2'
     assert result.support_state == 'incident'
     assert result.recommended_pathway == 'known_issues'
     assert result.private_case_storage is False

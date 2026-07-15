@@ -58,13 +58,28 @@ final class SCFS_Public_Ideas {
     private function public_query($args=array()) {
         return new WP_Query(array_merge(array('post_type'=>Sustainable_Catalyst_Feature_Suggestions::POST_TYPE,'post_status'=>array('publish','private','pending'),'posts_per_page'=>20,'meta_query'=>array(array('key'=>'_scfs_public_visibility','value'=>'1')),'orderby'=>'date','order'=>'DESC'),$args));
     }
+    public function enqueue_public_assets() {
+        if (function_exists('wp_enqueue_style')) {
+            wp_enqueue_style('scfs-public-ideas');
+        }
+        if (function_exists('wp_enqueue_script')) {
+            wp_enqueue_script('scfs-public-ideas');
+        }
+        if (function_exists('wp_localize_script') && function_exists('rest_url') && function_exists('wp_create_nonce')) {
+            wp_localize_script('scfs-public-ideas', 'SCFSPublicIdeas', array(
+                'endpoint' => esc_url_raw(rest_url('scfs/v1/public-ideas')),
+                'nonce' => wp_create_nonce('wp_rest'),
+                'supported' => array_values(array_filter(array_map('absint', explode(',', sanitize_text_field($_COOKIE[self::VOTE_COOKIE] ?? ''))))),
+            ));
+        }
+    }
+
     public function shortcode($atts) {
         $atts=shortcode_atts(array('limit'=>'20','state'=>'','title'=>'Public Ideas','product'=>''),$atts,self::SHORTCODE);
         $meta=array(array('key'=>'_scfs_public_visibility','value'=>'1'));
         $state=sanitize_key($atts['state']); if($state && isset($this->states()[$state]))$meta[]=array('key'=>'_scfs_public_state','value'=>$state);
         $query_args=array('posts_per_page'=>min(100,max(1,absint($atts['limit']))),'meta_query'=>$meta); $product=sanitize_title($atts['product']); if($product&&class_exists('SCFS_Product_Integration'))$query_args['tax_query']=array(array('taxonomy'=>SCFS_Product_Integration::PRODUCT_TAXONOMY,'field'=>'slug','terms'=>$product)); $q=$this->public_query($query_args);
-        wp_enqueue_style('scfs-public-ideas'); wp_enqueue_script('scfs-public-ideas');
-        wp_localize_script('scfs-public-ideas','SCFSPublicIdeas',array('endpoint'=>esc_url_raw(rest_url('scfs/v1/public-ideas')),'nonce'=>wp_create_nonce('wp_rest'),'supported'=>array_values(array_filter(array_map('absint',explode(',',sanitize_text_field($_COOKIE[self::VOTE_COOKIE] ?? '')))))));
+        $this->enqueue_public_assets();
         ob_start(); echo '<section class="scfs-public-ideas"><header><p class="scfs-public-kicker">'.esc_html__('Participatory roadmap','sustainable-catalyst-feature-suggestions').'</p><h2>'.esc_html($atts['title']).'</h2><p>'.esc_html__('Review approved ideas, support priorities, and follow official roadmap decisions. Support counts inform review but do not determine implementation.','sustainable-catalyst-feature-suggestions').'</p></header><div class="scfs-public-grid">';
         if(!$q->have_posts()) echo '<p>'.esc_html__('No public ideas are available yet.','sustainable-catalyst-feature-suggestions').'</p>';
         while($q->have_posts()){ $q->the_post(); $id=get_the_ID(); $canonical=absint(get_post_meta($id,'_scfs_canonical_idea_id',true)); if($canonical){continue;} $state=get_post_meta($id,'_scfs_public_state',true)?:'under_review'; $votes=absint(get_post_meta($id,'_scfs_support_votes',true)); $response=get_post_meta($id,'_scfs_official_response',true); $release=get_post_meta($id,'_scfs_release_url',true); $category=get_post_meta($id,'_scfs_category',true);

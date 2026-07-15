@@ -9,8 +9,8 @@ from .guided_resolution import ResolutionRankRequest, ResolutionRankResult, rank
 from .documentation_intelligence import DocumentationGapEvidence, DocumentationGapScore, SupportDemandEvidence, SupportDemandScore, score_documentation_gap, score_support_demand
 from .product_support_platform import ProductSupportEvidence, ProductSupportOverview, ReleaseReadinessEvidence, ReleaseReadinessScore, summarize_product_support, score_release_readiness
 
-VERSION='4.0.0'
-ANALYSIS_VERSION='4.0.0-1'
+VERSION='4.0.2'
+ANALYSIS_VERSION='4.0.2-1'
 app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
 
 class Submission(BaseModel):
@@ -145,7 +145,7 @@ def survey_analyze(payload: SurveyAnalysisRequest, x_scfs_ai_key:Optional[str]=H
 @app.get('/v1/surveys/methodology')
 def survey_methodology(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {'ok':True,'analysis_version':'4.0.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+    return {'ok':True,'analysis_version':'4.0.2-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
 
 
 @app.get('/v1/platform/capabilities')
@@ -206,7 +206,7 @@ def product_support_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None
         'ok': True,
         'version': VERSION,
         'schema': 'scfs-product-support-platform/1.0',
-        'capabilities': ['unified_support_overview','release_readiness_scoring','guided_resolution','knowledge_base','known_issue_prioritization','public_feedback','survey_research','private_support_handoff_boundary'],
+        'capabilities': ['unified_support_overview','release_readiness_scoring','guided_resolution','knowledge_base','known_issue_prioritization','public_feedback','survey_research','private_support_handoff_boundary','embedded_view_switching','browser_history_navigation','anchored_fallback_links','product_context_preservation'],
         'wordpress_source_of_truth': True,
         'private_case_storage': False,
         'automatic_case_creation': False,

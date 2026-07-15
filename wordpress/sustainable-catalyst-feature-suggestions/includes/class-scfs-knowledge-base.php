@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Knowledge_Base_Foundation {
-    const VERSION = '4.0.0';
+    const VERSION = '4.0.2';
     const SCHEMA_VERSION = '1.0';
     const ARTICLE_POST_TYPE = 'sc_support_article';
     const ISSUE_POST_TYPE = 'sc_known_issue';
@@ -444,7 +444,7 @@ final class SCFS_Knowledge_Base_Foundation {
         echo '<p><label for="scfs_kb_summary"><strong>' . esc_html__('Support summary', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><textarea class="widefat" rows="3" id="scfs_kb_summary" name="scfs_kb_summary">' . esc_textarea($summary) . '</textarea></p>';
         echo '<div class="scfs-admin-grid"><p><label for="scfs_article_audience"><strong>' . esc_html__('Audience', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><input class="widefat" id="scfs_article_audience" name="scfs_article_audience" value="' . esc_attr($audience) . '"></p>';
         echo '<p><label for="scfs_estimated_minutes"><strong>' . esc_html__('Estimated minutes', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><input class="small-text" type="number" min="0" max="999" id="scfs_estimated_minutes" name="scfs_estimated_minutes" value="' . esc_attr((string) $minutes) . '"></p>';
-        echo '<p><label for="scfs_last_verified_version"><strong>' . esc_html__('Last verified version', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><input class="widefat" id="scfs_last_verified_version" name="scfs_last_verified_version" value="' . esc_attr($verified) . '" placeholder="v4.0.0"></p></div>';
+        echo '<p><label for="scfs_last_verified_version"><strong>' . esc_html__('Last verified version', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><input class="widefat" id="scfs_last_verified_version" name="scfs_last_verified_version" value="' . esc_attr($verified) . '" placeholder="v4.0.2"></p></div>';
         echo '<p><label for="scfs_article_prerequisites"><strong>' . esc_html__('Prerequisites', 'sustainable-catalyst-feature-suggestions') . '</strong></label><br><textarea class="widefat" rows="3" id="scfs_article_prerequisites" name="scfs_article_prerequisites">' . esc_textarea($prerequisites) . '</textarea></p>';
     }
 

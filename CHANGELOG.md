@@ -1,5 +1,29 @@
 # Changelog
 
+## 4.0.2 — Navigation and Embedded Pathway Reliability Patch
+
+- Added in-place Support Center workspace switching through a public, read-only view endpoint.
+- Added browser back/forward history and direct-link support for every Support Center view.
+- Added anchored no-JavaScript fallbacks so direct navigation returns to `#support-center`.
+- Preserved product and survey context while switching views and applying product filters.
+- Added dynamic initialization for surveys and preloaded public-ideas, form, and suggestion assets.
+- Repaired “Choose another support pathway” cards with protected horizontal text, stable card widths, and responsive one-, two-, and three-column layouts.
+- Added loading, accessibility announcement, active-navigation, and REST-failure fallback behavior.
+- Preserved v4.0.1 branding controls and the v4.0.0 public/private support boundary.
+
+## 4.0.1 — Embedded Support Center Interface Reliability Patch
+
+- Added a true `mode="embedded"` Support Center rendering mode for use inside designed WordPress pages.
+- Added configurable branding presets for the platform default, Sustainable Catalyst, active-theme inheritance, and custom token sets.
+- Added admin controls for accent, contrast, ink, muted text, surface, soft surface, border, success, warning, danger, typography, radius, shadow, width, and navigation columns.
+- Added shortcode-level branding and layout overrides without requiring page-specific CSS.
+- Suppressed duplicate embedded heroes, all-zero status rows, long navigation descriptions, and repeated overview pathways by default.
+- Preserved the selected Support Center view when applying product context.
+- Scoped application navigation, buttons, forms, cards, Guided Resolution, Knowledge Base, public ideas, suggestions, and surveys against broad theme CSS collisions.
+- Added responsive one-, two-, three-, and four-column navigation safeguards plus accessible active-view state and screen-reader headings.
+- Added cache-safe `filemtime()` asset versioning so branding changes are not hidden by stale CSS.
+- Added branding-token and embedded-render regression tests while preserving the public/private support boundary.
+
 ## 4.0.0 — Product Support and Feedback Platform
 
 - Added the unified `[scfs_product_support_center]` public interface and `[scfs_support_center]` legacy alias.
