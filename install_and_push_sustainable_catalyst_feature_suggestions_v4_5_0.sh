@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-VERSION="4.4.0"
-RELEASE_NAME="Support Analytics and Product Reliability Center"
+VERSION="4.5.0"
+RELEASE_NAME="Cross-Product Support Orchestration"
 REPOSITORY="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${HOME}/Downloads"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v440.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v450.XXXXXX")"
 STAGE_DIR="${WORK_DIR}/stage"
 CLONE_DIR="${WORK_DIR}/repository"
 VENV_DIR="${WORK_DIR}/venv"
 SUCCESS=0
 
 cleanup() {
-  local status=$?
-  if [[ "$SUCCESS" -eq 1 ]]; then
+  status=$?
+  if [ "$SUCCESS" -eq 1 ]; then
     rm -rf "$WORK_DIR"
   else
     echo
@@ -25,23 +25,22 @@ cleanup() {
 trap cleanup EXIT
 
 echo "Feature Suggestions v${VERSION} — ${RELEASE_NAME}"
+echo "Installer compatibility: macOS Bash 3.2+"
 echo "Working directory: $WORK_DIR"
 mkdir -p "$STAGE_DIR"
 
 choose_python() {
-  local candidates=(
-    "/opt/homebrew/bin/python3.13"
-    "/usr/local/bin/python3.13"
-    "python3.13"
-    "/opt/homebrew/bin/python3.12"
-    "/usr/local/bin/python3.12"
-    "python3.12"
-  )
-  local candidate version
-  for candidate in "${candidates[@]}"; do
-    if command -v "$candidate" >/dev/null 2>&1 || [[ -x "$candidate" ]]; then
+  for candidate in \
+    /opt/homebrew/bin/python3.13 \
+    /usr/local/bin/python3.13 \
+    python3.13 \
+    /opt/homebrew/bin/python3.12 \
+    /usr/local/bin/python3.12 \
+    python3.12
+  do
+    if command -v "$candidate" >/dev/null 2>&1 || [ -x "$candidate" ]; then
       version="$($candidate -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")' 2>/dev/null || true)"
-      if [[ "$version" == "3.13" || "$version" == "3.12" ]]; then
+      if [ "$version" = "3.13" ] || [ "$version" = "3.12" ]; then
         printf '%s' "$candidate"
         return 0
       fi
@@ -51,7 +50,7 @@ choose_python() {
 }
 
 PYTHON_BIN="$(choose_python || true)"
-if [[ -z "$PYTHON_BIN" ]]; then
+if [ -z "$PYTHON_BIN" ]; then
   echo "ERROR: Python 3.12 or 3.13 is required."
   echo "Install it with: brew install python@3.13"
   exit 1
@@ -59,52 +58,58 @@ fi
 
 echo "Using Python: $PYTHON_BIN ($($PYTHON_BIN --version 2>&1))"
 
-shopt -s nullglob
-archives=(
-  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v4.4.0-repo*.zip
-  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v4.4.0-release-bundle*.zip
-)
-shopt -u nullglob
-if [[ ${#archives[@]} -eq 0 ]]; then
-  echo "ERROR: No v4.4.0 repository ZIP or release bundle was found in ~/Downloads."
+SOURCE_ARCHIVE="$($PYTHON_BIN - "$DOWNLOADS_DIR" <<'PY'
+from pathlib import Path
+import sys
+root=Path(sys.argv[1])
+files=list(root.glob('sustainable-catalyst-feature-suggestions-v4.5.0-repo*.zip'))
+files+=list(root.glob('sustainable-catalyst-feature-suggestions-v4.5.0-release-bundle*.zip'))
+if files:
+    print(max(files, key=lambda path: path.stat().st_mtime))
+PY
+)"
+if [ -z "$SOURCE_ARCHIVE" ] || [ ! -f "$SOURCE_ARCHIVE" ]; then
+  echo "ERROR: No v4.5.0 repository ZIP or release bundle was found in ~/Downloads."
   exit 1
 fi
-SOURCE_ARCHIVE="$(ls -t "${archives[@]}" | head -1)"
+
 echo "Using release archive: $SOURCE_ARCHIVE"
 unzip -q "$SOURCE_ARCHIVE" -d "$STAGE_DIR"
 
-MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 7 -type f -name feature_suggestions_manifest.json -print -quit)"
-if [[ -z "$MANIFEST_PATH" ]]; then
-  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 7 -type f -name 'sustainable-catalyst-feature-suggestions-v4.4.0-repo*.zip' -print -quit)"
-  if [[ -z "$INNER_ZIP" ]]; then
-    echo "ERROR: The release archive does not contain the v4.4.0 repository."
+MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
+if [ -z "$MANIFEST_PATH" ]; then
+  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v4.5.0-repo*.zip' -print -quit)"
+  if [ -z "$INNER_ZIP" ]; then
+    echo "ERROR: The release archive does not contain the v4.5.0 repository."
     exit 1
   fi
   mkdir -p "$STAGE_DIR/repository-package"
   unzip -q "$INNER_ZIP" -d "$STAGE_DIR/repository-package"
-  MANIFEST_PATH="$(find "$STAGE_DIR/repository-package" -maxdepth 7 -type f -name feature_suggestions_manifest.json -print -quit)"
+  MANIFEST_PATH="$(find "$STAGE_DIR/repository-package" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 fi
-if [[ -z "$MANIFEST_PATH" ]]; then
-  echo "ERROR: Could not locate the v4.4.0 repository root."
+if [ -z "$MANIFEST_PATH" ]; then
+  echo "ERROR: Could not locate the v4.5.0 repository root."
   exit 1
 fi
 PACKAGE_ROOT="$(dirname "$MANIFEST_PATH")"
 
-readarray -t MANIFEST_VALUES < <("$PYTHON_BIN" - "$MANIFEST_PATH" <<'PY'
+MANIFEST_VERSION="$($PYTHON_BIN - "$MANIFEST_PATH" <<'PY'
 import json,sys
 with open(sys.argv[1], encoding='utf-8') as handle:
-    data=json.load(handle)
-print(data.get('version',''))
-print(data.get('release_name',''))
+    print(json.load(handle).get('version',''))
 PY
-)
-MANIFEST_VERSION="${MANIFEST_VALUES[0]:-}"
-MANIFEST_RELEASE_NAME="${MANIFEST_VALUES[1]:-}"
-if [[ "$MANIFEST_VERSION" != "$VERSION" ]]; then
+)"
+MANIFEST_RELEASE_NAME="$($PYTHON_BIN - "$MANIFEST_PATH" <<'PY'
+import json,sys
+with open(sys.argv[1], encoding='utf-8') as handle:
+    print(json.load(handle).get('release_name',''))
+PY
+)"
+if [ "$MANIFEST_VERSION" != "$VERSION" ]; then
   echo "ERROR: Manifest version is '$MANIFEST_VERSION', expected '$VERSION'."
   exit 1
 fi
-if [[ "$MANIFEST_RELEASE_NAME" != "$RELEASE_NAME" ]]; then
+if [ "$MANIFEST_RELEASE_NAME" != "$RELEASE_NAME" ]; then
   echo "ERROR: Manifest release name is '$MANIFEST_RELEASE_NAME', expected '$RELEASE_NAME'."
   exit 1
 fi
@@ -123,19 +128,18 @@ rsync -a --delete \
   "$PACKAGE_ROOT/" "$CLONE_DIR/"
 
 MAIN_PLUGIN="wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php"
-RELIABILITY_CLASS="wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-support-reliability-center.php"
-RELIABILITY_CSS="wordpress/sustainable-catalyst-feature-suggestions/assets/support-reliability-center.css"
-RELIABILITY_JS="wordpress/sustainable-catalyst-feature-suggestions/assets/support-reliability-center.js"
-BACKEND_MODULE="backend/app/support_reliability.py"
-if [[ ! -f "$MAIN_PLUGIN" || ! -f "$RELIABILITY_CLASS" || ! -f "$RELIABILITY_CSS" || ! -f "$RELIABILITY_JS" || ! -f "$BACKEND_MODULE" ]]; then
-  echo "ERROR: Required WordPress or FastAPI v4.4.0 files are missing."
+ORCHESTRATION_CLASS="wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-cross-product-orchestration.php"
+ORCHESTRATION_CSS="wordpress/sustainable-catalyst-feature-suggestions/assets/cross-product-orchestration.css"
+BACKEND_MODULE="backend/app/cross_product_orchestration.py"
+if [ ! -f "$MAIN_PLUGIN" ] || [ ! -f "$ORCHESTRATION_CLASS" ] || [ ! -f "$ORCHESTRATION_CSS" ] || [ ! -f "$BACKEND_MODULE" ]; then
+  echo "ERROR: Required WordPress or FastAPI v4.5.0 files are missing."
   exit 1
 fi
-if ! grep -Fq 'Version: 4.4.0' "$MAIN_PLUGIN" || \
-   ! grep -Fq "const VERSION = '4.4.0';" "$RELIABILITY_CLASS" || \
-   ! grep -Fq "const SCHEMA_VERSION = '1.0';" "$RELIABILITY_CLASS" || \
-   ! grep -Fq 'version: str = "4.4.0"' "$BACKEND_MODULE"; then
-  echo "ERROR: WordPress or FastAPI version markers do not match v4.4.0."
+if ! grep -Fq 'Version: 4.5.0' "$MAIN_PLUGIN" || \
+   ! grep -Fq "const VERSION = '4.5.0';" "$ORCHESTRATION_CLASS" || \
+   ! grep -Fq "const SCHEMA_VERSION = '1.0';" "$ORCHESTRATION_CLASS" || \
+   ! grep -Fq 'version: str = "4.5.0"' "$BACKEND_MODULE"; then
+  echo "ERROR: WordPress or FastAPI version markers do not match v4.5.0."
   exit 1
 fi
 
@@ -159,11 +163,11 @@ while IFS= read -r test_file; do
   output="$(php "$test_file")"
   printf '%s\n' "$output"
   count="$(printf '%s\n' "$output" | awk '/checks passed/{print $1}' | tail -1)"
-  [[ -n "$count" ]] && PHP_CHECKS=$((PHP_CHECKS + count))
+  if [ -n "$count" ]; then PHP_CHECKS=$((PHP_CHECKS + count)); fi
   PHP_TESTS=$((PHP_TESTS + 1))
 done < <(find tests -maxdepth 1 -type f -name 'test-*.php' | sort)
-if [[ "$PHP_TESTS" -lt 28 || "$PHP_CHECKS" -lt 450 ]]; then
-  echo "ERROR: Expected at least 28 WordPress test files and 450 checks; found $PHP_TESTS files and $PHP_CHECKS checks."
+if [ "$PHP_TESTS" -lt 32 ] || [ "$PHP_CHECKS" -lt 520 ]; then
+  echo "ERROR: Expected at least 32 WordPress test files and 520 checks; found $PHP_TESTS files and $PHP_CHECKS checks."
   exit 1
 fi
 echo "PASS - $PHP_TESTS WordPress test files, $PHP_CHECKS checks"
@@ -200,8 +204,8 @@ for path in Path('.').rglob('*.json'):
 print(len(files))
 PY
 )"
-if [[ "$JSON_COUNT" -lt 34 ]]; then
-  echo "ERROR: Expected at least 34 JSON records; found $JSON_COUNT."
+if [ "$JSON_COUNT" -lt 37 ]; then
+  echo "ERROR: Expected at least 37 JSON records; found $JSON_COUNT."
   exit 1
 fi
 echo "PASS - $JSON_COUNT JSON files"
@@ -215,19 +219,19 @@ rm -f dist/sustainable-catalyst-feature-suggestions.zip
 )
 unzip -tq dist/sustainable-catalyst-feature-suggestions.zip >/dev/null
 HEADER_FILE="$WORK_DIR/plugin-header.php"
-RELIABILITY_ZIP_FILE="$WORK_DIR/support-reliability-class.php"
+ORCHESTRATION_ZIP_FILE="$WORK_DIR/cross-product-class.php"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php > "$HEADER_FILE"
-unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/includes/class-scfs-support-reliability-center.php > "$RELIABILITY_ZIP_FILE"
-if ! grep -Fq 'Version: 4.4.0' "$HEADER_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain plugin version 4.4.0."
+unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/includes/class-scfs-cross-product-orchestration.php > "$ORCHESTRATION_ZIP_FILE"
+if ! grep -Fq 'Version: 4.5.0' "$HEADER_FILE"; then
+  echo "ERROR: WordPress distribution ZIP does not contain plugin version 4.5.0."
   exit 1
 fi
-if ! grep -Fq "const VERSION = '4.4.0';" "$RELIABILITY_ZIP_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain the v4.4.0 reliability class."
+if ! grep -Fq "const VERSION = '4.5.0';" "$ORCHESTRATION_ZIP_FILE"; then
+  echo "ERROR: WordPress distribution ZIP does not contain the v4.5.0 orchestration class."
   exit 1
 fi
 ROOT_ENTRY_COUNT="$(zipinfo -1 dist/sustainable-catalyst-feature-suggestions.zip | awk -F/ 'NF && $1!=""{print $1}' | sort -u | wc -l | tr -d ' ')"
-if [[ "$ROOT_ENTRY_COUNT" != "1" ]]; then
+if [ "$ROOT_ENTRY_COUNT" != "1" ]; then
   echo "ERROR: WordPress ZIP must contain exactly one plugin root folder."
   exit 1
 fi
@@ -241,9 +245,9 @@ fi
 
 git add -A
 if git diff --cached --quiet; then
-  echo "No repository changes remain. v4.4.0 may already be installed."
+  echo "No repository changes remain. v4.5.0 may already be installed."
 else
-  git commit -m "Release Feature Suggestions v4.4.0 support reliability center"
+  git commit -m "Release Feature Suggestions v4.5.0 cross-product support orchestration"
 fi
 
 echo "Rebasing over any newer remote commits..."
@@ -254,5 +258,5 @@ git push origin main
 SUCCESS=1
 
 echo
-echo "Feature Suggestions v4.4.0 was validated, committed, and pushed successfully."
+echo "Feature Suggestions v4.5.0 was validated, committed, and pushed successfully."
 echo "Repository: $REPOSITORY"

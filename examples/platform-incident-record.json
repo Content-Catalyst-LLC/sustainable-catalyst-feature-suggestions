@@ -1,0 +1,25 @@
+{
+  "schema": "scfs-platform-incident/1.0",
+  "version": "4.5.0",
+  "id": 451,
+  "title": "Shared retrieval index unavailable",
+  "status": "investigating",
+  "severity": "high",
+  "summary": "Research Librarian and Knowledge Library retrieval are returning incomplete results while the shared index is rebuilt.",
+  "workaround": "Use direct Knowledge Library browsing and product-specific documentation until monitoring is complete.",
+  "products": [
+    {"slug": "research-librarian", "name": "Research Librarian"},
+    {"slug": "knowledge-library", "name": "Knowledge Library"}
+  ],
+  "components": [
+    {"slug": "retrieval-index", "name": "Retrieval Index"}
+  ],
+  "impact": {
+    "score": 72,
+    "state": "high",
+    "human_review_required": true,
+    "automatic_incident_declaration": false,
+    "automatic_release_blocking": false
+  },
+  "private_case_content_exposed": false
+}

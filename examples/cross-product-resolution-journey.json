@@ -1,0 +1,15 @@
+{
+  "schema": "scfs-cross-product-resolution-journey/1.0",
+  "version": "4.5.0",
+  "starting_product": "research-librarian",
+  "steps": [
+    {"key": "diagnose", "label": "Diagnose the visible symptom", "view": "resolve", "product": "research-librarian"},
+    {"key": "status", "label": "Check product and platform incidents", "view": "platform", "product": "research-librarian"},
+    {"key": "learn", "label": "Review product-aware documentation", "view": "documentation", "product": "research-librarian"},
+    {"key": "related-product", "label": "Review related product: knowledge-library", "view": "resolve", "product": "knowledge-library", "relationship": "depends_on"},
+    {"key": "private-support", "label": "Continue to private support when public guidance is insufficient", "view": "private-support", "product": "research-librarian"}
+  ],
+  "private_case_content_stored": false,
+  "automatic_private_case_creation": false,
+  "human_review_required": true
+}

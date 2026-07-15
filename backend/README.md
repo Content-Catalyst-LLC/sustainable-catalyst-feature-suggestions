@@ -1,4 +1,4 @@
-# Feature Suggestions Intelligence Backend v4.4.0
+# Feature Suggestions Intelligence Backend v4.5.0
 
 FastAPI service for advisory classification of Feature Suggestions. It supports deterministic local classification and optional Gemini, DeepSeek, or OpenAI structured analysis. AI output never changes roadmap status automatically and always requires human review.
 
@@ -70,7 +70,7 @@ Deterministic advisory endpoints evaluate repository candidates, drift, release 
 These endpoints never fetch private repositories, modify WordPress, approve content, or publish records.
 
 
-## v4.4.0 support reliability intelligence
+## v4.5.0 support reliability intelligence
 
 Deterministic advisory endpoints score product reliability, summarize trends, prioritize unresolved-query clusters, and verify report integrity:
 
@@ -81,4 +81,16 @@ Deterministic advisory endpoints score product reliability, summarize trends, pr
 - `POST /v1/support-reliability/reports/verify`
 
 These endpoints do not store private case content, alter roadmaps, declare incidents, or publish WordPress records.
+
+## v4.5.0 cross-product orchestration
+
+Deterministic advisory endpoints evaluate public incident impact, recommend related-product routes, build cross-product resolution journeys, and verify orchestration report integrity:
+
+- `GET /v1/cross-product/capabilities`
+- `POST /v1/cross-product/incidents/evaluate`
+- `POST /v1/cross-product/routes/recommend`
+- `POST /v1/cross-product/journeys/build`
+- `POST /v1/cross-product/reports/verify`
+
+These endpoints do not declare incidents, block releases, publish WordPress records, store private case content, or create private cases.
 

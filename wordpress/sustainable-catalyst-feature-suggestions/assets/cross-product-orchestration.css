@@ -1,0 +1,27 @@
+/* Sustainable Catalyst Feature Suggestions v4.5.0 cross-product orchestration */
+.scfs-cross-product-support { color: var(--scfs-token-ink, #171717); }
+.scfs-cross-product-support > header { margin-bottom: 1.25rem; }
+.scfs-cross-product-support__grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 1.25rem; align-items: start; }
+.scfs-cross-product-support__incidents,
+.scfs-cross-product-support__routes,
+.scfs-cross-product-support__journey { min-width: 0; }
+.scfs-cross-product-support__incident,
+.scfs-cross-product-support__routes article,
+.scfs-cross-product-support__journey { margin: 0 0 1rem; padding: 1rem; background: var(--scfs-token-surface, #fff); border: 1px solid var(--scfs-token-line, #d9d2c4); border-radius: var(--scfs-token-radius, 0); overflow-wrap: anywhere; }
+.scfs-cross-product-support__incident h5,
+.scfs-cross-product-support__routes h5 { margin: .55rem 0; font-family: var(--scfs-token-heading-font, inherit); }
+.scfs-cross-product-support__badges { display: flex; flex-wrap: wrap; gap: .45rem; }
+.scfs-cross-product-support__badges span { display: inline-flex; padding: .25rem .5rem; border: 1px solid currentColor; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+.scfs-cross-product-support__badges .severity-critical { color: var(--scfs-token-danger, #9b1111); }
+.scfs-cross-product-support__badges .severity-high { color: var(--scfs-token-warning, #8a5a00); }
+.scfs-cross-product-support__badges .status-resolved { color: var(--scfs-token-success, #176b3a); }
+.scfs-cross-product-support__products { color: var(--scfs-token-muted, #555); font-size: .88rem; font-weight: 700; }
+.scfs-cross-product-support__routes article { background: var(--scfs-token-soft, #f7f3ea); }
+.scfs-cross-product-support__journey ol { margin: .75rem 0 0 1.25rem; }
+.scfs-cross-product-support__journey li { margin: .55rem 0; }
+.scfs-cross-product-admin__cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+.scfs-cross-product-admin__cards article { padding: 16px; background: #fff; border: 1px solid #c3c4c7; }
+.scfs-cross-product-admin__cards span { display: block; color: #646970; }
+.scfs-cross-product-admin__cards strong { display: block; margin-top: 6px; font-size: 1.8rem; }
+@media (max-width: 900px) { .scfs-cross-product-support__grid { grid-template-columns: 1fr; } .scfs-cross-product-admin__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .scfs-cross-product-admin__cards { grid-template-columns: 1fr; } }

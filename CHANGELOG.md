@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.5.0 — Cross-Product Support Orchestration
+
+- Added the public `sc_platform_incident` post type with status, severity, summaries, workarounds, timestamps, and shared product context.
+- Added a configurable product dependency graph with dependency, integration, shared-component, routing, and data-provider relationships.
+- Added multi-product orchestration metadata for Support Articles, Known Issues, and Release Records.
+- Added dependency-aware Known Issue and release relationships.
+- Added related-product support recommendations and product handoff pathways.
+- Added cross-product resolution journeys with Guided Resolution, platform status, documentation, related-product, and private-support steps.
+- Added a Platform status workspace to the unified Product Support Center.
+- Added the `[scfs_cross_product_support]` shortcode and public incident summaries.
+- Added protected administration and snapshot APIs plus public schema, incident, route, and journey APIs.
+- Added deterministic FastAPI incident-impact, route-recommendation, journey-planning, and report-integrity endpoints.
+- Preserved human review and disabled automatic incident declaration, release blocking, roadmap changes, and private case creation.
+
 ## 4.4.0 — Support Analytics and Product Reliability Center
 
 - Added a protected Product Reliability administration workspace.

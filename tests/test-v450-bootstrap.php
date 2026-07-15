@@ -13,12 +13,13 @@ function __($text) { return $text; }
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
 $checks = array(
     'main version is 4.5.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '4.5.0',
-    'reliability center loaded' => class_exists('SCFS_Support_Reliability_Center'),
-    'reliability center version' => SCFS_Support_Reliability_Center::VERSION === '4.5.0',
-    'reliability schema version' => SCFS_Support_Reliability_Center::SCHEMA_VERSION === '1.0',
+    'cross product orchestration loaded' => class_exists('SCFS_Cross_Product_Support_Orchestration'),
+    'cross product version' => SCFS_Cross_Product_Support_Orchestration::VERSION === '4.5.0',
+    'cross product schema version' => SCFS_Cross_Product_Support_Orchestration::SCHEMA_VERSION === '1.0',
+    'platform incident post type declared' => SCFS_Cross_Product_Support_Orchestration::INCIDENT_POST_TYPE === 'sc_platform_incident',
+    'support reliability retained' => class_exists('SCFS_Support_Reliability_Center'),
     'repository synchronization retained' => class_exists('SCFS_Repository_Release_Synchronization'),
     'editorial governance retained' => class_exists('SCFS_Editorial_Governance'),
-    'content operations retained' => class_exists('SCFS_Support_Content_Operations'),
 );
 foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";

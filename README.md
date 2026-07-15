@@ -2,13 +2,15 @@
 
 A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
-## Version 4.4.0 — Support Analytics and Product Reliability Center
+## Version 4.5.0 — Cross-Product Support Orchestration
 
-Version 4.4.0 adds a protected operational intelligence layer that compares support health across Sustainable Catalyst products. Reliability scores combine Guided Resolution outcomes, documentation usefulness, Known Issue health, release readiness, content onboarding, repository health, editorial governance, and documentation gaps.
+Version 4.5.0 coordinates public support when an incident, dependency, shared component, release, or resolution path spans more than one Sustainable Catalyst product.
 
-Open **Feature Suggestions → Product Reliability** to review product scorecards, unresolved-query clusters, recurring issues, priority documentation gaps, daily trends, and integrity-protected CSV or JSON reports. Scores are advisory: they cannot change roadmaps, publish content, close issues, declare incidents, or expose private Contact and Engagement case content.
+Open **Feature Suggestions → Cross-Product Support** to configure the product dependency graph, publish governed Platform Incident records, review shared-component relationships, and manage related-product support pathways. The Product Support Center gains a **Platform status** workspace, and `[scfs_cross_product_support]` can render the orchestration view independently.
 
-See `docs/support-analytics-product-reliability-center.md`.
+The orchestration layer can recommend related products and build public resolution journeys. It cannot declare incidents automatically, block releases automatically, change the roadmap, expose private case content, or create private support cases.
+
+See `docs/cross-product-support-orchestration.md`.
 
 ## Version 4.3.0 — Repository and Release Synchronization
 

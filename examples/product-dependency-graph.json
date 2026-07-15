@@ -1,0 +1,22 @@
+{
+  "schema": "scfs-product-dependency-graph/1.0",
+  "version": "4.5.0",
+  "relationships": [
+    {
+      "source": "research-librarian",
+      "relationship": "depends_on",
+      "target": "knowledge-library",
+      "component": "retrieval index",
+      "criticality": "high",
+      "active": true
+    },
+    {
+      "source": "research-librarian",
+      "relationship": "routes_to",
+      "target": "workbench",
+      "component": "calculation handoff",
+      "criticality": "moderate",
+      "active": true
+    }
+  ]
+}

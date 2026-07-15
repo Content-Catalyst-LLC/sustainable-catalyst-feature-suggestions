@@ -32,7 +32,7 @@ def test_editorial_capabilities():
     response = client.get("/v1/editorial-governance/capabilities")
     assert response.status_code == 200
     data = response.json()
-    assert data["version"] == "4.4.0"
+    assert data["version"] == "4.5.0"
     assert data["schema"] == "scfs-editorial-governance/1.0"
     assert data["automatic_approval"] is False
     assert data["private_editorial_comments_publicly_exposed"] is False
@@ -152,6 +152,6 @@ def test_queue_summary_endpoint():
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["version"] == "4.4.0"
+    assert data["version"] == "4.5.0"
     assert data["review_queue"] == 3
     assert data["human_review_required"] is True

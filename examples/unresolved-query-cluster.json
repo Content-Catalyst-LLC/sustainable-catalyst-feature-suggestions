@@ -1,6 +1,6 @@
 {
   "schema": "scfs-unresolved-query-cluster-priority/1.0",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "query_hash": "3f8656625d5f9a5d0f4bdb6aee4971cc",
   "query_text": "Research Librarian endpoint unavailable",
   "searches": 18,

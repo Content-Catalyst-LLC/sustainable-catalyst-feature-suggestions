@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Support_Platform {
-    const VERSION = '4.4.0';
+    const VERSION = '4.5.0';
     const SCHEMA_VERSION = '1.0';
     const RELEASE_POST_TYPE = 'sc_release_record';
     const SHORTCODE = 'scfs_product_support_center';
@@ -470,6 +470,8 @@ final class SCFS_Product_Support_Platform {
                 'guided_resolution',
                 'support_knowledge_base',
                 'known_issues',
+                'cross_product_support_orchestration',
+                'platform_incident_summaries',
                 'release_intelligence',
                 'feature_suggestions',
                 'public_ideas',
@@ -477,7 +479,7 @@ final class SCFS_Product_Support_Platform {
                 'forms_and_surveys',
             ),
             'private_integrations' => array('contact_and_engagement'),
-            'operational_modules' => array('support_content_operations', 'product_onboarding', 'support_readiness'),
+            'operational_modules' => array('support_content_operations', 'product_onboarding', 'support_readiness', 'cross_product_orchestration'),
             'shared_context' => array('product', 'product_version', 'component', 'issue_type', 'release'),
             'shortcodes' => array(self::SHORTCODE, self::LEGACY_SHORTCODE),
             'rendering_modes' => array('standalone', 'embedded'),
@@ -520,7 +522,8 @@ final class SCFS_Product_Support_Platform {
             'context' => array(
                 'product', 'product_version', 'component', 'issue_type', 'release',
                 'search_query', 'search_confidence', 'articles_viewed', 'known_issues_viewed',
-                'release_records_viewed', 'public_suggestions_viewed', 'unresolved_reason',
+                'release_records_viewed', 'public_suggestions_viewed', 'platform_incidents_viewed',
+                'related_products', 'dependency_path', 'unresolved_reason',
             ),
             'privacy' => array(
                 'identity_collected_by_feature_suggestions' => false,
@@ -941,6 +944,9 @@ final class SCFS_Product_Support_Platform {
             wp_enqueue_script('scfs-product-support-platform');
         }
         $this->enqueue_child_assets();
+        if (class_exists('SCFS_Cross_Product_Support_Orchestration')) {
+            wp_enqueue_style('scfs-cross-product-orchestration');
+        }
         $display = $this->display_context($settings, $raw_atts, $atts);
         $branding = $this->branding_context($settings, $atts, $raw_atts);
         $context = $this->current_context();
@@ -1069,6 +1075,13 @@ final class SCFS_Product_Support_Platform {
                 break;
             case 'issues':
                 $this->render_known_issues($context['product']);
+                break;
+            case 'platform':
+                if (class_exists('SCFS_Cross_Product_Support_Orchestration')) {
+                    SCFS_Cross_Product_Support_Orchestration::instance()->render_public_panel($context['product'], true, 30);
+                } else {
+                    echo '<div class="scfs-support-platform__empty"><h3>' . esc_html__('Platform status unavailable', 'sustainable-catalyst-feature-suggestions') . '</h3></div>';
+                }
                 break;
             case 'releases':
                 $this->render_releases($context['product'], 30);

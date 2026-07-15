@@ -7,13 +7,13 @@ $backend = file_get_contents($root . '/backend/app/support_reliability.py');
 $backend_main = file_get_contents($root . '/backend/app/main.py');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version header' => strpos($main, 'Version: 4.4.0') !== false,
-    'main version constant' => strpos($main, "const VERSION = '4.4.0';") !== false,
+    'plugin version header' => strpos($main, 'Version: 4.5.0') !== false,
+    'main version constant' => strpos($main, "const VERSION = '4.5.0';") !== false,
     'reliability class include' => strpos($main, 'class-scfs-support-reliability-center.php') !== false,
     'reliability class instance' => strpos($main, 'SCFS_Support_Reliability_Center::instance();') !== false,
     'reliability activation' => strpos($main, 'SCFS_Support_Reliability_Center::activate();') !== false,
     'reliability deactivation' => strpos($main, 'SCFS_Support_Reliability_Center::deactivate();') !== false,
-    'reliability class version' => strpos($class, "const VERSION = '4.4.0';") !== false,
+    'reliability class version' => strpos($class, "const VERSION = '4.5.0';") !== false,
     'product scoring' => strpos($class, 'function calculate_reliability_score') !== false,
     'resolution metrics' => strpos($class, 'function resolution_metrics') !== false,
     'documentation metrics' => strpos($class, 'function documentation_metrics') !== false,
@@ -34,7 +34,7 @@ $checks = array(
     'backend cluster prioritizer' => strpos($backend, 'def prioritize_unresolved_cluster') !== false,
     'backend integrity verifier' => strpos($backend, 'def verify_reliability_report') !== false,
     'backend capabilities endpoint' => strpos($backend_main, "/v1/support-reliability/capabilities") !== false,
-    'manifest version' => ($manifest['version'] ?? '') === '4.4.0',
+    'manifest version' => ($manifest['version'] ?? '') === '4.5.0',
     'reliability documentation' => file_exists($root . '/docs/support-analytics-product-reliability-center.md'),
     'score example' => file_exists($root . '/examples/product-reliability-score.json'),
     'dashboard example' => file_exists($root . '/examples/support-reliability-dashboard.json'),

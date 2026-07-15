@@ -1,4 +1,4 @@
-/** Sustainable Catalyst Feature Suggestions v4.4.0 content operations reliability. */
+/** Sustainable Catalyst Feature Suggestions v4.5.0 content operations reliability. */
 (function () {
   'use strict';
 

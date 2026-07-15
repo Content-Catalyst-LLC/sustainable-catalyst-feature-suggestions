@@ -1,8 +1,8 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 4.4.0 is a Product Support and Feedback WordPress plugin for documentation, known issues, releases, guided resolution, feature suggestions, surveys, repository synchronization, editorial governance, and product reliability intelligence.
+Version 4.5.0 is a Product Support and Feedback WordPress plugin for documentation, known issues, releases, guided resolution, feature suggestions, surveys, repository synchronization, editorial governance, product reliability intelligence, and cross-product support orchestration.
 
-Version 4.4.0 adds the Support Analytics and Product Reliability Center with product health scoring, support-resolution rates, documentation usefulness, issue recurrence, release and content readiness, repository health, unresolved-query clusters, documentation-gap prioritization, daily snapshots, and checksum-protected reports.
+Version 4.5.0 adds public Platform Incident records, a configurable product dependency graph, shared-component relationships, dependency-aware Known Issues and releases, related-product recommendations, and cross-product resolution journeys.
 
 Recommended integration:
 
@@ -11,6 +11,17 @@ Recommended integration:
 ```
 
 
+
+
+## Cross-Product Support Orchestration
+
+Use **Feature Suggestions → Cross-Product Support** to configure dependencies and publish human-reviewed Platform Incidents. The Product Support Center includes a **Platform status** workspace. Standalone shortcode:
+
+```text
+[scfs_cross_product_support product="research-librarian"]
+```
+
+Private Contact and Engagement case content is never copied into public orchestration records.
 
 
 ## Support Analytics and Product Reliability Center

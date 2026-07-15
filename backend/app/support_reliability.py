@@ -36,7 +36,7 @@ class ReliabilityDimension(BaseModel):
 class ProductReliabilityScore(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-product-reliability-score/1.0", alias="schema")
-    version: str = "4.4.0"
+    version: str = "4.5.0"
     score: float = Field(ge=0, le=100)
     state: ReliabilityState
     dimensions: List[ReliabilityDimension]
@@ -61,7 +61,7 @@ class ReliabilityTrendEvidence(BaseModel):
 class ReliabilityTrendSummary(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-product-reliability-trend/1.0", alias="schema")
-    version: str = "4.4.0"
+    version: str = "4.5.0"
     direction: TrendDirection
     score_delta: float
     unresolved_delta: int
@@ -86,7 +86,7 @@ class UnresolvedClusterEvidence(BaseModel):
 class UnresolvedClusterPriority(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-unresolved-query-cluster-priority/1.0", alias="schema")
-    version: str = "4.4.0"
+    version: str = "4.5.0"
     score: float = Field(ge=0, le=100)
     priority: Literal["low", "medium", "high", "critical"]
     signals: List[str]
@@ -101,7 +101,7 @@ class ReliabilityReportIntegrityEvidence(BaseModel):
 class ReliabilityReportIntegrityResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-reliability-report-integrity/1.0", alias="schema")
-    version: str = "4.4.0"
+    version: str = "4.5.0"
     record_count: int = Field(ge=0)
     checksum: str
     matches_expected: bool

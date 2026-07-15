@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Support_Reliability_Center {
-    const VERSION = '4.4.0';
+    const VERSION = '4.5.0';
     const SCHEMA_VERSION = '1.0';
     const OPTION_KEY = 'scfs_support_reliability_settings';
     const SNAPSHOT_OPTION = 'scfs_support_reliability_snapshots';
@@ -582,6 +582,7 @@ final class SCFS_Support_Reliability_Center {
         $repository = $this->repository_metrics($product->term_id);
         $governance = $this->governance_metrics();
         $gaps = $this->gap_metrics($product->slug);
+        $cross_product = class_exists('SCFS_Cross_Product_Support_Orchestration') ? SCFS_Cross_Product_Support_Orchestration::instance()->overview_record($product->slug) : array();
         $score = $this->calculate_reliability_score(array(
             'resolution_success' => $resolution['resolution_success_percent'],
             'documentation_helpfulness' => $documentation['helpfulness_percent'],
@@ -609,6 +610,7 @@ final class SCFS_Support_Reliability_Center {
             'repository' => $repository,
             'governance' => $governance,
             'documentation_gaps' => $gaps,
+            'cross_product_support' => $cross_product,
             'unresolved_clusters' => $this->unresolved_clusters($product->slug, null, 10),
             'privacy' => array('private_case_content_exposed' => false, 'contact_details_exposed' => false),
             'human_review_required' => true,

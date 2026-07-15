@@ -1,6 +1,6 @@
 {
   "schema": "scfs-support-reliability-dashboard/1.0",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "generated_at": "2026-07-15T20:00:00Z",
   "analysis_window_days": 30,
   "summary": {

@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "updated": "2026-07-15",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -266,7 +266,28 @@
     "product reliability trend history",
     "CSV and JSON reliability reports",
     "SHA-256 reliability report integrity",
-    "privacy-minimized aggregate support analytics"
+    "privacy-minimized aggregate support analytics",
+    "public Platform Incident post type",
+    "cross-product incident status and severity lifecycle",
+    "product dependency graph",
+    "shared component relationships",
+    "multi-product support article orchestration",
+    "dependency-aware known issues",
+    "platform-wide release dependencies",
+    "related-product support recommendations",
+    "product handoff pathways",
+    "cross-product resolution journeys",
+    "public platform incident summaries",
+    "cross-product support administration workspace",
+    "cross-product support shortcode",
+    "cross-product orchestration REST API",
+    "FastAPI incident-impact scoring",
+    "FastAPI product-route recommendations",
+    "FastAPI cross-product journey planning",
+    "orchestration report integrity verification",
+    "automatic incident declaration disabled",
+    "automatic release blocking disabled",
+    "private case content excluded from orchestration records"
   ],
   "boundaries": [
     "no confidential information",
@@ -276,9 +297,9 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 4.4.0 adds the Support Analytics and Product Reliability Center with product health scoring, resolution and documentation trends, issue recurrence, release and content readiness, repository health, unresolved-query clustering, gap prioritization, scheduled snapshots, and integrity-protected reports.",
-  "release_name": "Support Analytics and Product Reliability Center",
-  "release": "Feature Suggestions v4.4.0 — Support Analytics and Product Reliability Center",
+  "notes": "Version 4.5.0 adds cross-product incidents, product dependency and shared-component relationships, dependency-aware Known Issues, release dependencies, related-product recommendations, public platform status summaries, and cross-product resolution journeys while preserving the Contact and Engagement privacy boundary.",
+  "release_name": "Cross-Product Support Orchestration",
+  "release": "Feature Suggestions v4.5.0 — Cross-Product Support Orchestration",
   "features": [
     "Protected Product Reliability administration workspace and product scorecards",
     "Weighted support reliability scoring across resolution, documentation, issues, releases, content, repositories, and governance",
@@ -299,7 +320,8 @@
     "sc_known_issue",
     "sc_doc_gap",
     "sc_release_record",
-    "sc_editorial_note"
+    "sc_editorial_note",
+    "sc_platform_incident"
   ],
   "shortcodes": [
     "[scfs_product_support_center]",
@@ -308,7 +330,8 @@
     "[scfs_guided_resolution]",
     "[sc_public_ideas]",
     "[sustainable_catalyst_feature_suggestions]",
-    "[sc_feedback_form]"
+    "[sc_feedback_form]",
+    "[scfs_cross_product_support]"
   ],
   "support_center_shortcode": "[scfs_product_support_center]",
   "public_support_archive": "/support-knowledge-base/"

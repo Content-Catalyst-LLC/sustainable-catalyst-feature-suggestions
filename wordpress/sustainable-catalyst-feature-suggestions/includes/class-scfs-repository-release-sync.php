@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Repository_Release_Synchronization {
-    const VERSION = '4.4.0';
+    const VERSION = '4.5.0';
     const SCHEMA_VERSION = '1.0';
     const OPTION_KEY = 'scfs_repository_sync_settings';
     const MAPPING_OPTION = 'scfs_repository_sync_mappings';
