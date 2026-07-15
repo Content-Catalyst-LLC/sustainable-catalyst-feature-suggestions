@@ -1,0 +1,26 @@
+{
+  "schema": "scfs-repository-drift-report/1.0",
+  "version": "4.3.0",
+  "product_id": 17,
+  "counts": {
+    "aligned": 12,
+    "local_edit": 2,
+    "remote_update": 3,
+    "conflict": 1,
+    "unknown": 0
+  },
+  "records": [
+    {
+      "post_id": 902,
+      "post_type": "sc_support_article",
+      "title": "Research Librarian: Installation and Configuration",
+      "post_status": "draft",
+      "state": "remote_update",
+      "external_id": "github-file:README.md",
+      "source_path": "README.md",
+      "last_seen_at": "2026-07-15T19:00:00+00:00"
+    }
+  ],
+  "generated_at": "2026-07-15T19:00:00+00:00",
+  "human_review_required": true
+}

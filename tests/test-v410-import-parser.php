@@ -19,7 +19,7 @@ $ops = SCFS_Support_Content_Operations::instance();
 $tmp = tempnam(sys_get_temp_dir(), 'scfs-');
 file_put_contents($tmp, "# Product README\n\nSetup and first workflow.\n");
 $readme = $ops->parse_import_file($tmp, 'README.md', 'auto');
-file_put_contents($tmp, "## 4.2.0 - 2026-07-15\nAdded onboarding.\n\n## 4.0.2\nFixed navigation.\n");
+file_put_contents($tmp, "## 4.3.0 - 2026-07-15\nAdded onboarding.\n\n## 4.0.2\nFixed navigation.\n");
 $changelog = $ops->parse_import_file($tmp, 'CHANGELOG.md', 'auto');
 unlink($tmp);
 $checks = array(
@@ -27,7 +27,7 @@ $checks = array(
     'readme article type' => ($readme['records'][0]['type'] ?? '') === 'article',
     'readme getting started' => ($readme['records'][0]['article_type'] ?? '') === 'getting-started',
     'changelog parsed' => is_array($changelog) && count($changelog['records'] ?? array()) === 2,
-    'first release version' => ($changelog['records'][0]['source_version'] ?? '') === 'v4.2.0',
+    'first release version' => ($changelog['records'][0]['source_version'] ?? '') === 'v4.3.0',
     'first release current' => ($changelog['records'][0]['release_status'] ?? '') === 'current',
     'older release superseded' => ($changelog['records'][1]['release_status'] ?? '') === 'superseded',
     'automatic publication absent' => !isset($changelog['records'][0]['status']),

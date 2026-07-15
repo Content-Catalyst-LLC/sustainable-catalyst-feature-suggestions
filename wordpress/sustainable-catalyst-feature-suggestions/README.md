@@ -1,8 +1,8 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 4.2.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 4.3.0 is a Product Support and Feedback WordPress plugin for documentation, known issues, releases, guided resolution, feature suggestions, surveys, and product intelligence.
 
-Version 4.2.0 adds documentation workflow and editorial governance with author, reviewer, and approver assignments; controlled review states; documentation standards; version-specific approval; scheduled publication; expiration and review reminders; private editorial comments; and internal audit history.
+Version 4.3.0 adds public GitHub repository mapping, README and CHANGELOG inspection, release synchronization, source provenance, documentation drift detection, broken-link checks, signed webhook inspection queues, and approval-gated review drafts. Published records are never overwritten and automatic publication remains disabled.
 
 Recommended integration:
 
@@ -10,6 +10,11 @@ Recommended integration:
 [scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve" anchor="support-center"]
 ```
 
+
+
+## Repository and Release Synchronization
+
+Use **Feature Suggestions → Repository Sync** to map each Product term to a public GitHub repository, inspect documentation and releases, create review drafts, detect local/remote drift, check links, and export synchronization logs. Optional GitHub credentials and webhook secrets are supplied through constants or environment variables, not WordPress options.
 
 ## Documentation Workflow and Editorial Governance
 

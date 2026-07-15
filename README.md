@@ -2,11 +2,17 @@
 
 A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
+## Version 4.3.0 — Repository and Release Synchronization
+
+Version 4.3.0 maps Sustainable Catalyst products to public GitHub repositories and inspects README files, CHANGELOG files, documentation directories, and published GitHub releases. Remote changes become approval-gated WordPress drafts with commit, path, URL, and content-hash provenance.
+
+Open **Feature Suggestions → Repository Sync** to configure product mappings, inspect remote sources, create review drafts, detect local/remote documentation drift, check public links, and export synchronization logs. Published records are never overwritten, conflicting local edits create review copies, private repository access is disabled, and automatic approval or publication remains prohibited.
+
+See `docs/repository-release-synchronization.md`.
+
 ## Version 4.2.0 — Documentation Workflow and Editorial Governance
 
-Version 4.2.0 adds a controlled editorial lifecycle for Support Articles, Known Issues, and Release Records. Assign authors, reviewers, and approvers; submit records into a review queue; request changes; approve version-specific documentation; schedule publication; expire outdated records; and maintain private editorial comments and an internal audit history.
-
-Open **Feature Suggestions → Editorial Governance** to review workflow queues, overdue reviews, expiring records, documentation-standards blockers, assignments, governance settings, and audit events. Publication can be blocked until the configured review and documentation standards are satisfied. Human approval remains mandatory.
+Version 4.2.0 adds a controlled editorial lifecycle for Support Articles, Known Issues, and Release Records. Assign authors, reviewers, and approvers; submit records into review queues; request changes; approve version-specific documentation; schedule publication; expire outdated records; and maintain private editorial comments and audit history.
 
 See `docs/documentation-workflow-editorial-governance.md`.
 

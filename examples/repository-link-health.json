@@ -1,0 +1,14 @@
+{
+  "schema": "scfs-repository-link-health/1.0",
+  "version": "4.3.0",
+  "state": "review",
+  "health_percent": 94,
+  "checked_links": 50,
+  "broken_links": 0,
+  "timeout_links": 3,
+  "signals": [
+    "3 links timed out and should be checked again."
+  ],
+  "generated_at": "2026-07-15T19:00:00+00:00",
+  "human_review_required": true
+}

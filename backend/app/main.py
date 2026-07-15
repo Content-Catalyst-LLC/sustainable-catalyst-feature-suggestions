@@ -10,9 +10,10 @@ from .documentation_intelligence import DocumentationGapEvidence, DocumentationG
 from .product_support_platform import ProductSupportEvidence, ProductSupportOverview, ReleaseReadinessEvidence, ReleaseReadinessScore, summarize_product_support, score_release_readiness
 from .support_content_operations import ProductOnboardingEvidence, ProductSupportReadiness, SourceDocument, ImportPlan, ImportSourceInspection, ImportBatchEvidence, ImportRecoveryPlan, ExportIntegrityEvidence, ExportIntegrityResult, score_product_readiness, plan_source_import, inspect_source_document, plan_import_recovery, verify_export_integrity
 from .editorial_governance import EditorialTransitionEvidence, EditorialTransitionDecision, DocumentationStandardsEvidence, DocumentationStandardsScore, EditorialQueueEvidence, EditorialGovernanceSummary, evaluate_editorial_transition, score_documentation_standards, summarize_editorial_queue
+from .repository_release_sync import RepositoryCandidateEvidence, RepositorySyncDecision, RepositoryDriftEvidence, RepositoryDriftResult, ReleaseSourceEvidence, ReleaseSyncPlan, LinkHealthEvidence, LinkHealthSummary, evaluate_repository_candidate, evaluate_repository_drift, plan_release_sync, summarize_link_health
 
-VERSION='4.2.0'
-ANALYSIS_VERSION='4.2.0-1'
+VERSION='4.3.0'
+ANALYSIS_VERSION='4.3.0-1'
 app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
 
 class Submission(BaseModel):
@@ -147,7 +148,7 @@ def survey_analyze(payload: SurveyAnalysisRequest, x_scfs_ai_key:Optional[str]=H
 @app.get('/v1/surveys/methodology')
 def survey_methodology(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {'ok':True,'analysis_version':'4.2.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+    return {'ok':True,'analysis_version':'4.3.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
 
 
 @app.get('/v1/platform/capabilities')
@@ -157,7 +158,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','error_signature_matching','known_issue_prioritization','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','documentation_standards_scoring','controlled_publication_workflow','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','error_signature_matching','known_issue_prioritization','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -345,4 +346,52 @@ def editorial_standards_score(payload: DocumentationStandardsEvidence, x_scfs_ai
 def editorial_queue_summary(payload: EditorialQueueEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return summarize_editorial_queue(payload)
+
+@app.get('/v1/repository-sync/capabilities')
+def repository_sync_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-repository-release-synchronization/1.0',
+        'providers': ['github_public'],
+        'capabilities': [
+            'repository_mapping',
+            'release_ingestion_planning',
+            'readme_and_changelog_ingestion',
+            'documentation_drift_detection',
+            'link_health_summarization',
+            'approval_gated_draft_creation',
+            'signed_webhook_queue',
+        ],
+        'wordpress_source_of_truth': True,
+        'private_repository_sync': False,
+        'automatic_approval': False,
+        'automatic_publication': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/repository-sync/candidates/evaluate', response_model=RepositorySyncDecision)
+def repository_sync_candidate_evaluate(payload: RepositoryCandidateEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_repository_candidate(payload)
+
+
+@app.post('/v1/repository-sync/drift/evaluate', response_model=RepositoryDriftResult)
+def repository_sync_drift_evaluate(payload: RepositoryDriftEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_repository_drift(payload)
+
+
+@app.post('/v1/repository-sync/releases/plan', response_model=ReleaseSyncPlan)
+def repository_sync_release_plan(payload: ReleaseSourceEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return plan_release_sync(payload)
+
+
+@app.post('/v1/repository-sync/link-health/summarize', response_model=LinkHealthSummary)
+def repository_sync_link_health(payload: LinkHealthEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return summarize_link_health(payload)
 

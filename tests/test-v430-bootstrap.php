@@ -13,10 +13,11 @@ function __($text) { return $text; }
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
 $checks = array(
     'main version is 4.3.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '4.3.0',
-    'editorial governance loaded' => class_exists('SCFS_Editorial_Governance'),
-    'editorial governance version' => SCFS_Editorial_Governance::VERSION === '4.3.0',
-    'editorial schema version' => SCFS_Editorial_Governance::SCHEMA_VERSION === '1.0',
-    'support operations retained' => class_exists('SCFS_Support_Content_Operations'),
+    'repository synchronization loaded' => class_exists('SCFS_Repository_Release_Synchronization'),
+    'repository synchronization version' => SCFS_Repository_Release_Synchronization::VERSION === '4.3.0',
+    'repository synchronization schema' => SCFS_Repository_Release_Synchronization::SCHEMA_VERSION === '1.0',
+    'editorial governance retained' => class_exists('SCFS_Editorial_Governance'),
+    'content operations retained' => class_exists('SCFS_Support_Content_Operations'),
     'product support retained' => class_exists('SCFS_Product_Support_Platform'),
 );
 foreach ($checks as $label => $passed) {

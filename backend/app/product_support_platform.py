@@ -15,7 +15,7 @@ class ProductSupportEvidence(BaseModel):
 class ProductSupportOverview(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-product-support-overview/1.0", alias="schema")
-    version: str = "4.2.0"
+    version: str = "4.3.0"
     support_state: Literal["stable", "attention", "incident"]
     public_resolution_coverage: int = Field(ge=0, le=100)
     signals: List[str]
@@ -44,7 +44,7 @@ class ReleaseReadinessEvidence(BaseModel):
 class ReleaseReadinessScore(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-release-readiness/1.0", alias="schema")
-    version: str = "4.2.0"
+    version: str = "4.3.0"
     score: int = Field(ge=0, le=100)
     state: Literal["not_ready", "review", "ready"]
     missing: List[str]

@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.3.0 — Repository and Release Synchronization
+
+- Added public GitHub repository mapping for Product taxonomy terms.
+- Added README, CHANGELOG, documentation-directory, release-note, and GitHub release inspection.
+- Added approval-gated draft creation with published-record overwrite protection.
+- Added local-edit, remote-update, and conflict-aware documentation drift detection.
+- Added repository URL, source path, commit, external ID, and content-hash provenance.
+- Added Product Version and Release taxonomy assignment for synchronized releases.
+- Added public-link health checks and bounded synchronization logs.
+- Added daily inspection, optional draft ingestion, and signed webhook inspection queues.
+- Added FastAPI candidate, drift, release-plan, and link-health evaluators.
+- Kept private repository access, automatic approval, and automatic publication disabled.
+
 ## 4.2.0 — Documentation Workflow and Editorial Governance
 
 - Added accountable author, reviewer, and approver assignments for Support Articles, Known Issues, and Release Records.

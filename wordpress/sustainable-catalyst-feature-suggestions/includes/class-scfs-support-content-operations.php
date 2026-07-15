@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Support_Content_Operations {
-    const VERSION = '4.2.0';
+    const VERSION = '4.3.0';
     const SCHEMA_VERSION = '1.1';
     const OPTION_KEY = 'scfs_support_content_operations';
     const PROFILE_OPTION = 'scfs_support_product_profiles';

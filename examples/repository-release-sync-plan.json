@@ -1,0 +1,12 @@
+{
+  "schema": "scfs-release-sync-plan/1.0",
+  "version": "4.3.0",
+  "action": "create_draft",
+  "lifecycle": "current",
+  "title": "Feature Suggestions v4.3.0",
+  "blockers": [],
+  "warnings": [],
+  "human_review_required": true,
+  "automatic_approval": false,
+  "automatic_publication": false
+}

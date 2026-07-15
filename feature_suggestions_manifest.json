@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "updated": "2026-07-15",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -234,7 +234,26 @@
     "editorial governance dashboard",
     "protected editorial governance REST API",
     "WP-CLI editorial queue and transition operations",
-    "FastAPI transition evaluation, standards scoring, and queue summarization"
+    "FastAPI transition evaluation, standards scoring, and queue summarization",
+    "public GitHub product repository mapping",
+    "GitHub README and CHANGELOG inspection",
+    "GitHub release ingestion planning",
+    "repository documentation directory inspection",
+    "commit tag and source path provenance",
+    "approval-gated repository draft creation",
+    "published record overwrite protection",
+    "local edit and remote update conflict detection",
+    "documentation drift reports",
+    "broken repository link checks",
+    "bounded repository synchronization logs",
+    "manual and scheduled repository inspection",
+    "signed GitHub webhook queue",
+    "GitHub tokens and webhook secrets excluded from plugin options and logs",
+    "private repository synchronization disabled by default",
+    "FastAPI repository candidate evaluation",
+    "FastAPI repository drift evaluation",
+    "FastAPI release synchronization planning",
+    "FastAPI repository link health summaries"
   ],
   "boundaries": [
     "no confidential information",
@@ -244,9 +263,9 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 4.2.0 adds assigned authors, reviewers, and approvers; controlled editorial transitions; version-specific approval; documentation standards; scheduled publication; expiration and review reminders; private editorial comments; audit history; governance dashboards; protected REST operations; and deterministic FastAPI governance evaluation.",
+  "notes": "Version 4.3.0 adds public GitHub repository mapping, README and CHANGELOG inspection, GitHub release synchronization, approval-gated draft creation, documentation drift detection, broken-link checks, signed webhook inspection queues, synchronization logs, and deterministic FastAPI synchronization evaluation.",
   "release_name": "Documentation Workflow and Editorial Governance",
-  "release": "Feature Suggestions v4.2.0 \u2014 Documentation Workflow and Editorial Governance",
+  "release": "Feature Suggestions v4.3.0 \u2014 Repository and Release Synchronization",
   "features": [
     "Author, reviewer, and approver assignments for Support Articles, Known Issues, and Release Records",
     "Explicit Draft, Submitted, In Review, Changes Requested, Approved, Scheduled, Published, Expired, and Archived states",

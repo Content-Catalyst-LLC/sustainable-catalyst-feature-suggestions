@@ -1,0 +1,13 @@
+{
+  "schema": "scfs-repository-sync-decision/1.0",
+  "version": "4.3.0",
+  "action": "create_review_copy",
+  "state": "conflict",
+  "reason": "Repository and WordPress content both changed; preserve local edits and create a review copy.",
+  "local_changed": true,
+  "remote_changed": true,
+  "human_review_required": true,
+  "automatic_approval": false,
+  "automatic_publication": false,
+  "overwrite_published_record": false
+}

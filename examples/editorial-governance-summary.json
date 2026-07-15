@@ -1,6 +1,6 @@
 {
   "schema": "scfs-editorial-governance-summary/1.0",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "total": 38,
   "states": {
     "draft": 8,

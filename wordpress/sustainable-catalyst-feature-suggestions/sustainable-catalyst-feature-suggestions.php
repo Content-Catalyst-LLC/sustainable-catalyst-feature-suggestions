@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Product support documentation, known issues, feature suggestions, surveys, public participation, roadmap governance, privacy controls, and shared platform integration for Sustainable Catalyst.
- * Version: 4.2.0
+ * Version: 4.3.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '4.2.0';
+    const VERSION = '4.3.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -90,6 +90,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         if (class_exists('SCFS_Editorial_Governance')) {
             SCFS_Editorial_Governance::activate();
         }
+        if (class_exists('SCFS_Repository_Release_Synchronization')) {
+            SCFS_Repository_Release_Synchronization::activate();
+        }
         $instance->migrate_legacy_post_type();
         flush_rewrite_rules();
         if (!get_option(self::OPTION_KEY)) {
@@ -104,6 +107,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $timestamp = wp_next_scheduled(self::CRON_HOOK);
         if ($timestamp) {
             wp_unschedule_event($timestamp, self::CRON_HOOK);
+        }
+        if (class_exists('SCFS_Repository_Release_Synchronization')) {
+            SCFS_Repository_Release_Synchronization::deactivate();
         }
         if (class_exists('SCFS_Editorial_Governance')) {
             SCFS_Editorial_Governance::deactivate();
@@ -2147,6 +2153,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-product-support-pl
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-platform-governance.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-content-operations.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-editorial-governance.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-repository-release-sync.php';
 SCFS_Product_Integration::instance();
 SCFS_Knowledge_Base_Foundation::instance();
 SCFS_Guided_Resolution::instance();
@@ -2160,6 +2167,7 @@ SCFS_Product_Support_Platform::instance();
 SCFS_Platform_Governance::instance();
 SCFS_Support_Content_Operations::instance();
 SCFS_Editorial_Governance::instance();
+SCFS_Repository_Release_Synchronization::instance();
 
 Sustainable_Catalyst_Feature_Suggestions::instance();
 register_activation_hook(__FILE__, array('Sustainable_Catalyst_Feature_Suggestions', 'activate'));
