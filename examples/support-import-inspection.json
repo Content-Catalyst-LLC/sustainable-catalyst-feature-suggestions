@@ -1,0 +1,11 @@
+{
+  "schema": "scfs-support-import-inspection/1.1",
+  "version": "4.1.1",
+  "valid": true,
+  "size_bytes": 18422,
+  "checksum_sha256": "08bb886c05d0ea895d9c3f06c09385719cf5bd8a5a21fc43d8b86ef02f925beb",
+  "inferred_source_type": "changelog",
+  "errors": [],
+  "warnings": [],
+  "human_review_required": true
+}

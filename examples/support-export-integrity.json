@@ -1,0 +1,11 @@
+{
+  "schema": "scfs-support-content-export/1.1",
+  "version": "4.1.1",
+  "integrity": {
+    "record_count": 12,
+    "algorithm": "sha256",
+    "records_checksum": "d56e50dd355865872250efb6c7d10b9573263e4c5bbfaf700bb18a7557743f40",
+    "stable_ordering": true
+  },
+  "private_case_content_included": false
+}

@@ -2,11 +2,13 @@
 
 A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
-## Version 4.1.0 — Support Content Operations and Product Onboarding
+## Version 4.1.1 — Content Operations Reliability Patch
 
-Version 4.1.0 adds **Feature Suggestions → Content Operations**, where each Sustainable Catalyst product can be mapped, given a complete starter support set, populated from README/CHANGELOG/JSON sources, validated, exported, and scored for public support readiness. Empty public support modules can remain hidden until published records exist.
+Version 4.1.1 hardens **Feature Suggestions → Content Operations** with recoverable import batches, malformed-source inspection, refined duplicate detection, restored starter drafts, product-context integrity checks, operation progress, scheduled validation health, checksummed exports, accessibility improvements, and administrator capability controls.
 
-The workflow preserves human review and never imports private Contact and Engagement case content. See `docs/support-content-operations-product-onboarding.md`.
+Successful imports retain a time-limited **Roll back batch** action that moves created records to WordPress Trash. Strict import validation can roll back the whole batch automatically when any record fails. Private Contact and Engagement case content remains excluded.
+
+See `docs/support-content-operations-reliability.md`.
 
 ## Version 4.0.2 — Navigation and Embedded Pathway Reliability Patch
 

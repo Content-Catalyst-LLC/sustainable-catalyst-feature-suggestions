@@ -16,7 +16,7 @@ def test_readiness_ready_state():
         known_issue_count=1,
         fresh_content_percent=100,
     ))
-    assert result.version == '4.1.0'
+    assert result.version == '4.1.1'
     assert result.score == 100
     assert result.state == 'ready'
     assert result.blockers == []
@@ -33,7 +33,7 @@ def test_readiness_blockers():
 def test_changelog_import_plan():
     plan = plan_source_import(SourceDocument(
         filename='CHANGELOG.md',
-        content='## 4.1.0 - 2026-07-15\nAdded onboarding.\n\n## 4.1.0\nFixed navigation.',
+        content='## 4.1.1 - 2026-07-15\nAdded onboarding.\n\n## 4.1.1\nFixed navigation.',
     ))
     assert plan.inferred_source_type == 'changelog'
     assert plan.suggested_record_type == 'release'
@@ -45,7 +45,7 @@ def test_capabilities_endpoint():
     response = client.get('/v1/support-content/capabilities')
     assert response.status_code == 200
     data = response.json()
-    assert data['version'] == '4.1.0'
+    assert data['version'] == '4.1.1'
     assert data['product_onboarding'] is True
     assert data['automatic_publication'] is False
 
@@ -75,3 +75,44 @@ def test_import_plan_endpoint():
     data = response.json()
     assert data['inferred_source_type'] == 'readme'
     assert data['suggested_record_type'] == 'article'
+
+
+def test_malformed_source_inspection():
+    response = client.post('/v1/support-content/import/inspect', json={
+        'filename': 'broken.json',
+        'content': '{"records": [}',
+        'source_type': 'auto',
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data['version'] == '4.1.1'
+    assert data['valid'] is False
+    assert 'invalid_json' in data['errors']
+
+
+def test_import_recovery_plan_rolls_back_strict_batch():
+    response = client.post('/v1/support-content/import/recovery', json={
+        'batch_id': 'batch-1',
+        'created_record_ids': [4, 3, 4],
+        'failed_record_count': 1,
+        'strict_validation': True,
+        'rollback_policy': 'rollback_batch',
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data['action'] == 'automatic_rollback'
+    assert data['rollback_record_ids'] == [3, 4]
+    assert data['rollback_moves_to_trash'] is True
+
+
+def test_export_integrity_verification():
+    import hashlib
+    records = '[{"id":1}]'
+    response = client.post('/v1/support-content/export/verify', json={
+        'records_json': records,
+        'expected_sha256': hashlib.sha256(records.encode()).hexdigest(),
+        'expected_record_count': 1,
+        'actual_record_count': 1,
+    })
+    assert response.status_code == 200
+    assert response.json()['valid'] is True

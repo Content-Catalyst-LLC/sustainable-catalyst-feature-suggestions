@@ -1,0 +1,10 @@
+{
+  "schema": "scfs-support-import-recovery/1.1",
+  "version": "4.1.1",
+  "batch_id": "fd7dc130-b42d-4a56-971f-148228c2b00c",
+  "action": "automatic_rollback",
+  "rollback_record_ids": [1842, 1843, 1844],
+  "rollback_moves_to_trash": true,
+  "reason": "Strict validation found failed records, so the created batch should be moved to Trash.",
+  "human_review_required": true
+}

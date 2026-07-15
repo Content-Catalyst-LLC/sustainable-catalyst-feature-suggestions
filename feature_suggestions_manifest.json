@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "updated": "2026-07-15",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -205,7 +205,22 @@
     "empty Support Center section suppression",
     "WP-CLI product onboarding and validation",
     "FastAPI support-content readiness scoring",
-    "FastAPI import planning"
+    "FastAPI import planning",
+    "import batch rollback to WordPress Trash",
+    "automatic strict-validation batch rollback",
+    "malformed JSON and UTF-8 source inspection",
+    "import source SHA-256 checksums",
+    "source-and-title duplicate refinement",
+    "restored starter records from Trash",
+    "product-version and component assignment integrity validation",
+    "operation job and progress reporting",
+    "daily content-integrity validation sweep",
+    "scheduled-task health reporting",
+    "stable support export ordering",
+    "SHA-256 export integrity metadata",
+    "accessible content-operations controls and tables",
+    "manage-options capability boundary with multisite override",
+    "FastAPI source inspection, recovery planning, and export verification"
   ],
   "boundaries": [
     "no confidential information",
@@ -215,9 +230,9 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 4.1.0 adds product onboarding profiles, readiness scoring, idempotent starter content, README/CHANGELOG/JSON import, lifecycle metadata, freshness and duplicate validation, bulk export, and empty-section suppression for the public Support Center.",
-  "release_name": "Support Content Operations and Product Onboarding",
-  "release": "Feature Suggestions v4.1.0 — Support Content Operations and Product Onboarding",
+  "notes": "Version 4.1.1 hardens support content operations with recoverable import batches, malformed-source validation, duplicate refinements, starter recovery, product-context integrity checks, operation progress, scheduled validation health, checksummed exports, accessibility improvements, and administrator capability boundaries.",
+  "release_name": "Content Operations Reliability Patch",
+  "release": "Feature Suggestions v4.1.1 — Content Operations Reliability Patch",
   "features": [
     "Product-by-product onboarding profiles for repository, documentation, support URL, version, owner, and component context",
     "Deterministic 0–100 support-readiness scoring with explicit blockers and human review",

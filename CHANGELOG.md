@@ -1,5 +1,22 @@
 # Changelog
 
+## 4.1.1 — Content Operations Reliability Patch
+
+- Added time-limited import-batch rollback that moves created records to WordPress Trash.
+- Added automatic strict-validation rollback when any imported record fails.
+- Added empty-file, size, UTF-8, null-byte, JSON-shape, and record-count validation.
+- Added source SHA-256 checksums and per-record import-integrity hashes.
+- Added same-source, normalized-title, and same-product duplicate refinement.
+- Added starter-record recovery from Trash and equivalent-starter adoption.
+- Added product-version and component relationship integrity validation.
+- Added operation job progress, richer import notices, and recovery logs.
+- Added a locked daily validation sweep with cron health reporting.
+- Added deterministic export ordering, record counts, and SHA-256 integrity metadata.
+- Added administrator and multisite capability boundaries.
+- Added accessible progress, focus, tables, fieldsets, and rollback confirmation.
+- Added FastAPI source inspection, recovery planning, and export verification endpoints.
+- Preserved draft-first imports, mandatory human review, and the private Contact and Engagement boundary.
+
 ## 4.1.0 — Support Content Operations and Product Onboarding
 
 - Added product onboarding profiles for ownership, repository, documentation, support URL, current version, components, and known-issue review.

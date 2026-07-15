@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Product support documentation, known issues, feature suggestions, surveys, public participation, roadmap governance, privacy controls, and shared platform integration for Sustainable Catalyst.
- * Version: 4.1.0
+ * Version: 4.1.1
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '4.1.0';
+    const VERSION = '4.1.1';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -101,6 +101,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $timestamp = wp_next_scheduled(self::CRON_HOOK);
         if ($timestamp) {
             wp_unschedule_event($timestamp, self::CRON_HOOK);
+        }
+        if (class_exists('SCFS_Support_Content_Operations')) {
+            SCFS_Support_Content_Operations::deactivate();
         }
         if (class_exists('SCFS_Documentation_Feature_Intelligence')) {
             $gap_timestamp = wp_next_scheduled(SCFS_Documentation_Feature_Intelligence::GAP_REFRESH_HOOK);

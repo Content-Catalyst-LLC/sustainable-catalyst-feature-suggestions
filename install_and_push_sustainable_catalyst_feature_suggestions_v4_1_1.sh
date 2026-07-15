@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-VERSION="4.1.0"
-RELEASE_NAME="Support Content Operations and Product Onboarding"
+VERSION="4.1.1"
+RELEASE_NAME="Content Operations Reliability Patch"
 REPOSITORY="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${HOME}/Downloads"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v410.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v411.XXXXXX")"
 STAGE_DIR="${WORK_DIR}/stage"
 CLONE_DIR="${WORK_DIR}/repository"
 VENV_DIR="${WORK_DIR}/venv"
@@ -61,36 +61,36 @@ echo "Using Python: $PYTHON_BIN ($($PYTHON_BIN --version 2>&1))"
 
 shopt -s nullglob
 archives=(
-  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v4.1.0-repo*.zip
-  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v4.1.0-release-bundle*.zip
+  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v4.1.1-repo*.zip
+  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v4.1.1-release-bundle*.zip
 )
 shopt -u nullglob
 if [[ ${#archives[@]} -eq 0 ]]; then
-  echo "ERROR: No v4.1.0 repository ZIP or release bundle was found in ~/Downloads."
+  echo "ERROR: No v4.1.1 repository ZIP or release bundle was found in ~/Downloads."
   exit 1
 fi
 SOURCE_ARCHIVE="$(ls -t "${archives[@]}" | head -1)"
 echo "Using release archive: $SOURCE_ARCHIVE"
 unzip -q "$SOURCE_ARCHIVE" -d "$STAGE_DIR"
 
-PACKAGE_ROOT="$(find "$STAGE_DIR" -maxdepth 4 -type f -name feature_suggestions_manifest.json -print -quit | xargs -I{} dirname "{}")"
-if [[ -z "$PACKAGE_ROOT" ]]; then
-  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 5 -type f -name 'sustainable-catalyst-feature-suggestions-v4.1.0-repo*.zip' -print -quit)"
+MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 5 -type f -name feature_suggestions_manifest.json -print -quit)"
+if [[ -z "$MANIFEST_PATH" ]]; then
+  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 5 -type f -name 'sustainable-catalyst-feature-suggestions-v4.1.1-repo*.zip' -print -quit)"
   if [[ -z "$INNER_ZIP" ]]; then
-    echo "ERROR: The release archive does not contain the v4.1.0 repository."
+    echo "ERROR: The release archive does not contain the v4.1.1 repository."
     exit 1
   fi
-  rm -rf "$STAGE_DIR/repository-package"
   mkdir -p "$STAGE_DIR/repository-package"
   unzip -q "$INNER_ZIP" -d "$STAGE_DIR/repository-package"
-  PACKAGE_ROOT="$(find "$STAGE_DIR/repository-package" -maxdepth 4 -type f -name feature_suggestions_manifest.json -print -quit | xargs -I{} dirname "{}")"
+  MANIFEST_PATH="$(find "$STAGE_DIR/repository-package" -maxdepth 5 -type f -name feature_suggestions_manifest.json -print -quit)"
 fi
-if [[ -z "$PACKAGE_ROOT" || ! -f "$PACKAGE_ROOT/feature_suggestions_manifest.json" ]]; then
-  echo "ERROR: Could not locate the v4.1.0 repository root."
+if [[ -z "$MANIFEST_PATH" ]]; then
+  echo "ERROR: Could not locate the v4.1.1 repository root."
   exit 1
 fi
+PACKAGE_ROOT="$(dirname "$MANIFEST_PATH")"
 
-MANIFEST_VERSION="$($PYTHON_BIN - "$PACKAGE_ROOT/feature_suggestions_manifest.json" <<'PY'
+MANIFEST_VERSION="$($PYTHON_BIN - "$MANIFEST_PATH" <<'PY'
 import json,sys
 with open(sys.argv[1], encoding='utf-8') as handle:
     print(json.load(handle).get('version',''))
@@ -116,12 +116,15 @@ rsync -a --delete \
 
 MAIN_PLUGIN="wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php"
 OPERATIONS_CLASS="wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-support-content-operations.php"
-if [[ ! -f "$MAIN_PLUGIN" || ! -f "$OPERATIONS_CLASS" ]]; then
-  echo "ERROR: Required WordPress v4.1.0 files are missing."
+OPERATIONS_JS="wordpress/sustainable-catalyst-feature-suggestions/assets/support-content-operations.js"
+if [[ ! -f "$MAIN_PLUGIN" || ! -f "$OPERATIONS_CLASS" || ! -f "$OPERATIONS_JS" ]]; then
+  echo "ERROR: Required WordPress v4.1.1 files are missing."
   exit 1
 fi
-if ! grep -Fq 'Version: 4.1.0' "$MAIN_PLUGIN" || ! grep -Fq "const VERSION = '4.1.0';" "$OPERATIONS_CLASS"; then
-  echo "ERROR: WordPress version markers do not match v4.1.0."
+if ! grep -Fq 'Version: 4.1.1' "$MAIN_PLUGIN" || \
+   ! grep -Fq "const VERSION = '4.1.1';" "$OPERATIONS_CLASS" || \
+   ! grep -Fq "const SCHEMA_VERSION = '1.1';" "$OPERATIONS_CLASS"; then
+  echo "ERROR: WordPress version or schema markers do not match v4.1.1."
   exit 1
 fi
 
@@ -131,9 +134,12 @@ if ! command -v php >/dev/null 2>&1; then
 fi
 
 echo "Running PHP syntax validation..."
+PHP_FILES=0
 while IFS= read -r -d '' file; do
   php -l "$file" >/dev/null
+  PHP_FILES=$((PHP_FILES + 1))
 done < <(find wordpress tests -type f -name '*.php' -print0)
+echo "PASS - $PHP_FILES PHP files"
 
 echo "Running WordPress contract tests..."
 PHP_TESTS=0
@@ -145,8 +151,8 @@ while IFS= read -r test_file; do
   [[ -n "$count" ]] && PHP_CHECKS=$((PHP_CHECKS + count))
   PHP_TESTS=$((PHP_TESTS + 1))
 done < <(find tests -maxdepth 1 -type f -name 'test-*.php' | sort)
-if [[ "$PHP_TESTS" -lt 11 ]]; then
-  echo "ERROR: Expected at least 11 WordPress test files; found $PHP_TESTS."
+if [[ "$PHP_TESTS" -lt 15 || "$PHP_CHECKS" -lt 250 ]]; then
+  echo "ERROR: Expected at least 15 WordPress test files and 250 checks; found $PHP_TESTS files and $PHP_CHECKS checks."
   exit 1
 fi
 echo "PASS - $PHP_TESTS WordPress test files, $PHP_CHECKS checks"
@@ -154,6 +160,7 @@ echo "PASS - $PHP_TESTS WordPress test files, $PHP_CHECKS checks"
 if command -v node >/dev/null 2>&1; then
   echo "Validating JavaScript syntax..."
   node --check wordpress/sustainable-catalyst-feature-suggestions/assets/product-support-platform.js
+  node --check wordpress/sustainable-catalyst-feature-suggestions/assets/support-content-operations.js
 fi
 
 echo "Creating an isolated Python validation environment..."
@@ -168,18 +175,22 @@ echo "Validating JSON records..."
 JSON_COUNT="$($VENV_DIR/bin/python - <<'PY'
 import json
 from pathlib import Path
-files=list(Path('.').rglob('*.json'))
-for path in files:
-    if any(part in {'.git','venv','__pycache__'} for part in path.parts):
+files=[]
+for path in Path('.').rglob('*.json'):
+    if any(part in {'.git','venv','__pycache__','.pytest_cache'} for part in path.parts):
         continue
     with path.open(encoding='utf-8') as handle:
         json.load(handle)
+    files.append(path)
 print(len(files))
 PY
 )"
+if [[ "$JSON_COUNT" -lt 24 ]]; then
+  echo "ERROR: Expected at least 24 JSON records; found $JSON_COUNT."
+  exit 1
+fi
 echo "PASS - $JSON_COUNT JSON files"
 
-PLUGIN_DIR="wordpress/sustainable-catalyst-feature-suggestions"
 mkdir -p dist
 rm -f dist/sustainable-catalyst-feature-suggestions.zip
 (
@@ -190,13 +201,18 @@ rm -f dist/sustainable-catalyst-feature-suggestions.zip
 unzip -tq dist/sustainable-catalyst-feature-suggestions.zip >/dev/null
 HEADER_FILE="$WORK_DIR/plugin-header.php"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php > "$HEADER_FILE"
-if ! grep -Fq 'Version: 4.1.0' "$HEADER_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain plugin version 4.1.0."
+if ! grep -Fq 'Version: 4.1.1' "$HEADER_FILE"; then
+  echo "ERROR: WordPress distribution ZIP does not contain plugin version 4.1.1."
   exit 1
 fi
 ROOT_ENTRY_COUNT="$(zipinfo -1 dist/sustainable-catalyst-feature-suggestions.zip | awk -F/ 'NF && $1!=""{print $1}' | sort -u | wc -l | tr -d ' ')"
 if [[ "$ROOT_ENTRY_COUNT" != "1" ]]; then
   echo "ERROR: WordPress ZIP must contain exactly one plugin root folder."
+  exit 1
+fi
+
+if ! unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/includes/class-scfs-support-content-operations.php | grep -F "const VERSION = '4.1.1';" >/dev/null; then
+  echo "ERROR: WordPress ZIP does not contain the v4.1.1 content-operations class."
   exit 1
 fi
 
@@ -209,9 +225,9 @@ fi
 
 git add -A
 if git diff --cached --quiet; then
-  echo "No repository changes remain. v4.1.0 may already be installed."
+  echo "No repository changes remain. v4.1.1 may already be installed."
 else
-  git commit -m "Release Feature Suggestions v4.1.0 support content operations"
+  git commit -m "Release Feature Suggestions v4.1.1 content operations reliability"
 fi
 
 echo "Rebasing over any newer remote commits..."
@@ -222,5 +238,5 @@ git push origin main
 SUCCESS=1
 
 echo
-echo "Feature Suggestions v4.1.0 was validated, committed, and pushed successfully."
+echo "Feature Suggestions v4.1.1 was validated, committed, and pushed successfully."
 echo "Repository: $REPOSITORY"

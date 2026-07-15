@@ -15,7 +15,7 @@ class DocumentationGapEvidence(BaseModel):
 
 class DocumentationGapScore(BaseModel):
     schema_id: str = Field(default="scfs-documentation-gap-score/1.0", alias="schema")
-    version: str = "4.1.0"
+    version: str = "4.1.1"
     score: float = Field(ge=0, le=100)
     priority: Literal["low", "moderate", "high", "critical"]
     signals: dict[str, float]
@@ -32,7 +32,7 @@ class SupportDemandEvidence(BaseModel):
 
 class SupportDemandScore(BaseModel):
     schema_id: str = Field(default="scfs-support-demand-score/1.0", alias="schema")
-    version: str = "4.1.0"
+    version: str = "4.1.1"
     score: float = Field(ge=0, le=5)
     evidence_count: int = Field(ge=0, le=4)
     signals: dict[str, float | int]

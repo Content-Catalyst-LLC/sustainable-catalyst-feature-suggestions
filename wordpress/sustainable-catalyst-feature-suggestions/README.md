@@ -1,8 +1,8 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 4.1.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 4.1.1 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
 
-Version 4.1.0 adds product onboarding, support-readiness scoring, starter documentation, source import, lifecycle validation, bulk export, and empty-section suppression while preserving the v4.0.2 navigation and embedded interface.
+Version 4.1.1 hardens product onboarding and content operations with recoverable import batches, malformed-source validation, duplicate refinements, starter recovery, scheduled integrity checks, checksummed exports, accessibility improvements, and administrator capability boundaries.
 
 Recommended integration:
 
@@ -13,7 +13,7 @@ Recommended integration:
 
 ## Support Content Operations
 
-Use **Feature Suggestions → Content Operations** to onboard products, create missing starter records, import README/CHANGELOG/JSON sources, validate support content, and export product-scoped support records. Human review remains mandatory and imported content defaults to draft.
+Use **Feature Suggestions → Content Operations** to onboard products, create missing starter records, import README/CHANGELOG/JSON sources, validate support content, roll back recent import batches, inspect scheduled validation health, and export checksummed product support records. Human review remains mandatory and imported content defaults to draft.
 
 ## Embedded Support Center and branding
 

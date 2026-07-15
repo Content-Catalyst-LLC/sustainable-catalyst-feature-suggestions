@@ -15,13 +15,19 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Support_Content_Operations {
-    const VERSION = '4.1.0';
-    const SCHEMA_VERSION = '1.0';
+    const VERSION = '4.1.1';
+    const SCHEMA_VERSION = '1.1';
     const OPTION_KEY = 'scfs_support_content_operations';
     const PROFILE_OPTION = 'scfs_support_product_profiles';
     const LOG_OPTION = 'scfs_support_content_import_log';
     const VALIDATION_OPTION = 'scfs_support_content_validation';
     const SCHEMA_OPTION = 'scfs_support_content_schema_version';
+    const ROLLBACK_OPTION = 'scfs_support_content_rollback_batches';
+    const JOB_OPTION = 'scfs_support_content_operation_jobs';
+    const CRON_STATE_OPTION = 'scfs_support_content_cron_state';
+    const CRON_HOOK = 'scfs_support_content_reliability_sweep';
+    const CRON_LOCK = 'scfs_support_content_reliability_lock';
+    const ROLLBACK_RETENTION_DAYS = 14;
     const ADMIN_SLUG = 'scfs-support-content-operations';
     const MAX_IMPORT_BYTES = 2097152;
 
@@ -44,6 +50,8 @@ final class SCFS_Support_Content_Operations {
         add_action('admin_post_scfs_import_support_content', array($this, 'import_support_content_action'));
         add_action('admin_post_scfs_export_support_content', array($this, 'export_support_content_action'));
         add_action('admin_post_scfs_validate_support_content', array($this, 'validate_support_content_action'));
+        add_action('admin_post_scfs_rollback_support_import', array($this, 'rollback_support_import_action'));
+        add_action(self::CRON_HOOK, array($this, 'run_reliability_sweep'));
         add_action('save_post', array($this, 'save_content_operations_meta'), 30, 3);
         add_action('save_post', array($this, 'maintain_record_metadata'), 40, 3);
         add_action('rest_api_init', array($this, 'register_rest_routes'));
@@ -51,6 +59,7 @@ final class SCFS_Support_Content_Operations {
         if (defined('WP_CLI') && WP_CLI && class_exists('WP_CLI')) {
             WP_CLI::add_command('scfs support-onboard', array($this, 'cli_onboard'));
             WP_CLI::add_command('scfs support-validate', array($this, 'cli_validate'));
+            WP_CLI::add_command('scfs support-rollback', array($this, 'cli_rollback'));
         }
     }
 
@@ -63,7 +72,26 @@ final class SCFS_Support_Content_Operations {
         if (!get_option(self::PROFILE_OPTION)) {
             add_option(self::PROFILE_OPTION, array(), '', false);
         }
+        if (!get_option(self::ROLLBACK_OPTION)) {
+            add_option(self::ROLLBACK_OPTION, array(), '', false);
+        }
+        if (!get_option(self::JOB_OPTION)) {
+            add_option(self::JOB_OPTION, array(), '', false);
+        }
         update_option(self::SCHEMA_OPTION, self::SCHEMA_VERSION, false);
+        if (function_exists('wp_next_scheduled') && function_exists('wp_schedule_event') && !wp_next_scheduled(self::CRON_HOOK)) {
+            wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', self::CRON_HOOK);
+        }
+    }
+
+    public static function deactivate() {
+        if (!function_exists('wp_next_scheduled')) {
+            return;
+        }
+        $timestamp = wp_next_scheduled(self::CRON_HOOK);
+        if ($timestamp && function_exists('wp_unschedule_event')) {
+            wp_unschedule_event($timestamp, self::CRON_HOOK);
+        }
     }
 
     public function default_settings() {
@@ -75,6 +103,11 @@ final class SCFS_Support_Content_Operations {
             'default_import_status' => 'draft',
             'duplicate_policy' => 'skip',
             'max_import_records' => 100,
+            'strict_import_validation' => '1',
+            'import_failure_policy' => 'rollback_batch',
+            'rollback_retention_days' => self::ROLLBACK_RETENTION_DAYS,
+            'scheduled_validation' => '1',
+            'near_duplicate_title_detection' => '1',
         );
     }
 
@@ -119,6 +152,9 @@ final class SCFS_Support_Content_Operations {
             '_scfs_content_operations_schema' => array('type' => 'string', 'sanitize_callback' => 'sanitize_text_field'),
             '_scfs_starter_key' => array('type' => 'string', 'sanitize_callback' => 'sanitize_key'),
             '_scfs_import_batch_id' => array('type' => 'string', 'sanitize_callback' => 'sanitize_text_field'),
+            '_scfs_import_record_index' => array('type' => 'integer', 'sanitize_callback' => 'absint'),
+            '_scfs_normalized_title' => array('type' => 'string', 'sanitize_callback' => 'sanitize_text_field'),
+            '_scfs_import_integrity' => array('type' => 'string', 'sanitize_callback' => 'sanitize_text_field'),
         );
         foreach ($post_types as $post_type) {
             foreach ($definitions as $key => $definition) {
@@ -128,7 +164,7 @@ final class SCFS_Support_Content_Operations {
                     'show_in_rest' => true,
                     'sanitize_callback' => $definition['sanitize_callback'],
                     'auth_callback' => function () {
-                        return current_user_can('edit_posts');
+                        return $this->can_manage();
                     },
                 ));
             }
@@ -158,6 +194,195 @@ final class SCFS_Support_Content_Operations {
         return $value === '' ? '' : esc_url_raw($value);
     }
 
+    public function admin_capability() {
+        $default = (function_exists('is_multisite') && is_multisite() && function_exists('is_network_admin') && is_network_admin()) ? 'manage_network_options' : 'manage_options';
+        return apply_filters('scfs_support_content_operations_capability', $default);
+    }
+
+    public function can_manage() {
+        return current_user_can($this->admin_capability());
+    }
+
+    public function start_operation_job($type, $product_id, $total = 0) {
+        $jobs = get_option(self::JOB_OPTION, array());
+        $jobs = is_array($jobs) ? $jobs : array();
+        $job_id = function_exists('wp_generate_uuid4') ? wp_generate_uuid4() : uniqid('scfs-job-', true);
+        $jobs[$job_id] = array(
+            'job_id' => $job_id,
+            'type' => sanitize_key($type),
+            'product_term_id' => absint($product_id),
+            'status' => 'running',
+            'progress' => 0,
+            'processed' => 0,
+            'total' => absint($total),
+            'message' => __('Operation started.', 'sustainable-catalyst-feature-suggestions'),
+            'started_at' => gmdate('c'),
+            'updated_at' => gmdate('c'),
+            'user_id' => get_current_user_id(),
+        );
+        update_option(self::JOB_OPTION, array_slice($jobs, -25, 25, true), false);
+        return $job_id;
+    }
+
+    public function set_operation_job_total($job_id, $total) {
+        if ($job_id === '') { return; }
+        $jobs = get_option(self::JOB_OPTION, array());
+        if (!is_array($jobs) || empty($jobs[$job_id])) { return; }
+        $jobs[$job_id]['total'] = absint($total);
+        $jobs[$job_id]['updated_at'] = gmdate('c');
+        update_option(self::JOB_OPTION, $jobs, false);
+    }
+
+    public function update_operation_job($job_id, $processed, $message = '') {
+        if ($job_id === '') { return; }
+        $jobs = get_option(self::JOB_OPTION, array());
+        if (!is_array($jobs) || empty($jobs[$job_id])) { return; }
+        $total = max(1, absint($jobs[$job_id]['total'] ?? 0));
+        $jobs[$job_id]['processed'] = absint($processed);
+        $jobs[$job_id]['progress'] = min(100, (int) round((absint($processed) / $total) * 100));
+        $jobs[$job_id]['message'] = sanitize_text_field($message);
+        $jobs[$job_id]['updated_at'] = gmdate('c');
+        update_option(self::JOB_OPTION, $jobs, false);
+    }
+
+    public function finish_operation_job($job_id, $status, $created = 0, $skipped = 0, $failed = 0) {
+        if ($job_id === '') { return; }
+        $jobs = get_option(self::JOB_OPTION, array());
+        if (!is_array($jobs) || empty($jobs[$job_id])) { return; }
+        $jobs[$job_id]['status'] = sanitize_key($status);
+        $jobs[$job_id]['progress'] = 100;
+        $jobs[$job_id]['created'] = absint($created);
+        $jobs[$job_id]['skipped'] = absint($skipped);
+        $jobs[$job_id]['failed'] = absint($failed);
+        $jobs[$job_id]['message'] = sprintf(__('Completed: %1$d created, %2$d skipped, %3$d failed.', 'sustainable-catalyst-feature-suggestions'), $created, $skipped, $failed);
+        $jobs[$job_id]['updated_at'] = gmdate('c');
+        $jobs[$job_id]['finished_at'] = gmdate('c');
+        update_option(self::JOB_OPTION, $jobs, false);
+    }
+
+    private function store_rollback_batch($batch_id, $product, $created_ids, $job_id = '', $source_checksum = '') {
+        if (!$created_ids) { return; }
+        $batches = get_option(self::ROLLBACK_OPTION, array());
+        $batches = is_array($batches) ? $batches : array();
+        $batches[$batch_id] = array(
+            'batch_id' => $batch_id,
+            'product' => array('id' => (int) $product->term_id, 'slug' => $product->slug, 'name' => $product->name),
+            'post_ids' => array_values(array_unique(array_map('absint', $created_ids))),
+            'status' => 'available',
+            'job_id' => $job_id,
+            'source_checksum' => sanitize_text_field($source_checksum),
+            'created_at' => gmdate('c'),
+            'expires_at' => gmdate('c', time() + (max(1, absint($this->settings()['rollback_retention_days'] ?? self::ROLLBACK_RETENTION_DAYS)) * DAY_IN_SECONDS)),
+            'user_id' => get_current_user_id(),
+        );
+        update_option(self::ROLLBACK_OPTION, $batches, false);
+    }
+
+    private function rollback_created_ids($post_ids, $batch_id, $reason) {
+        $rolled_back = array();
+        $failed = array();
+        foreach (array_values(array_unique(array_map('absint', (array) $post_ids))) as $post_id) {
+            if (!$post_id || get_post_meta($post_id, '_scfs_import_batch_id', true) !== $batch_id) {
+                $failed[] = $post_id;
+                continue;
+            }
+            $result = wp_trash_post($post_id);
+            if ($result) { $rolled_back[] = $post_id; } else { $failed[] = $post_id; }
+        }
+        return array('batch_id' => $batch_id, 'reason' => sanitize_key($reason), 'rolled_back' => $rolled_back, 'failed' => $failed);
+    }
+
+    public function rollback_import_batch($batch_id, $reason = 'manual') {
+        $batch_id = sanitize_text_field($batch_id);
+        $batches = get_option(self::ROLLBACK_OPTION, array());
+        if ($batch_id === '' || !is_array($batches) || empty($batches[$batch_id])) {
+            return new WP_Error('scfs_rollback_batch_not_found', __('The import batch was not found or is no longer available.', 'sustainable-catalyst-feature-suggestions'));
+        }
+        $batch = $batches[$batch_id];
+        if (($batch['status'] ?? '') !== 'available') {
+            return new WP_Error('scfs_rollback_batch_unavailable', __('This import batch has already been rolled back or expired.', 'sustainable-catalyst-feature-suggestions'));
+        }
+        $result = $this->rollback_created_ids($batch['post_ids'] ?? array(), $batch_id, $reason);
+        $batches[$batch_id]['status'] = empty($result['failed']) ? 'rolled_back' : 'partial_rollback';
+        $batches[$batch_id]['rolled_back_at'] = gmdate('c');
+        $batches[$batch_id]['rolled_back_by'] = get_current_user_id();
+        $batches[$batch_id]['rollback_reason'] = sanitize_key($reason);
+        $batches[$batch_id]['rollback_result'] = $result;
+        update_option(self::ROLLBACK_OPTION, $batches, false);
+        return $result;
+    }
+
+    public function purge_expired_rollback_batches() {
+        $batches = get_option(self::ROLLBACK_OPTION, array());
+        if (!is_array($batches)) { return 0; }
+        $purged = 0;
+        foreach ($batches as $batch_id => $batch) {
+            if (($batch['status'] ?? '') === 'available' && !empty($batch['expires_at']) && strtotime($batch['expires_at']) < time()) {
+                $batches[$batch_id]['status'] = 'expired';
+                $batches[$batch_id]['expired_at'] = gmdate('c');
+                $purged++;
+            }
+        }
+        update_option(self::ROLLBACK_OPTION, $batches, false);
+        return $purged;
+    }
+
+    public function run_reliability_sweep() {
+        if (function_exists('get_transient') && get_transient(self::CRON_LOCK)) { return; }
+        if (function_exists('set_transient')) { set_transient(self::CRON_LOCK, '1', 15 * MINUTE_IN_SECONDS); }
+        $started = microtime(true);
+        $settings = $this->settings();
+        $report = !empty($settings['scheduled_validation']) ? $this->validate_content(0) : array('records_scanned' => 0, 'issues' => array());
+        $purged = $this->purge_expired_rollback_batches();
+        update_option(self::CRON_STATE_OPTION, array(
+            'last_started_at' => gmdate('c'),
+            'last_completed_at' => gmdate('c'),
+            'duration_ms' => (int) round((microtime(true) - $started) * 1000),
+            'records_scanned' => absint($report['records_scanned'] ?? 0),
+            'issues_found' => count($report['issues'] ?? array()),
+            'rollback_batches_expired' => $purged,
+            'status' => 'completed',
+        ), false);
+        if (function_exists('delete_transient')) { delete_transient(self::CRON_LOCK); }
+    }
+
+    public function cron_health_record() {
+        $state = get_option(self::CRON_STATE_OPTION, array());
+        $next = function_exists('wp_next_scheduled') ? wp_next_scheduled(self::CRON_HOOK) : false;
+        $last = !empty($state['last_completed_at']) ? strtotime($state['last_completed_at']) : 0;
+        return array(
+            'schema' => 'scfs-content-operations-health/' . self::SCHEMA_VERSION,
+            'version' => self::VERSION,
+            'scheduled' => (bool) $next,
+            'next_run_at' => $next ? gmdate('c', $next) : '',
+            'last_run' => $state,
+            'overdue' => $last ? (time() - $last > 2 * DAY_IN_SECONDS) : false,
+            'lock_active' => function_exists('get_transient') ? (bool) get_transient(self::CRON_LOCK) : false,
+        );
+    }
+
+    public function rollback_support_import_action() {
+        if (!$this->can_manage()) { wp_die(__('You do not have permission to roll back support imports.', 'sustainable-catalyst-feature-suggestions')); }
+        $batch_id = sanitize_text_field(wp_unslash($_GET['batch_id'] ?? ''));
+        check_admin_referer('scfs_rollback_support_import_' . $batch_id);
+        $result = $this->rollback_import_batch($batch_id, 'admin_request');
+        $args = array('rolled_back' => is_wp_error($result) ? 0 : count($result['rolled_back']), 'error' => is_wp_error($result) ? rawurlencode($result->get_error_message()) : '');
+        wp_safe_redirect($this->admin_url($args));
+        exit;
+    }
+
+    private function render_reliability_panel() {
+        $health = $this->cron_health_record();
+        $jobs = get_option(self::JOB_OPTION, array());
+        echo '<section class="scfs-content-ops-section" aria-labelledby="scfs-reliability-title"><h2 id="scfs-reliability-title">' . esc_html__('5. Reliability and recovery', 'sustainable-catalyst-feature-suggestions') . '</h2>';
+        echo '<p><strong>' . esc_html__('Scheduled validation:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($health['scheduled'] ? __('Scheduled', 'sustainable-catalyst-feature-suggestions') : __('Not scheduled', 'sustainable-catalyst-feature-suggestions')) . '. <strong>' . esc_html__('Last run:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($health['last_run']['last_completed_at'] ?? __('Not yet run', 'sustainable-catalyst-feature-suggestions')) . '.</p>';
+        if (is_array($jobs) && $jobs) {
+            $latest = end($jobs);
+            echo '<div class="scfs-operation-progress" role="status" aria-live="polite"><strong>' . esc_html__('Latest operation', 'sustainable-catalyst-feature-suggestions') . '</strong><div class="scfs-operation-progress__bar" aria-label="' . esc_attr__('Operation progress', 'sustainable-catalyst-feature-suggestions') . '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' . esc_attr((string) ($latest['progress'] ?? 0)) . '"><span style="width:' . esc_attr((string) ($latest['progress'] ?? 0)) . '%"></span></div><p>' . esc_html($latest['message'] ?? '') . '</p></div>';
+        }
+        echo '</section>';
+    }
+
     public function admin_assets($hook) {
         if (strpos((string) $hook, self::ADMIN_SLUG) === false) {
             return;
@@ -168,6 +393,14 @@ final class SCFS_Support_Content_Operations {
             plugins_url('assets/support-content-operations.css', dirname(__DIR__) . '/sustainable-catalyst-feature-suggestions.php'),
             array('scfs-admin'),
             is_readable($path) ? (string) filemtime($path) : self::VERSION
+        );
+        $script_path = dirname(__DIR__) . '/assets/support-content-operations.js';
+        wp_enqueue_script(
+            'scfs-support-content-operations',
+            plugins_url('assets/support-content-operations.js', dirname(__DIR__) . '/sustainable-catalyst-feature-suggestions.php'),
+            array(),
+            is_readable($script_path) ? (string) filemtime($script_path) : self::VERSION,
+            true
         );
     }
 
@@ -233,7 +466,7 @@ final class SCFS_Support_Content_Operations {
             'edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE,
             __('Support Content Operations and Product Onboarding', 'sustainable-catalyst-feature-suggestions'),
             __('Content Operations', 'sustainable-catalyst-feature-suggestions'),
-            'edit_posts',
+            $this->admin_capability(),
             self::ADMIN_SLUG,
             array($this, 'render_admin_page')
         );
@@ -583,10 +816,20 @@ final class SCFS_Support_Content_Operations {
         $status = in_array($status, array('draft', 'pending'), true) ? $status : 'draft';
         $created = array();
         $skipped = array();
+        $failed = array();
+        $created_ids = array();
         foreach ($this->starter_definitions($product->name, $version) as $definition) {
-            $existing = $this->find_starter($product->term_id, $definition['key']);
+            $existing = $this->find_starter_record($product->term_id, $definition['key'], $definition['title']);
             if ($existing) {
-                $skipped[] = array('key' => $definition['key'], 'post_id' => $existing);
+                update_post_meta($existing->ID, '_scfs_starter_key', $definition['key']);
+                update_post_meta($existing->ID, '_scfs_normalized_title', $this->normalize_title($definition['title']));
+                if ($existing->post_status === 'trash') {
+                    wp_untrash_post($existing->ID);
+                    wp_update_post(array('ID' => $existing->ID, 'post_status' => $status));
+                    $recovered[] = array('key' => $definition['key'], 'post_id' => (int) $existing->ID, 'reason' => 'restored_from_trash');
+                } else {
+                    $skipped[] = array('key' => $definition['key'], 'post_id' => (int) $existing->ID, 'reason' => 'existing_starter');
+                }
                 continue;
             }
             $post_type = $definition['type'] === 'release' ? SCFS_Product_Support_Platform::RELEASE_POST_TYPE : SCFS_Knowledge_Base_Foundation::ARTICLE_POST_TYPE;
@@ -642,21 +885,45 @@ final class SCFS_Support_Content_Operations {
             'product' => array('id' => (int) $product->term_id, 'slug' => $product->slug, 'name' => $product->name),
             'created' => $created,
             'skipped' => $skipped,
+            'recovered' => $recovered,
             'idempotent' => true,
         );
     }
 
-    private function find_starter($product_id, $key) {
-        $query = new WP_Query(array(
+    private function find_starter_record($product_id, $key, $title = '') {
+        $base = array(
             'post_type' => $this->managed_post_types(),
             'post_status' => array('publish', 'future', 'draft', 'pending', 'private', 'trash'),
             'posts_per_page' => 1,
-            'fields' => 'ids',
-            'meta_query' => array(array('key' => '_scfs_starter_key', 'value' => sanitize_key($key))),
-            'tax_query' => array(array('taxonomy' => SCFS_Product_Integration::PRODUCT_TAXONOMY, 'field' => 'term_id', 'terms' => absint($product_id))),
             'no_found_rows' => true,
-        ));
-        return $query->posts ? (int) $query->posts[0] : 0;
+            'tax_query' => array(array('taxonomy' => SCFS_Product_Integration::PRODUCT_TAXONOMY, 'field' => 'term_id', 'terms' => absint($product_id))),
+        );
+        $query = new WP_Query(array_merge($base, array(
+            'meta_query' => array(array('key' => '_scfs_starter_key', 'value' => sanitize_key($key))),
+        )));
+        if ($query->posts) {
+            return $query->posts[0];
+        }
+        if ($title !== '') {
+            $query = new WP_Query(array_merge($base, array(
+                'meta_query' => array(array('key' => '_scfs_normalized_title', 'value' => $this->normalize_title($title))),
+            )));
+            if ($query->posts) {
+                return $query->posts[0];
+            }
+            $query = new WP_Query(array_merge($base, array('s' => sanitize_text_field($title))));
+            foreach ((array) $query->posts as $post) {
+                if ($this->normalize_title($post->post_title) === $this->normalize_title($title)) {
+                    return $post;
+                }
+            }
+        }
+        return null;
+    }
+
+    private function find_starter($product_id, $key) {
+        $post = $this->find_starter_record($product_id, $key);
+        return $post ? (int) $post->ID : 0;
     }
 
     public function fingerprint($title, $content) {
@@ -672,6 +939,7 @@ final class SCFS_Support_Content_Operations {
         }
         $fingerprint = $this->fingerprint($post->post_title, $post->post_content);
         update_post_meta($post_id, '_scfs_source_fingerprint', $fingerprint);
+        update_post_meta($post_id, '_scfs_normalized_title', $this->normalize_title($post->post_title));
         update_post_meta($post_id, '_scfs_content_operations_schema', self::SCHEMA_VERSION);
         if (!get_post_meta($post_id, '_scfs_content_lifecycle', true)) {
             $lifecycle = 'draft';
@@ -689,18 +957,85 @@ final class SCFS_Support_Content_Operations {
         }
     }
 
-    public function detect_duplicate($title, $content, $exclude_id = 0) {
+    public function normalize_title($title) {
+        $title = strtolower(wp_strip_all_tags((string) $title));
+        $title = preg_replace('/\bv?\d+(?:\.\d+){1,3}(?:[-+][a-z0-9.-]+)?\b/i', ' ', $title);
+        $title = preg_replace('/[^a-z0-9]+/i', ' ', $title);
+        return trim(preg_replace('/\s+/', ' ', $title));
+    }
+
+    public function find_duplicate($title, $content, $exclude_id = 0, $product_id = 0, $source_reference = '') {
         $fingerprint = $this->fingerprint($title, $content);
-        $query = new WP_Query(array(
+        $base = array(
             'post_type' => $this->managed_post_types(),
-            'post_status' => array('publish', 'future', 'draft', 'pending', 'private'),
+            'post_status' => array('publish', 'future', 'draft', 'pending', 'private', 'trash'),
             'posts_per_page' => 2,
             'fields' => 'ids',
             'post__not_in' => $exclude_id ? array(absint($exclude_id)) : array(),
-            'meta_query' => array(array('key' => '_scfs_source_fingerprint', 'value' => $fingerprint)),
             'no_found_rows' => true,
-        ));
-        return $query->posts ? (int) $query->posts[0] : 0;
+        );
+        if ($product_id) {
+            $base['tax_query'] = array(array(
+                'taxonomy' => SCFS_Product_Integration::PRODUCT_TAXONOMY,
+                'field' => 'term_id',
+                'terms' => absint($product_id),
+            ));
+        }
+        $query = new WP_Query(array_merge($base, array(
+            'meta_query' => array(array('key' => '_scfs_source_fingerprint', 'value' => $fingerprint)),
+        )));
+        if ($query->posts) {
+            return array('post_id' => (int) $query->posts[0], 'match' => 'exact_fingerprint', 'fingerprint' => $fingerprint);
+        }
+        if ($source_reference !== '') {
+            $query = new WP_Query(array_merge($base, array(
+                'meta_query' => array(
+                    'relation' => 'AND',
+                    array('key' => '_scfs_source_reference', 'value' => sanitize_text_field($source_reference)),
+                    array('key' => '_scfs_normalized_title', 'value' => $this->normalize_title($title)),
+                ),
+            )));
+            if ($query->posts) {
+                return array('post_id' => (int) $query->posts[0], 'match' => 'same_source_and_title', 'fingerprint' => $fingerprint);
+            }
+        }
+        $settings = $this->settings();
+        if (!empty($settings['near_duplicate_title_detection'])) {
+            $query = new WP_Query(array_merge($base, array(
+                'meta_query' => array(array('key' => '_scfs_normalized_title', 'value' => $this->normalize_title($title))),
+            )));
+            if ($query->posts) {
+                return array('post_id' => (int) $query->posts[0], 'match' => 'normalized_title', 'fingerprint' => $fingerprint);
+            }
+        }
+        return array('post_id' => 0, 'match' => '', 'fingerprint' => $fingerprint);
+    }
+
+    public function detect_duplicate($title, $content, $exclude_id = 0, $product_id = 0, $source_reference = '') {
+        $match = $this->find_duplicate($title, $content, $exclude_id, $product_id, $source_reference);
+        return (int) $match['post_id'];
+    }
+
+    public function validate_import_record($record, $index = 0) {
+        if (!is_array($record)) {
+            return new WP_Error('scfs_invalid_import_record', sprintf(__('Record %d is not an object.', 'sustainable-catalyst-feature-suggestions'), (int) $index + 1));
+        }
+        $type = sanitize_key($record['type'] ?? 'article');
+        if (!in_array($type, array('article', 'known_issue', 'release'), true)) {
+            return new WP_Error('scfs_invalid_import_type', sprintf(__('Record %d has an unsupported type.', 'sustainable-catalyst-feature-suggestions'), (int) $index + 1));
+        }
+        $title = sanitize_text_field($record['title'] ?? '');
+        $content = (string) ($record['content'] ?? '');
+        if ($title === '' || trim(wp_strip_all_tags($content)) === '') {
+            return new WP_Error('scfs_import_missing_content', sprintf(__('Record %d requires a title and content.', 'sustainable-catalyst-feature-suggestions'), (int) $index + 1));
+        }
+        if (strlen($title) > 240) {
+            return new WP_Error('scfs_import_title_too_long', sprintf(__('Record %d has a title longer than 240 characters.', 'sustainable-catalyst-feature-suggestions'), (int) $index + 1));
+        }
+        if (strpos($content, "\0") !== false || preg_match('//u', $content) !== 1) {
+            return new WP_Error('scfs_import_encoding', sprintf(__('Record %d contains invalid text encoding.', 'sustainable-catalyst-feature-suggestions'), (int) $index + 1));
+        }
+        return array_merge($record, array('type' => $type, 'title' => $title, 'content' => wp_kses_post($content)));
     }
 
     public function import_records($records, $product_id, $defaults = array()) {
@@ -711,14 +1046,21 @@ final class SCFS_Support_Content_Operations {
         $settings = $this->settings();
         $limit = min(500, max(1, absint($settings['max_import_records'])));
         $records = array_slice(array_values((array) $records), 0, $limit);
+        $job_id = !empty($defaults['job_id']) ? sanitize_text_field($defaults['job_id']) : $this->start_operation_job('import', $product->term_id, count($records));
+        $this->set_operation_job_total($job_id, count($records));
         $batch_id = function_exists('wp_generate_uuid4') ? wp_generate_uuid4() : uniqid('scfs-import-', true);
         $created = array();
         $skipped = array();
+        $failed = array();
+        $created_ids = array();
         foreach ($records as $index => $record) {
-            if (!is_array($record)) {
-                $skipped[] = array('index' => $index, 'reason' => 'invalid_record');
+            $this->update_operation_job($job_id, $index, sprintf(__('Validating record %1$d of %2$d', 'sustainable-catalyst-feature-suggestions'), $index + 1, count($records)));
+            $validated = $this->validate_import_record($record, $index);
+            if (is_wp_error($validated)) {
+                $failed[] = array('index' => $index, 'reason' => $validated->get_error_code(), 'message' => $validated->get_error_message());
                 continue;
             }
+            $record = $validated;
             $type = sanitize_key($record['type'] ?? $defaults['type'] ?? 'article');
             if (!in_array($type, array('article', 'known_issue', 'release'), true)) {
                 $type = 'article';
@@ -729,9 +1071,10 @@ final class SCFS_Support_Content_Operations {
                 $skipped[] = array('index' => $index, 'title' => $title, 'reason' => 'missing_title_or_content');
                 continue;
             }
-            $duplicate = $this->detect_duplicate($title, $content);
+            $duplicate_match = $this->find_duplicate($title, $content, 0, $product->term_id, $record['source_reference'] ?? $defaults['source_reference'] ?? '');
+            $duplicate = (int) $duplicate_match['post_id'];
             if ($duplicate && ($settings['duplicate_policy'] ?? 'skip') === 'skip') {
-                $skipped[] = array('index' => $index, 'title' => $title, 'reason' => 'duplicate', 'post_id' => $duplicate);
+                $skipped[] = array('index' => $index, 'title' => $title, 'reason' => 'duplicate', 'match' => $duplicate_match['match'], 'post_id' => $duplicate);
                 continue;
             }
             $post_type = $type === 'release' ? SCFS_Product_Support_Platform::RELEASE_POST_TYPE : ($type === 'known_issue' ? SCFS_Knowledge_Base_Foundation::ISSUE_POST_TYPE : SCFS_Knowledge_Base_Foundation::ARTICLE_POST_TYPE);
@@ -750,7 +1093,7 @@ final class SCFS_Support_Content_Operations {
                 'post_excerpt' => sanitize_textarea_field($record['excerpt'] ?? wp_trim_words(wp_strip_all_tags($content), 35)),
             ), true);
             if (is_wp_error($post_id)) {
-                $skipped[] = array('index' => $index, 'title' => $title, 'reason' => $post_id->get_error_message());
+                $failed[] = array('index' => $index, 'title' => $title, 'reason' => $post_id->get_error_code(), 'message' => $post_id->get_error_message());
                 continue;
             }
             wp_set_object_terms($post_id, array((int) $product->term_id), SCFS_Product_Integration::PRODUCT_TAXONOMY, false);
@@ -760,6 +1103,9 @@ final class SCFS_Support_Content_Operations {
             update_post_meta($post_id, '_scfs_source_version', sanitize_text_field($record['source_version'] ?? $defaults['source_version'] ?? ''));
             update_post_meta($post_id, '_scfs_source_fingerprint', $this->fingerprint($title, $content));
             update_post_meta($post_id, '_scfs_import_batch_id', $batch_id);
+            update_post_meta($post_id, '_scfs_import_record_index', (int) $index);
+            update_post_meta($post_id, '_scfs_normalized_title', $this->normalize_title($title));
+            update_post_meta($post_id, '_scfs_import_integrity', hash('sha256', $batch_id . '|' . $index . '|' . $this->fingerprint($title, $content)));
             update_post_meta($post_id, '_scfs_content_lifecycle', $post_status === 'publish' ? 'published' : ($post_status === 'pending' ? 'review' : 'draft'));
             update_post_meta($post_id, '_scfs_content_operations_schema', self::SCHEMA_VERSION);
             if (!empty($record['verified_at'])) {
@@ -784,7 +1130,9 @@ final class SCFS_Support_Content_Operations {
                 update_post_meta($post_id, '_scfs_release_summary', sanitize_textarea_field($record['summary'] ?? wp_trim_words(wp_strip_all_tags($content), 30)));
                 update_post_meta($post_id, '_scfs_release_support_note', sanitize_textarea_field($record['support_note'] ?? ''));
             }
+            $created_ids[] = (int) $post_id;
             $created[] = array('index' => $index, 'post_id' => (int) $post_id, 'post_type' => $post_type, 'title' => $title);
+            $this->update_operation_job($job_id, $index + 1, sprintf(__('Imported record %1$d of %2$d', 'sustainable-catalyst-feature-suggestions'), $index + 1, count($records)));
         }
         $result = array(
             'schema' => 'scfs-support-import-result/' . self::SCHEMA_VERSION,
@@ -793,8 +1141,23 @@ final class SCFS_Support_Content_Operations {
             'product' => array('id' => (int) $product->term_id, 'slug' => $product->slug, 'name' => $product->name),
             'created' => $created,
             'skipped' => $skipped,
+            'failed' => $failed,
+            'status' => 'completed',
+            'rollback_available' => !empty($created_ids),
+            'job_id' => $job_id,
+            'source_checksum' => sanitize_text_field($defaults['source_checksum'] ?? ''),
             'human_review_required' => true,
         );
+        if ($failed && ($settings['import_failure_policy'] ?? 'rollback_batch') === 'rollback_batch' && !empty($settings['strict_import_validation'])) {
+            $rollback = $this->rollback_created_ids($created_ids, $batch_id, 'automatic_import_failure');
+            $result['status'] = 'rolled_back';
+            $result['rolled_back'] = $rollback['rolled_back'];
+            $result['created'] = array();
+            $result['rollback_available'] = false;
+        } else {
+            $this->store_rollback_batch($batch_id, $product, $created_ids, $job_id, $defaults['source_checksum'] ?? '');
+        }
+        $this->finish_operation_job($job_id, $result['status'], count($result['created']), count($skipped), count($failed));
         $this->append_log($result);
         return $result;
     }
@@ -842,17 +1205,33 @@ final class SCFS_Support_Content_Operations {
         if (!in_array($extension, array('json', 'md', 'markdown', 'txt'), true)) {
             return new WP_Error('scfs_import_extension', __('Only JSON, Markdown, and text files are supported.', 'sustainable-catalyst-feature-suggestions'));
         }
+        if ($size === 0) {
+            return new WP_Error('scfs_import_empty', __('The import file is empty.', 'sustainable-catalyst-feature-suggestions'));
+        }
         $content = file_get_contents($path);
         if ($content === false) {
             return new WP_Error('scfs_import_read_failed', __('The import file could not be read.', 'sustainable-catalyst-feature-suggestions'));
         }
+        $content = preg_replace('/^\xEF\xBB\xBF/', '', $content);
+        if (strpos($content, "\0") !== false || preg_match('//u', $content) !== 1) {
+            return new WP_Error('scfs_import_encoding', __('The import file contains invalid UTF-8 text or null bytes.', 'sustainable-catalyst-feature-suggestions'));
+        }
+        $content = str_replace(array("\r\n", "\r"), "\n", $content);
         if ($extension === 'json') {
-            $decoded = json_decode($content, true);
+            $decoded = json_decode($content, true, 128, JSON_BIGINT_AS_STRING);
             if (!is_array($decoded)) {
-                return new WP_Error('scfs_import_json', __('The JSON import is invalid.', 'sustainable-catalyst-feature-suggestions'));
+                return new WP_Error('scfs_import_json', sprintf(__('The JSON import is invalid: %s', 'sustainable-catalyst-feature-suggestions'), function_exists('json_last_error_msg') ? json_last_error_msg() : __('parse error', 'sustainable-catalyst-feature-suggestions')));
             }
             $records = isset($decoded['records']) && is_array($decoded['records']) ? $decoded['records'] : ($this->is_list_array($decoded) ? $decoded : array($decoded));
-            return array('records' => $records, 'source_kind' => 'json_import');
+            if (!$records || count($records) > 500) {
+                return new WP_Error('scfs_import_record_count', __('JSON imports must contain between 1 and 500 records.', 'sustainable-catalyst-feature-suggestions'));
+            }
+            foreach ($records as $record) {
+                if (!is_array($record)) {
+                    return new WP_Error('scfs_import_record_shape', __('Every JSON import record must be an object.', 'sustainable-catalyst-feature-suggestions'));
+                }
+            }
+            return array('records' => $records, 'source_kind' => 'json_import', 'checksum' => hash('sha256', $content));
         }
         $lower_name = strtolower($filename);
         $resolved_type = sanitize_key($type);
@@ -945,6 +1324,10 @@ final class SCFS_Support_Content_Operations {
             'product' => $record['product'] ?? array(),
             'created' => count($record['created'] ?? array()),
             'skipped' => count($record['skipped'] ?? array()),
+            'failed' => count($record['failed'] ?? array()),
+            'status' => $record['status'] ?? 'completed',
+            'rollback_available' => !empty($record['rollback_available']),
+            'job_id' => $record['job_id'] ?? '',
             'user_id' => get_current_user_id(),
         ));
         update_option(self::LOG_OPTION, array_slice($log, 0, 50), false);
@@ -969,14 +1352,44 @@ final class SCFS_Support_Content_Operations {
         foreach ($query->posts as $post) {
             $post_id = (int) $post->ID;
             $products = wp_get_object_terms($post_id, SCFS_Product_Integration::PRODUCT_TAXONOMY, array('fields' => 'ids'));
+            if (is_wp_error($products)) {
+                $issues[] = $this->validation_issue($post, 'product_assignment_unreadable', 'error');
+                $products = array();
+            }
             if (empty($products) && !empty($settings['require_product_context'])) {
                 $issues[] = $this->validation_issue($post, 'missing_product_context', 'error');
+            }
+            foreach (array(SCFS_Product_Integration::VERSION_TAXONOMY, SCFS_Product_Integration::COMPONENT_TAXONOMY) as $taxonomy) {
+                $context_terms = wp_get_object_terms($post_id, $taxonomy, array('fields' => 'ids'));
+                if (is_wp_error($context_terms)) {
+                    $issues[] = $this->validation_issue($post, 'context_assignment_unreadable', 'error', array('taxonomy' => $taxonomy));
+                    continue;
+                }
+                foreach ((array) $context_terms as $context_term_id) {
+                    $allowed_products = array_values(array_filter(array_map('absint', (array) get_term_meta($context_term_id, 'scfs_product_ids', true))));
+                    if ($allowed_products && !array_intersect($allowed_products, array_map('absint', (array) $products))) {
+                        $issues[] = $this->validation_issue($post, 'context_product_mismatch', 'error', array('taxonomy' => $taxonomy, 'term_id' => (int) $context_term_id, 'allowed_product_ids' => $allowed_products));
+                    }
+                }
             }
             $fingerprint = get_post_meta($post_id, '_scfs_source_fingerprint', true) ?: $this->fingerprint($post->post_title, $post->post_content);
             if (isset($fingerprints[$fingerprint])) {
                 $issues[] = $this->validation_issue($post, 'duplicate_content', 'warning', array('duplicate_of' => $fingerprints[$fingerprint]));
             } else {
                 $fingerprints[$fingerprint] = $post_id;
+            }
+            $stored_fingerprint = get_post_meta($post_id, '_scfs_source_fingerprint', true);
+            if ($stored_fingerprint && !hash_equals((string) $stored_fingerprint, $this->fingerprint($post->post_title, $post->post_content))) {
+                $issues[] = $this->validation_issue($post, 'fingerprint_drift', 'warning');
+            }
+            $batch_id = get_post_meta($post_id, '_scfs_import_batch_id', true);
+            $record_index = get_post_meta($post_id, '_scfs_import_record_index', true);
+            $integrity = get_post_meta($post_id, '_scfs_import_integrity', true);
+            if ($batch_id && $integrity) {
+                $expected_integrity = hash('sha256', $batch_id . '|' . absint($record_index) . '|' . $fingerprint);
+                if (!hash_equals((string) $integrity, $expected_integrity)) {
+                    $issues[] = $this->validation_issue($post, 'import_integrity_mismatch', 'warning', array('batch_id' => $batch_id));
+                }
             }
             $verified = get_post_meta($post_id, '_scfs_verified_at', true);
             $timestamp = $verified ? strtotime($verified . ' 00:00:00 UTC') : get_post_modified_time('U', true, $post_id);
@@ -1053,7 +1466,7 @@ final class SCFS_Support_Content_Operations {
             'post_type' => $this->managed_post_types(),
             'post_status' => array('publish', 'future', 'draft', 'pending', 'private'),
             'posts_per_page' => -1,
-            'orderby' => 'post_type title',
+            'orderby' => 'ID',
             'order' => 'ASC',
             'no_found_rows' => true,
         );
@@ -1061,34 +1474,54 @@ final class SCFS_Support_Content_Operations {
             $args['tax_query'] = array(array('taxonomy' => SCFS_Product_Integration::PRODUCT_TAXONOMY, 'field' => 'term_id', 'terms' => absint($product_id)));
         }
         $query = new WP_Query($args);
-        return array(
+        $records = array_values(array_map(array($this, 'export_record'), $query->posts));
+        usort($records, function ($a, $b) {
+            return strcmp(($a['type'] ?? '') . '|' . strtolower($a['title'] ?? '') . '|' . ($a['id'] ?? 0), ($b['type'] ?? '') . '|' . strtolower($b['title'] ?? '') . '|' . ($b['id'] ?? 0));
+        });
+        $payload = array(
             'schema' => 'scfs-support-content-export/' . self::SCHEMA_VERSION,
             'version' => self::VERSION,
             'generated_at' => gmdate('c'),
             'product_term_id' => absint($product_id),
             'profile' => $product_id ? $this->product_profile($product_id) : array(),
-            'records' => array_values(array_map(array($this, 'export_record'), $query->posts)),
+            'records' => $records,
             'private_case_content_included' => false,
         );
+        $canonical = wp_json_encode($records, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $payload['integrity'] = array(
+            'record_count' => count($records),
+            'algorithm' => 'sha256',
+            'records_checksum' => hash('sha256', (string) $canonical),
+            'stable_ordering' => true,
+        );
+        return $payload;
+    }
+
+    public function validate_export_payload($payload) {
+        if (!is_array($payload) || !isset($payload['records'], $payload['integrity']['records_checksum'])) {
+            return false;
+        }
+        $canonical = wp_json_encode(array_values((array) $payload['records']), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return hash_equals((string) $payload['integrity']['records_checksum'], hash('sha256', (string) $canonical));
     }
 
     public function save_product_onboarding() {
-        if (!current_user_can('edit_posts')) {
+        if (!$this->can_manage()) {
             wp_die(__('You do not have permission to manage product onboarding.', 'sustainable-catalyst-feature-suggestions'));
         }
         check_admin_referer('scfs_save_product_onboarding', 'scfs_content_operations_nonce');
         $product_id = absint($_POST['product_term_id'] ?? 0);
         $this->save_profile($product_id, wp_unslash($_POST));
         $settings = $this->settings();
-        foreach (array('freshness_days', 'max_import_records') as $numeric) {
+        foreach (array('freshness_days', 'max_import_records', 'rollback_retention_days') as $numeric) {
             if (isset($_POST[$numeric])) {
                 $settings[$numeric] = absint($_POST[$numeric]);
             }
         }
-        foreach (array('hide_empty_support_sections', 'require_product_context') as $checkbox) {
+        foreach (array('hide_empty_support_sections', 'require_product_context', 'strict_import_validation', 'scheduled_validation', 'near_duplicate_title_detection') as $checkbox) {
             $settings[$checkbox] = !empty($_POST[$checkbox]) ? '1' : '';
         }
-        foreach (array('starter_post_status', 'default_import_status', 'duplicate_policy') as $choice) {
+        foreach (array('starter_post_status', 'default_import_status', 'duplicate_policy', 'import_failure_policy') as $choice) {
             if (isset($_POST[$choice])) {
                 $settings[$choice] = sanitize_key($_POST[$choice]);
             }
@@ -1099,7 +1532,7 @@ final class SCFS_Support_Content_Operations {
     }
 
     public function create_support_starters_action() {
-        if (!current_user_can('edit_posts')) {
+        if (!$this->can_manage()) {
             wp_die(__('You do not have permission to create support content.', 'sustainable-catalyst-feature-suggestions'));
         }
         check_admin_referer('scfs_create_support_starters', 'scfs_starter_nonce');
@@ -1113,7 +1546,7 @@ final class SCFS_Support_Content_Operations {
     }
 
     public function import_support_content_action() {
-        if (!current_user_can('edit_posts')) {
+        if (!$this->can_manage()) {
             wp_die(__('You do not have permission to import support content.', 'sustainable-catalyst-feature-suggestions'));
         }
         check_admin_referer('scfs_import_support_content', 'scfs_import_nonce');
@@ -1127,8 +1560,10 @@ final class SCFS_Support_Content_Operations {
             wp_safe_redirect($this->admin_url(array('product' => $product_id, 'error' => rawurlencode(__('The upload failed.', 'sustainable-catalyst-feature-suggestions')))));
             exit;
         }
+        $job_id = $this->start_operation_job('file_import', $product_id, 1);
         $parsed = $this->parse_import_file($file['tmp_name'], sanitize_file_name($file['name']), sanitize_key($_POST['import_type'] ?? 'auto'));
         if (is_wp_error($parsed)) {
+            $this->finish_operation_job($job_id, 'failed', 0, 0, 1);
             wp_safe_redirect($this->admin_url(array('product' => $product_id, 'error' => rawurlencode($parsed->get_error_message()))));
             exit;
         }
@@ -1137,30 +1572,43 @@ final class SCFS_Support_Content_Operations {
             'source_kind' => $parsed['source_kind'],
             'source_reference' => sanitize_file_name($file['name']),
             'source_version' => sanitize_text_field(wp_unslash($_POST['source_version'] ?? '')),
+            'source_checksum' => $parsed['checksum'] ?? '',
+            'job_id' => $job_id,
         ));
         $created = is_wp_error($result) ? 0 : count($result['created']);
         $skipped = is_wp_error($result) ? 0 : count($result['skipped']);
-        wp_safe_redirect($this->admin_url(array('product' => $product_id, 'imported' => $created, 'skipped' => $skipped, 'error' => is_wp_error($result) ? rawurlencode($result->get_error_message()) : '')));
+        $failed = is_wp_error($result) ? 0 : count($result['failed'] ?? array());
+        $batch = is_wp_error($result) ? '' : ($result['batch_id'] ?? '');
+        wp_safe_redirect($this->admin_url(array('product' => $product_id, 'imported' => $created, 'skipped' => $skipped, 'failed' => $failed, 'batch' => $batch, 'error' => is_wp_error($result) ? rawurlencode($result->get_error_message()) : '')));
         exit;
     }
 
     public function export_support_content_action() {
-        if (!current_user_can('edit_posts')) {
+        if (!$this->can_manage()) {
             wp_die(__('You do not have permission to export support content.', 'sustainable-catalyst-feature-suggestions'));
         }
         check_admin_referer('scfs_export_support_content');
         $product_id = absint($_GET['product_term_id'] ?? 0);
         $payload = $this->product_export($product_id);
+        if (!$this->validate_export_payload($payload)) {
+            wp_die(__('Export integrity validation failed. No file was sent.', 'sustainable-catalyst-feature-suggestions'));
+        }
         $filename = 'scfs-support-content-' . ($product_id ?: 'all') . '-' . gmdate('Ymd-His') . '.json';
         nocache_headers();
         header('Content-Type: application/json; charset=utf-8');
+        $encoded = wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if ($encoded === false) {
+            wp_die(__('The export could not be encoded as JSON.', 'sustainable-catalyst-feature-suggestions'));
+        }
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        echo wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        header('X-SCFS-Content-SHA256: ' . hash('sha256', $encoded));
+        header('Content-Length: ' . strlen($encoded));
+        echo $encoded;
         exit;
     }
 
     public function validate_support_content_action() {
-        if (!current_user_can('edit_posts')) {
+        if (!$this->can_manage()) {
             wp_die(__('You do not have permission to validate support content.', 'sustainable-catalyst-feature-suggestions'));
         }
         check_admin_referer('scfs_validate_support_content');
@@ -1178,7 +1626,7 @@ final class SCFS_Support_Content_Operations {
     }
 
     public function render_admin_page() {
-        if (!current_user_can('edit_posts')) {
+        if (!$this->can_manage()) {
             wp_die(__('You do not have permission to manage support content operations.', 'sustainable-catalyst-feature-suggestions'));
         }
         $products = get_terms(array('taxonomy' => SCFS_Product_Integration::PRODUCT_TAXONOMY, 'hide_empty' => false, 'orderby' => 'name'));
@@ -1195,7 +1643,7 @@ final class SCFS_Support_Content_Operations {
         $settings = $this->settings();
         $validation = get_option(self::VALIDATION_OPTION, array());
         $log = get_option(self::LOG_OPTION, array());
-        echo '<div class="wrap scfs-content-operations"><h1>' . esc_html__('Support Content Operations and Product Onboarding', 'sustainable-catalyst-feature-suggestions') . '</h1><p>' . esc_html__('Onboard each Sustainable Catalyst product, create a reviewable starter set, import existing documentation and release history, and measure whether public support is ready.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<div class="wrap scfs-content-operations"><div class="scfs-content-ops-status" role="status" aria-live="polite" aria-atomic="true"></div><h1>' . esc_html__('Support Content Operations and Product Onboarding', 'sustainable-catalyst-feature-suggestions') . '</h1><p>' . esc_html__('Onboard each Sustainable Catalyst product, create a reviewable starter set, import existing documentation and release history, and measure whether public support is ready.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         $this->render_notices();
         if (!$products) {
             echo '<div class="notice notice-warning"><p>' . esc_html__('Create or seed Product taxonomy terms before onboarding support content.', 'sustainable-catalyst-feature-suggestions') . '</p></div></div>';
@@ -1221,6 +1669,7 @@ final class SCFS_Support_Content_Operations {
             $this->render_starter_form($selected, $profile, $settings);
             $this->render_import_form($selected, $settings);
             $this->render_validation_panel($selected, $validation);
+            $this->render_reliability_panel();
             $this->render_log($log);
         }
         echo '</div>';
@@ -1234,10 +1683,13 @@ final class SCFS_Support_Content_Operations {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html(sprintf(__('%d starter records created. Existing starter records were preserved.', 'sustainable-catalyst-feature-suggestions'), absint($_GET['starters']))) . '</p></div>';
         }
         if (isset($_GET['imported'])) {
-            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html(sprintf(__('%d records imported; %d skipped.', 'sustainable-catalyst-feature-suggestions'), absint($_GET['imported']), absint($_GET['skipped'] ?? 0))) . '</p></div>';
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html(sprintf(__('%d records imported; %d skipped; %d failed.', 'sustainable-catalyst-feature-suggestions'), absint($_GET['imported']), absint($_GET['skipped'] ?? 0), absint($_GET['failed'] ?? 0))) . '</p></div>';
         }
         if (isset($_GET['validated'])) {
             echo '<div class="notice notice-info is-dismissible"><p>' . esc_html(sprintf(__('Validation completed with %d issue(s) requiring review.', 'sustainable-catalyst-feature-suggestions'), absint($_GET['validated']))) . '</p></div>';
+        }
+        if (isset($_GET['rolled_back'])) {
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html(sprintf(__('%d imported record(s) moved to Trash.', 'sustainable-catalyst-feature-suggestions'), absint($_GET['rolled_back']))) . '</p></div>';
         }
         if (!empty($_GET['error'])) {
             echo '<div class="notice notice-error"><p>' . esc_html(sanitize_text_field(wp_unslash($_GET['error']))) . '</p></div>';
@@ -1263,7 +1715,7 @@ final class SCFS_Support_Content_Operations {
             echo '<option value="' . esc_attr($key) . '" ' . selected($profile['status'], $key, false) . '>' . esc_html($label) . '</option>';
         }
         echo '</select></td></tr><tr><th>' . esc_html__('Owner', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="owner" value="' . esc_attr($profile['owner']) . '"></td></tr><tr><th>' . esc_html__('Current version', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="current_version" value="' . esc_attr($profile['current_version']) . '" placeholder="v1.0.0"></td></tr><tr><th>' . esc_html__('Repository URL', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" type="url" name="repository_url" value="' . esc_attr($profile['repository_url']) . '"></td></tr><tr><th>' . esc_html__('Documentation URL', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" type="url" name="documentation_url" value="' . esc_attr($profile['documentation_url']) . '"></td></tr><tr><th>' . esc_html__('Product support URL', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" type="url" name="support_url" value="' . esc_attr($profile['support_url']) . '"></td></tr><tr><th>' . esc_html__('Components', 'sustainable-catalyst-feature-suggestions') . '</th><td><textarea class="large-text" rows="5" name="components" placeholder="Public interface&#10;REST API&#10;Admin settings">' . esc_textarea(implode("\n", (array) $profile['components'])) . '</textarea><p class="description">' . esc_html__('One component per line. Missing component terms are created and linked to this product.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr><tr><th>' . esc_html__('Known-issue review', 'sustainable-catalyst-feature-suggestions') . '</th><td><label><input type="checkbox" name="known_issues_reviewed" value="1" ' . checked($profile['known_issues_reviewed'], '1', false) . '> ' . esc_html__('The product was reviewed and currently has no additional known issues to publish.', 'sustainable-catalyst-feature-suggestions') . '</label></td></tr><tr><th>' . esc_html__('Source notes', 'sustainable-catalyst-feature-suggestions') . '</th><td><textarea class="large-text" rows="4" name="source_notes">' . esc_textarea($profile['source_notes']) . '</textarea></td></tr>';
-        echo '<tr><th>' . esc_html__('Operations defaults', 'sustainable-catalyst-feature-suggestions') . '</th><td><label>' . esc_html__('Freshness window', 'sustainable-catalyst-feature-suggestions') . ' <input type="number" min="30" max="1095" name="freshness_days" value="' . esc_attr((string) $settings['freshness_days']) . '"> ' . esc_html__('days', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="hide_empty_support_sections" value="1" ' . checked($settings['hide_empty_support_sections'], '1', false) . '> ' . esc_html__('Hide empty Knowledge Base, Known Issues, Releases, Public Ideas, and Surveys navigation until content exists', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="require_product_context" value="1" ' . checked($settings['require_product_context'], '1', false) . '> ' . esc_html__('Require product context during validation', 'sustainable-catalyst-feature-suggestions') . '</label><br><label>' . esc_html__('Duplicate import policy', 'sustainable-catalyst-feature-suggestions') . ' <select name="duplicate_policy"><option value="skip" ' . selected($settings['duplicate_policy'], 'skip', false) . '>' . esc_html__('Skip exact duplicates', 'sustainable-catalyst-feature-suggestions') . '</option><option value="create" ' . selected($settings['duplicate_policy'], 'create', false) . '>' . esc_html__('Create and flag for review', 'sustainable-catalyst-feature-suggestions') . '</option></select></label><br><label>' . esc_html__('Maximum records per import', 'sustainable-catalyst-feature-suggestions') . ' <input type="number" min="1" max="500" name="max_import_records" value="' . esc_attr((string) $settings['max_import_records']) . '"></label></td></tr></table><p><button class="button button-primary">' . esc_html__('Save onboarding profile', 'sustainable-catalyst-feature-suggestions') . '</button></p></form></section>';
+        echo '<tr><th>' . esc_html__('Operations defaults', 'sustainable-catalyst-feature-suggestions') . '</th><td><label>' . esc_html__('Freshness window', 'sustainable-catalyst-feature-suggestions') . ' <input type="number" min="30" max="1095" name="freshness_days" value="' . esc_attr((string) $settings['freshness_days']) . '"> ' . esc_html__('days', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="hide_empty_support_sections" value="1" ' . checked($settings['hide_empty_support_sections'], '1', false) . '> ' . esc_html__('Hide empty Knowledge Base, Known Issues, Releases, Public Ideas, and Surveys navigation until content exists', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="require_product_context" value="1" ' . checked($settings['require_product_context'], '1', false) . '> ' . esc_html__('Require product context during validation', 'sustainable-catalyst-feature-suggestions') . '</label><br><label>' . esc_html__('Duplicate import policy', 'sustainable-catalyst-feature-suggestions') . ' <select name="duplicate_policy"><option value="skip" ' . selected($settings['duplicate_policy'], 'skip', false) . '>' . esc_html__('Skip exact duplicates', 'sustainable-catalyst-feature-suggestions') . '</option><option value="create" ' . selected($settings['duplicate_policy'], 'create', false) . '>' . esc_html__('Create and flag for review', 'sustainable-catalyst-feature-suggestions') . '</option></select></label><br><label>' . esc_html__('Maximum records per import', 'sustainable-catalyst-feature-suggestions') . ' <input type="number" min="1" max="500" name="max_import_records" value="' . esc_attr((string) $settings['max_import_records']) . '"></label><hr><fieldset><legend><strong>' . esc_html__('Reliability controls', 'sustainable-catalyst-feature-suggestions') . '</strong></legend><label><input type="checkbox" name="strict_import_validation" value="1" ' . checked($settings['strict_import_validation'], '1', false) . '> ' . esc_html__('Roll back the whole batch when a record fails validation', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="near_duplicate_title_detection" value="1" ' . checked($settings['near_duplicate_title_detection'], '1', false) . '> ' . esc_html__('Detect same-product records with equivalent normalized titles', 'sustainable-catalyst-feature-suggestions') . '</label><br><label><input type="checkbox" name="scheduled_validation" value="1" ' . checked($settings['scheduled_validation'], '1', false) . '> ' . esc_html__('Run the daily content-integrity sweep', 'sustainable-catalyst-feature-suggestions') . '</label><br><label>' . esc_html__('Rollback availability', 'sustainable-catalyst-feature-suggestions') . ' <input type="number" min="1" max="90" name="rollback_retention_days" value="' . esc_attr((string) $settings['rollback_retention_days']) . '"> ' . esc_html__('days', 'sustainable-catalyst-feature-suggestions') . '</label><input type="hidden" name="import_failure_policy" value="rollback_batch"></fieldset></td></tr></table><p><button class="button button-primary">' . esc_html__('Save onboarding profile', 'sustainable-catalyst-feature-suggestions') . '</button></p></form></section>';
     }
 
     private function render_starter_form($product, $profile, $settings) {
@@ -1296,14 +1748,20 @@ final class SCFS_Support_Content_Operations {
     }
 
     private function render_log($log) {
-        if (!is_array($log) || !$log) {
-            return;
-        }
-        echo '<section class="scfs-content-ops-section"><h2>' . esc_html__('Recent imports', 'sustainable-catalyst-feature-suggestions') . '</h2><table class="widefat striped"><thead><tr><th>' . esc_html__('Time', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Product', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Created', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Skipped', 'sustainable-catalyst-feature-suggestions') . '</th></tr></thead><tbody>';
+        if (!is_array($log) || !$log) { return; }
+        echo '<section class="scfs-content-ops-section" aria-labelledby="scfs-import-log-title"><h2 id="scfs-import-log-title">' . esc_html__('Recent imports and recovery', 'sustainable-catalyst-feature-suggestions') . '</h2><div class="scfs-table-scroll" tabindex="0" role="region" aria-label="' . esc_attr__('Recent support-content imports', 'sustainable-catalyst-feature-suggestions') . '"><table class="widefat striped"><thead><tr><th scope="col">' . esc_html__('Time', 'sustainable-catalyst-feature-suggestions') . '</th><th scope="col">' . esc_html__('Product', 'sustainable-catalyst-feature-suggestions') . '</th><th scope="col">' . esc_html__('Status', 'sustainable-catalyst-feature-suggestions') . '</th><th scope="col">' . esc_html__('Created', 'sustainable-catalyst-feature-suggestions') . '</th><th scope="col">' . esc_html__('Skipped', 'sustainable-catalyst-feature-suggestions') . '</th><th scope="col">' . esc_html__('Failed', 'sustainable-catalyst-feature-suggestions') . '</th><th scope="col">' . esc_html__('Recovery', 'sustainable-catalyst-feature-suggestions') . '</th></tr></thead><tbody>';
+        $batches = get_option(self::ROLLBACK_OPTION, array());
         foreach (array_slice($log, 0, 10) as $entry) {
-            echo '<tr><td>' . esc_html($entry['at'] ?? '') . '</td><td>' . esc_html($entry['product']['name'] ?? '') . '</td><td>' . esc_html((string) ($entry['created'] ?? 0)) . '</td><td>' . esc_html((string) ($entry['skipped'] ?? 0)) . '</td></tr>';
+            $batch_id = $entry['batch_id'] ?? '';
+            $batch = is_array($batches) && $batch_id !== '' && isset($batches[$batch_id]) ? $batches[$batch_id] : array();
+            $recovery = '—';
+            if (($batch['status'] ?? '') === 'available') {
+                $url = wp_nonce_url(admin_url('admin-post.php?action=scfs_rollback_support_import&batch_id=' . rawurlencode($batch_id)), 'scfs_rollback_support_import_' . $batch_id);
+                $recovery = '<a class="button button-small" href="' . esc_url($url) . '" data-scfs-confirm="' . esc_attr__('Move every record created by this import to Trash?', 'sustainable-catalyst-feature-suggestions') . '">' . esc_html__('Roll back batch', 'sustainable-catalyst-feature-suggestions') . '</a>';
+            } elseif (!empty($batch['status'])) { $recovery = esc_html(ucwords(str_replace('_', ' ', $batch['status']))); }
+            echo '<tr><td>' . esc_html($entry['at'] ?? '') . '</td><td>' . esc_html($entry['product']['name'] ?? '') . '</td><td>' . esc_html(ucwords(str_replace('_', ' ', $entry['status'] ?? 'completed'))) . '</td><td>' . esc_html((string) ($entry['created'] ?? 0)) . '</td><td>' . esc_html((string) ($entry['skipped'] ?? 0)) . '</td><td>' . esc_html((string) ($entry['failed'] ?? 0)) . '</td><td>' . $recovery . '</td></tr>';
         }
-        echo '</tbody></table></section>';
+        echo '</tbody></table></div></section>';
     }
 
     public function schema_record() {
@@ -1322,6 +1780,13 @@ final class SCFS_Support_Content_Operations {
                 'duplicate_fingerprint_detection',
                 'product_version_component_mapping',
                 'empty_support_section_suppression',
+                'import_batch_rollback',
+                'malformed_import_recovery',
+                'source_and_title_duplicate_detection',
+                'operation_progress_reporting',
+                'scheduled_validation_health',
+                'export_checksum_integrity',
+                'multisite_and_role_capability_boundary',
             ),
             'managed_post_types' => $this->managed_post_types(),
             'import_formats' => array('json', 'md', 'markdown', 'txt'),
@@ -1332,6 +1797,8 @@ final class SCFS_Support_Content_Operations {
                 'starter_content_never_overwrites_existing_records' => true,
                 'private_case_content_imported' => false,
                 'automatic_publication' => false,
+                'rollback_moves_records_to_trash' => true,
+                'operations_require_manage_options' => true,
             ),
         );
     }
@@ -1360,6 +1827,16 @@ final class SCFS_Support_Content_Operations {
             'callback' => array($this, 'rest_import'),
             'permission_callback' => array($this, 'rest_admin_permission'),
         ));
+        register_rest_route($namespace, '/content-operations/rollback', array(
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => array($this, 'rest_rollback'),
+            'permission_callback' => array($this, 'rest_admin_permission'),
+        ));
+        register_rest_route($namespace, '/content-operations/health', array(
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => function () { return rest_ensure_response($this->cron_health_record()); },
+            'permission_callback' => array($this, 'rest_admin_permission'),
+        ));
         register_rest_route($namespace, '/content-operations/export', array(
             'methods' => WP_REST_Server::READABLE,
             'callback' => array($this, 'rest_export'),
@@ -1369,7 +1846,7 @@ final class SCFS_Support_Content_Operations {
     }
 
     public function rest_admin_permission() {
-        return current_user_can('edit_posts');
+        return $this->can_manage();
     }
 
     public function rest_readiness($request) {
@@ -1387,6 +1864,12 @@ final class SCFS_Support_Content_Operations {
             return new WP_Error('scfs_import_records_required', __('A records array is required.', 'sustainable-catalyst-feature-suggestions'), array('status' => 400));
         }
         $result = $this->import_records($records, $product_id, array('status' => 'draft', 'source_kind' => 'rest_import'));
+        return is_wp_error($result) ? $result : rest_ensure_response($result);
+    }
+
+    public function rest_rollback($request) {
+        $batch_id = sanitize_text_field($request->get_param('batch_id'));
+        $result = $this->rollback_import_batch($batch_id, 'rest_request');
         return is_wp_error($result) ? $result : rest_ensure_response($result);
     }
 
@@ -1410,6 +1893,18 @@ final class SCFS_Support_Content_Operations {
             WP_CLI::error($result->get_error_message());
         }
         WP_CLI::success(sprintf('Onboarded %s; created %d starter records; skipped %d existing records.', $term->name, count($result['created']), count($result['skipped'])));
+    }
+
+    public function cli_rollback($args, $assoc_args) {
+        $batch_id = sanitize_text_field($assoc_args['batch'] ?? '');
+        if ($batch_id === '') {
+            WP_CLI::error('Provide --batch=<batch-id>.');
+        }
+        $result = $this->rollback_import_batch($batch_id, 'wp_cli');
+        if (is_wp_error($result)) {
+            WP_CLI::error($result->get_error_message());
+        }
+        WP_CLI::success(sprintf('Rolled back %d record(s) from batch %s.', count($result['rolled_back']), $batch_id));
     }
 
     public function cli_validate($args, $assoc_args) {
