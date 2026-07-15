@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class SCFS_Survey_Intelligence {
-    const VERSION='4.3.0';
+    const VERSION='4.4.0';
     private static $instance=null;
     public static function instance(){if(self::$instance===null)self::$instance=new self();return self::$instance;}
     private function __construct(){

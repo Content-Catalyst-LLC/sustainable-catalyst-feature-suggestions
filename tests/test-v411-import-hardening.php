@@ -36,7 +36,7 @@ $valid = $ops->parse_import_file($tmp, 'support.json', 'auto');
 unlink($tmp);
 $invalid_type = $ops->validate_import_record(array('type'=>'private_case','title'=>'No','content'=>'No'), 0);
 $missing = $ops->validate_import_record(array('type'=>'article','title'=>'','content'=>''), 1);
-$good = $ops->validate_import_record(array('type'=>'article','title'=>'Workbench v4.3.0 Guide','content'=>'Useful'), 2);
+$good = $ops->validate_import_record(array('type'=>'article','title'=>'Workbench v4.4.0 Guide','content'=>'Useful'), 2);
 $checks = array(
     'empty file rejected' => is_wp_error($empty) && $empty->get_error_code() === 'scfs_import_empty',
     'invalid JSON explained' => is_wp_error($invalid_json) && $invalid_json->get_error_code() === 'scfs_import_json',
@@ -46,7 +46,7 @@ $checks = array(
     'unsupported record type rejected' => is_wp_error($invalid_type) && $invalid_type->get_error_code() === 'scfs_invalid_import_type',
     'missing record content rejected' => is_wp_error($missing) && $missing->get_error_code() === 'scfs_import_missing_content',
     'valid record normalized' => is_array($good) && ($good['type'] ?? '') === 'article',
-    'version-insensitive title normalization' => $ops->normalize_title('Workbench v4.3.0 Guide') === $ops->normalize_title('Workbench v4.3.0 Guide'),
+    'version-insensitive title normalization' => $ops->normalize_title('Workbench v4.4.0 Guide') === $ops->normalize_title('Workbench v4.4.0 Guide'),
 );
 foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";

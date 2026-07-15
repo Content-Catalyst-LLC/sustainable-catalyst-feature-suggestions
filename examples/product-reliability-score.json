@@ -1,0 +1,19 @@
+{
+  "schema": "scfs-product-reliability-score/1.0",
+  "version": "4.4.0",
+  "score": 78.5,
+  "state": "watch",
+  "dimensions": [
+    {"key": "resolution_success", "label": "Resolution success", "score": 82, "weight": 0.25, "contribution": 20.5},
+    {"key": "documentation_helpfulness", "label": "Documentation usefulness", "score": 76, "weight": 0.2, "contribution": 15.2},
+    {"key": "known_issue_health", "label": "Known-issue health", "score": 70, "weight": 0.15, "contribution": 10.5},
+    {"key": "release_readiness", "label": "Release readiness", "score": 84, "weight": 0.15, "contribution": 12.6},
+    {"key": "content_readiness", "label": "Content readiness", "score": 80, "weight": 0.1, "contribution": 8},
+    {"key": "repository_health", "label": "Repository health", "score": 88, "weight": 0.1, "contribution": 8.8},
+    {"key": "governance_health", "label": "Editorial governance", "score": 78, "weight": 0.05, "contribution": 3.9}
+  ],
+  "blockers": [],
+  "signals": ["Three unresolved searches require review."],
+  "human_review_required": true,
+  "automatic_roadmap_change": false
+}

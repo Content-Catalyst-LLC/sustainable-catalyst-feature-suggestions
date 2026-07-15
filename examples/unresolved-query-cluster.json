@@ -1,0 +1,13 @@
+{
+  "schema": "scfs-unresolved-query-cluster-priority/1.0",
+  "version": "4.4.0",
+  "query_hash": "3f8656625d5f9a5d0f4bdb6aee4971cc",
+  "query_text": "Research Librarian endpoint unavailable",
+  "searches": 18,
+  "no_match_searches": 14,
+  "low_confidence_searches": 4,
+  "last_seen": "2026-07-15 18:40:00",
+  "score": 86.5,
+  "priority": "critical",
+  "human_review_required": true
+}

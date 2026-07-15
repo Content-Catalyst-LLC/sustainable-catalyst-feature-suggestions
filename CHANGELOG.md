@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.4.0 — Support Analytics and Product Reliability Center
+
+- Added a protected Product Reliability administration workspace.
+- Added bounded 0–100 product reliability scoring across seven weighted dimensions.
+- Added support-resolution rates and repeated unresolved-query clustering.
+- Added documentation usefulness trends and privacy-safe support-demand counts.
+- Added active, critical, and recurring Known Issue analysis.
+- Added release-readiness and support-content-readiness aggregation.
+- Added repository drift, broken-link, and editorial-governance health signals.
+- Added documentation-gap prioritization and explicit operational blockers.
+- Added daily product snapshots and product reliability trend history.
+- Added checksum-protected CSV and JSON reliability reports.
+- Added protected WordPress REST routes and deterministic FastAPI scoring endpoints.
+- Preserved the private Contact and Engagement boundary and disabled automatic roadmap or incident decisions.
+
 ## 4.3.0 — Repository and Release Synchronization
 
 - Added public GitHub repository mapping for Product taxonomy terms.

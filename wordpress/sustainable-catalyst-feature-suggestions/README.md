@@ -1,8 +1,8 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 4.3.0 is a Product Support and Feedback WordPress plugin for documentation, known issues, releases, guided resolution, feature suggestions, surveys, and product intelligence.
+Version 4.4.0 is a Product Support and Feedback WordPress plugin for documentation, known issues, releases, guided resolution, feature suggestions, surveys, repository synchronization, editorial governance, and product reliability intelligence.
 
-Version 4.3.0 adds public GitHub repository mapping, README and CHANGELOG inspection, release synchronization, source provenance, documentation drift detection, broken-link checks, signed webhook inspection queues, and approval-gated review drafts. Published records are never overwritten and automatic publication remains disabled.
+Version 4.4.0 adds the Support Analytics and Product Reliability Center with product health scoring, support-resolution rates, documentation usefulness, issue recurrence, release and content readiness, repository health, unresolved-query clusters, documentation-gap prioritization, daily snapshots, and checksum-protected reports.
 
 Recommended integration:
 
@@ -11,6 +11,11 @@ Recommended integration:
 ```
 
 
+
+
+## Support Analytics and Product Reliability Center
+
+Use **Feature Suggestions → Product Reliability** to compare support health across products, inspect score dimensions and blockers, review recurring unresolved searches and issues, prioritize documentation gaps, and export integrity-protected reports. Reliability intelligence is aggregate and advisory; it does not expose private case content or make automatic roadmap, publication, or incident decisions.
 
 ## Repository and Release Synchronization
 

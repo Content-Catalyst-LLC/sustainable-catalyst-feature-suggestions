@@ -19,7 +19,7 @@ def test_repository_capabilities_preserve_governance_boundary():
     response = client.get("/v1/repository-sync/capabilities")
     assert response.status_code == 200
     data = response.json()
-    assert data["version"] == "4.3.0"
+    assert data["version"] == "4.4.0"
     assert data["schema"] == "scfs-repository-release-synchronization/1.0"
     assert data["automatic_approval"] is False
     assert data["automatic_publication"] is False
@@ -104,7 +104,7 @@ def test_drift_evaluator_distinguishes_remote_update():
 def test_release_sync_plan_never_publishes_automatically():
     plan = plan_release_sync(
         ReleaseSourceEvidence(
-            tag="v4.3.0",
+            tag="v4.4.0",
             title="Repository synchronization",
             body_characters=500,
             published_at="2026-07-15T12:00:00Z",

@@ -2,6 +2,14 @@
 
 A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
+## Version 4.4.0 — Support Analytics and Product Reliability Center
+
+Version 4.4.0 adds a protected operational intelligence layer that compares support health across Sustainable Catalyst products. Reliability scores combine Guided Resolution outcomes, documentation usefulness, Known Issue health, release readiness, content onboarding, repository health, editorial governance, and documentation gaps.
+
+Open **Feature Suggestions → Product Reliability** to review product scorecards, unresolved-query clusters, recurring issues, priority documentation gaps, daily trends, and integrity-protected CSV or JSON reports. Scores are advisory: they cannot change roadmaps, publish content, close issues, declare incidents, or expose private Contact and Engagement case content.
+
+See `docs/support-analytics-product-reliability-center.md`.
+
 ## Version 4.3.0 — Repository and Release Synchronization
 
 Version 4.3.0 maps Sustainable Catalyst products to public GitHub repositories and inspects README files, CHANGELOG files, documentation directories, and published GitHub releases. Remote changes become approval-gated WordPress drafts with commit, path, URL, and content-hash provenance.

@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Documentation_Feature_Intelligence {
-    const VERSION = '4.3.0';
+    const VERSION = '4.4.0';
     const SCHEMA_VERSION = '1.0';
     const DB_VERSION_OPTION = 'scfs_documentation_intelligence_db_version';
     const OPTION_KEY = 'scfs_documentation_intelligence_settings';

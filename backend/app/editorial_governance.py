@@ -52,7 +52,7 @@ class EditorialTransitionEvidence(BaseModel):
 class EditorialTransitionDecision(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-editorial-transition-decision/1.0", alias="schema")
-    version: str = "4.3.0"
+    version: str = "4.4.0"
     allowed: bool
     current_state: WorkflowState
     target_state: WorkflowState
@@ -79,7 +79,7 @@ class DocumentationStandardsEvidence(BaseModel):
 class DocumentationStandardsScore(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-documentation-standards/1.0", alias="schema")
-    version: str = "4.3.0"
+    version: str = "4.4.0"
     score: int = Field(ge=0, le=100)
     state: Literal["blocked", "review", "ready"]
     blockers: List[str]
@@ -99,7 +99,7 @@ class EditorialQueueEvidence(BaseModel):
 class EditorialGovernanceSummary(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-editorial-governance-summary/1.0", alias="schema")
-    version: str = "4.3.0"
+    version: str = "4.4.0"
     total: int = Field(ge=0)
     review_queue: int = Field(ge=0)
     approved_or_scheduled: int = Field(ge=0)

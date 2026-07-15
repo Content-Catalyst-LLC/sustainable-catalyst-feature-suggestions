@@ -8,7 +8,7 @@ def test_documentation_intelligence_capabilities():
     response = client.get('/v1/documentation-intelligence/capabilities')
     assert response.status_code == 200
     data = response.json()
-    assert data['version'] == '4.3.0'
+    assert data['version'] == '4.4.0'
     assert data['private_case_content_storage'] is False
     assert data['contact_details_storage'] is False
     assert 'support_demand_scoring' in data['capabilities']

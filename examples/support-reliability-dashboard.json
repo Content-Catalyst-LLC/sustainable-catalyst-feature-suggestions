@@ -1,0 +1,25 @@
+{
+  "schema": "scfs-support-reliability-dashboard/1.0",
+  "version": "4.4.0",
+  "generated_at": "2026-07-15T20:00:00Z",
+  "analysis_window_days": 30,
+  "summary": {
+    "products": 3,
+    "healthy": 1,
+    "watch": 1,
+    "attention": 1,
+    "critical": 0,
+    "average_score": 75.4,
+    "unresolved_searches": 12,
+    "active_issues": 4,
+    "priority_gaps": 2
+  },
+  "products": [],
+  "privacy": {
+    "ip_addresses_stored": false,
+    "private_case_content_stored": false,
+    "private_contact_details_stored": false,
+    "opaque_case_relationship_counts_only": true
+  },
+  "human_review_required": true
+}
