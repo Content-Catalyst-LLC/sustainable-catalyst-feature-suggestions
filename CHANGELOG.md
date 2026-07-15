@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.1.0 — Support Content Operations and Product Onboarding
+
+- Added product onboarding profiles for ownership, repository, documentation, support URL, current version, components, and known-issue review.
+- Added deterministic product support-readiness scoring with criteria, blockers, and freshness signals.
+- Added idempotent starter drafts for Getting Started, configuration, workflows, troubleshooting, technical reference, and release intelligence.
+- Added README, Markdown/text documentation, CHANGELOG, release-notes, and JSON import.
+- Added source provenance, version, lifecycle, verification, review-due, supersession, import-batch, and fingerprint metadata.
+- Added duplicate, stale-content, missing-context, lifecycle, and supersession validation.
+- Added product-scoped JSON export, protected REST routes, and WP-CLI onboarding/validation commands.
+- Added optional suppression of empty public support sections until content is published.
+- Added FastAPI support-readiness scoring and source-import planning.
+- Preserved mandatory human review and the private Contact and Engagement boundary.
+
 ## 4.0.2 — Navigation and Embedded Pathway Reliability Patch
 
 - Added in-place Support Center workspace switching through a public, read-only view endpoint.

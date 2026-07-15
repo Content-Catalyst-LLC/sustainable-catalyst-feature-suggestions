@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Support_Platform {
-    const VERSION = '4.0.2';
+    const VERSION = '4.1.0';
     const SCHEMA_VERSION = '1.0';
     const RELEASE_POST_TYPE = 'sc_release_record';
     const SHORTCODE = 'scfs_product_support_center';
@@ -477,6 +477,7 @@ final class SCFS_Product_Support_Platform {
                 'forms_and_surveys',
             ),
             'private_integrations' => array('contact_and_engagement'),
+            'operational_modules' => array('support_content_operations', 'product_onboarding', 'support_readiness'),
             'shared_context' => array('product', 'product_version', 'component', 'issue_type', 'release'),
             'shortcodes' => array(self::SHORTCODE, self::LEGACY_SHORTCODE),
             'rendering_modes' => array('standalone', 'embedded'),
@@ -488,6 +489,7 @@ final class SCFS_Product_Support_Platform {
                 'direct_links' => true,
                 'anchored_fallback' => true,
                 'product_context_preserved' => true,
+                'empty_sections_hidden_until_published' => class_exists('SCFS_Support_Content_Operations') ? !empty(SCFS_Support_Content_Operations::instance()->settings()['hide_empty_support_sections']) : false,
             ),
             'routes' => array(
                 '/product-support/schema',
@@ -853,7 +855,7 @@ final class SCFS_Product_Support_Platform {
         echo '</select></label><button type="submit">' . esc_html__('Apply product', 'sustainable-catalyst-feature-suggestions') . '</button></form>';
     }
 
-    private function navigation_items($settings) {
+    private function navigation_items($settings, $product = '', $respect_content = false) {
         $items = array(
             'overview' => array('label' => __('Support overview', 'sustainable-catalyst-feature-suggestions'), 'description' => __('Status and starting points', 'sustainable-catalyst-feature-suggestions')),
             'resolve' => array('label' => __('Find a resolution', 'sustainable-catalyst-feature-suggestions'), 'description' => __('Guided search and known issues', 'sustainable-catalyst-feature-suggestions')),
@@ -874,7 +876,25 @@ final class SCFS_Product_Support_Platform {
         if (empty($settings['show_release_intelligence'])) {
             unset($items['releases']);
         }
-        return $items;
+        if ($respect_content && class_exists('SCFS_Support_Content_Operations')) {
+            $operations_settings = SCFS_Support_Content_Operations::instance()->settings();
+            if (!empty($operations_settings['hide_empty_support_sections'])) {
+                $counts = SCFS_Support_Content_Operations::instance()->product_content_counts($product, false);
+                $content_views = array(
+                    'documentation' => 'support_articles',
+                    'issues' => 'known_issues',
+                    'releases' => 'release_records',
+                    'ideas' => 'public_ideas',
+                    'surveys' => 'open_surveys',
+                );
+                foreach ($content_views as $view => $count_key) {
+                    if (isset($items[$view]) && empty($counts[$count_key])) {
+                        unset($items[$view]);
+                    }
+                }
+            }
+        }
+        return apply_filters('scfs_support_navigation_items', $items, $settings, $product, $respect_content);
     }
 
     public function render_shortcode($atts = array()) {
@@ -1000,7 +1020,7 @@ final class SCFS_Product_Support_Platform {
         }
         if ($display['show_navigation']) {
             echo '<nav class="scfs-support-platform__nav" aria-label="' . esc_attr__('Product support sections', 'sustainable-catalyst-feature-suggestions') . '">';
-            foreach ($this->navigation_items($settings) as $key => $item) {
+            foreach ($this->navigation_items($settings, $context['product'], true) as $key => $item) {
                 $active = $context['view'] === $key;
                 echo '<a class="' . ($active ? 'is-active' : '') . '" href="' . esc_url($this->view_url($key, $context['product'])) . '" ' . $this->view_link_attributes($key, $context['product']) . ($active ? ' aria-current="page"' : '') . '><strong>' . esc_html($item['label']) . '</strong>';
                 if ($display['show_nav_descriptions']) {
@@ -1078,6 +1098,8 @@ final class SCFS_Product_Support_Platform {
             return SCFS_Guided_Resolution::instance()->render_shortcode(array('title' => __('Search product support', 'sustainable-catalyst-feature-suggestions'), 'compact' => '1', 'show_handoff' => '1'));
         }); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo '</section>';
+        $content_counts = class_exists('SCFS_Support_Content_Operations') ? SCFS_Support_Content_Operations::instance()->product_content_counts($product, false) : array();
+        $hide_empty = class_exists('SCFS_Support_Content_Operations') && !empty(SCFS_Support_Content_Operations::instance()->settings()['hide_empty_support_sections']);
         if (!isset($display['show_overview_pathways']) || $display['show_overview_pathways']) {
             echo '<section class="scfs-support-platform__pathways"><h3>' . esc_html__('Choose another support pathway', 'sustainable-catalyst-feature-suggestions') . '</h3><div class="scfs-support-platform__cards">';
         $cards = array(
@@ -1088,15 +1110,19 @@ final class SCFS_Product_Support_Platform {
             'surveys' => array(__('Participate in research', 'sustainable-catalyst-feature-suggestions'), __('Respond to open product surveys. Survey results inform review but do not automatically set priorities.', 'sustainable-catalyst-feature-suggestions')),
             'private-support' => array(__('Continue to private support', 'sustainable-catalyst-feature-suggestions'), __('Use Contact and Engagement for identity, correspondence, private documents, and case lifecycle management.', 'sustainable-catalyst-feature-suggestions')),
         );
+        $content_view_counts = array('documentation' => 'support_articles', 'issues' => 'known_issues', 'ideas' => 'public_ideas', 'surveys' => 'open_surveys');
         foreach ($cards as $view => $card) {
             if (($view === 'surveys' && empty($settings['show_surveys'])) || ($view === 'ideas' && empty($settings['show_public_ideas']))) {
+                continue;
+            }
+            if ($hide_empty && isset($content_view_counts[$view]) && empty($content_counts[$content_view_counts[$view]])) {
                 continue;
             }
             echo '<a class="scfs-support-platform__pathway-card" href="' . esc_url($this->view_url($view, $product)) . '" ' . $this->view_link_attributes($view, $product) . '><h4>' . esc_html($card[0]) . '</h4><p>' . esc_html($card[1]) . '</p><span class="scfs-support-platform__pathway-action">' . esc_html__('Open pathway', 'sustainable-catalyst-feature-suggestions') . ' →</span></a>';
         }
             echo '</div></section>';
         }
-        if (!empty($settings['show_release_intelligence'])) {
+        if (!empty($settings['show_release_intelligence']) && (!$hide_empty || !empty($content_counts['release_records']))) {
             echo '<section><div class="scfs-support-platform__section-head"><div><h3>' . esc_html__('Release intelligence', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Current, planned, maintenance, and retired releases with documentation and known-issue relationships.', 'sustainable-catalyst-feature-suggestions') . '</p></div><a href="' . esc_url($this->view_url('releases', $product)) . '" ' . $this->view_link_attributes('releases', $product) . '>' . esc_html__('View all releases', 'sustainable-catalyst-feature-suggestions') . '</a></div>';
             $this->render_releases($product, absint($settings['featured_release_limit']), true);
             echo '</section>';
@@ -1322,7 +1348,7 @@ final class SCFS_Product_Support_Platform {
         }
         $settings = $this->settings();
         $overview = $this->overview_record('');
-        echo '<div class="wrap scfs-platform-center"><h1>' . esc_html__('Product Support and Feedback Platform', 'sustainable-catalyst-feature-suggestions') . '</h1><p>' . esc_html__('Unified public support with embedded-mode reliability and configurable site branding.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<div class="wrap scfs-platform-center"><h1>' . esc_html__('Product Support and Feedback Platform', 'sustainable-catalyst-feature-suggestions') . '</h1><p>' . esc_html__('Unified public support with embedded reliability, configurable branding, and product-by-product content operations.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         echo '<div class="scfs-intel-cards">';
         foreach ($overview['counts'] as $key => $value) {
             echo '<div class="scfs-intel-card"><span>' . esc_html(ucwords(str_replace('_', ' ', $key))) . '</span><strong>' . esc_html((string) $value) . '</strong></div>';

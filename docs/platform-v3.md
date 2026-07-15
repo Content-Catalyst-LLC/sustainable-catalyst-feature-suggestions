@@ -1,6 +1,9 @@
-# Sustainable Catalyst Product Support and Feedback Platform v4.0.2
+# Sustainable Catalyst Product Support and Feedback Platform v4.1.0
 
-Version 4.0.2 preserves the v4.0.0 unified platform and adds embedded rendering, configurable branding, theme inheritance, responsive safeguards, and cache-safe assets. The platform unifies Guided Resolution, documentation, Known Issues, Release Intelligence, feature suggestions, public voting, surveys, and privacy-bounded private support handoff in one product-aware public Support Center.
+
+Version 4.1.0 also adds product-by-product support content operations, onboarding profiles, readiness scoring, starter documentation, source import, lifecycle validation, and empty-section suppression.
+
+Version 4.1.0 preserves the v4.0.0 unified platform and adds embedded rendering, configurable branding, theme inheritance, responsive safeguards, and cache-safe assets. The platform unifies Guided Resolution, documentation, Known Issues, Release Intelligence, feature suggestions, public voting, surveys, and privacy-bounded private support handoff in one product-aware public Support Center.
 
 ## Embedded integration
 

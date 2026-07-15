@@ -1,5 +1,5 @@
 /*
- * Sustainable Catalyst Feature Suggestions v4.0.2
+ * Sustainable Catalyst Feature Suggestions v4.1.0
  * Navigation and Embedded Pathway Reliability
  */
 (function () {

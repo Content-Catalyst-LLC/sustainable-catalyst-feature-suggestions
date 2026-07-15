@@ -1,4 +1,4 @@
-# Feature Suggestions Intelligence Backend v4.0.2
+# Feature Suggestions Intelligence Backend v4.1.0
 
 FastAPI service for advisory classification of Feature Suggestions. It supports deterministic local classification and optional Gemini, DeepSeek, or OpenAI structured analysis. AI output never changes roadmap status automatically and always requires human review.
 

@@ -1,6 +1,6 @@
 {
   "schema": "scfs-product-support-platform/1.0",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "platform": "Sustainable Catalyst Product Support and Feedback Platform",
   "public_modules": [
     "guided_resolution",
@@ -12,7 +12,9 @@
     "advisory_voting",
     "forms_and_surveys"
   ],
-  "private_integrations": ["contact_and_engagement"],
+  "private_integrations": [
+    "contact_and_engagement"
+  ],
   "governance": {
     "voting_is_advisory": true,
     "surveys_do_not_auto_prioritize": true,

@@ -13,7 +13,7 @@
     "label": "Minor"
   },
   "symptom": "The /support-knowledge-base/ archive returns a not-found response immediately after plugin replacement.",
-  "workaround": "Open Settings \u2192 Permalinks and save the current permalink structure once.",
+  "workaround": "Open Settings → Permalinks and save the current permalink structure once.",
   "resolution": "The activation routine refreshes rewrite rules during a normal WordPress plugin activation.",
   "first_observed": "2026-07-14",
   "resolved_at": "",

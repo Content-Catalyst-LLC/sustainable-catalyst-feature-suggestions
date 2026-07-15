@@ -1,3 +1,12 @@
+
+## v4.1.0 content operations
+
+After activation, open **Feature Suggestions → Content Operations**. Select each Product taxonomy term, save its onboarding profile, create the missing starter records, import repository documentation or release history, and run validation before publishing.
+
+The importer accepts JSON, Markdown, and text files up to 2 MB. Imported records default to draft and require human review.
+
+The public Support Center can hide empty Knowledge Base, Known Issues, Releases, Public Ideas, and Surveys sections until matching public records exist.
+
 # Installation
 
 ## Plugin

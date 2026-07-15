@@ -3,14 +3,28 @@ $root = dirname(__DIR__);
 $plugin = $root . '/wordpress/sustainable-catalyst-feature-suggestions';
 $main = file_get_contents($plugin . '/sustainable-catalyst-feature-suggestions.php');
 $platform = file_get_contents($plugin . '/includes/class-scfs-product-support-platform.php');
+$operations = file_get_contents($plugin . '/includes/class-scfs-support-content-operations.php');
 $public_ideas = file_get_contents($plugin . '/includes/class-scfs-public-ideas.php');
 $governance = file_get_contents($plugin . '/includes/class-scfs-platform-governance.php');
 $backend = file_get_contents($root . '/backend/app/main.py');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version' => strpos($main, 'Version: 4.0.2') !== false,
-    'runtime version' => strpos($main, "const VERSION = '4.0.2';") !== false,
+    'plugin version' => strpos($main, 'Version: 4.1.0') !== false,
+    'runtime version' => strpos($main, "const VERSION = '4.1.0';") !== false,
     'platform class file' => file_exists($plugin . '/includes/class-scfs-product-support-platform.php'),
+    'content operations class file' => file_exists($plugin . '/includes/class-scfs-support-content-operations.php'),
+    'content operations stylesheet' => file_exists($plugin . '/assets/support-content-operations.css'),
+    'content operations bootstrap' => strpos($main, 'SCFS_Support_Content_Operations::instance();') !== false,
+    'content operations activation' => strpos($main, 'SCFS_Support_Content_Operations::activate();') !== false,
+    'onboarding admin page' => strpos($operations, "const ADMIN_SLUG = 'scfs-support-content-operations';") !== false,
+    'starter generation' => strpos($operations, 'create_starter_content') !== false,
+    'readme import' => strpos($operations, 'parse_import_file') !== false,
+    'release markdown parser' => strpos($operations, 'parse_release_markdown') !== false,
+    'readiness record' => strpos($operations, 'readiness_record') !== false,
+    'duplicate fingerprints' => strpos($operations, '_scfs_source_fingerprint') !== false,
+    'content validation' => strpos($operations, 'validate_content') !== false,
+    'empty section suppression' => strpos($platform, 'hide_empty_support_sections') !== false,
+
     'platform stylesheet' => file_exists($plugin . '/assets/product-support-platform.css'),
     'platform navigation script' => file_exists($plugin . '/assets/product-support-platform.js'),
     'public view route' => strpos($platform, "'/product-support/view'") !== false,
@@ -49,9 +63,12 @@ $checks = array(
     'backend support overview' => strpos($backend, '/v1/product-support/overview') !== false,
     'backend release score' => strpos($backend, '/v1/product-support/releases/score') !== false,
     'backend platform module' => file_exists($root . '/backend/app/product_support_platform.py'),
+    'backend support content module' => file_exists($root . '/backend/app/support_content_operations.py'),
+    'backend support content tests' => file_exists($root . '/backend/tests/test_support_content_operations.py'),
+    'backend support content capabilities' => strpos($backend, '/v1/support-content/capabilities') !== false,
     'backend platform tests' => file_exists($root . '/backend/tests/test_product_support_platform.py'),
-    'manifest version' => is_array($manifest) && ($manifest['version'] ?? '') === '4.0.2',
-    'manifest release name' => is_array($manifest) && ($manifest['release_name'] ?? '') === 'Navigation and Embedded Pathway Reliability Patch',
+    'manifest version' => is_array($manifest) && ($manifest['version'] ?? '') === '4.1.0',
+    'manifest release name' => is_array($manifest) && ($manifest['release_name'] ?? '') === 'Support Content Operations and Product Onboarding',
     'embedded mode option' => strpos($platform, "'default_mode' => 'standalone'") !== false && strpos($platform, "'embedded_default_view' => 'resolve'") !== false,
     'branding presets' => strpos($platform, "'sustainable-catalyst'") !== false && strpos($platform, "'inherit'") !== false && strpos($platform, "'custom'") !== false,
     'branding token filter' => strpos($platform, 'scfs_support_branding_tokens') !== false,

@@ -1,0 +1,50 @@
+{
+  "schema": "scfs-support-content-import/1.0",
+  "version": "4.1.0",
+  "records": [
+    {
+      "type": "article",
+      "title": "Workbench: Configure the Python Service",
+      "content": "## Overview\n\nConnect Workbench to its supported Python service.\n\n## Validation\n\nConfirm the health endpoint and provider status before publishing.",
+      "article_type": "how-to",
+      "collection": "Workbench Documentation",
+      "product_versions": ["v5.0.0"],
+      "components": ["Python service", "Admin settings"],
+      "source_kind": "readme",
+      "source_reference": "README.md",
+      "source_version": "v5.0.0",
+      "verified_at": "2026-07-15"
+    },
+    {
+      "type": "known_issue",
+      "title": "Workbench health endpoint unavailable after cold start",
+      "content": "The hosted Python service can require a cold-start interval before its health endpoint responds.",
+      "issue_status": "monitoring",
+      "severity": "medium",
+      "symptom": "The WordPress interface reports that the backend endpoint is unavailable.",
+      "workaround": "Wait for the service to become healthy, then retry the request.",
+      "product_versions": ["v5.0.0"],
+      "components": ["Python service"],
+      "issue_types": ["Availability"],
+      "source_kind": "release_notes",
+      "source_version": "v5.0.0"
+    },
+    {
+      "type": "release",
+      "title": "Workbench v5.0.0",
+      "content": "## Release overview\n\nConnected Scientific and Engineering Workbench release.",
+      "release_status": "current",
+      "release_date": "2026-07-12",
+      "product_versions": ["v5.0.0"],
+      "releases": ["v5.0.0"],
+      "source_kind": "changelog",
+      "source_reference": "CHANGELOG.md",
+      "source_version": "v5.0.0"
+    }
+  ],
+  "governance": {
+    "create_as": "draft",
+    "human_review_required": true,
+    "private_case_content_included": false
+  }
+}

@@ -1,0 +1,22 @@
+FEATURE SUGGESTIONS v4.1.0 — INSTALL, VALIDATE, COMMIT, AND PUSH
+
+Place these files in ~/Downloads:
+- sustainable-catalyst-feature-suggestions-v4.1.0-repo.zip or the complete release bundle
+- install_and_push_sustainable_catalyst_feature_suggestions_v4_1_0.sh
+
+Run:
+
+cd ~/Downloads
+
+brew install python@3.13
+hash -r
+
+SCRIPT="$(ls -t install_and_push_sustainable_catalyst_feature_suggestions_v4_1_0*.sh | head -1)"
+chmod +x "$SCRIPT"
+bash "$SCRIPT"
+
+The installer starts from a fresh clone of the current GitHub main branch, overlays v4.1.0, runs PHP syntax and WordPress contract tests, validates JavaScript, creates an isolated Python 3.12/3.13 environment, installs the pinned FastAPI dependencies including httpx, runs the complete backend test suite, validates JSON and the WordPress distribution ZIP, scans for likely secrets, commits, rebases over any new remote changes, and pushes main.
+
+For direct WordPress installation, upload:
+
+sustainable-catalyst-feature-suggestions-v4.1.0-wordpress.zip

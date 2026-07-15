@@ -1,4 +1,7 @@
-# Product Support and Feedback Platform v4.0.2
+# Product Support and Feedback Platform v4.1.0
+
+
+Version 4.1.0 also adds product-by-product support content operations, onboarding profiles, readiness scoring, starter documentation, source import, lifecycle validation, and empty-section suppression.
 
 Feature Suggestions v4.0.2 is the unified public product-support layer for Sustainable Catalyst, with a site-native embedded mode and configurable branding.
 

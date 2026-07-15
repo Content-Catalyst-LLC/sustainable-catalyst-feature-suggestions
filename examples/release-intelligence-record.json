@@ -13,7 +13,13 @@
     "Public/private support governance boundary"
   ],
   "known_limitations": [],
-  "products": [{"id": 1, "slug": "sustainable-catalyst-platform", "name": "Sustainable Catalyst Platform"}],
+  "products": [
+    {
+      "id": 1,
+      "slug": "sustainable-catalyst-platform",
+      "name": "Sustainable Catalyst Platform"
+    }
+  ],
   "related_articles": [],
   "related_known_issues": [],
   "related_public_suggestions": [],

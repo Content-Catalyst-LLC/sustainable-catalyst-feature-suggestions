@@ -1,0 +1,23 @@
+{
+  "schema": "scfs-product-onboarding-profile/1.0",
+  "version": "4.1.0",
+  "product": {
+    "slug": "workbench",
+    "name": "Workbench"
+  },
+  "status": "drafting",
+  "owner": "Platform editorial review",
+  "repository_url": "https://github.com/Content-Catalyst-LLC/sustainable-catalyst-workbench",
+  "documentation_url": "https://sustainablecatalyst.com/platform/workbench/",
+  "support_url": "https://sustainablecatalyst.com/support/",
+  "current_version": "v5.0.0",
+  "components": [
+    "WordPress interface",
+    "Python service",
+    "REST API",
+    "Admin settings",
+    "Export system"
+  ],
+  "known_issues_reviewed": true,
+  "human_review_required": true
+}

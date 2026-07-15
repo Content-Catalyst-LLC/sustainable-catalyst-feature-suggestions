@@ -8,9 +8,10 @@ from .survey_intelligence import SurveyAnalysisRequest, SurveyAnalysisResult, an
 from .guided_resolution import ResolutionRankRequest, ResolutionRankResult, rank_resolution
 from .documentation_intelligence import DocumentationGapEvidence, DocumentationGapScore, SupportDemandEvidence, SupportDemandScore, score_documentation_gap, score_support_demand
 from .product_support_platform import ProductSupportEvidence, ProductSupportOverview, ReleaseReadinessEvidence, ReleaseReadinessScore, summarize_product_support, score_release_readiness
+from .support_content_operations import ProductOnboardingEvidence, ProductSupportReadiness, SourceDocument, ImportPlan, score_product_readiness, plan_source_import
 
-VERSION='4.0.2'
-ANALYSIS_VERSION='4.0.2-1'
+VERSION='4.1.0'
+ANALYSIS_VERSION='4.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
 
 class Submission(BaseModel):
@@ -145,7 +146,7 @@ def survey_analyze(payload: SurveyAnalysisRequest, x_scfs_ai_key:Optional[str]=H
 @app.get('/v1/surveys/methodology')
 def survey_methodology(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {'ok':True,'analysis_version':'4.0.2-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+    return {'ok':True,'analysis_version':'4.1.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
 
 
 @app.get('/v1/platform/capabilities')
@@ -250,3 +251,33 @@ def documentation_gap_score(payload: DocumentationGapEvidence, x_scfs_ai_key:Opt
 def support_demand_score(payload: SupportDemandEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return score_support_demand(payload)
+
+
+@app.get('/v1/support-content/capabilities')
+def support_content_capabilities():
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-support-content-operations/1.0',
+        'product_onboarding': True,
+        'starter_content': True,
+        'readme_import': True,
+        'changelog_import': True,
+        'json_import_export': True,
+        'duplicate_detection': True,
+        'freshness_validation': True,
+        'human_review_required': True,
+        'automatic_publication': False,
+    }
+
+
+@app.post('/v1/support-content/readiness/score', response_model=ProductSupportReadiness)
+def support_content_readiness(payload: ProductOnboardingEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return score_product_readiness(payload)
+
+
+@app.post('/v1/support-content/import/plan', response_model=ImportPlan)
+def support_content_import_plan(payload: SourceDocument, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return plan_source_import(payload)

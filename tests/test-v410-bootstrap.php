@@ -13,7 +13,7 @@ function __($text) { return $text; }
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
 $checks = array(
     'main class loaded' => class_exists('Sustainable_Catalyst_Feature_Suggestions'),
-    'version is 4.0.2' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '4.0.2',
+    'version is 4.1.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '4.1.0',
     'product integration loaded' => class_exists('SCFS_Product_Integration'),
     'knowledge base loaded' => class_exists('SCFS_Knowledge_Base_Foundation'),
     'guided resolution loaded' => class_exists('SCFS_Guided_Resolution'),
@@ -24,6 +24,7 @@ $checks = array(
     'opportunity workflow loaded' => class_exists('SCFS_Opportunity_Workflow'),
     'product support platform loaded' => class_exists('SCFS_Product_Support_Platform'),
     'governance loaded' => class_exists('SCFS_Platform_Governance'),
+    'support content operations loaded' => class_exists('SCFS_Support_Content_Operations'),
 );
 foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";
@@ -45,4 +46,4 @@ if (!in_array('release_intelligence', $schema['public_modules'] ?? array(), true
 if (($schema['governance']['automatic_case_creation'] ?? true) !== false) {
     fwrite(STDERR, "FAIL - automatic case boundary\n"); exit(1);
 }
-echo "PASS - product support schema\nPASS - embedded rendering mode\nPASS - custom branding preset\nPASS - release intelligence module\nPASS - automatic case boundary\n17 checks passed.\n";
+echo "PASS - product support schema\nPASS - embedded rendering mode\nPASS - custom branding preset\nPASS - release intelligence module\nPASS - automatic case boundary\n18 checks passed.\n";

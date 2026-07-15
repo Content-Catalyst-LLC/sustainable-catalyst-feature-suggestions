@@ -6,11 +6,6 @@ class WP_Query {
     public function __construct($args = array()) {}
     public function have_posts() { return false; }
 }
-class SCFS_Test_Request {
-    private $params;
-    public function __construct($params) { $this->params = $params; }
-    public function get_param($key) { return $this->params[$key] ?? null; }
-}
 function add_action() { return true; }
 function add_filter() { return true; }
 function add_shortcode() { return true; }
@@ -22,40 +17,48 @@ function apply_filters($hook, $value) { return $value; }
 function __($text) { return $text; }
 function esc_html__($text) { return $text; }
 function esc_html($text) { return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8'); }
+function esc_attr__($text) { return $text; }
 function esc_attr($text) { return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8'); }
 function esc_url($text) { return (string) $text; }
 function esc_url_raw($text) { return (string) $text; }
 function sanitize_key($value) { return preg_replace('/[^a-z0-9_\-]/', '', strtolower((string) $value)); }
-function sanitize_title($value) { return sanitize_key(str_replace(' ', '-', (string) $value)); }
+function sanitize_title($value) { return sanitize_key(str_replace(' ', '-', $value)); }
+function sanitize_text_field($value) { return trim((string) $value); }
 function wp_unslash($value) { return $value; }
 function absint($value) { return abs((int) $value); }
 function home_url($path = '') { return 'https://example.test' . $path; }
-function get_option($key, $default = array()) { return $default; }
+function get_option($key, $default = array()) { if ($key === 'scfs_support_content_operations') return array('hide_empty_support_sections' => ''); return $default; }
 function wp_parse_args($args, $defaults = array()) { return array_merge($defaults, is_array($args) ? $args : array()); }
+function shortcode_atts($pairs, $atts) { return array_merge($pairs, is_array($atts) ? $atts : array()); }
+function wp_enqueue_style() { return true; }
+function wp_enqueue_script() { return true; }
 function wp_count_posts() { return (object) array('publish' => 0, 'pending' => 0, 'draft' => 0, 'private' => 0); }
 function post_type_exists() { return false; }
+function get_terms() { return array(); }
+function is_wp_error() { return false; }
+function selected($a, $b, $echo = true) { return (string) $a === (string) $b ? 'selected="selected"' : ''; }
 function remove_query_arg($keys = array(), $url = '') { return $url ?: 'https://example.test/support/'; }
 function add_query_arg($args, $url = '') { return rtrim((string) $url, '?') . '?' . http_build_query((array) $args); }
-function rest_ensure_response($value) { return $value; }
+function rest_url($path = '') { return 'https://example.test/wp-json/' . ltrim($path, '/'); }
 
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
-$request = new SCFS_Test_Request(array(
-    'view' => 'private-support',
-    'product' => 'workbench',
-    'survey' => 0,
-    'base_url' => 'https://example.test/support/',
+$html = SCFS_Product_Support_Platform::instance()->render_shortcode(array(
+    'mode' => 'embedded',
+    'branding' => 'sustainable-catalyst',
+    'default_view' => 'private-support',
+    'show_product_filter' => '0',
     'anchor' => 'support-center',
-    'show_overview_pathways' => '0',
 ));
-$result = SCFS_Product_Support_Platform::instance()->rest_view($request);
 $checks = array(
-    'view response schema' => ($result['schema'] ?? '') === 'scfs-product-support-view/1.0',
-    'view response version' => ($result['version'] ?? '') === '4.0.2',
-    'requested view retained' => ($result['view'] ?? '') === 'private-support',
-    'product retained' => ($result['product'] ?? '') === 'workbench',
-    'private support rendered' => strpos($result['html'] ?? '', 'Continue to Contact and Engagement') !== false,
-    'direct URL anchored' => strpos($result['url'] ?? '', 'scfs_support_view=private-support') !== false && substr($result['url'], -15) === '#support-center',
-    'private case content protected' => ($result['private_case_content_exposed'] ?? true) === false,
+    'interactive root enabled' => strpos($html, 'data-scfs-interactive="1"') !== false,
+    'view endpoint exposed' => strpos($html, 'data-scfs-endpoint="https://example.test/wp-json/scfs/v1/product-support/view"') !== false,
+    'base URL exposed' => strpos($html, 'data-scfs-base-url="https://example.test/support/"') !== false,
+    'anchor exposed' => strpos($html, 'data-scfs-anchor="support-center"') !== false,
+    'current view exposed' => strpos($html, 'data-scfs-current-view="private-support"') !== false,
+    'navigation links carry view data' => strpos($html, 'data-scfs-support-view="documentation"') !== false,
+    'fallback link returns to support center' => strpos($html, 'scfs_support_view=documentation#support-center') !== false,
+    'workspace announces updates' => strpos($html, 'aria-live="polite"') !== false,
+    'workspace exposes active view' => strpos($html, 'data-scfs-view="private-support"') !== false,
 );
 foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";

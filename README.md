@@ -2,6 +2,12 @@
 
 A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
+## Version 4.1.0 — Support Content Operations and Product Onboarding
+
+Version 4.1.0 adds **Feature Suggestions → Content Operations**, where each Sustainable Catalyst product can be mapped, given a complete starter support set, populated from README/CHANGELOG/JSON sources, validated, exported, and scored for public support readiness. Empty public support modules can remain hidden until published records exist.
+
+The workflow preserves human review and never imports private Contact and Engagement case content. See `docs/support-content-operations-product-onboarding.md`.
+
 ## Version 4.0.2 — Navigation and Embedded Pathway Reliability Patch
 
 Version 4.0.2 makes the embedded Support Center behave like one application. Internal navigation changes the workspace without returning visitors to the top of the page, updates browser history and direct URLs, preserves product context, and falls back to anchored full-page links when JavaScript or the REST endpoint is unavailable.

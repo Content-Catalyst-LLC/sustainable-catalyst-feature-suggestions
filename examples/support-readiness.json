@@ -1,0 +1,22 @@
+{
+  "schema": "scfs-support-readiness/1.0",
+  "version": "4.1.0",
+  "product": {
+    "id": 12,
+    "slug": "workbench",
+    "name": "Workbench"
+  },
+  "score": 90,
+  "state": "ready",
+  "criteria": {
+    "product_profile": {"points": 10, "earned": 10},
+    "current_version": {"points": 10, "earned": 10},
+    "component_map": {"points": 10, "earned": 10},
+    "required_articles": {"points": 35, "earned": 35},
+    "release_intelligence": {"points": 15, "earned": 15},
+    "known_issue_review": {"points": 10, "earned": 10},
+    "freshness": {"points": 10, "earned": 0}
+  },
+  "blockers": [],
+  "human_review_required": true
+}
