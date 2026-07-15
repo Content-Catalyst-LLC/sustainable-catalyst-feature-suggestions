@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Product support documentation, known issues, feature suggestions, surveys, public participation, roadmap governance, privacy controls, and shared platform integration for Sustainable Catalyst.
- * Version: 3.4.0
+ * Version: 4.0.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '3.4.0';
+    const VERSION = '4.0.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -80,6 +80,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
         if (class_exists('SCFS_Documentation_Feature_Intelligence')) {
             SCFS_Documentation_Feature_Intelligence::activate();
+        }
+        if (class_exists('SCFS_Product_Support_Platform')) {
+            SCFS_Product_Support_Platform::activate();
         }
         $instance->migrate_legacy_post_type();
         flush_rewrite_rules();
@@ -2128,6 +2131,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-survey-intelligenc
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-research-librarian-feedback.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-public-ideas.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-opportunity-workflow.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-product-support-platform.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-platform-governance.php';
 SCFS_Product_Integration::instance();
 SCFS_Knowledge_Base_Foundation::instance();
@@ -2138,6 +2142,7 @@ SCFS_Survey_Intelligence::instance();
 SCFS_Research_Librarian_Feedback::instance();
 SCFS_Public_Ideas::instance();
 SCFS_Opportunity_Workflow::instance();
+SCFS_Product_Support_Platform::instance();
 SCFS_Platform_Governance::instance();
 
 Sustainable_Catalyst_Feature_Suggestions::instance();

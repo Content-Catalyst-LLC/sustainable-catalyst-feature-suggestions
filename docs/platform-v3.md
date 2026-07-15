@@ -1,6 +1,10 @@
-# Sustainable Catalyst Product Support and Feedback Platform v3.4.0
+# Sustainable Catalyst Product Support and Feedback Platform v4.0.0
 
-Version 3.4.0 adds documentation feedback, gap intelligence, privacy-safe support relationships, and support-demand-informed opportunity scoring on top of the guided product-support workflow.
+Version 4.0.0 unifies Guided Resolution, documentation, Known Issues, Release Intelligence, feature suggestions, public voting, surveys, and privacy-bounded private support handoff in one product-aware public Support Center.
+
+## Unified Support Center
+
+Use `[scfs_product_support_center]` to provide one public entry point for support search, documentation, Known Issues, releases, ideas, voting, suggestions, surveys, and private-support continuation.
 
 ## Support Knowledge Base
 

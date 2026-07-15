@@ -1,6 +1,6 @@
 <?php
 /**
- * Opportunity scoring and roadmap workflow with support-demand intelligence for Feature Suggestions v3.4.0.
+ * Opportunity scoring and roadmap workflow with support-demand intelligence for Feature Suggestions v4.0.0.
  */
 if (!defined('ABSPATH')) { exit; }
 
@@ -186,7 +186,7 @@ final class SCFS_Opportunity_Workflow {
         echo '</select></label></p>';
         echo '<p><label><strong>'.esc_html__('Public-interest value (0–5)','sustainable-catalyst-feature-suggestions').'</strong><br><select class="widefat" name="scfs_public_interest_score">'; for($i=0;$i<=5;$i++) echo '<option value="'.$i.'" '.selected((string)$public_interest,(string)$i,false).'>'.$i.'</option>'; echo '</select></label></p>';
         echo '<p><label><strong>'.esc_html__('Owner','sustainable-catalyst-feature-suggestions').'</strong><br><input class="widefat" name="scfs_roadmap_owner" value="'.esc_attr($owner).'"></label></p>';
-        echo '<p><label><strong>'.esc_html__('Target release','sustainable-catalyst-feature-suggestions').'</strong><br><input class="widefat" name="scfs_target_release" value="'.esc_attr($target).'" placeholder="v3.4.0"></label></p>';
+        echo '<p><label><strong>'.esc_html__('Target release','sustainable-catalyst-feature-suggestions').'</strong><br><input class="widefat" name="scfs_target_release" value="'.esc_attr($target).'" placeholder="v4.0.0"></label></p>';
         echo '<p><label><strong>'.esc_html__('Decision rationale','sustainable-catalyst-feature-suggestions').'</strong><br><textarea class="widefat" rows="4" name="scfs_roadmap_decision_reason">'.esc_textarea($decision).'</textarea></label></p>';
         $recalc = wp_nonce_url(admin_url('admin-post.php?action=scfs_opportunity_recalculate&post_id='.$post->ID), self::NONCE.'_'.$post->ID);
         $export = wp_nonce_url(admin_url('admin-post.php?action=scfs_opportunity_export&post_id='.$post->ID), self::NONCE.'_export_'.$post->ID);

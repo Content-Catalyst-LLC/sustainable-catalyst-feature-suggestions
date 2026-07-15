@@ -27,6 +27,22 @@ Optional category preselection:
 [sustainable_catalyst_feature_suggestions category="Research Librarian feature"]
 ```
 
+## Version 4.0.0 — Product Support and Feedback Platform
+
+Version 4.0.0 introduces the unified public Support Center:
+
+```text
+[scfs_product_support_center]
+```
+
+The Support Center combines Guided Resolution, the Support Knowledge Base, Known Issues, Release Intelligence, feature suggestions, moderated public ideas, advisory voting, and open surveys. A shared product selector carries context across the public workflow.
+
+The new public `sc_release_record` post type publishes release lifecycle state, support and compatibility notes, highlights, known limitations, product context, and privacy-safe relationships to documentation, Known Issues, and public ideas.
+
+Feature Suggestions remains the public support and feedback system. Contact and Engagement remains the private case, communication, document, and lifecycle system of record. Automatic private case creation is disabled.
+
+Administration: **Feature Suggestions → Support Platform**. See `docs/product-support-feedback-platform.md`.
+
 ## Version 3.4.0 — Documentation and Feature Intelligence
 
 Version 3.4.0 adds Support Article feedback, privacy-minimized documentation-gap detection, protected case-to-article and case-to-suggestion relationships, and a distinct Support Demand signal in opportunity scoring. Contact and Engagement remains the private case-management system; Feature Suggestions stores only public-record relationships and opaque case references.

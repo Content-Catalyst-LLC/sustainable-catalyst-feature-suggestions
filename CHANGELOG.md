@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.0.0 — Product Support and Feedback Platform
+
+- Added the unified `[scfs_product_support_center]` public interface and `[scfs_support_center]` legacy alias.
+- Combined Guided Resolution, Knowledge Base browsing, Known Issues, Release Intelligence, public ideas, voting, suggestions, surveys, and private-support continuation.
+- Added public `sc_release_record` Release Intelligence records with lifecycle, compatibility, highlights, limitations, and typed relationships.
+- Added product-aware routing across public support modules.
+- Added product-support schema, overview, releases, products, handoff-schema, and protected snapshot REST endpoints.
+- Added deterministic FastAPI support-state summarization and release-readiness scoring.
+- Preserved Contact and Engagement as the private case, communication, and document system of record.
+- Kept voting, survey evidence, search demand, AI, and scoring advisory with mandatory human review.
+
 ## 3.4.0 — Documentation and Feature Intelligence
 
 - Added Support Article helpfulness feedback with privacy redaction and aggregate metrics.

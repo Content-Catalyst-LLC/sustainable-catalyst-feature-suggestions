@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-VERSION="3.4.0"
+VERSION="4.0.0"
 REPO_URL="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${1:-$HOME/Downloads}"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v340.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v400.XXXXXX")"
 CLONE_DIR="$WORK_DIR/repo"
 STAGE_DIR="$WORK_DIR/stage"
 VENV_DIR="$WORK_DIR/venv"
@@ -13,9 +13,8 @@ cleanup_on_failure() {
   local status=$?
   if [[ $status -ne 0 ]]; then
     echo
-    echo "The v3.4.0 release was not committed or pushed."
-    echo "Temporary validation workspace: $WORK_DIR"
-    echo "It has been retained for inspection."
+    echo "The v4.0.0 release was not committed or pushed."
+    echo "Temporary validation workspace retained at: $WORK_DIR"
     trap - EXIT
   fi
   exit "$status"
@@ -55,33 +54,23 @@ fi
 
 echo "Using Python: $PYTHON_BIN ($($PYTHON_BIN --version 2>&1))"
 
-if ! command -v git >/dev/null 2>&1; then
-  echo "ERROR: Git is required."
-  exit 1
-fi
-if ! command -v unzip >/dev/null 2>&1; then
-  echo "ERROR: unzip is required."
-  exit 1
-fi
-if ! command -v rsync >/dev/null 2>&1; then
-  echo "ERROR: rsync is required."
-  exit 1
-fi
-if ! command -v php >/dev/null 2>&1; then
-  echo "ERROR: PHP is required for plugin validation."
-  exit 1
-fi
+for command_name in git unzip rsync php; do
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    echo "ERROR: $command_name is required."
+    exit 1
+  fi
+done
 
 shopt -s nullglob
 ARCHIVE_CANDIDATES=(
-  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v3.4.0-repo*.zip
-  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v3.4.0-release-bundle*.zip
+  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v4.0.0-repo*.zip
+  "$DOWNLOADS_DIR"/sustainable-catalyst-feature-suggestions-v4.0.0-release-bundle*.zip
 )
 shopt -u nullglob
 
 if (( ${#ARCHIVE_CANDIDATES[@]} == 0 )); then
-  echo "ERROR: Could not find the v3.4.0 repository ZIP or release bundle in $DOWNLOADS_DIR."
-  echo "Download sustainable-catalyst-feature-suggestions-v3.4.0-repo.zip and run again."
+  echo "ERROR: Could not find the v4.0.0 repository ZIP or release bundle in $DOWNLOADS_DIR."
+  echo "Download sustainable-catalyst-feature-suggestions-v4.0.0-repo.zip and run again."
   exit 1
 fi
 
@@ -90,13 +79,13 @@ echo "Using release archive: $RELEASE_ARCHIVE"
 mkdir -p "$STAGE_DIR"
 unzip -q "$RELEASE_ARCHIVE" -d "$STAGE_DIR"
 
-MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 5 -type f -name feature_suggestions_manifest.json -print -quit)"
+MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 6 -type f -name feature_suggestions_manifest.json -print -quit)"
 if [[ -z "$MANIFEST_PATH" ]]; then
-  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 4 -type f -name 'sustainable-catalyst-feature-suggestions-v3.4.0-repo*.zip' -print -quit)"
+  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 5 -type f -name 'sustainable-catalyst-feature-suggestions-v4.0.0-repo*.zip' -print -quit)"
   if [[ -n "$INNER_ZIP" ]]; then
     mkdir -p "$STAGE_DIR/repository"
     unzip -q "$INNER_ZIP" -d "$STAGE_DIR/repository"
-    MANIFEST_PATH="$(find "$STAGE_DIR/repository" -maxdepth 5 -type f -name feature_suggestions_manifest.json -print -quit)"
+    MANIFEST_PATH="$(find "$STAGE_DIR/repository" -maxdepth 6 -type f -name feature_suggestions_manifest.json -print -quit)"
   fi
 fi
 
@@ -122,12 +111,17 @@ if [[ ! -d "$SOURCE_DIR/wordpress/sustainable-catalyst-feature-suggestions" || !
   exit 1
 fi
 
+if [[ ! -f "$SOURCE_DIR/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-product-support-platform.php" ]]; then
+  echo "ERROR: The v4.0.0 Product Support Platform class is missing."
+  exit 1
+fi
+
 echo "Cloning the latest GitHub main branch..."
 git clone "$REPO_URL" "$CLONE_DIR"
 cd "$CLONE_DIR"
 git checkout main
 
-echo "Applying the complete v3.4.0 repository over the fresh clone..."
+echo "Applying the complete v4.0.0 repository over the fresh clone..."
 rsync -a --delete --exclude='.git/' "$SOURCE_DIR/" "$CLONE_DIR/"
 
 echo "Running PHP syntax checks..."
@@ -136,8 +130,8 @@ while IFS= read -r -d '' file; do
 done < <(find wordpress/sustainable-catalyst-feature-suggestions tests -type f -name '*.php' -print0)
 echo "PASS - PHP syntax"
 
-echo "Running WordPress contract, rendering, and scoring tests..."
-for test_file in tests/test-v340-*.php; do
+echo "Running WordPress contract and platform tests..."
+for test_file in tests/test-v400-*.php; do
   php "$test_file"
 done
 
@@ -165,9 +159,14 @@ if [[ ! -f dist/sustainable-catalyst-feature-suggestions.zip ]]; then
   exit 1
 fi
 unzip -tq dist/sustainable-catalyst-feature-suggestions.zip >/dev/null
+ZIP_ROOTS="$(unzip -Z1 dist/sustainable-catalyst-feature-suggestions.zip | awk -F/ 'NF {print $1}' | sort -u | tr '\n' ' ')"
+if [[ "$ZIP_ROOTS" != "sustainable-catalyst-feature-suggestions " ]]; then
+  echo "ERROR: WordPress ZIP must contain one plugin root. Found: $ZIP_ROOTS"
+  exit 1
+fi
 echo "PASS - WordPress distribution ZIP"
 
-if grep -RInE --exclude='*.zip' --exclude='*.md' --exclude-dir='.git' --exclude-dir='venv' \
+if grep -RInE --exclude='*.zip' --exclude='*.md' --exclude='*.txt' --exclude-dir='.git' --exclude-dir='venv' \
   '(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{30,}|gh[pousr]_[A-Za-z0-9_]{30,})' .; then
   echo "ERROR: A potential secret was found. Nothing was committed or pushed."
   exit 1
@@ -177,7 +176,7 @@ echo "PASS - secret scan"
 echo "Validation passed. Preparing Git commit..."
 git add -A
 if git diff --cached --quiet; then
-  echo "No uncommitted v3.4.0 changes were found. The remote may already contain this release."
+  echo "No uncommitted v4.0.0 changes were found. The remote may already contain this release."
 else
   if ! git config user.name >/dev/null; then
     git config user.name "$(git log -1 --format='%an' 2>/dev/null || echo 'Content Catalyst LLC')"
@@ -185,17 +184,17 @@ else
   if ! git config user.email >/dev/null; then
     git config user.email "$(git log -1 --format='%ae' 2>/dev/null || echo 'release@users.noreply.github.com')"
   fi
-  git commit -m "Release Feature Suggestions v3.4.0 documentation and feature intelligence"
+  git commit -m "Release Feature Suggestions v4.0.0 product support and feedback platform"
 fi
 
 echo "Checking for GitHub changes that arrived during validation..."
 git pull --rebase origin main
 
-echo "Pushing Feature Suggestions v3.4.0..."
+echo "Pushing Feature Suggestions v4.0.0..."
 git push origin main
 
 echo
-echo "Feature Suggestions v3.4.0 was validated, installed, committed, and pushed successfully."
+echo "Feature Suggestions v4.0.0 was validated, installed, committed, and pushed successfully."
 echo "Validated repository retained at: $CLONE_DIR"
 rm -rf "$VENV_DIR" "$STAGE_DIR"
 trap - EXIT

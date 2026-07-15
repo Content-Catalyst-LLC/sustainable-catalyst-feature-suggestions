@@ -1,0 +1,18 @@
+{
+  "schema": "scfs-product-support-overview/1.0",
+  "version": "4.0.0",
+  "generated_at": "2026-07-14T00:00:00Z",
+  "product": "workbench",
+  "counts": {
+    "support_articles": 12,
+    "active_known_issues": 1,
+    "public_ideas": 8,
+    "open_surveys": 1,
+    "release_records": 5
+  },
+  "privacy": {
+    "public_records_only": true,
+    "private_case_content_exposed": false,
+    "contact_and_engagement_is_private_system_of_record": true
+  }
+}

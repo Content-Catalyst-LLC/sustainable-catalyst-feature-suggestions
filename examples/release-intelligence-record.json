@@ -1,0 +1,21 @@
+{
+  "schema": "scfs-release-intelligence/1.0",
+  "id": 410,
+  "slug": "feature-suggestions-v4-0-0",
+  "title": "Feature Suggestions v4.0.0",
+  "summary": "Unified Product Support and Feedback Platform.",
+  "status": "current",
+  "release_date": "2026-07-14",
+  "support_note": "Replaces the separate public entry points with one product-aware Support Center.",
+  "highlights": [
+    "Unified Guided Resolution and Knowledge Base entry point",
+    "Public Release Intelligence",
+    "Public/private support governance boundary"
+  ],
+  "known_limitations": [],
+  "products": [{"id": 1, "slug": "sustainable-catalyst-platform", "name": "Sustainable Catalyst Platform"}],
+  "related_articles": [],
+  "related_known_issues": [],
+  "related_public_suggestions": [],
+  "private_suggestion_text_exposed": false
+}

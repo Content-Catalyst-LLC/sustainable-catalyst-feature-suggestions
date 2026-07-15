@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class SCFS_Platform_Governance {
-    const VERSION = '3.4.0';
+    const VERSION = '4.0.0';
     const OPTION_KEY = 'scfs_platform_governance';
     const AUDIT_KEY = 'scfs_platform_audit';
     const NONCE = 'scfs_platform_governance';
@@ -51,6 +51,7 @@ final class SCFS_Platform_Governance {
     private function module_status() {
         $settings = get_option(Sustainable_Catalyst_Feature_Suggestions::OPTION_KEY, array());
         return array(
+            'product_support_platform' => array('label'=>'Unified support platform','ready'=>class_exists('SCFS_Product_Support_Platform') && shortcode_exists(SCFS_Product_Support_Platform::SHORTCODE) && post_type_exists(SCFS_Product_Support_Platform::RELEASE_POST_TYPE),'detail'=>'Unified public support center, release intelligence, participation, and private handoff boundary'),
             'feature_intake' => array('label'=>'Feature intake','ready'=>shortcode_exists(Sustainable_Catalyst_Feature_Suggestions::SHORTCODE),'detail'=>'Structured public suggestions and review workflow'),
             'ai_triage' => array('label'=>'AI triage','ready'=>!empty($settings['ai_backend_url']),'detail'=>!empty($settings['ai_backend_url'])?'Backend URL configured':'Deterministic/manual workflow remains available'),
             'forms_surveys' => array('label'=>'Forms and surveys','ready'=>post_type_exists('scfs_form'),'detail'=>'Builder, conditional logic, quotas, and response storage'),
@@ -83,6 +84,7 @@ final class SCFS_Platform_Governance {
             'public_ideas'=>(int) count(get_posts(array('post_type'=>Sustainable_Catalyst_Feature_Suggestions::POST_TYPE,'post_status'=>array('publish','pending','draft','private'),'posts_per_page'=>-1,'fields'=>'ids','meta_key'=>'_scfs_public_visibility','meta_value'=>'1'))),
             'support_articles'=>post_type_exists('sc_support_article')?$this->count_posts('sc_support_article'):0,
             'known_issues'=>post_type_exists('sc_known_issue')?$this->count_posts('sc_known_issue'):0,
+            'release_records'=>post_type_exists('sc_release_record')?$this->count_posts('sc_release_record'):0,
             'resolution_searches'=>class_exists('SCFS_Guided_Resolution')?(int)(SCFS_Guided_Resolution::instance()->analytics_summary()['total_searches']??0):0,
             'documentation_gaps'=>post_type_exists('sc_doc_gap')?$this->count_posts('sc_doc_gap'):0,
             'article_feedback'=>class_exists('SCFS_Documentation_Feature_Intelligence')?(int)(SCFS_Documentation_Feature_Intelligence::instance()->analytics_summary()['feedback_total']??0):0,
@@ -95,6 +97,8 @@ final class SCFS_Platform_Governance {
         $modules=$this->module_status(); $passed=0;
         foreach($modules as $m) if($m['ready']) $passed++;
         $tests=array(
+            array('label'=>'Unified support center registered','pass'=>class_exists('SCFS_Product_Support_Platform') && shortcode_exists('scfs_product_support_center')),
+            array('label'=>'Release intelligence registered','pass'=>post_type_exists('sc_release_record')),
             array('label'=>'Core feature intake registered','pass'=>post_type_exists(Sustainable_Catalyst_Feature_Suggestions::POST_TYPE)),
             array('label'=>'Forms module registered','pass'=>post_type_exists('scfs_form')),
             array('label'=>'Public ideas shortcode registered','pass'=>shortcode_exists('sc_public_ideas')),
@@ -121,7 +125,7 @@ final class SCFS_Platform_Governance {
         echo '<p>'.esc_html__('Unified operational view across support documentation, known issues, feature intake, forms, surveys, research intelligence, public participation, and roadmap governance.','sustainable-catalyst-feature-suggestions').'</p>';
         echo '<p><a class="button button-primary" href="'.esc_url($snapshot).'">'.esc_html__('Export platform snapshot','sustainable-catalyst-feature-suggestions').'</a> <a class="button" href="'.esc_url(admin_url('edit.php?post_type='.Sustainable_Catalyst_Feature_Suggestions::POST_TYPE.'&page=scfs-platform-governance')).'">'.esc_html__('Governance settings','sustainable-catalyst-feature-suggestions').'</a></p>';
         echo '<div class="scfs-intel-cards">';
-        foreach(array('suggestions'=>'Suggestions','support_articles'=>'Support articles','known_issues'=>'Known issues','documentation_gaps'=>'Documentation gaps','article_feedback'=>'Article feedback','case_relationships'=>'Case relationships','forms'=>'Forms & surveys','responses'=>'Responses','public_ideas'=>'Public ideas') as $k=>$label) echo '<div class="scfs-intel-card"><span>'.esc_html($label).'</span><strong>'.esc_html((string)$c[$k]).'</strong></div>';
+        foreach(array('suggestions'=>'Suggestions','support_articles'=>'Support articles','known_issues'=>'Known issues','documentation_gaps'=>'Documentation gaps','article_feedback'=>'Article feedback','case_relationships'=>'Case relationships','release_records'=>'Release records','forms'=>'Forms & surveys','responses'=>'Responses','public_ideas'=>'Public ideas') as $k=>$label) echo '<div class="scfs-intel-card"><span>'.esc_html($label).'</span><strong>'.esc_html((string)$c[$k]).'</strong></div>';
         echo '<div class="scfs-intel-card"><span>'.esc_html__('Release readiness','sustainable-catalyst-feature-suggestions').'</span><strong>'.esc_html($r['passed'].' / '.$r['total']).'</strong></div></div>';
         echo '<h2>'.esc_html__('Module health','sustainable-catalyst-feature-suggestions').'</h2><table class="widefat striped"><thead><tr><th>Module</th><th>Status</th><th>Operational note</th></tr></thead><tbody>';
         foreach($r['modules'] as $m) echo '<tr><td><strong>'.esc_html($m['label']).'</strong></td><td>'.($m['ready']?'<span class="scfs-status scfs-status--ok">Ready</span>':'<span class="scfs-status">Optional / needs configuration</span>').'</td><td>'.esc_html($m['detail']).'</td></tr>';
@@ -208,7 +212,7 @@ final class SCFS_Platform_Governance {
     }
 
     private function snapshot() {
-        return array('ok'=>true,'platform'=>'Sustainable Catalyst Product Support and Feedback Platform','version'=>self::VERSION,'generated_at'=>gmdate('c'),'counts'=>$this->counts(),'readiness'=>$this->readiness(),'governance'=>array_diff_key($this->settings(),array('enable_retention_actions'=>true)),'event_schema_version'=>Sustainable_Catalyst_Feature_Suggestions::EVENT_SCHEMA_VERSION,'product_taxonomy'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->taxonomy_schema():array(),'product_coverage'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->coverage():array(),'knowledge_base'=>class_exists('SCFS_Knowledge_Base_Foundation')?SCFS_Knowledge_Base_Foundation::instance()->schema_record():array(),'guided_resolution'=>class_exists('SCFS_Guided_Resolution')?SCFS_Guided_Resolution::instance()->schema_record():array(),'guided_resolution_handoff'=>class_exists('SCFS_Guided_Resolution')?SCFS_Guided_Resolution::instance()->handoff_schema():array(),'contact_engagement_handoff'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->handoff_schema():array(),'human_review_required'=>true);
+        return array('ok'=>true,'platform'=>'Sustainable Catalyst Product Support and Feedback Platform','version'=>self::VERSION,'generated_at'=>gmdate('c'),'counts'=>$this->counts(),'readiness'=>$this->readiness(),'governance'=>array_diff_key($this->settings(),array('enable_retention_actions'=>true)),'event_schema_version'=>Sustainable_Catalyst_Feature_Suggestions::EVENT_SCHEMA_VERSION,'product_taxonomy'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->taxonomy_schema():array(),'product_coverage'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->coverage():array(),'knowledge_base'=>class_exists('SCFS_Knowledge_Base_Foundation')?SCFS_Knowledge_Base_Foundation::instance()->schema_record():array(),'guided_resolution'=>class_exists('SCFS_Guided_Resolution')?SCFS_Guided_Resolution::instance()->schema_record():array(),'guided_resolution_handoff'=>class_exists('SCFS_Guided_Resolution')?SCFS_Guided_Resolution::instance()->handoff_schema():array(),'contact_engagement_handoff'=>class_exists('SCFS_Product_Integration')?SCFS_Product_Integration::instance()->handoff_schema():array(),'product_support_platform'=>class_exists('SCFS_Product_Support_Platform')?SCFS_Product_Support_Platform::instance()->schema_record():array(),'release_intelligence'=>class_exists('SCFS_Product_Support_Platform')?SCFS_Product_Support_Platform::instance()->overview_record(''):array(),'human_review_required'=>true);
     }
 
     public function export_snapshot() {

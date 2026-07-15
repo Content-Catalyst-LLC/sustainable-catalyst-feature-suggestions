@@ -12,13 +12,38 @@
   "estimated_minutes": 10,
   "last_verified_version": "v3.2.0",
   "product_context": {
-    "products": [{"name": "Feature Suggestions", "slug": "feature-suggestions"}],
-    "product_versions": [{"name": "v3.2.0", "slug": "v3-2-0"}],
-    "components": [{"name": "WordPress Administration", "slug": "wordpress-admin"}],
+    "products": [
+      {
+        "name": "Feature Suggestions",
+        "slug": "feature-suggestions"
+      }
+    ],
+    "product_versions": [
+      {
+        "name": "v3.2.0",
+        "slug": "v3-2-0"
+      }
+    ],
+    "components": [
+      {
+        "name": "WordPress Administration",
+        "slug": "wordpress-admin"
+      }
+    ],
     "issue_types": [],
-    "releases": [{"name": "v3.2.0", "slug": "v3-2-0"}]
+    "releases": [
+      {
+        "name": "v3.2.0",
+        "slug": "v3-2-0"
+      }
+    ]
   },
-  "collections": [{"name": "Installation and Upgrades", "slug": "installation-upgrades"}],
+  "collections": [
+    {
+      "name": "Installation and Upgrades",
+      "slug": "installation-upgrades"
+    }
+  ],
   "related_suggestions": [],
   "related_suggestion_count": 0
 }

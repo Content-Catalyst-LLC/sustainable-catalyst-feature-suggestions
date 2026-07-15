@@ -59,10 +59,10 @@ final class SCFS_Public_Ideas {
         return new WP_Query(array_merge(array('post_type'=>Sustainable_Catalyst_Feature_Suggestions::POST_TYPE,'post_status'=>array('publish','private','pending'),'posts_per_page'=>20,'meta_query'=>array(array('key'=>'_scfs_public_visibility','value'=>'1')),'orderby'=>'date','order'=>'DESC'),$args));
     }
     public function shortcode($atts) {
-        $atts=shortcode_atts(array('limit'=>'20','state'=>'','title'=>'Public Ideas'),$atts,self::SHORTCODE);
+        $atts=shortcode_atts(array('limit'=>'20','state'=>'','title'=>'Public Ideas','product'=>''),$atts,self::SHORTCODE);
         $meta=array(array('key'=>'_scfs_public_visibility','value'=>'1'));
         $state=sanitize_key($atts['state']); if($state && isset($this->states()[$state]))$meta[]=array('key'=>'_scfs_public_state','value'=>$state);
-        $q=$this->public_query(array('posts_per_page'=>min(100,max(1,absint($atts['limit']))),'meta_query'=>$meta));
+        $query_args=array('posts_per_page'=>min(100,max(1,absint($atts['limit']))),'meta_query'=>$meta); $product=sanitize_title($atts['product']); if($product&&class_exists('SCFS_Product_Integration'))$query_args['tax_query']=array(array('taxonomy'=>SCFS_Product_Integration::PRODUCT_TAXONOMY,'field'=>'slug','terms'=>$product)); $q=$this->public_query($query_args);
         wp_enqueue_style('scfs-public-ideas'); wp_enqueue_script('scfs-public-ideas');
         wp_localize_script('scfs-public-ideas','SCFSPublicIdeas',array('endpoint'=>esc_url_raw(rest_url('scfs/v1/public-ideas')),'nonce'=>wp_create_nonce('wp_rest'),'supported'=>array_values(array_filter(array_map('absint',explode(',',sanitize_text_field($_COOKIE[self::VOTE_COOKIE] ?? '')))))));
         ob_start(); echo '<section class="scfs-public-ideas"><header><p class="scfs-public-kicker">'.esc_html__('Participatory roadmap','sustainable-catalyst-feature-suggestions').'</p><h2>'.esc_html($atts['title']).'</h2><p>'.esc_html__('Review approved ideas, support priorities, and follow official roadmap decisions. Support counts inform review but do not determine implementation.','sustainable-catalyst-feature-suggestions').'</p></header><div class="scfs-public-grid">';
@@ -79,7 +79,10 @@ final class SCFS_Public_Ideas {
         register_rest_route('scfs/v1','/public-ideas/(?P<id>\d+)/support',array('methods'=>WP_REST_Server::CREATABLE,'callback'=>array($this,'rest_support'),'permission_callback'=>'__return_true'));
     }
     public function rest_list($request) {
-        $q=$this->public_query(array('posts_per_page'=>min(100,max(1,absint($request->get_param('limit')?:20))))); $items=array();
+        $query_args=array('posts_per_page'=>min(100,max(1,absint($request->get_param('limit')?:20))));
+        $product=sanitize_title($request->get_param('product'));
+        if($product&&class_exists('SCFS_Product_Integration')) $query_args['tax_query']=array(array('taxonomy'=>SCFS_Product_Integration::PRODUCT_TAXONOMY,'field'=>'slug','terms'=>$product));
+        $q=$this->public_query($query_args); $items=array();
         foreach($q->posts as $p){if(absint(get_post_meta($p->ID,'_scfs_canonical_idea_id',true)))continue;$items[]=array('id'=>$p->ID,'title'=>$p->post_title,'summary'=>wp_trim_words(wp_strip_all_tags($p->post_content),55),'category'=>get_post_meta($p->ID,'_scfs_category',true),'state'=>get_post_meta($p->ID,'_scfs_public_state',true)?:'under_review','supports'=>absint(get_post_meta($p->ID,'_scfs_support_votes',true)),'official_response'=>get_post_meta($p->ID,'_scfs_official_response',true),'release_url'=>get_post_meta($p->ID,'_scfs_release_url',true));}
         return rest_ensure_response(array('items'=>$items,'participation_note'=>'Support is advisory and does not automatically determine roadmap priority.'));
     }

@@ -3,9 +3,9 @@
   "slug": "sustainable-catalyst-feature-suggestions",
   "repository": "Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions",
   "type": "wordpress-plugin-and-python-ai-service",
-  "shortcode": "[sustainable_catalyst_feature_suggestions]",
+  "shortcode": "[scfs_product_support_center]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "updated": "2026-07-14",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -147,7 +147,26 @@
     "documentation intelligence REST API",
     "documentation intelligence CSV export",
     "FastAPI documentation gap scoring endpoint",
-    "FastAPI support demand scoring endpoint"
+    "FastAPI support demand scoring endpoint",
+    "unified product support center",
+    "scfs_product_support_center shortcode",
+    "legacy scfs_support_center shortcode",
+    "product-aware support module routing",
+    "public Release Record post type",
+    "release lifecycle states",
+    "release summaries, support notes, highlights, and known limitations",
+    "release-to-documentation relationships",
+    "release-to-known-issue relationships",
+    "privacy-safe release-to-public-idea relationships",
+    "release intelligence archive",
+    "release intelligence REST API",
+    "product support overview REST API",
+    "product support product summaries",
+    "product support handoff schema",
+    "protected product support snapshot",
+    "deterministic product support state summarization",
+    "deterministic release-readiness scoring",
+    "unified public/private support governance boundary"
   ],
   "boundaries": [
     "no confidential information",
@@ -157,25 +176,34 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 3.4.0 connects Support Article feedback, failed-search analytics, documentation gaps, privacy-safe case relationships, and support-demand-informed opportunity scoring while preserving Contact and Engagement as the private support-case system of record.",
-  "release_name": "Documentation and Feature Intelligence",
-  "release": "Feature Suggestions v3.4.0 — Documentation and Feature Intelligence",
+  "notes": "Version 4.0.0 unifies Guided Resolution, the Support Knowledge Base, Known Issues, Release Intelligence, feature suggestions, public voting, and surveys in one product-aware public support center while preserving Contact and Engagement as the private case, communication, and document system of record.",
+  "release_name": "Product Support and Feedback Platform",
+  "release": "Feature Suggestions v4.0.0 \u2014 Product Support and Feedback Platform",
   "features": [
-    "Helpful and not-helpful Support Article feedback with privacy redaction",
-    "Documentation Gap records generated from failed searches and negative feedback",
-    "Protected case-to-article and case-to-suggestion relationship registry",
-    "Support Demand opportunity-scoring dimension",
-    "Documentation intelligence dashboard, REST API, CSV export, and FastAPI scoring endpoints",
-    "Explicit private-case boundary with Contact and Engagement"
+    "Unified product-aware public Support Center",
+    "Guided resolution, documentation, known issues, releases, ideas, voting, suggestions, and surveys in one interface",
+    "Public Release Record post type with lifecycle, compatibility, highlights, limitations, and relationships",
+    "Release intelligence REST API and deterministic release-readiness scoring",
+    "Shared product routing across support modules",
+    "Explicit public-support and private-case governance boundary",
+    "Consent-gated Contact and Engagement handoff with automatic case creation disabled"
   ],
   "wordpress_post_types": [
     "sc_feature_suggest",
     "sc_support_article",
     "sc_known_issue",
-    "sc_doc_gap"
+    "sc_doc_gap",
+    "sc_release_record"
   ],
   "shortcodes": [
+    "[scfs_product_support_center]",
+    "[scfs_support_center]",
     "[scfs_support_knowledge_base]",
-    "[scfs_guided_resolution]"
-  ]
+    "[scfs_guided_resolution]",
+    "[sc_public_ideas]",
+    "[sustainable_catalyst_feature_suggestions]",
+    "[sc_feedback_form]"
+  ],
+  "support_center_shortcode": "[scfs_product_support_center]",
+  "public_support_archive": "/support-knowledge-base/"
 }

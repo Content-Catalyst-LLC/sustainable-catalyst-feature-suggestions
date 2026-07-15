@@ -13,26 +13,30 @@ function __($text) { return $text; }
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
 $checks = array(
     'main class loaded' => class_exists('Sustainable_Catalyst_Feature_Suggestions'),
-    'version is 3.4.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '3.4.0',
+    'version is 4.0.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '4.0.0',
     'product integration loaded' => class_exists('SCFS_Product_Integration'),
     'knowledge base loaded' => class_exists('SCFS_Knowledge_Base_Foundation'),
     'guided resolution loaded' => class_exists('SCFS_Guided_Resolution'),
     'documentation intelligence loaded' => class_exists('SCFS_Documentation_Feature_Intelligence'),
+    'forms loaded' => class_exists('SCFS_Forms_Foundation'),
+    'survey intelligence loaded' => class_exists('SCFS_Survey_Intelligence'),
+    'public ideas loaded' => class_exists('SCFS_Public_Ideas'),
     'opportunity workflow loaded' => class_exists('SCFS_Opportunity_Workflow'),
+    'product support platform loaded' => class_exists('SCFS_Product_Support_Platform'),
     'governance loaded' => class_exists('SCFS_Platform_Governance'),
 );
 foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";
     if (!$passed) exit(1);
 }
-$schema = SCFS_Documentation_Feature_Intelligence::instance()->schema_record();
-if (($schema['schema'] ?? '') !== 'scfs-documentation-feature-intelligence/1.0') {
-    fwrite(STDERR, "FAIL - documentation intelligence schema\n"); exit(1);
+$schema = SCFS_Product_Support_Platform::instance()->schema_record();
+if (($schema['schema'] ?? '') !== 'scfs-product-support-platform/1.0') {
+    fwrite(STDERR, "FAIL - product support schema\n"); exit(1);
 }
-if (!in_array('support_demand_opportunity_scoring', $schema['capabilities'] ?? array(), true)) {
-    fwrite(STDERR, "FAIL - support demand capability\n"); exit(1);
+if (!in_array('release_intelligence', $schema['public_modules'] ?? array(), true)) {
+    fwrite(STDERR, "FAIL - release intelligence module\n"); exit(1);
 }
-if (($schema['privacy']['case_content_stored'] ?? true) !== false) {
-    fwrite(STDERR, "FAIL - private case boundary\n"); exit(1);
+if (($schema['governance']['automatic_case_creation'] ?? true) !== false) {
+    fwrite(STDERR, "FAIL - automatic case boundary\n"); exit(1);
 }
-echo "PASS - documentation intelligence schema\nPASS - support demand capability\nPASS - private case boundary\n11 checks passed.\n";
+echo "PASS - product support schema\nPASS - release intelligence module\nPASS - automatic case boundary\n15 checks passed.\n";

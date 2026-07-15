@@ -95,3 +95,14 @@ The Python validation environment must use Python 3.12 or 3.13 and install `back
 ## Documentation and Feature Intelligence v3.4.0
 
 After upgrading, open **Feature Suggestions → Documentation Intelligence**. The plugin creates the article-feedback and support-relationship tables during activation or the first administrator request. Use **Refresh documentation gaps** after Guided Resolution has collected unresolved-search evidence.
+
+
+## Product Support and Feedback Platform v4.0.0
+
+Create or update the public support page with:
+
+```text
+[scfs_product_support_center]
+```
+
+The `/support-knowledge-base/` archive also renders the unified Support Center. Configure the Contact and Engagement destination and visible modules under **Feature Suggestions → Support Platform**. Add public release records under **Feature Suggestions → Releases**.

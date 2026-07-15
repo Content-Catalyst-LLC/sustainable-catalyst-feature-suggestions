@@ -1,6 +1,12 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 3.4.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+Version 4.0.0 is a Product Support and Feedback WordPress plugin for collecting, storing, triaging, and exporting structured Sustainable Catalyst feature suggestions.
+
+## Unified Product Support Center
+
+Version 4.0.0 adds `[scfs_product_support_center]`, a single product-aware public interface for Guided Resolution, documentation, Known Issues, Release Intelligence, public ideas and advisory voting, feature suggestions, surveys, and private-support continuation.
+
+Release records use the public `sc_release_record` post type. Contact and Engagement remains the private case, communication, and document system of record.
 
 ## Support Knowledge Base Foundation
 

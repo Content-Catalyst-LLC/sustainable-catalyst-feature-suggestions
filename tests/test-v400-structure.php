@@ -1,0 +1,55 @@
+<?php
+$root = dirname(__DIR__);
+$plugin = $root . '/wordpress/sustainable-catalyst-feature-suggestions';
+$main = file_get_contents($plugin . '/sustainable-catalyst-feature-suggestions.php');
+$platform = file_get_contents($plugin . '/includes/class-scfs-product-support-platform.php');
+$public_ideas = file_get_contents($plugin . '/includes/class-scfs-public-ideas.php');
+$governance = file_get_contents($plugin . '/includes/class-scfs-platform-governance.php');
+$backend = file_get_contents($root . '/backend/app/main.py');
+$manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
+$checks = array(
+    'plugin version' => strpos($main, 'Version: 4.0.0') !== false,
+    'runtime version' => strpos($main, "const VERSION = '4.0.0';") !== false,
+    'platform class file' => file_exists($plugin . '/includes/class-scfs-product-support-platform.php'),
+    'platform stylesheet' => file_exists($plugin . '/assets/product-support-platform.css'),
+    'platform bootstrap' => strpos($main, 'SCFS_Product_Support_Platform::instance();') !== false,
+    'platform activation' => strpos($main, 'SCFS_Product_Support_Platform::activate();') !== false,
+    'release post type' => strpos($platform, "const RELEASE_POST_TYPE = 'sc_release_record';") !== false,
+    'support center shortcode' => strpos($platform, "const SHORTCODE = 'scfs_product_support_center';") !== false,
+    'legacy support shortcode' => strpos($platform, "const LEGACY_SHORTCODE = 'scfs_support_center';") !== false,
+    'unified support modules' => strpos($platform, "'guided_resolution'") !== false && strpos($platform, "'forms_and_surveys'") !== false,
+    'release lifecycle' => strpos($platform, "'current' =>") !== false && strpos($platform, "'retired' =>") !== false,
+    'release relationship privacy' => strpos($platform, "'private_suggestion_text_exposed' => false") !== false,
+    'private case boundary' => strpos($platform, "'case_content_stored_by_feature_suggestions' => false") !== false,
+    'automatic case creation disabled' => strpos($platform, "'automatic_case_creation' => false") !== false,
+    'product context routing' => strpos($platform, 'scfs_support_product') !== false,
+    'guided resolution orchestration' => strpos($platform, 'SCFS_Guided_Resolution::instance()->render_shortcode') !== false,
+    'knowledge base orchestration' => strpos($platform, 'SCFS_Knowledge_Base_Foundation::instance()->render_shortcode') !== false,
+    'public ideas orchestration' => strpos($platform, 'SCFS_Public_Ideas::instance()->shortcode') !== false,
+    'survey orchestration' => strpos($platform, 'SCFS_Forms_Foundation::instance()->render_shortcode') !== false,
+    'public ideas product filter' => strpos($public_ideas, "'product'=>''") !== false,
+    'support center schema route' => strpos($platform, "'/product-support/schema'") !== false,
+    'support overview route' => strpos($platform, "'/product-support/overview'") !== false,
+    'release intelligence route' => strpos($platform, "'/product-support/releases'") !== false,
+    'product overview route' => strpos($platform, "'/product-support/products'") !== false,
+    'handoff schema route' => strpos($platform, "'/product-support/handoff-schema'") !== false,
+    'protected snapshot route' => strpos($platform, "'/product-support/snapshot'") !== false,
+    'release archive template' => file_exists($plugin . '/templates/archive-support-releases.php'),
+    'knowledge base archive unified' => strpos(file_get_contents($plugin . '/templates/archive-support-knowledge-base.php'), '[scfs_product_support_center]') !== false,
+    'governance platform module' => strpos($governance, "'product_support_platform'") !== false,
+    'governance release records' => strpos($governance, "'release_records'") !== false,
+    'backend support capabilities' => strpos($backend, '/v1/product-support/capabilities') !== false,
+    'backend support overview' => strpos($backend, '/v1/product-support/overview') !== false,
+    'backend release score' => strpos($backend, '/v1/product-support/releases/score') !== false,
+    'backend platform module' => file_exists($root . '/backend/app/product_support_platform.py'),
+    'backend platform tests' => file_exists($root . '/backend/tests/test_product_support_platform.py'),
+    'manifest version' => is_array($manifest) && ($manifest['version'] ?? '') === '4.0.0',
+    'manifest release name' => is_array($manifest) && ($manifest['release_name'] ?? '') === 'Product Support and Feedback Platform',
+);
+$failed = array();
+foreach ($checks as $label => $passed) {
+    echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";
+    if (!$passed) $failed[] = $label;
+}
+if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
+echo count($checks) . " checks passed.\n";
