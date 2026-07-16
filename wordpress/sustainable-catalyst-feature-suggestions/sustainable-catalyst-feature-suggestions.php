@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
- * Description: Product support documentation, known issues, feature suggestions, surveys, public participation, roadmap governance, privacy controls, and shared platform integration for Sustainable Catalyst.
- * Version: 4.5.0
+ * Description: Connected product support operations, documentation, known issues, releases, feature suggestions, surveys, editorial governance, repository synchronization, reliability analytics, cross-product orchestration, and privacy-safe support handoffs for Sustainable Catalyst.
+ * Version: 5.0.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '4.5.0';
+    const VERSION = '5.0.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -99,6 +99,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         if (class_exists('SCFS_Cross_Product_Support_Orchestration')) {
             SCFS_Cross_Product_Support_Orchestration::activate();
         }
+        if (class_exists('SCFS_Connected_Support_Operations')) {
+            SCFS_Connected_Support_Operations::activate();
+        }
         $instance->migrate_legacy_post_type();
         flush_rewrite_rules();
         if (!get_option(self::OPTION_KEY)) {
@@ -113,6 +116,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $timestamp = wp_next_scheduled(self::CRON_HOOK);
         if ($timestamp) {
             wp_unschedule_event($timestamp, self::CRON_HOOK);
+        }
+        if (class_exists('SCFS_Connected_Support_Operations')) {
+            SCFS_Connected_Support_Operations::deactivate();
         }
         if (class_exists('SCFS_Cross_Product_Support_Orchestration')) {
             SCFS_Cross_Product_Support_Orchestration::deactivate();
@@ -2168,6 +2174,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-editorial-governan
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-repository-release-sync.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-reliability-center.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-cross-product-orchestration.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-connected-support-operations.php';
 SCFS_Product_Integration::instance();
 SCFS_Knowledge_Base_Foundation::instance();
 SCFS_Guided_Resolution::instance();
@@ -2184,6 +2191,7 @@ SCFS_Editorial_Governance::instance();
 SCFS_Repository_Release_Synchronization::instance();
 SCFS_Support_Reliability_Center::instance();
 SCFS_Cross_Product_Support_Orchestration::instance();
+SCFS_Connected_Support_Operations::instance();
 
 Sustainable_Catalyst_Feature_Suggestions::instance();
 register_activation_hook(__FILE__, array('Sustainable_Catalyst_Feature_Suggestions', 'activate'));

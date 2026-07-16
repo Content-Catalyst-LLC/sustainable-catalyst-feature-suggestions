@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-VERSION="4.5.0"
-RELEASE_NAME="Cross-Product Support Orchestration"
+VERSION="5.0.0"
+RELEASE_NAME="Connected Product Support Operations Platform"
 REPOSITORY="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${HOME}/Downloads"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v450.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v500.XXXXXX")"
 STAGE_DIR="${WORK_DIR}/stage"
 CLONE_DIR="${WORK_DIR}/repository"
 VENV_DIR="${WORK_DIR}/venv"
@@ -62,14 +62,14 @@ SOURCE_ARCHIVE="$($PYTHON_BIN - "$DOWNLOADS_DIR" <<'PY'
 from pathlib import Path
 import sys
 root=Path(sys.argv[1])
-files=list(root.glob('sustainable-catalyst-feature-suggestions-v4.5.0-repo*.zip'))
-files+=list(root.glob('sustainable-catalyst-feature-suggestions-v4.5.0-release-bundle*.zip'))
+files=list(root.glob('sustainable-catalyst-feature-suggestions-v5.0.0-repo*.zip'))
+files+=list(root.glob('sustainable-catalyst-feature-suggestions-v5.0.0-release-bundle*.zip'))
 if files:
     print(max(files, key=lambda path: path.stat().st_mtime))
 PY
 )"
 if [ -z "$SOURCE_ARCHIVE" ] || [ ! -f "$SOURCE_ARCHIVE" ]; then
-  echo "ERROR: No v4.5.0 repository ZIP or release bundle was found in ~/Downloads."
+  echo "ERROR: No v5.0.0 repository ZIP or release bundle was found in ~/Downloads."
   exit 1
 fi
 
@@ -78,9 +78,9 @@ unzip -q "$SOURCE_ARCHIVE" -d "$STAGE_DIR"
 
 MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 if [ -z "$MANIFEST_PATH" ]; then
-  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v4.5.0-repo*.zip' -print -quit)"
+  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.0.0-repo*.zip' -print -quit)"
   if [ -z "$INNER_ZIP" ]; then
-    echo "ERROR: The release archive does not contain the v4.5.0 repository."
+    echo "ERROR: The release archive does not contain the v5.0.0 repository."
     exit 1
   fi
   mkdir -p "$STAGE_DIR/repository-package"
@@ -88,7 +88,7 @@ if [ -z "$MANIFEST_PATH" ]; then
   MANIFEST_PATH="$(find "$STAGE_DIR/repository-package" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 fi
 if [ -z "$MANIFEST_PATH" ]; then
-  echo "ERROR: Could not locate the v4.5.0 repository root."
+  echo "ERROR: Could not locate the v5.0.0 repository root."
   exit 1
 fi
 PACKAGE_ROOT="$(dirname "$MANIFEST_PATH")"
@@ -128,18 +128,18 @@ rsync -a --delete \
   "$PACKAGE_ROOT/" "$CLONE_DIR/"
 
 MAIN_PLUGIN="wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php"
-ORCHESTRATION_CLASS="wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-cross-product-orchestration.php"
-ORCHESTRATION_CSS="wordpress/sustainable-catalyst-feature-suggestions/assets/cross-product-orchestration.css"
-BACKEND_MODULE="backend/app/cross_product_orchestration.py"
-if [ ! -f "$MAIN_PLUGIN" ] || [ ! -f "$ORCHESTRATION_CLASS" ] || [ ! -f "$ORCHESTRATION_CSS" ] || [ ! -f "$BACKEND_MODULE" ]; then
-  echo "ERROR: Required WordPress or FastAPI v4.5.0 files are missing."
+OPERATIONS_CLASS="wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-connected-support-operations.php"
+OPERATIONS_CSS="wordpress/sustainable-catalyst-feature-suggestions/assets/connected-support-operations.css"
+BACKEND_MODULE="backend/app/connected_support_operations.py"
+if [ ! -f "$MAIN_PLUGIN" ] || [ ! -f "$OPERATIONS_CLASS" ] || [ ! -f "$OPERATIONS_CSS" ] || [ ! -f "$BACKEND_MODULE" ]; then
+  echo "ERROR: Required WordPress or FastAPI v5.0.0 files are missing."
   exit 1
 fi
-if ! grep -Fq 'Version: 4.5.0' "$MAIN_PLUGIN" || \
-   ! grep -Fq "const VERSION = '4.5.0';" "$ORCHESTRATION_CLASS" || \
-   ! grep -Fq "const SCHEMA_VERSION = '1.0';" "$ORCHESTRATION_CLASS" || \
-   ! grep -Fq 'version: str = "4.5.0"' "$BACKEND_MODULE"; then
-  echo "ERROR: WordPress or FastAPI version markers do not match v4.5.0."
+if ! grep -Fq 'Version: 5.0.0' "$MAIN_PLUGIN" || \
+   ! grep -Fq "const VERSION = '5.0.0';" "$OPERATIONS_CLASS" || \
+   ! grep -Fq "const SCHEMA_VERSION = '1.0';" "$OPERATIONS_CLASS" || \
+   ! grep -Fq 'version: str = "5.0.0"' "$BACKEND_MODULE"; then
+  echo "ERROR: WordPress or FastAPI version markers do not match v5.0.0."
   exit 1
 fi
 
@@ -154,6 +154,10 @@ while IFS= read -r -d '' file; do
   php -l "$file" >/dev/null
   PHP_FILES=$((PHP_FILES + 1))
 done < <(find wordpress tests -type f -name '*.php' -print0)
+if [ "$PHP_FILES" -lt 56 ]; then
+  echo "ERROR: Expected at least 56 PHP files; found $PHP_FILES."
+  exit 1
+fi
 echo "PASS - $PHP_FILES PHP files"
 
 echo "Running WordPress contract tests..."
@@ -166,8 +170,8 @@ while IFS= read -r test_file; do
   if [ -n "$count" ]; then PHP_CHECKS=$((PHP_CHECKS + count)); fi
   PHP_TESTS=$((PHP_TESTS + 1))
 done < <(find tests -maxdepth 1 -type f -name 'test-*.php' | sort)
-if [ "$PHP_TESTS" -lt 32 ] || [ "$PHP_CHECKS" -lt 520 ]; then
-  echo "ERROR: Expected at least 32 WordPress test files and 520 checks; found $PHP_TESTS files and $PHP_CHECKS checks."
+if [ "$PHP_TESTS" -lt 35 ] || [ "$PHP_CHECKS" -lt 570 ]; then
+  echo "ERROR: Expected at least 35 WordPress test files and 570 checks; found $PHP_TESTS files and $PHP_CHECKS checks."
   exit 1
 fi
 echo "PASS - $PHP_TESTS WordPress test files, $PHP_CHECKS checks"
@@ -179,6 +183,10 @@ if command -v node >/dev/null 2>&1; then
     node --check "$js_file"
     JS_FILES=$((JS_FILES + 1))
   done < <(find wordpress/sustainable-catalyst-feature-suggestions/assets -maxdepth 1 -type f -name '*.js' -print0)
+  if [ "$JS_FILES" -lt 9 ]; then
+    echo "ERROR: Expected at least 9 JavaScript files; found $JS_FILES."
+    exit 1
+  fi
   echo "PASS - $JS_FILES JavaScript files"
 fi
 
@@ -204,8 +212,8 @@ for path in Path('.').rglob('*.json'):
 print(len(files))
 PY
 )"
-if [ "$JSON_COUNT" -lt 37 ]; then
-  echo "ERROR: Expected at least 37 JSON records; found $JSON_COUNT."
+if [ "$JSON_COUNT" -lt 40 ]; then
+  echo "ERROR: Expected at least 40 JSON records; found $JSON_COUNT."
   exit 1
 fi
 echo "PASS - $JSON_COUNT JSON files"
@@ -219,15 +227,15 @@ rm -f dist/sustainable-catalyst-feature-suggestions.zip
 )
 unzip -tq dist/sustainable-catalyst-feature-suggestions.zip >/dev/null
 HEADER_FILE="$WORK_DIR/plugin-header.php"
-ORCHESTRATION_ZIP_FILE="$WORK_DIR/cross-product-class.php"
+OPERATIONS_ZIP_FILE="$WORK_DIR/connected-operations-class.php"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php > "$HEADER_FILE"
-unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/includes/class-scfs-cross-product-orchestration.php > "$ORCHESTRATION_ZIP_FILE"
-if ! grep -Fq 'Version: 4.5.0' "$HEADER_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain plugin version 4.5.0."
+unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/includes/class-scfs-connected-support-operations.php > "$OPERATIONS_ZIP_FILE"
+if ! grep -Fq 'Version: 5.0.0' "$HEADER_FILE"; then
+  echo "ERROR: WordPress distribution ZIP does not contain plugin version 5.0.0."
   exit 1
 fi
-if ! grep -Fq "const VERSION = '4.5.0';" "$ORCHESTRATION_ZIP_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain the v4.5.0 orchestration class."
+if ! grep -Fq "const VERSION = '5.0.0';" "$OPERATIONS_ZIP_FILE"; then
+  echo "ERROR: WordPress distribution ZIP does not contain the v5.0.0 connected operations class."
   exit 1
 fi
 ROOT_ENTRY_COUNT="$(zipinfo -1 dist/sustainable-catalyst-feature-suggestions.zip | awk -F/ 'NF && $1!=""{print $1}' | sort -u | wc -l | tr -d ' ')"
@@ -245,9 +253,9 @@ fi
 
 git add -A
 if git diff --cached --quiet; then
-  echo "No repository changes remain. v4.5.0 may already be installed."
+  echo "No repository changes remain. v5.0.0 may already be installed."
 else
-  git commit -m "Release Feature Suggestions v4.5.0 cross-product support orchestration"
+  git commit -m "Release Feature Suggestions v5.0.0 connected support operations platform"
 fi
 
 echo "Rebasing over any newer remote commits..."
@@ -258,5 +266,5 @@ git push origin main
 SUCCESS=1
 
 echo
-echo "Feature Suggestions v4.5.0 was validated, committed, and pushed successfully."
+echo "Feature Suggestions v5.0.0 was validated, committed, and pushed successfully."
 echo "Repository: $REPOSITORY"

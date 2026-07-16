@@ -16,7 +16,7 @@ $schema = $platform->schema_record();
 $handoff = $platform->handoff_schema();
 $checks = array(
     'platform schema version' => ($schema['schema'] ?? '') === 'scfs-product-support-platform/1.0',
-    'platform release version' => ($schema['version'] ?? '') === '4.5.0',
+    'platform release version' => ($schema['version'] ?? '') === '5.0.0',
     'embedded rendering mode' => in_array('embedded', $schema['rendering_modes'] ?? array(), true),
     'client-side navigation' => ($schema['navigation']['client_side_view_switching'] ?? false) === true,
     'browser history navigation' => ($schema['navigation']['browser_history'] ?? false) === true,

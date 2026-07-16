@@ -17,7 +17,7 @@ class ProductOnboardingEvidence(BaseModel):
 class ProductSupportReadiness(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-support-readiness/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     score: int = Field(ge=0, le=100)
     state: Literal["not_started", "building", "review", "ready"]
     blockers: List[str]
@@ -34,7 +34,7 @@ class SourceDocument(BaseModel):
 class ImportPlan(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-support-import-plan/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     inferred_source_type: Literal["readme", "documentation", "changelog", "release_notes", "json"]
     suggested_record_type: Literal["article", "release", "structured_records"]
     detected_release_headings: int = Field(ge=0)
@@ -150,7 +150,7 @@ def plan_source_import(document: SourceDocument) -> ImportPlan:
 class ImportSourceInspection(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-support-import-inspection/1.1", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     valid: bool
     size_bytes: int = Field(ge=0)
     checksum_sha256: str
@@ -171,7 +171,7 @@ class ImportBatchEvidence(BaseModel):
 class ImportRecoveryPlan(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-support-import-recovery/1.1", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     batch_id: str
     action: Literal["none", "offer_manual_rollback", "automatic_rollback"]
     rollback_record_ids: List[int]
@@ -190,7 +190,7 @@ class ExportIntegrityEvidence(BaseModel):
 class ExportIntegrityResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-support-export-integrity/1.1", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     valid: bool
     checksum_matches: bool
     record_count_matches: bool

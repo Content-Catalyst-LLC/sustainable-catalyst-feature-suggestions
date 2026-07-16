@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.0.0 — Connected Product Support Operations Platform
+
+- Added the Connected Operations administration workspace.
+- Added product operations dossiers and unified module health.
+- Added a human-approved operations action queue.
+- Added daily operations snapshots and SHA-256 report integrity.
+- Added protected WordPress REST and FastAPI advisory endpoints.
+- Preserved specialist-module authority and the Contact and Engagement privacy boundary.
+
 ## 4.5.0 — Cross-Product Support Orchestration
 
 - Added the public `sc_platform_incident` post type with status, severity, summaries, workarounds, timestamps, and shared product context.

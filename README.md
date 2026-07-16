@@ -1,10 +1,15 @@
 # Sustainable Catalyst Feature Suggestions
 
+## Version 5.0.0 — Connected Product Support Operations Platform
+
+Version 5.0.0 consolidates the complete public support and operational roadmap into one governed operations layer. It adds a Connected Operations workspace, product operations dossiers, unified module health, human-approved action queues, daily snapshots, and integrity-protected reports while preserving each specialist module as the source of truth.
+
+
 A WordPress and FastAPI Product Support and Feedback Platform for collecting feature suggestions, publishing support documentation and known issues, managing public participation, and producing product intelligence.
 
-## Version 4.5.0 — Cross-Product Support Orchestration
+## Version 5.0.0 — Cross-Product Support Orchestration
 
-Version 4.5.0 coordinates public support when an incident, dependency, shared component, release, or resolution path spans more than one Sustainable Catalyst product.
+Version 5.0.0 coordinates public support when an incident, dependency, shared component, release, or resolution path spans more than one Sustainable Catalyst product.
 
 Open **Feature Suggestions → Cross-Product Support** to configure the product dependency graph, publish governed Platform Incident records, review shared-component relationships, and manage related-product support pathways. The Product Support Center gains a **Platform status** workspace, and `[scfs_cross_product_support]` can render the orchestration view independently.
 

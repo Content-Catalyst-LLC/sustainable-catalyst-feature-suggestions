@@ -50,7 +50,7 @@ $request = new SCFS_Test_Request(array(
 $result = SCFS_Product_Support_Platform::instance()->rest_view($request);
 $checks = array(
     'view response schema' => ($result['schema'] ?? '') === 'scfs-product-support-view/1.0',
-    'view response version' => ($result['version'] ?? '') === '4.5.0',
+    'view response version' => ($result['version'] ?? '') === '5.0.0',
     'requested view retained' => ($result['view'] ?? '') === 'private-support',
     'product retained' => ($result['product'] ?? '') === 'workbench',
     'private support rendered' => strpos($result['html'] ?? '', 'Continue to Contact and Engagement') !== false,

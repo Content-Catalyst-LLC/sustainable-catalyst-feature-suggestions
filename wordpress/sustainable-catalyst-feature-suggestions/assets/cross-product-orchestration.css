@@ -1,4 +1,4 @@
-/* Sustainable Catalyst Feature Suggestions v4.5.0 cross-product orchestration */
+/* Sustainable Catalyst Feature Suggestions v5.0.0 cross-product orchestration */
 .scfs-cross-product-support { color: var(--scfs-token-ink, #171717); }
 .scfs-cross-product-support > header { margin-bottom: 1.25rem; }
 .scfs-cross-product-support__grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 1.25rem; align-items: start; }

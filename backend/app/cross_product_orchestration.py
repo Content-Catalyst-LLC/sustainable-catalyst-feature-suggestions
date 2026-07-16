@@ -40,7 +40,7 @@ class IncidentImpactEvidence(BaseModel):
 class IncidentImpactResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-cross-product-incident-impact/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     score: float = Field(ge=0, le=100)
     state: ImpactState
     signals: List[str]
@@ -70,7 +70,7 @@ class ProductRoute(BaseModel):
 class ProductRouteResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-cross-product-route-recommendations/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     starting_product: str
     routes: List[ProductRoute]
     human_review_required: bool = True
@@ -96,7 +96,7 @@ class JourneyStep(BaseModel):
 class ResolutionJourneyResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-cross-product-resolution-journey/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     starting_product: str
     steps: List[JourneyStep]
     related_products: List[ProductRoute]
@@ -113,7 +113,7 @@ class OrchestrationReportEvidence(BaseModel):
 class OrchestrationReportResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-cross-product-report-integrity/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     record_count: int = Field(ge=0)
     checksum: str
     matches_expected: bool

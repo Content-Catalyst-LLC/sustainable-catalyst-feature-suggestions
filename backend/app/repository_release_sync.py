@@ -29,7 +29,7 @@ class RepositoryCandidateEvidence(BaseModel):
 class RepositorySyncDecision(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-repository-sync-decision/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     action: SyncAction
     state: SyncState
     reason: str
@@ -52,7 +52,7 @@ class RepositoryDriftEvidence(BaseModel):
 class RepositoryDriftResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-repository-drift/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     state: Literal["aligned", "local_edit", "remote_update", "conflict", "source_missing", "unknown"]
     local_changed: bool
     remote_changed: bool
@@ -75,7 +75,7 @@ class ReleaseSourceEvidence(BaseModel):
 class ReleaseSyncPlan(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-release-sync-plan/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     action: SyncAction
     lifecycle: Literal["preview", "current", "review"]
     title: str
@@ -97,7 +97,7 @@ class LinkHealthEvidence(BaseModel):
 class LinkHealthSummary(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-repository-link-health/1.0", alias="schema")
-    version: str = "4.5.0"
+    version: str = "5.0.0"
     state: Literal["not_checked", "healthy", "review", "attention"]
     health_percent: int = Field(ge=0, le=100)
     checked_links: int = Field(ge=0)

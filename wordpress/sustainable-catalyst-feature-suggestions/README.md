@@ -1,8 +1,8 @@
 # Sustainable Catalyst Feature Suggestions
 
-Version 4.5.0 is a Product Support and Feedback WordPress plugin for documentation, known issues, releases, guided resolution, feature suggestions, surveys, repository synchronization, editorial governance, product reliability intelligence, and cross-product support orchestration.
+Version 5.0.0 is a Connected Product Support Operations WordPress plugin for documentation, known issues, releases, guided resolution, feature suggestions, surveys, repository synchronization, editorial governance, product reliability intelligence, and cross-product support orchestration.
 
-Version 4.5.0 adds public Platform Incident records, a configurable product dependency graph, shared-component relationships, dependency-aware Known Issues and releases, related-product recommendations, and cross-product resolution journeys.
+Version 5.0.0 adds a Connected Operations workspace with product dossiers, unified module health, a human-approved action queue, daily snapshots, and integrity-protected reports. It also retains public Platform Incident records, a configurable product dependency graph, shared-component relationships, dependency-aware Known Issues and releases, related-product recommendations, and cross-product resolution journeys.
 
 Recommended integration:
 

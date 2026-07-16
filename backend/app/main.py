@@ -13,9 +13,10 @@ from .editorial_governance import EditorialTransitionEvidence, EditorialTransiti
 from .repository_release_sync import RepositoryCandidateEvidence, RepositorySyncDecision, RepositoryDriftEvidence, RepositoryDriftResult, ReleaseSourceEvidence, ReleaseSyncPlan, LinkHealthEvidence, LinkHealthSummary, evaluate_repository_candidate, evaluate_repository_drift, plan_release_sync, summarize_link_health
 from .support_reliability import ProductReliabilityEvidence, ProductReliabilityScore, ReliabilityTrendEvidence, ReliabilityTrendSummary, UnresolvedClusterEvidence, UnresolvedClusterPriority, ReliabilityReportIntegrityEvidence, ReliabilityReportIntegrityResult, score_product_reliability, summarize_reliability_trend, prioritize_unresolved_cluster, verify_reliability_report
 from .cross_product_orchestration import IncidentImpactEvidence, IncidentImpactResult, ProductRouteEvidence, ProductRouteResult, ResolutionJourneyEvidence, ResolutionJourneyResult, OrchestrationReportEvidence, OrchestrationReportResult, evaluate_incident_impact, recommend_product_routes, build_resolution_journey, verify_orchestration_report
+from .connected_support_operations import ConnectedOperationsEvidence, ConnectedOperationsScore, OperationsActionEvidence, OperationsActionPlan, OperationsReportEvidence, OperationsReportResult, score_connected_operations, plan_connected_action, verify_connected_operations_report
 
-VERSION='4.5.0'
-ANALYSIS_VERSION='4.5.0-1'
+VERSION='5.0.0'
+ANALYSIS_VERSION='5.0.0-1'
 app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
 
 class Submission(BaseModel):
@@ -150,7 +151,7 @@ def survey_analyze(payload: SurveyAnalysisRequest, x_scfs_ai_key:Optional[str]=H
 @app.get('/v1/surveys/methodology')
 def survey_methodology(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {'ok':True,'analysis_version':'4.5.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+    return {'ok':True,'analysis_version':'5.0.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
 
 
 @app.get('/v1/platform/capabilities')
@@ -160,7 +161,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','error_signature_matching','known_issue_prioritization','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','error_signature_matching','known_issue_prioritization','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -494,4 +495,45 @@ def cross_product_journeys_build(payload: ResolutionJourneyEvidence, x_scfs_ai_k
 def cross_product_reports_verify(payload: OrchestrationReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_orchestration_report(payload)
+
+@app.get('/v1/connected-operations/capabilities')
+def connected_operations_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-connected-product-support-operations/1.0',
+        'capabilities': [
+            'connected_module_readiness',
+            'product_operations_scoring',
+            'governed_action_planning',
+            'operations_report_integrity',
+            'specialist_module_source_of_truth_preservation',
+        ],
+        'wordpress_source_of_truth': True,
+        'private_case_content_storage': False,
+        'automatic_publication': False,
+        'automatic_incident_declaration': False,
+        'automatic_roadmap_change': False,
+        'automatic_private_case_creation': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/connected-operations/readiness/score', response_model=ConnectedOperationsScore)
+def connected_operations_readiness_score(payload: ConnectedOperationsEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return score_connected_operations(payload)
+
+
+@app.post('/v1/connected-operations/actions/plan', response_model=OperationsActionPlan)
+def connected_operations_action_plan(payload: OperationsActionEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return plan_connected_action(payload)
+
+
+@app.post('/v1/connected-operations/reports/verify', response_model=OperationsReportResult)
+def connected_operations_report_verify(payload: OperationsReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_connected_operations_report(payload)
 

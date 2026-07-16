@@ -1,0 +1,14 @@
+{
+  "schema": "scfs-connected-product-support-operations/1.0",
+  "version": "5.0.0",
+  "generated_at": "2026-07-15T21:00:00Z",
+  "module_readiness": {"ready": 10, "total": 10},
+  "product_readiness": {"operational": 5, "total": 8},
+  "governance": {
+    "human_review_required": true,
+    "automatic_publication": false,
+    "automatic_incident_declaration": false,
+    "automatic_roadmap_change": false,
+    "automatic_private_case_creation": false
+  }
+}

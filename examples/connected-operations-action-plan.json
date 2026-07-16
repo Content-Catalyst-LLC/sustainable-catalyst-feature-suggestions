@@ -1,0 +1,15 @@
+{
+  "schema": "scfs-connected-operations-action-plan/1.0",
+  "version": "5.0.0",
+  "action_type": "validate_content",
+  "product": "workbench",
+  "permitted": true,
+  "execution_mode": "human_approved",
+  "steps": [
+    "Review the operational evidence and selected product context.",
+    "Queue the action for explicit human execution.",
+    "Run the corresponding specialist-module operation.",
+    "Capture the result and refresh the platform snapshot."
+  ],
+  "human_review_required": true
+}

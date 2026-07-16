@@ -1,0 +1,8 @@
+{
+  "schema": "scfs-connected-operations-report-integrity/1.0",
+  "version": "5.0.0",
+  "algorithm": "sha256",
+  "valid": true,
+  "expected_checksum": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "supplied_checksum": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+}

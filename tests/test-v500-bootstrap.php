@@ -9,16 +9,16 @@ function plugin_dir_path($file) { return dirname($file) . '/'; }
 function plugin_basename($file) { return basename($file); }
 function apply_filters($hook, $value) { return $value; }
 function __($text) { return $text; }
-
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
 $checks = array(
     'main version is 5.0.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '5.0.0',
-    'repository synchronization loaded' => class_exists('SCFS_Repository_Release_Synchronization'),
-    'repository synchronization version' => SCFS_Repository_Release_Synchronization::VERSION === '5.0.0',
-    'repository synchronization schema' => SCFS_Repository_Release_Synchronization::SCHEMA_VERSION === '1.0',
+    'connected operations loaded' => class_exists('SCFS_Connected_Support_Operations'),
+    'connected operations version' => SCFS_Connected_Support_Operations::VERSION === '5.0.0',
+    'connected operations schema version' => SCFS_Connected_Support_Operations::SCHEMA_VERSION === '1.0',
+    'cross product orchestration retained' => class_exists('SCFS_Cross_Product_Support_Orchestration'),
+    'support reliability retained' => class_exists('SCFS_Support_Reliability_Center'),
+    'repository synchronization retained' => class_exists('SCFS_Repository_Release_Synchronization'),
     'editorial governance retained' => class_exists('SCFS_Editorial_Governance'),
-    'content operations retained' => class_exists('SCFS_Support_Content_Operations'),
-    'product support retained' => class_exists('SCFS_Product_Support_Platform'),
 );
 foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";
