@@ -1,6 +1,6 @@
-# Sustainable Catalyst Feature Suggestions v5.2.1
+# Sustainable Catalyst Feature Suggestions v5.2.2
 
-## Support Page Library Interface and Automatic Knowledge Base Rendering
+## Compact Support Library, Dedicated Knowledge Base Page, and Shortcode Separation
 
 - Disables Astra's theme-generated title on Support Article pages.
 - Removes Astra's author/date metadata from Knowledge Base articles.

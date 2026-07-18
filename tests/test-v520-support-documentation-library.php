@@ -6,26 +6,26 @@ $js = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggest
 $main = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version header' => strpos($main, 'Version: 5.2.1') !== false,
-    'runtime version constant' => strpos($main, "const VERSION = '5.2.1';") !== false,
-    'knowledge base version' => strpos($class, "const VERSION = '5.2.1';") !== false,
+    'plugin version header' => strpos($main, 'Version: 5.2.3') !== false,
+    'runtime version constant' => strpos($main, "const VERSION = '5.2.3';") !== false,
+    'knowledge base version' => strpos($class, "const VERSION = '5.2.3';") !== false,
     'category grouping' => strpos($class, 'browser_category_groups') !== false,
-    'category-first view' => strpos($class, 'data-scfs-library-panel="categories"') !== false,
-    'product alternate view' => strpos($class, 'data-scfs-library-panel="products"') !== false,
+    'category navigation' => strpos($class, 'scfs-kb-refined__categories') !== false,
+    'product navigator' => strpos($class, 'scfs-kb-refined__products') !== false,
     'generated article rows' => strpos($class, 'render_library_article_row') !== false,
-    'category details expanded' => strpos($class, 'data-scfs-kb-category open') !== false,
-    'first product expanded' => strpos($class, '$product_index === 0') !== false,
-    'section details expandable' => strpos($class, 'class="scfs-kb-section-folder"><summary>') !== false,
-    'library controls' => strpos($class, 'scfs-support-library-controls') !== false,
-    'view session persistence' => strpos($js, 'scfs-support-library-view') !== false,
-    'expand all behavior' => strpos($js, 'data-scfs-kb-expand') !== false,
-    'category library styling' => strpos($css, '.scfs-support-library-category') !== false,
+    'compact category details' => strpos($class, 'scfs-support-library-compact__topic') !== false,
+    'first compact product expanded' => strpos($class, "\$shown === 0 && \$atts['open_first'] === '1'") !== false,
+    'inline article containers' => strpos($class, 'scfs-support-library-compact__articles') !== false,
+    'server rendered filters' => strpos($class, 'scfs_kb_section') !== false && strpos($class, 'scfs_kb_product') !== false,
+    'progressive script retained' => strlen($js) > 100,
+    'native details behavior' => strpos($class, '<details class="scfs-support-library-compact__topic"') !== false,
+    'refined library styling' => strpos($css, '.scfs-kb-refined__layout') !== false,
     'article list styling' => strpos($css, '.scfs-support-library-article') !== false,
-    'manifest version' => ($manifest['version'] ?? '') === '5.2.1',
-    'manifest release name' => ($manifest['release_name'] ?? '') === 'Support Page Library Interface and Automatic Knowledge Base Rendering',
-    'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.1.md'),
+    'manifest version' => ($manifest['version'] ?? '') === '5.2.3',
+    'manifest release name' => ($manifest['release_name'] ?? '') === 'Dynamic Documentation Records, Permalink Integrity, and Knowledge Base Interface Refinement',
+    'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.3.md'),
 );
 $failed = array_keys(array_filter($checks, function ($value) { return !$value; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { echo 'Failed checks: ' . implode(', ', $failed) . "\n"; exit(1); }
-echo 'v5.2.1 support documentation library contract passed (' . count($checks) . " checks).\n";
+echo 'v5.2.3 support documentation library contract passed (' . count($checks) . " checks).\n";

@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Integrated_Knowledge_Base {
-    const VERSION = '5.2.1';
+    const VERSION = '5.2.3';
     const CONTENT_VERSION = '1.0.0';
     const IMPORT_OPTION = 'scfs_integrated_kb_import_version';
     const REPORT_OPTION = 'scfs_integrated_kb_last_report';
@@ -26,6 +26,8 @@ final class SCFS_Integrated_Knowledge_Base {
     const SECTION_SLUG_META = '_scfs_kb_section_slug';
     const SOURCE_VERSION_META = '_scfs_kb_content_version';
     const ADMIN_PAGE = 'scfs-integrated-knowledge-base';
+    const COMPACT_SHORTCODE = 'scfs_support_library_compact';
+    const COMPACT_LEGACY_SHORTCODE = 'sustainable_catalyst_support_library_compact';
 
     private static $instance = null;
     private $rendering_article = false;
@@ -44,10 +46,15 @@ final class SCFS_Integrated_Knowledge_Base {
         add_action('admin_menu', array($this, 'register_admin_page'), 32);
         add_action('admin_init', array($this, 'maybe_import_documentation'), 45);
         add_action('admin_post_scfs_kb510_import', array($this, 'handle_import'));
-        add_filter('the_content', array($this, 'automatically_render_on_support_page'), 18);
+        add_action('init', array($this, 'register_shortcodes'), 25);
         add_filter('the_content', array($this, 'decorate_article_experience'), 30);
         add_filter('scfs_support_navigation_items', array($this, 'keep_knowledge_base_navigation'), 20, 4);
         add_filter('scfs_editorial_allow_system_publication', array($this, 'allow_integrated_publication'), 10, 3);
+    }
+
+    public function register_shortcodes() {
+        add_shortcode(self::COMPACT_SHORTCODE, array($this, 'render_compact_library'));
+        add_shortcode(self::COMPACT_LEGACY_SHORTCODE, array($this, 'render_compact_library'));
     }
 
     public function allow_integrated_publication($allowed, $data, $postarr) {
@@ -470,23 +477,7 @@ final class SCFS_Integrated_Knowledge_Base {
     }
 
     private function support_knowledge_base_url($product_slug = '') {
-        $base = home_url('/support/');
-        if (function_exists('get_page_by_path')) {
-            $page = get_page_by_path('support');
-            if ($page && function_exists('get_permalink')) {
-                $page_url = get_permalink($page);
-                if ($page_url) {
-                    $base = $page_url;
-                }
-            }
-        }
-        $base = apply_filters('scfs_integrated_kb_support_url', $base);
-        $args = array('scfs_support_view' => 'documentation');
-        if ($product_slug !== '') {
-            $products = $this->products();
-            $args['scfs_support_product'] = isset($products[$product_slug]) ? $products[$product_slug]['canonical'] : sanitize_title($product_slug);
-        }
-        return add_query_arg($args, $base) . '#support-center';
+        return $this->dedicated_knowledge_base_url($product_slug);
     }
 
     private function all_published_articles() {
@@ -591,36 +582,130 @@ final class SCFS_Integrated_Knowledge_Base {
     }
 
     /**
-     * Make the assigned Support page a first-class documentation library.
-     *
-     * The interface is injected only on the main public Support page and only
-     * when an editor has not already placed the Knowledge Base shortcode.
+     * Legacy v5.2.1 entry point retained as a no-op so upgrades never prepend
+     * the full Knowledge Base above manually authored Support page content.
      */
     public function automatically_render_on_support_page($content) {
-        if (is_admin() || !is_page() || !in_the_loop() || !is_main_query()) {
-            return $content;
+        return $content;
+    }
+
+    private function dedicated_knowledge_base_url($product_slug = '', $section_slug = '') {
+        $paths = array('support/knowledge-base', 'support-knowledge-base', 'knowledge-base');
+        $base = home_url('/support/knowledge-base/');
+        if (function_exists('get_page_by_path')) {
+            foreach ($paths as $path) {
+                $page = get_page_by_path($path);
+                if ($page && function_exists('get_permalink')) {
+                    $url = get_permalink($page);
+                    if ($url) { $base = $url; break; }
+                }
+            }
         }
-        $post = get_post();
-        if (!$post) return $content;
-        $slug = sanitize_title($post->post_name);
-        $configured = sanitize_title((string) get_option('scfs_support_page_slug', 'support'));
-        $is_support = in_array($slug, array_filter(array('support', 'product-support', 'support-center', $configured)), true);
-        if (!$is_support) return $content;
-        if (has_shortcode((string) $post->post_content, SCFS_Knowledge_Base_Foundation::SHORTCODE)
-            || strpos((string) $content, 'scfs-support-library') !== false) {
-            return $content;
+        $base = apply_filters('scfs_integrated_kb_dedicated_url', $base);
+        $args = array();
+        if ($product_slug !== '') $args['scfs_kb_product'] = sanitize_title($product_slug);
+        if ($section_slug !== '') $args['scfs_kb_section'] = sanitize_title($section_slug);
+        $url = $args ? add_query_arg($args, $base) : $base;
+        if ($product_slug !== '' && $section_slug !== '') $url .= '#scfs-kb-' . sanitize_title($product_slug) . '-' . sanitize_title($section_slug);
+        return $url;
+    }
+
+    private function article_matches_search($post, $search) {
+        $search = trim(wp_strip_all_tags((string) $search));
+        if ($search === '') return true;
+        $haystack = array(
+            get_the_title($post),
+            $post->post_excerpt,
+            wp_strip_all_tags($post->post_content),
+            (string) get_post_meta($post->ID, '_scfs_kb_summary', true),
+            (string) get_post_meta($post->ID, '_scfs_product_version', true),
+            (string) get_post_meta($post->ID, '_scfs_last_verified_version', true),
+            (string) get_post_meta($post->ID, '_scfs_component', true),
+            $this->article_product_slug($post),
+            $this->article_section_slug($post),
+        );
+        foreach (array(
+            SCFS_Product_Integration::PRODUCT_TAXONOMY,
+            SCFS_Product_Integration::COMPONENT_TAXONOMY,
+            SCFS_Product_Integration::VERSION_TAXONOMY,
+            SCFS_Knowledge_Base_Foundation::ARTICLE_TYPE_TAXONOMY,
+            SCFS_Knowledge_Base_Foundation::COLLECTION_TAXONOMY,
+        ) as $taxonomy) {
+            $terms = wp_get_post_terms($post->ID, $taxonomy, array('fields' => 'names'));
+            if (!is_wp_error($terms)) $haystack = array_merge($haystack, $terms);
         }
-        $library = $this->render_browser(array(
-            'title' => __('Support Documentation', 'sustainable-catalyst-feature-suggestions'),
-            'intro' => __('Search product documentation, open a product domain, and move through generated categories and verified guides.', 'sustainable-catalyst-feature-suggestions'),
-        ));
-        return '<div class="scfs-support-page-library-entry">' . $library . '</div>' . $content;
+        $text = strtolower(implode(' ', array_filter(array_map('strval', $haystack))));
+        $words = preg_split('/\s+/', strtolower($search));
+        foreach ($words as $word) {
+            if ($word !== '' && strpos($text, $word) === false) return false;
+        }
+        return true;
+    }
+
+    private function filtered_articles($product_filter = '', $section_filter = '', $search = '') {
+        $results = array();
+        foreach ($this->all_published_articles() as $post) {
+            if ($product_filter !== '' && $this->article_product_slug($post) !== $product_filter) continue;
+            if ($section_filter !== '' && $this->article_section_slug($post) !== $section_filter) continue;
+            if (!$this->article_matches_search($post, $search)) continue;
+            $permalink = get_permalink($post);
+            if (!$permalink) continue;
+            $results[] = $post;
+        }
+        return $results;
+    }
+
+    public function render_compact_library($atts = array()) {
+        $atts = shortcode_atts(array(
+            'title' => __('Browse product documentation', 'sustainable-catalyst-feature-suggestions'),
+            'intro' => __('Open a product, choose a documentation category, or search the complete Support Knowledge Base.', 'sustainable-catalyst-feature-suggestions'),
+            'products' => '6',
+            'open_first' => '1',
+            'button_label' => __('Open the full Knowledge Base', 'sustainable-catalyst-feature-suggestions'),
+            'knowledge_base_url' => '',
+        ), $atts, self::COMPACT_SHORTCODE);
+        wp_enqueue_style('scfs-knowledge-base');
+        wp_enqueue_script('scfs-integrated-knowledge-base');
+        $products = $this->products();
+        $sections = $this->sections();
+        $groups = $this->browser_groups('');
+        $limit = max(1, min(count($products), absint($atts['products'])));
+        $base_url = trim((string) $atts['knowledge_base_url']);
+        if ($base_url === '') $base_url = $this->dedicated_knowledge_base_url();
+        $total = count($this->all_published_articles());
+        $shown = 0;
+        ob_start();
+        echo '<section class="scfs-support-library-compact" aria-labelledby="scfs-support-library-compact-title">';
+        echo '<div class="scfs-support-library-compact__heading"><div><p class="scfs-support-library-compact__eyebrow">' . esc_html__('Support Knowledge Base', 'sustainable-catalyst-feature-suggestions') . '</p><h2 id="scfs-support-library-compact-title">' . esc_html($atts['title']) . '</h2><p>' . esc_html($atts['intro']) . '</p></div><span class="scfs-support-library-compact__count">' . esc_html(sprintf(_n('%d guide', '%d guides', $total, 'sustainable-catalyst-feature-suggestions'), $total)) . '</span></div>';
+        echo '<form class="scfs-support-library-compact__command" method="get" action="' . esc_url($base_url) . '" role="search"><label><span class="screen-reader-text">' . esc_html__('Search support documentation', 'sustainable-catalyst-feature-suggestions') . '</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/></svg><input type="search" name="scfs_kb_search" placeholder="' . esc_attr__('Search setup, features, workflows, and errors', 'sustainable-catalyst-feature-suggestions') . '"></label><button type="submit">' . esc_html__('Search', 'sustainable-catalyst-feature-suggestions') . '</button></form>';
+        echo '<div class="scfs-support-library-compact__stack">';
+        foreach ($products as $product_slug => $product) {
+            if ($shown >= $limit) break;
+            $product_groups = isset($groups[$product_slug]) ? $groups[$product_slug] : array();
+            $article_count = 0; $section_count = 0;
+            foreach ($product_groups as $articles) { if ($articles) $section_count++; $article_count += count($articles); }
+            if ($article_count < 1) continue;
+            $open = ($shown === 0 && $atts['open_first'] === '1') ? ' open' : '';
+            echo '<details class="scfs-support-library-compact__product"' . $open . '><summary><span><strong>' . esc_html($product['name']) . '</strong><small>' . esc_html($product['description']) . '</small></span><em>' . esc_html(sprintf(__('%1$d guides · %2$d categories', 'sustainable-catalyst-feature-suggestions'), $article_count, $section_count)) . '</em></summary><div class="scfs-support-library-compact__topics">';
+            foreach ($sections as $section_slug => $section) {
+                $articles = isset($product_groups[$section_slug]) ? $product_groups[$section_slug] : array();
+                if (!$articles) continue;
+                echo '<details class="scfs-support-library-compact__topic"><summary><span><strong>' . esc_html($section['name']) . '</strong><small>' . esc_html($section['description']) . '</small></span><em>' . esc_html(sprintf(_n('%d guide', '%d guides', count($articles), 'sustainable-catalyst-feature-suggestions'), count($articles))) . '</em></summary><div class="scfs-support-library-compact__articles">';
+                foreach ($articles as $post) $this->render_library_article_row($post);
+                echo '<a class="scfs-support-library-compact__category-link" href="' . esc_url($this->dedicated_knowledge_base_url($product_slug, $section_slug)) . '">' . esc_html__('View this category in the full Knowledge Base', 'sustainable-catalyst-feature-suggestions') . ' →</a>';
+                echo '</div></details>';
+            }
+            echo '</div></details>';
+            $shown++;
+        }
+        echo '</div><div class="scfs-support-library-compact__footer"><p>' . esc_html__('Browse every product, category, known issue, and verified guide in the complete documentation catalog.', 'sustainable-catalyst-feature-suggestions') . '</p><a class="scfs-support-library-compact__button" href="' . esc_url($base_url) . '">' . esc_html($atts['button_label']) . ' →</a></div></section>';
+        return ob_get_clean();
     }
 
     public function render_browser($atts = array()) {
         $atts = shortcode_atts(array(
-            'title' => __('Support Documentation Library', 'sustainable-catalyst-feature-suggestions'),
-            'intro' => __('Browse generated documentation collections by category or product, then open a publication-style support article.', 'sustainable-catalyst-feature-suggestions'),
+            'title' => __('Support Knowledge Base', 'sustainable-catalyst-feature-suggestions'),
+            'intro' => __('Product documentation, troubleshooting, and technical guidance.', 'sustainable-catalyst-feature-suggestions'),
             'product' => '',
             'show_known_issues' => '0',
         ), $atts, 'scfs_support_knowledge_base');
@@ -629,85 +714,49 @@ final class SCFS_Integrated_Knowledge_Base {
         $search = isset($_GET['scfs_kb_search']) ? sanitize_text_field(wp_unslash($_GET['scfs_kb_search'])) : '';
         $raw_product = isset($_GET['scfs_kb_product']) ? sanitize_title(wp_unslash($_GET['scfs_kb_product'])) : sanitize_title($atts['product']);
         $product_filter = $this->normalize_product_filter($raw_product);
-        $product_groups = $this->browser_groups($product_filter);
-        $category_groups = $this->browser_category_groups($product_filter);
+        $selected_section = isset($_GET['scfs_kb_section']) ? sanitize_title(wp_unslash($_GET['scfs_kb_section'])) : '';
         $products = $this->products();
         $sections = $this->sections();
-        $published_count = wp_count_posts(SCFS_Knowledge_Base_Foundation::ARTICLE_POST_TYPE);
-        $total = isset($published_count->publish) ? (int) $published_count->publish : 0;
-
-        $search_results = array();
-        if ($search !== '') {
-            $query = new WP_Query(array(
-                'post_type' => SCFS_Knowledge_Base_Foundation::ARTICLE_POST_TYPE,
-                'post_status' => 'publish',
-                'posts_per_page' => 100,
-                's' => $search,
-                'orderby' => 'relevance',
-            ));
-            foreach ($query->posts as $post) {
-                if ($product_filter !== '' && $this->article_product_slug($post) !== $product_filter) continue;
-                $search_results[] = $post;
-            }
+        $groups = $this->browser_groups('');
+        $available_products = array();
+        foreach ($products as $slug => $product) {
+            $count = 0;
+            foreach (($groups[$slug] ?? array()) as $articles) $count += count($articles);
+            if ($count > 0) { $product['count'] = $count; $available_products[$slug] = $product; }
         }
+        if ($product_filter === '' || !isset($available_products[$product_filter])) $product_filter = $available_products ? array_key_first($available_products) : '';
+        $results = $this->filtered_articles($product_filter, $selected_section, $search);
+        $total = count($this->all_published_articles());
+        $action = remove_query_arg(array('scfs_kb_search', 'scfs_kb_product', 'scfs_kb_section'));
 
         ob_start();
-        echo '<section class="scfs-kb scfs-kb--modern scfs-support-library" aria-labelledby="scfs-kb-title">';
-        echo '<header class="scfs-kb-modern-hero"><p class="scfs-kb-eyebrow">' . esc_html__('Sustainable Catalyst Support', 'sustainable-catalyst-feature-suggestions') . '</p><h2 id="scfs-kb-title">' . esc_html($atts['title']) . '</h2><p>' . esc_html($atts['intro']) . '</p><div class="scfs-kb-modern-stats"><span><strong>' . esc_html((string) $total) . '</strong> ' . esc_html__('published articles', 'sustainable-catalyst-feature-suggestions') . '</span><span><strong>' . esc_html((string) count($products)) . '</strong> ' . esc_html__('products', 'sustainable-catalyst-feature-suggestions') . '</span><span><strong>' . esc_html((string) count($sections)) . '</strong> ' . esc_html__('documentation categories', 'sustainable-catalyst-feature-suggestions') . '</span></div></header>';
-
-        $action = remove_query_arg(array('scfs_kb_search', 'scfs_kb_product', 'scfs_kb_page'));
-        echo '<form class="scfs-kb-modern-search" method="get" action="' . esc_url($action) . '" role="search">';
-        foreach (array('scfs_support_view', 'scfs_support_product') as $preserve) {
-            if (isset($_GET[$preserve])) echo '<input type="hidden" name="' . esc_attr($preserve) . '" value="' . esc_attr(sanitize_text_field(wp_unslash($_GET[$preserve]))) . '">';
+        echo '<section class="scfs-kb scfs-kb--refined" aria-labelledby="scfs-kb-title">';
+        echo '<header class="scfs-kb-refined__masthead"><p class="scfs-kb-eyebrow">' . esc_html__('Sustainable Catalyst Support', 'sustainable-catalyst-feature-suggestions') . '</p><h2 id="scfs-kb-title">' . esc_html($atts['title']) . '</h2><p>' . esc_html($atts['intro']) . '</p><span>' . esc_html(sprintf(__('%1$d articles · %2$d products', 'sustainable-catalyst-feature-suggestions'), $total, count($available_products))) . '</span></header>';
+        echo '<form class="scfs-kb-refined__search" method="get" action="' . esc_url($action) . '" role="search"><label><span class="screen-reader-text">' . esc_html__('Search documentation', 'sustainable-catalyst-feature-suggestions') . '</span><input type="search" name="scfs_kb_search" value="' . esc_attr($search) . '" placeholder="' . esc_attr__('Search documentation', 'sustainable-catalyst-feature-suggestions') . '"></label><select name="scfs_kb_product" aria-label="' . esc_attr__('Product', 'sustainable-catalyst-feature-suggestions') . '">';
+        foreach ($available_products as $slug => $product) echo '<option value="' . esc_attr($slug) . '" ' . selected($product_filter, $slug, false) . '>' . esc_html($product['name']) . '</option>';
+        echo '</select><button type="submit">' . esc_html__('Search', 'sustainable-catalyst-feature-suggestions') . '</button></form>';
+        echo '<div class="scfs-kb-refined__layout"><nav class="scfs-kb-refined__products" aria-label="' . esc_attr__('Support products', 'sustainable-catalyst-feature-suggestions') . '"><p>' . esc_html__('Products', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        foreach ($available_products as $slug => $product) {
+            $url = add_query_arg(array_filter(array('scfs_kb_product'=>$slug, 'scfs_kb_search'=>$search)), $action);
+            echo '<a class="' . ($slug === $product_filter ? 'is-active' : '') . '" href="' . esc_url($url) . '"><span>' . esc_html($product['name']) . '</span><em>' . esc_html((string) $product['count']) . '</em></a>';
         }
-        echo '<label><span>' . esc_html__('Search documentation', 'sustainable-catalyst-feature-suggestions') . '</span><input type="search" name="scfs_kb_search" value="' . esc_attr($search) . '" placeholder="' . esc_attr__('Search by task, feature, error message, or topic', 'sustainable-catalyst-feature-suggestions') . '"></label>';
-        echo '<label><span>' . esc_html__('Product', 'sustainable-catalyst-feature-suggestions') . '</span><select name="scfs_kb_product"><option value="">' . esc_html__('All products', 'sustainable-catalyst-feature-suggestions') . '</option>';
-        foreach ($products as $slug => $product) echo '<option value="' . esc_attr($slug) . '" ' . selected($product_filter, $slug, false) . '>' . esc_html($product['name']) . '</option>';
-        echo '</select></label><button type="submit">' . esc_html__('Search', 'sustainable-catalyst-feature-suggestions') . '</button></form>';
-
-        if ($search !== '') {
-            echo '<section class="scfs-kb-search-results" aria-labelledby="scfs-kb-search-results-title"><div class="scfs-kb-results-head"><h3 id="scfs-kb-search-results-title">' . esc_html__('Search results', 'sustainable-catalyst-feature-suggestions') . '</h3><span>' . esc_html(sprintf(_n('%d article', '%d articles', count($search_results), 'sustainable-catalyst-feature-suggestions'), count($search_results))) . '</span></div>';
-            if (!$search_results) {
-                echo '<div class="scfs-kb-empty"><h3>' . esc_html__('No matching documentation found', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Try a category below or use fewer search terms.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
-            } else {
-                echo '<div class="scfs-support-library-results">';
-                foreach ($search_results as $post) $this->render_library_article_row($post);
-                echo '</div>';
-            }
-            echo '</section>';
-        }
-
-        echo '<div class="scfs-support-library-controls" role="group" aria-label="' . esc_attr__('Documentation views', 'sustainable-catalyst-feature-suggestions') . '"><button type="button" class="is-active" data-scfs-library-view="products">' . esc_html__('Browse by product', 'sustainable-catalyst-feature-suggestions') . '</button><button type="button" data-scfs-library-view="categories">' . esc_html__('Browse by category', 'sustainable-catalyst-feature-suggestions') . '</button><span></span><button type="button" data-scfs-kb-expand>' . esc_html__('Expand all', 'sustainable-catalyst-feature-suggestions') . '</button><button type="button" data-scfs-kb-collapse>' . esc_html__('Collapse all', 'sustainable-catalyst-feature-suggestions') . '</button></div>';
-
-        echo '<div class="scfs-support-library-view" data-scfs-library-panel="categories" hidden><div class="scfs-support-library-heading"><div><p class="scfs-kb-eyebrow">' . esc_html__('Documentation collections', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html__('Browse by category', 'sustainable-catalyst-feature-suggestions') . '</h3></div><p>' . esc_html__('Every list is generated automatically from published Support Articles.', 'sustainable-catalyst-feature-suggestions') . '</p></div><div class="scfs-support-library-categories">';
-        foreach ($sections as $section_slug => $section) {
-            $articles = isset($category_groups[$section_slug]) ? $category_groups[$section_slug] : array();
-            echo '<details class="scfs-support-library-category" data-scfs-kb-category open><summary><span class="scfs-support-library-category-icon" aria-hidden="true"></span><span><strong>' . esc_html($section['name']) . '</strong><small>' . esc_html($section['description']) . '</small></span><em>' . esc_html(sprintf(_n('%d article', '%d articles', count($articles), 'sustainable-catalyst-feature-suggestions'), count($articles))) . '</em></summary><div class="scfs-support-library-articles">';
-            if (!$articles) echo '<p class="scfs-kb-folder-empty">' . esc_html__('No published articles in this category yet.', 'sustainable-catalyst-feature-suggestions') . '</p>';
-            else foreach ($articles as $post) $this->render_library_article_row($post);
-            echo '</div></details>';
-        }
-        echo '</div></div>';
-
-        echo '<div class="scfs-support-library-view is-active" data-scfs-library-panel="products"><div class="scfs-support-library-heading"><div><p class="scfs-kb-eyebrow">' . esc_html__('Product documentation', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html__('Browse the support architecture', 'sustainable-catalyst-feature-suggestions') . '</h3></div><p>' . esc_html__('Open a product, then choose a documentation category or guide.', 'sustainable-catalyst-feature-suggestions') . '</p></div><div class="scfs-kb-product-folders">';
-        $product_index = 0;
-        foreach ($products as $product_slug => $product) {
-            if ($product_filter !== '' && $product_filter !== $product_slug) continue;
-            $groups = isset($product_groups[$product_slug]) ? $product_groups[$product_slug] : array();
-            $article_count = 0;
-            foreach ($groups as $articles) $article_count += count($articles);
-            echo '<details class="scfs-kb-product-folder" data-scfs-kb-product ' . ($product_index === 0 ? 'open' : '') . '><summary><span class="scfs-kb-folder-mark" aria-hidden="true"></span><span class="scfs-kb-folder-copy"><strong>' . esc_html($product['name']) . '</strong><small>' . esc_html($product['description']) . '</small></span><span class="scfs-kb-folder-count">' . esc_html(sprintf(_n('%d article', '%d articles', $article_count, 'sustainable-catalyst-feature-suggestions'), $article_count)) . '</span></summary><div class="scfs-kb-section-folders">';
+        echo '</nav><main class="scfs-kb-refined__content">';
+        if ($product_filter !== '' && isset($available_products[$product_filter])) {
+            $product = $available_products[$product_filter];
+            echo '<div class="scfs-kb-refined__product-head"><div><p class="scfs-kb-eyebrow">' . esc_html__('Product documentation', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html($product['name']) . '</h3><p>' . esc_html($product['description']) . '</p></div><span>' . esc_html(sprintf(_n('%d article', '%d articles', $product['count'], 'sustainable-catalyst-feature-suggestions'), $product['count'])) . '</span></div>';
+            echo '<div class="scfs-kb-refined__categories"><a class="' . ($selected_section === '' ? 'is-active' : '') . '" href="' . esc_url(add_query_arg(array_filter(array('scfs_kb_product'=>$product_filter,'scfs_kb_search'=>$search)), $action)) . '">' . esc_html__('All guides', 'sustainable-catalyst-feature-suggestions') . '</a>';
             foreach ($sections as $section_slug => $section) {
-                $articles = isset($groups[$section_slug]) ? $groups[$section_slug] : array();
-                echo '<details class="scfs-kb-section-folder"><summary><span><strong>' . esc_html($section['name']) . '</strong><small>' . esc_html($section['description']) . '</small></span><span>' . esc_html((string) count($articles)) . '</span></summary><div class="scfs-support-library-articles">';
-                if (!$articles) echo '<p class="scfs-kb-folder-empty">' . esc_html__('No published articles in this section yet.', 'sustainable-catalyst-feature-suggestions') . '</p>';
-                else foreach ($articles as $post) $this->render_library_article_row($post);
-                echo '</div></details>';
+                $count = count($groups[$product_filter][$section_slug] ?? array());
+                if ($count < 1) continue;
+                $url = add_query_arg(array_filter(array('scfs_kb_product'=>$product_filter,'scfs_kb_section'=>$section_slug,'scfs_kb_search'=>$search)), $action);
+                echo '<a class="' . ($selected_section === $section_slug ? 'is-active' : '') . '" href="' . esc_url($url) . '">' . esc_html($section['name']) . ' <span>' . esc_html((string)$count) . '</span></a>';
             }
-            echo '</div></details>';
-            $product_index++;
+            echo '</div>';
         }
-        echo '</div></div></section>';
+        echo '<div class="scfs-kb-refined__results-head"><h3>' . esc_html($search !== '' ? __('Search results', 'sustainable-catalyst-feature-suggestions') : __('Documentation', 'sustainable-catalyst-feature-suggestions')) . '</h3><span>' . esc_html(sprintf(_n('%d result', '%d results', count($results), 'sustainable-catalyst-feature-suggestions'), count($results))) . '</span></div><div class="scfs-kb-refined__results">';
+        if (!$results) echo '<div class="scfs-kb-empty"><h3>' . esc_html__('No matching documentation found', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Try another product, category, or fewer search terms.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
+        else foreach ($results as $post) $this->render_library_article_row($post);
+        echo '</div></main></div></section>';
         return ob_get_clean();
     }
 

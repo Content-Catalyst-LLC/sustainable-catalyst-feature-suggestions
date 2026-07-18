@@ -5,8 +5,8 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "5.2.1",
-  "updated": "2026-07-17",
+  "version": "5.2.3",
+  "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
     "standalone settings access fallback",
@@ -313,7 +313,12 @@
     "anonymous visitor usefulness ratings with duplicate protection",
     "full-width Knowledge Base article and archive layouts",
     "Astra no-sidebar Knowledge Base integration",
-    "scoped Publications sidebar suppression"
+    "scoped Publications sidebar suppression",
+    "dynamic published Support Article queries",
+    "permalink-safe documentation links",
+    "inline compact article results",
+    "refined two-column Knowledge Base browser",
+    "server-rendered product and category filtering"
   ],
   "boundaries": [
     "no confidential information",
@@ -324,7 +329,7 @@
   ],
   "wordpress_post_type": "sc_feature_suggest",
   "notes": "Version 5.0.0 consolidates public support, content operations, repository synchronization, editorial governance, product reliability, cross-product orchestration, and consent-gated private-support handoffs into one connected operations layer while preserving specialist modules as the source of truth.",
-  "release_name": "Support Page Library Interface and Automatic Knowledge Base Rendering",
+  "release_name": "Dynamic Documentation Records, Permalink Integrity, and Knowledge Base Interface Refinement",
   "release": "Feature Suggestions v5.1.0 \u2014 Integrated Knowledge Base and Documentation Library",
   "features": [
     "Connected Product Support Operations administration workspace",
@@ -352,6 +357,8 @@
   "shortcodes": [
     "[scfs_product_support_center]",
     "[scfs_support_center]",
+    "[sustainable_catalyst_support_library_compact]",
+    "[scfs_support_library_compact]",
     "[scfs_support_knowledge_base]",
     "[scfs_guided_resolution]",
     "[sc_public_ideas]",
@@ -360,6 +367,8 @@
     "[scfs_cross_product_support]"
   ],
   "support_center_shortcode": "[scfs_product_support_center]",
-  "public_support_archive": "/support-knowledge-base/",
-  "release_date": "2026-07-17"
+  "public_support_archive": "/support/knowledge-base/",
+  "release_date": "2026-07-18",
+  "compact_support_library_shortcode": "[scfs_support_library_compact]",
+  "dedicated_knowledge_base_shortcode": "[scfs_support_knowledge_base]"
 }

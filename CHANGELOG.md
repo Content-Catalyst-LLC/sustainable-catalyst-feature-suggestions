@@ -1,4 +1,13 @@
-## 5.2.1 - 2026-07-17
+## 5.2.3 - 2026-07-18
+
+- Query real published Support Article records for compact and full Knowledge Base interfaces.
+- Expand compact categories inline to reveal real article titles, summaries, metadata, and permalinks.
+- Remove constructed article destinations and skip records without valid WordPress permalinks.
+- Add server-rendered search across article content, metadata, and support taxonomies.
+- Replace the long full-page accordion with a refined two-column product navigator and documentation results pane.
+- Preserve product and category state through query-string deep links.
+
+## 5.2.2 - 2026-07-17
 
 ### Changed
 - Matched Knowledge Base article presentation to Sustainable Catalyst publication articles while retaining support-specific metadata and controls.
@@ -354,6 +363,6 @@
 - Added CSV export workflow.
 - Added page HTML, site CSS, documentation, examples, manifest, and PHP lint workflow.
 
-## 5.2.1
+## 5.2.2
 - Repaired duplicate Knowledge Base titles and Astra bylines.
 - Added structural theme filters plus a scoped CSS fallback.

@@ -1,6 +1,6 @@
-# Sustainable Catalyst Feature Suggestions v5.2.1
+# Sustainable Catalyst Feature Suggestions v5.2.2
 
-## Support Page Library Interface and Automatic Knowledge Base Rendering
+## Compact Support Library, Dedicated Knowledge Base Page, and Shortcode Separation
 
 This release transforms the public Support area into a library-style documentation experience while preserving the publication-quality article reader.
 
@@ -21,6 +21,6 @@ This release transforms the public Support area into a library-style documentati
 
 ### Compatibility
 
-- WordPress and Knowledge Base modules advance to v5.2.1.
+- WordPress and Knowledge Base modules advance to v5.2.2.
 - The unchanged FastAPI service remains compatible at v5.1.0.
 - Existing Support Articles, taxonomies, URLs, imports, sample files, article styling, feedback, and integrations are preserved.
