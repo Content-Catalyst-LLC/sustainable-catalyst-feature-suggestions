@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Knowledge_Base_Foundation {
-    const VERSION = '5.2.3';
+    const VERSION = '5.2.4';
     const SCHEMA_VERSION = '1.0';
     const ARTICLE_POST_TYPE = 'sc_support_article';
     const ISSUE_POST_TYPE = 'sc_known_issue';
@@ -93,8 +93,8 @@ final class SCFS_Knowledge_Base_Foundation {
             'rest_base' => 'support-articles',
             'menu_icon' => 'dashicons-media-document',
             'supports' => array('title', 'editor', 'excerpt', 'author', 'thumbnail', 'revisions', 'custom-fields'),
-            'has_archive' => 'support-knowledge-base',
-            'rewrite' => array('slug' => 'support', 'with_front' => false),
+            'has_archive' => 'support-documentation',
+            'rewrite' => array('slug' => 'support/guides', 'with_front' => false),
             'taxonomies' => array(
                 SCFS_Product_Integration::PRODUCT_TAXONOMY,
                 SCFS_Product_Integration::VERSION_TAXONOMY,

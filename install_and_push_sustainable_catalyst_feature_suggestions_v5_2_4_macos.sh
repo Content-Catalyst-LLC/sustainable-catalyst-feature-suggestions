@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-VERSION="5.2.3"
-INSTALLER_REVISION="V5_2_2"
-RELEASE_NAME="Dynamic Documentation Records, Permalink Integrity, and Knowledge Base Interface Refinement"
+VERSION="5.2.4"
+INSTALLER_REVISION="V5_2_4_ROUTE_REPAIR"
+RELEASE_NAME="Knowledge Base Route Integrity and Dedicated Page Recovery"
 REPOSITORY="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${HOME}/Downloads"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v522.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v524.XXXXXX")"
 STAGE_DIR="${WORK_DIR}/stage"
 CLONE_DIR="${WORK_DIR}/repository"
 VENV_DIR="${WORK_DIR}/venv"
@@ -27,14 +27,14 @@ SOURCE_ARCHIVE="$($PYTHON_BIN - "$DOWNLOADS_DIR" <<'PY'
 from pathlib import Path
 import sys
 root=Path(sys.argv[1])
-files=list(root.glob('sustainable-catalyst-feature-suggestions-v5.2.3-repo*.zip'))+list(root.glob('sustainable-catalyst-feature-suggestions-v5.2.3-release-bundle*.zip'))
+files=list(root.glob('sustainable-catalyst-feature-suggestions-v5.2.4-repo*.zip'))+list(root.glob('sustainable-catalyst-feature-suggestions-v5.2.4-release-bundle*.zip'))
 print(max(files,key=lambda p:p.stat().st_mtime) if files else '')
 PY
 )"
 [ -f "$SOURCE_ARCHIVE" ] || { echo "ERROR: No v${VERSION} repository ZIP or release bundle found in ~/Downloads."; exit 1; }
 echo "Using release archive: $SOURCE_ARCHIVE"
 unzip -q "$SOURCE_ARCHIVE" -d "$STAGE_DIR"
-INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.2.3-repo*.zip' -print -quit)"
+INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.2.4-repo*.zip' -print -quit)"
 if [ -n "$INNER_ZIP" ]; then mkdir -p "$STAGE_DIR/repository-package"; unzip -q "$INNER_ZIP" -d "$STAGE_DIR/repository-package"; SEARCH_ROOT="$STAGE_DIR/repository-package"; else SEARCH_ROOT="$STAGE_DIR"; fi
 MANIFEST_PATH="$(find "$SEARCH_ROOT" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 [ -n "$MANIFEST_PATH" ] || { echo "ERROR: Could not locate repository manifest."; exit 1; }
@@ -68,9 +68,9 @@ rsync -a --delete --exclude='.git/' --exclude='__pycache__/' --exclude='.pytest_
 MAIN="wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php"
 KB="wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-integrated-knowledge-base.php"
 CSS="wordpress/sustainable-catalyst-feature-suggestions/assets/knowledge-base.css"
-for f in "$MAIN" "$KB" "$CSS" tests/test-v523-dynamic-documentation.php RELEASE_NOTES_5.2.3.md; do [ -f "$f" ] || { echo "ERROR: Missing $f"; exit 1; }; done
-grep -Fq 'Version: 5.2.3' "$MAIN" || { echo "ERROR: WordPress version marker mismatch."; exit 1; }
-grep -Fq "const VERSION = '5.2.3';" "$KB" || { echo "ERROR: Knowledge Base version marker mismatch."; exit 1; }
+for f in "$MAIN" "$KB" "$CSS" tests/test-v524-route-integrity.php RELEASE_NOTES_5.2.4.md; do [ -f "$f" ] || { echo "ERROR: Missing $f"; exit 1; }; done
+grep -Fq 'Version: 5.2.4' "$MAIN" || { echo "ERROR: WordPress version marker mismatch."; exit 1; }
+grep -Fq "const VERSION = '5.2.4';" "$KB" || { echo "ERROR: Knowledge Base version marker mismatch."; exit 1; }
 grep -Fq "const COMPACT_SHORTCODE = 'scfs_support_library_compact';" "$KB" || { echo "ERROR: Compact shortcode missing."; exit 1; }
 if grep -Fq "add_filter('the_content', array(\$this, 'automatically_render_on_support_page')" "$KB"; then echo "ERROR: Automatic Support-page injection is still active."; exit 1; fi
 

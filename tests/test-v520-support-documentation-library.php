@@ -6,9 +6,9 @@ $js = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggest
 $main = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version header' => strpos($main, 'Version: 5.2.3') !== false,
-    'runtime version constant' => strpos($main, "const VERSION = '5.2.3';") !== false,
-    'knowledge base version' => strpos($class, "const VERSION = '5.2.3';") !== false,
+    'plugin version header' => strpos($main, 'Version: 5.2.4') !== false,
+    'runtime version constant' => strpos($main, "const VERSION = '5.2.4';") !== false,
+    'knowledge base version' => strpos($class, "const VERSION = '5.2.4';") !== false,
     'category grouping' => strpos($class, 'browser_category_groups') !== false,
     'category navigation' => strpos($class, 'scfs-kb-refined__categories') !== false,
     'product navigator' => strpos($class, 'scfs-kb-refined__products') !== false,
@@ -21,11 +21,11 @@ $checks = array(
     'native details behavior' => strpos($class, '<details class="scfs-support-library-compact__topic"') !== false,
     'refined library styling' => strpos($css, '.scfs-kb-refined__layout') !== false,
     'article list styling' => strpos($css, '.scfs-support-library-article') !== false,
-    'manifest version' => ($manifest['version'] ?? '') === '5.2.3',
-    'manifest release name' => ($manifest['release_name'] ?? '') === 'Dynamic Documentation Records, Permalink Integrity, and Knowledge Base Interface Refinement',
-    'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.3.md'),
+    'manifest version' => ($manifest['version'] ?? '') === '5.2.4',
+    'manifest release name' => ($manifest['release_name'] ?? '') === 'Knowledge Base Route Integrity and Dedicated Page Recovery',
+    'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.4.md'),
 );
 $failed = array_keys(array_filter($checks, function ($value) { return !$value; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { echo 'Failed checks: ' . implode(', ', $failed) . "\n"; exit(1); }
-echo 'v5.2.3 support documentation library contract passed (' . count($checks) . " checks).\n";
+echo 'v5.2.4 support documentation library contract passed (' . count($checks) . " checks).\n";

@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Integrated_Knowledge_Base {
-    const VERSION = '5.2.3';
+    const VERSION = '5.2.4';
     const CONTENT_VERSION = '1.0.0';
     const IMPORT_OPTION = 'scfs_integrated_kb_import_version';
     const REPORT_OPTION = 'scfs_integrated_kb_last_report';
@@ -28,6 +28,9 @@ final class SCFS_Integrated_Knowledge_Base {
     const ADMIN_PAGE = 'scfs-integrated-knowledge-base';
     const COMPACT_SHORTCODE = 'scfs_support_library_compact';
     const COMPACT_LEGACY_SHORTCODE = 'sustainable_catalyst_support_library_compact';
+    const DEDICATED_PAGE_OPTION = 'scfs_kb_dedicated_page_id';
+    const ROUTE_VERSION_OPTION = 'scfs_kb_route_version';
+    const ROUTE_VERSION = '2.0.0';
 
     private static $instance = null;
     private $rendering_article = false;
@@ -44,6 +47,7 @@ final class SCFS_Integrated_Knowledge_Base {
         add_action('wp_enqueue_scripts', array($this, 'register_assets'));
         add_action('admin_enqueue_scripts', array($this, 'register_admin_assets'));
         add_action('admin_menu', array($this, 'register_admin_page'), 32);
+        add_action('admin_init', array($this, 'maybe_repair_dedicated_page_route'), 5);
         add_action('admin_init', array($this, 'maybe_import_documentation'), 45);
         add_action('admin_post_scfs_kb510_import', array($this, 'handle_import'));
         add_action('init', array($this, 'register_shortcodes'), 25);
@@ -67,11 +71,73 @@ final class SCFS_Integrated_Knowledge_Base {
 
     public static function activate() {
         $instance = self::instance();
+        $instance->ensure_dedicated_knowledge_base_page();
+        update_option(self::ROUTE_VERSION_OPTION, self::ROUTE_VERSION, false);
         $report = $instance->import_documentation('publish');
         update_option(self::REPORT_OPTION, $report, false);
         if (!empty($report['ok'])) {
             update_option(self::IMPORT_OPTION, self::CONTENT_VERSION, false);
         }
+    }
+
+
+    /**
+     * Repair the dedicated Knowledge Base page and rewrite rules once per route
+     * contract version. This also runs after in-place plugin upgrades where the
+     * WordPress activation hook is not called.
+     */
+    public function maybe_repair_dedicated_page_route() {
+        $page_id = $this->ensure_dedicated_knowledge_base_page();
+        $stored = (string) get_option(self::ROUTE_VERSION_OPTION, '');
+        if ($stored !== self::ROUTE_VERSION) {
+            if (function_exists('flush_rewrite_rules')) {
+                flush_rewrite_rules(false);
+            }
+            update_option(self::ROUTE_VERSION_OPTION, self::ROUTE_VERSION, false);
+        }
+        if ($page_id) {
+            update_option(self::DEDICATED_PAGE_OPTION, (int) $page_id, false);
+        }
+    }
+
+    /**
+     * Ensure /support/knowledge-base/ is a real published WordPress page. The
+     * support-article rewrite base is intentionally /support/guides/ so it can
+     * never capture this child-page route.
+     */
+    public function ensure_dedicated_knowledge_base_page() {
+        if (!function_exists('get_page_by_path') || !function_exists('wp_insert_post')) {
+            return 0;
+        }
+
+        $page = get_page_by_path('support/knowledge-base', OBJECT, 'page');
+        $support = get_page_by_path('support', OBJECT, 'page');
+        if (!$support) {
+            return 0;
+        }
+
+        if ($page instanceof WP_Post) {
+            $changes = array('ID' => $page->ID);
+            if ($page->post_status !== 'publish') $changes['post_status'] = 'publish';
+            if ((int) $page->post_parent !== (int) $support->ID) $changes['post_parent'] = (int) $support->ID;
+            if ($page->post_name !== 'knowledge-base') $changes['post_name'] = 'knowledge-base';
+            if (count($changes) > 1) wp_update_post(wp_slash($changes));
+            if (trim((string) $page->post_content) === '') {
+                wp_update_post(wp_slash(array('ID' => $page->ID, 'post_content' => '[scfs_support_knowledge_base]')));
+            }
+            return (int) $page->ID;
+        }
+
+        $page_id = wp_insert_post(wp_slash(array(
+            'post_type' => 'page',
+            'post_status' => 'publish',
+            'post_title' => __('Support Knowledge Base', 'sustainable-catalyst-feature-suggestions'),
+            'post_name' => 'knowledge-base',
+            'post_parent' => (int) $support->ID,
+            'post_content' => '[scfs_support_knowledge_base]',
+            'comment_status' => 'closed',
+        )), true);
+        return is_wp_error($page_id) ? 0 : (int) $page_id;
     }
 
     public function register_assets() {
@@ -590,15 +656,16 @@ final class SCFS_Integrated_Knowledge_Base {
     }
 
     private function dedicated_knowledge_base_url($product_slug = '', $section_slug = '') {
-        $paths = array('support/knowledge-base', 'support-knowledge-base', 'knowledge-base');
         $base = home_url('/support/knowledge-base/');
-        if (function_exists('get_page_by_path')) {
-            foreach ($paths as $path) {
-                $page = get_page_by_path($path);
-                if ($page && function_exists('get_permalink')) {
-                    $url = get_permalink($page);
-                    if ($url) { $base = $url; break; }
-                }
+        $page_id = absint(get_option(self::DEDICATED_PAGE_OPTION, 0));
+        if ($page_id && get_post_status($page_id) === 'publish') {
+            $resolved = get_permalink($page_id);
+            if ($resolved) $base = $resolved;
+        } elseif (function_exists('get_page_by_path')) {
+            $page = get_page_by_path('support/knowledge-base', OBJECT, 'page');
+            if ($page instanceof WP_Post && $page->post_status === 'publish') {
+                $resolved = get_permalink($page);
+                if ($resolved) $base = $resolved;
             }
         }
         $base = apply_filters('scfs_integrated_kb_dedicated_url', $base);

@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -329,7 +329,7 @@
   ],
   "wordpress_post_type": "sc_feature_suggest",
   "notes": "Version 5.0.0 consolidates public support, content operations, repository synchronization, editorial governance, product reliability, cross-product orchestration, and consent-gated private-support handoffs into one connected operations layer while preserving specialist modules as the source of truth.",
-  "release_name": "Dynamic Documentation Records, Permalink Integrity, and Knowledge Base Interface Refinement",
+  "release_name": "Knowledge Base Route Integrity and Dedicated Page Recovery",
   "release": "Feature Suggestions v5.1.0 \u2014 Integrated Knowledge Base and Documentation Library",
   "features": [
     "Connected Product Support Operations administration workspace",

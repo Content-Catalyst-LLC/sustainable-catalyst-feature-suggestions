@@ -1,4 +1,9 @@
-## 5.2.3 - 2026-07-18
+## 5.2.4 - 2026-07-18
+
+- Repaired the dedicated Knowledge Base route and removed Support Article rewrite collisions.
+- Added automatic page recovery and upgrade-safe rewrite refresh.
+
+## 5.2.4 - 2026-07-18
 
 - Query real published Support Article records for compact and full Knowledge Base interfaces.
 - Expand compact categories inline to reveal real article titles, summaries, metadata, and permalinks.

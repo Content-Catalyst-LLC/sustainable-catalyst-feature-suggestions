@@ -904,7 +904,7 @@ body.single-sc_support_article.scfs-kb-full-width .entry-content {
 }
 
 /* ================================================================
-   v5.2.3 Dynamic records, permalink integrity, refined full browser
+   v5.2.4 Dynamic records, permalink integrity, refined full browser
    ================================================================ */
 .scfs-support-library-compact__topics{display:block;padding:0;background:#fff}
 .scfs-support-library-compact__topic{border-top:1px solid var(--scfs-compact-line);background:var(--scfs-compact-panel)}
