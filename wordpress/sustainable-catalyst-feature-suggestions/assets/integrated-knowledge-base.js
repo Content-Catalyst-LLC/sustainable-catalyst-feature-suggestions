@@ -1,25 +1,65 @@
 (function () {
   'use strict';
 
-  function setAll(directory, open) {
-    directory.querySelectorAll('details[data-scfs-kb-product], details.scfs-kb-section-folder').forEach(function (detail) {
+  function detailsIn(scope) {
+    return scope.querySelectorAll('details[data-scfs-kb-category], details[data-scfs-kb-product], details.scfs-kb-section-folder');
+  }
+
+  function setAll(scope, open) {
+    detailsIn(scope).forEach(function (detail) {
       detail.open = open;
     });
   }
 
+  function setView(library, view) {
+    library.querySelectorAll('[data-scfs-library-view]').forEach(function (button) {
+      var active = button.getAttribute('data-scfs-library-view') === view;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    library.querySelectorAll('[data-scfs-library-panel]').forEach(function (panel) {
+      var active = panel.getAttribute('data-scfs-library-panel') === view;
+      panel.hidden = !active;
+      panel.classList.toggle('is-active', active);
+    });
+    try {
+      window.sessionStorage.setItem('scfs-support-library-view', view);
+    } catch (error) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.scfs-support-library').forEach(function (library) {
+      var stored = 'categories';
+      try {
+        stored = window.sessionStorage.getItem('scfs-support-library-view') || 'categories';
+      } catch (error) {}
+      if (!library.querySelector('[data-scfs-library-panel="' + stored + '"]')) stored = 'categories';
+      setView(library, stored);
+    });
+  });
+
   document.addEventListener('click', function (event) {
+    var viewButton = event.target.closest('[data-scfs-library-view]');
+    if (viewButton) {
+      var library = viewButton.closest('.scfs-support-library');
+      if (library) setView(library, viewButton.getAttribute('data-scfs-library-view'));
+      return;
+    }
+
     var expand = event.target.closest('[data-scfs-kb-expand]');
     if (expand) {
-      var directory = expand.closest('.scfs-kb-directory');
-      if (directory) setAll(directory, true);
+      var expandLibrary = expand.closest('.scfs-support-library, .scfs-kb-directory');
+      if (expandLibrary) setAll(expandLibrary, true);
       return;
     }
+
     var collapse = event.target.closest('[data-scfs-kb-collapse]');
     if (collapse) {
-      var directoryToCollapse = collapse.closest('.scfs-kb-directory');
-      if (directoryToCollapse) setAll(directoryToCollapse, false);
+      var collapseLibrary = collapse.closest('.scfs-support-library, .scfs-kb-directory');
+      if (collapseLibrary) setAll(collapseLibrary, false);
       return;
     }
+
     if (event.target.closest('[data-scfs-kb-print]')) {
       window.print();
     }

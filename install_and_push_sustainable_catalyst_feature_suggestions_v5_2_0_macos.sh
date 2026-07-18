@@ -2,11 +2,11 @@
 set -Eeuo pipefail
 
 VERSION="5.2.0"
-INSTALLER_REVISION="V5_1_2"
-RELEASE_NAME="Knowledge Base Publication-Parity Article Experience"
+INSTALLER_REVISION="V5_2_0"
+RELEASE_NAME="Support Documentation Library and Expandable Category Index"
 REPOSITORY="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${HOME}/Downloads"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v512.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v520.XXXXXX")"
 STAGE_DIR="${WORK_DIR}/stage"
 CLONE_DIR="${WORK_DIR}/repository"
 VENV_DIR="${WORK_DIR}/venv"
@@ -80,16 +80,16 @@ fi
 echo "Using release archive: $SOURCE_ARCHIVE"
 unzip -q "$SOURCE_ARCHIVE" -d "$STAGE_DIR"
 
-MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
-if [ -z "$MANIFEST_PATH" ]; then
-  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.2.0-repo*.zip' -print -quit)"
-  if [ -z "$INNER_ZIP" ]; then
-    echo "ERROR: The release archive does not contain the v5.2.0 repository."
-    exit 1
-  fi
+# A release bundle contains its own manifest plus an embedded repository ZIP.
+# Always prefer the embedded repository ZIP when present; the bundle root is
+# packaging metadata, not the source tree that should replace GitHub main.
+INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.2.0-repo*.zip' -print -quit)"
+if [ -n "$INNER_ZIP" ]; then
   mkdir -p "$STAGE_DIR/repository-package"
   unzip -q "$INNER_ZIP" -d "$STAGE_DIR/repository-package"
   MANIFEST_PATH="$(find "$STAGE_DIR/repository-package" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
+else
+  MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 fi
 if [ -z "$MANIFEST_PATH" ]; then
   echo "ERROR: Could not locate the v5.2.0 repository root."
@@ -210,14 +210,16 @@ if [ "$PHP_TESTS" -lt 39 ] || [ "$PHP_CHECKS" -lt 639 ]; then
 fi
 echo "PASS - $PHP_TESTS WordPress test files, $PHP_CHECKS checks"
 
-if [ ! -f tests/test-v512-article-header.php ]; then
-  echo "ERROR: The v5.2.0 publication-parity Knowledge Base contract test is missing."
+if [ ! -f tests/test-v520-support-documentation-library.php ]; then
+  echo "ERROR: The v5.2.0 Support Documentation Library contract test is missing."
   exit 1
 fi
-LAYOUT_OUTPUT="$(php tests/test-v512-article-header.php)"
-printf '%s\n' "$LAYOUT_OUTPUT"
-if ! printf '%s\n' "$LAYOUT_OUTPUT" | grep -Fq 'PASS - 11 Knowledge Base article header checks'; then
-  echo "ERROR: The v5.2.0 publication-parity and expanded-default contract did not pass all 11 checks."
+LAYOUT_OUTPUT="$(php tests/test-v520-support-documentation-library.php)"
+printf '%s
+' "$LAYOUT_OUTPUT"
+if ! printf '%s
+' "$LAYOUT_OUTPUT" | grep -Fq 'v5.2.0 support documentation library contract passed (18 checks).'; then
+  echo "ERROR: The v5.2.0 Support Documentation Library contract did not pass all 18 checks."
   exit 1
 fi
 
@@ -293,11 +295,11 @@ KB_ZIP_FILE="$WORK_DIR/full-width-knowledge-base-class.php"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php > "$HEADER_FILE"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/includes/class-scfs-integrated-knowledge-base.php > "$KB_ZIP_FILE"
 if ! grep -Fq 'Version: 5.2.0' "$HEADER_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain plugin version 5.1.0."
+  echo "ERROR: WordPress distribution ZIP does not contain plugin version 5.2.0."
   exit 1
 fi
 if ! grep -Fq "const VERSION = '5.2.0';" "$KB_ZIP_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain the v5.2.0 full-width Knowledge Base class."
+  echo "ERROR: WordPress distribution ZIP does not contain the v5.2.0 Knowledge Base class."
   exit 1
 fi
 ROOT_ENTRY_COUNT="$(zipinfo -1 dist/sustainable-catalyst-feature-suggestions.zip | awk -F/ 'NF && $1!=""{print $1}' | sort -u | wc -l | tr -d ' ')"
@@ -317,7 +319,7 @@ git add -A
 if git diff --cached --quiet; then
   echo "No repository changes remain. v5.2.0 may already be installed."
 else
-  git commit -m "Release Feature Suggestions v5.2.0 — Knowledge Base Publication-Parity Article Experience"
+  git commit -m "Release Feature Suggestions v5.2.0 — Support Documentation Library and Expandable Category Index"
 fi
 
 echo "Rebasing over any newer remote commits..."

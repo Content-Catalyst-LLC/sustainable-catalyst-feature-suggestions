@@ -2,11 +2,11 @@
 set -Eeuo pipefail
 
 VERSION="5.2.0"
-INSTALLER_REVISION="V5_1_2"
-RELEASE_NAME="Knowledge Base Publication-Parity Article Experience"
+INSTALLER_REVISION="REPAIRED_V1"
+RELEASE_NAME="Support Documentation Library and Expandable Category Index"
 REPOSITORY="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${HOME}/Downloads"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v512.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v513.XXXXXX")"
 STAGE_DIR="${WORK_DIR}/stage"
 CLONE_DIR="${WORK_DIR}/repository"
 VENV_DIR="${WORK_DIR}/venv"
@@ -80,16 +80,16 @@ fi
 echo "Using release archive: $SOURCE_ARCHIVE"
 unzip -q "$SOURCE_ARCHIVE" -d "$STAGE_DIR"
 
-MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
-if [ -z "$MANIFEST_PATH" ]; then
-  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.2.0-repo*.zip' -print -quit)"
-  if [ -z "$INNER_ZIP" ]; then
-    echo "ERROR: The release archive does not contain the v5.2.0 repository."
-    exit 1
-  fi
+# A release bundle contains its own manifest plus an embedded repository ZIP.
+# Always prefer the embedded repository ZIP when present; the bundle root is
+# packaging metadata, not the source tree that should replace GitHub main.
+INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.2.0-repo*.zip' -print -quit)"
+if [ -n "$INNER_ZIP" ]; then
   mkdir -p "$STAGE_DIR/repository-package"
   unzip -q "$INNER_ZIP" -d "$STAGE_DIR/repository-package"
   MANIFEST_PATH="$(find "$STAGE_DIR/repository-package" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
+else
+  MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 fi
 if [ -z "$MANIFEST_PATH" ]; then
   echo "ERROR: Could not locate the v5.2.0 repository root."
@@ -210,11 +210,11 @@ if [ "$PHP_TESTS" -lt 39 ] || [ "$PHP_CHECKS" -lt 639 ]; then
 fi
 echo "PASS - $PHP_TESTS WordPress test files, $PHP_CHECKS checks"
 
-if [ ! -f tests/test-v512-article-header.php ]; then
+if [ ! -f tests/test-v513-article-header.php ]; then
   echo "ERROR: The v5.2.0 publication-parity Knowledge Base contract test is missing."
   exit 1
 fi
-LAYOUT_OUTPUT="$(php tests/test-v512-article-header.php)"
+LAYOUT_OUTPUT="$(php tests/test-v513-article-header.php)"
 printf '%s\n' "$LAYOUT_OUTPUT"
 if ! printf '%s\n' "$LAYOUT_OUTPUT" | grep -Fq 'PASS - 11 Knowledge Base article header checks'; then
   echo "ERROR: The v5.2.0 publication-parity and expanded-default contract did not pass all 11 checks."
@@ -317,7 +317,7 @@ git add -A
 if git diff --cached --quiet; then
   echo "No repository changes remain. v5.2.0 may already be installed."
 else
-  git commit -m "Release Feature Suggestions v5.2.0 — Knowledge Base Publication-Parity Article Experience"
+  git commit -m "Release Feature Suggestions v5.2.0 — Support Documentation Library and Expandable Category Index"
 fi
 
 echo "Rebasing over any newer remote commits..."

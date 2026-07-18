@@ -11,7 +11,7 @@ $checks = array(
     'publication article palette' => strpos($css, '--scfs-publication-panel:#faf5e8') !== false,
     'publication style section rule' => strpos($css, '.scfs-kb-article-content h2::after') !== false,
     'publication style breakout tables' => strpos($css, '.sckb-table-wrap') !== false && strpos($css, 'transform:translateX(-50%)') !== false,
-    'directory expanded by default' => strpos($php, 'class="scfs-kb-directory" open') !== false,
+    'directory expanded by default' => strpos($php, 'data-scfs-kb-category open') !== false,
     'product folders expanded by default' => strpos($php, 'data-scfs-kb-product open') !== false,
     'section folders expanded by default' => strpos($php, 'class="scfs-kb-section-folder" open') !== false,
 );

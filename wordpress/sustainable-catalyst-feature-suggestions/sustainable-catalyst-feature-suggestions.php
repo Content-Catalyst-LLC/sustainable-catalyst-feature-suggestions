@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Connected product support operations, documentation, known issues, releases, feature suggestions, surveys, editorial governance, repository synchronization, reliability analytics, cross-product orchestration, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 5.1.2
+ * Version: 5.2.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '5.1.2';
+    const VERSION = '5.2.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';

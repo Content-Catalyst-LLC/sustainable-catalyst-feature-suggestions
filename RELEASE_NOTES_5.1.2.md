@@ -1,4 +1,4 @@
-# Sustainable Catalyst Feature Suggestions v5.1.2
+# Sustainable Catalyst Feature Suggestions v5.1.3
 
 ## Knowledge Base Publication-Parity Article Experience
 

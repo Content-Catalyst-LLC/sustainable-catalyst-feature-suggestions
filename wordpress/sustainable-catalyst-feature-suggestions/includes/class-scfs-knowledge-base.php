@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Knowledge_Base_Foundation {
-    const VERSION = '5.1.2';
+    const VERSION = '5.2.0';
     const SCHEMA_VERSION = '1.0';
     const ARTICLE_POST_TYPE = 'sc_support_article';
     const ISSUE_POST_TYPE = 'sc_known_issue';
@@ -51,6 +51,8 @@ final class SCFS_Knowledge_Base_Foundation {
         add_filter('body_class', array($this, 'knowledge_base_body_classes'));
         add_filter('astra_page_layout', array($this, 'force_full_width_layout'));
         add_filter('astra_get_content_layout', array($this, 'force_full_width_layout'));
+        add_filter('astra_the_title_enabled', array($this, 'disable_theme_title'));
+        add_filter('astra_single_post_meta', array($this, 'disable_theme_post_meta'));
         add_filter('the_content', array($this, 'decorate_single_content'), 20);
         add_filter('manage_' . self::ARTICLE_POST_TYPE . '_posts_columns', array($this, 'article_columns'));
         add_action('manage_' . self::ARTICLE_POST_TYPE . '_posts_custom_column', array($this, 'article_column_content'), 10, 2);
@@ -894,6 +896,22 @@ final class SCFS_Knowledge_Base_Foundation {
      */
     public function force_full_width_layout($layout) {
         return $this->is_public_knowledge_base_view() ? 'no-sidebar' : $layout;
+    }
+
+    /**
+     * Prevent Astra from rendering a second H1 above the first-party
+     * Knowledge Base publication masthead.
+     */
+    public function disable_theme_title($enabled) {
+        return is_singular(self::ARTICLE_POST_TYPE) ? false : $enabled;
+    }
+
+    /**
+     * Suppress Astra's author/date row on support articles. The Knowledge Base
+     * renders verified version, audience, reading time, and status itself.
+     */
+    public function disable_theme_post_meta($meta) {
+        return is_singular(self::ARTICLE_POST_TYPE) ? '' : $meta;
     }
 
     private function is_public_knowledge_base_view() {

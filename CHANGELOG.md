@@ -1,4 +1,4 @@
-## 5.1.2 - 2026-07-17
+## 5.2.0 - 2026-07-17
 
 ### Changed
 - Matched Knowledge Base article presentation to Sustainable Catalyst publication articles while retaining support-specific metadata and controls.
@@ -353,3 +353,7 @@
 - Added site admin email notification.
 - Added CSV export workflow.
 - Added page HTML, site CSS, documentation, examples, manifest, and PHP lint workflow.
+
+## 5.2.0
+- Repaired duplicate Knowledge Base titles and Astra bylines.
+- Added structural theme filters plus a scoped CSS fallback.
