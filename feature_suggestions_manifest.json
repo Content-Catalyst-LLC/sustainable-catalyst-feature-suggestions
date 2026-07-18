@@ -1,11 +1,11 @@
 {
-  "name": "Sustainable Catalyst Feature Suggestions",
+  "name": "Sustainable Catalyst Product Support and Feedback Platform",
   "slug": "sustainable-catalyst-feature-suggestions",
   "repository": "Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions",
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
-  "public_page": "/platform/feature-suggestions/",
-  "version": "5.2.4",
+  "public_page": "/support/",
+  "version": "5.2.5",
   "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -318,7 +318,26 @@
     "permalink-safe documentation links",
     "inline compact article results",
     "refined two-column Knowledge Base browser",
-    "server-rendered product and category filtering"
+    "server-rendered product and category filtering",
+    "public Product Support and Feedback Platform branding with legacy slug compatibility",
+    "unchanged scfs_* functions options shortcodes REST routes and database structures",
+    "dedicated Knowledge Base shortcode comment recovery",
+    "bundled publication-ready Knowledge Base page content",
+    "early Knowledge Base stylesheet and script loading on the dedicated page",
+    "compact two-panel Knowledge Base library browser",
+    "left-panel product version and category navigation",
+    "right-panel Support Article search filters and results",
+    "all-products Knowledge Base browsing",
+    "publication-parity Support Article mastheads and metadata",
+    "verified version product component updated date and reading-time metadata",
+    "cream editorial information panels",
+    "publication-style code blocks tables figures and captions",
+    "related releases and related known issues",
+    "related Support Article cards",
+    "previous and next Support Article navigation",
+    "single-renderer Support Article decoration without nested headers",
+    "responsive and print publication layouts",
+    "Knowledge Base HTML-to-CSS class coverage validation"
   ],
   "boundaries": [
     "no confidential information",
@@ -328,22 +347,35 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 5.0.0 consolidates public support, content operations, repository synchronization, editorial governance, product reliability, cross-product orchestration, and consent-gated private-support handoffs into one connected operations layer while preserving specialist modules as the source of truth.",
-  "release_name": "Knowledge Base Route Integrity and Dedicated Page Recovery",
-  "release": "Feature Suggestions v5.1.0 \u2014 Integrated Knowledge Base and Documentation Library",
+  "notes": "Version 5.2.5 rebrands the public platform without changing legacy identifiers; repairs dedicated Knowledge Base shortcode execution; replaces the oversized folder browser with a compact two-panel product, version, and category navigator; and renders Support Articles with the same editorial visual language as Sustainable Catalyst publications.",
+  "release_name": "Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles",
+  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.2.5 — Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles",
   "features": [
-    "Connected Product Support Operations administration workspace",
-    "Unified module-health inventory across the complete support platform",
-    "Product operations dossiers combining onboarding readiness and reliability evidence",
-    "Governed human-approved operations action queue",
-    "Daily operational snapshots with bounded retention",
-    "Repository, editorial, incident, documentation-gap, and unresolved-search blockers",
-    "Aggregate Contact and Engagement handoff readiness without private-case content",
-    "Integrity-protected connected operations JSON reports with SHA-256 checksums",
-    "Protected WordPress connected-operations REST API",
-    "FastAPI connected-operations readiness scoring, action planning, and report verification",
-    "Automatic publication, approval, incident declaration, roadmap change, and private-case creation remain disabled",
-    "Specialist modules remain the source of truth for their records and workflows"
+    {
+      "name": "Public rebrand",
+      "status": "complete",
+      "compatibility": "legacy plugin slug, text domain, PHP class, post types, settings, routes, and shortcodes retained"
+    },
+    {
+      "name": "Knowledge Base rendering repair",
+      "status": "complete",
+      "details": "repairs shortcodes trapped in HTML comments and restores executable browser output"
+    },
+    {
+      "name": "Two-panel library browser",
+      "status": "complete",
+      "details": "products, versions, and categories on the left; search, filters, and article results on the right"
+    },
+    {
+      "name": "Publication-parity Support Articles",
+      "status": "complete",
+      "details": "editorial masthead, metadata, cream panels, content typography, code, tables, figures, related content, and navigation"
+    },
+    {
+      "name": "CSS completeness",
+      "status": "complete",
+      "details": "page and renderer class coverage is validated by the release suite"
+    }
   ],
   "wordpress_post_types": [
     "sc_feature_suggest",
@@ -370,5 +402,7 @@
   "public_support_archive": "/support/knowledge-base/",
   "release_date": "2026-07-18",
   "compact_support_library_shortcode": "[scfs_support_library_compact]",
-  "dedicated_knowledge_base_shortcode": "[scfs_support_knowledge_base]"
+  "dedicated_knowledge_base_shortcode": "[scfs_support_knowledge_base]",
+  "legacy_name": "Sustainable Catalyst Feature Suggestions",
+  "legacy_public_page": "/platform/feature-suggestions/"
 }

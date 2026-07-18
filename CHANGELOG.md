@@ -1,3 +1,16 @@
+# Changelog
+
+## 5.2.5 — Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles
+
+- Rebrands the public plugin and WordPress navigation as the Sustainable Catalyst Product Support and Feedback Platform while retaining the `sustainable-catalyst-feature-suggestions` slug, text domain, main PHP class, `scfs_*` identifiers, custom post types, settings, REST routes, database records, and existing URLs.
+- Repairs the dedicated `/support/knowledge-base/` page when its shortcode was saved only inside an HTML comment, and bundles a complete executable page layout for new or empty routes.
+- Replaces the large nested-folder browser with a compact two-panel library: Products, Versions, and Categories on the left; Support Article search, filters, and results on the right.
+- Adds an All Products view while preserving product, version, section, component, type, and search query parameters.
+- Removes duplicate Support Article decoration so each article has one publication masthead and one editorial metadata layer.
+- Renders Support Articles with Sustainable Catalyst publication typography, spacing, heading hierarchy, cream information panels, code blocks, tables, figures, related-content cards, and previous/next navigation.
+- Presents verified version, product, component, updated date, reading time, related releases, related known issues, related articles, and existing feedback controls as publication metadata rather than dashboard boxes.
+- Adds complete page and renderer CSS coverage, responsive behavior, print behavior, route-repair tests, compatibility tests, and HTML-class-to-CSS validation.
+
 ## 5.2.4 - 2026-07-18
 
 - Repaired the dedicated Knowledge Base route and removed Support Article rewrite collisions.

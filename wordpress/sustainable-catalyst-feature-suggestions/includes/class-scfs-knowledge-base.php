@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Knowledge_Base_Foundation {
-    const VERSION = '5.2.4';
+    const VERSION = '5.2.5';
     const SCHEMA_VERSION = '1.0';
     const ARTICLE_POST_TYPE = 'sc_support_article';
     const ISSUE_POST_TYPE = 'sc_known_issue';
@@ -886,6 +886,7 @@ final class SCFS_Knowledge_Base_Foundation {
         if ($this->is_public_knowledge_base_view()) {
             $classes[] = 'scfs-kb-full-width';
             $classes[] = 'scfs-kb-no-publications-sidebar';
+            if (is_singular(self::ARTICLE_POST_TYPE)) $classes[] = 'scfs-support-publication';
         }
         return array_values(array_unique($classes));
     }
@@ -936,6 +937,9 @@ final class SCFS_Knowledge_Base_Foundation {
             return $content;
         }
         $post_id = get_the_ID();
+        if (get_post_type($post_id) === self::ARTICLE_POST_TYPE && class_exists('SCFS_Integrated_Knowledge_Base')) {
+            return $content;
+        }
         $context = $this->context_markup($post_id);
         $relationships = $this->relationships_markup($post_id);
         if (get_post_type($post_id) === self::ARTICLE_POST_TYPE) {

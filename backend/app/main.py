@@ -17,7 +17,7 @@ from .connected_support_operations import ConnectedOperationsEvidence, Connected
 
 VERSION='5.1.0'
 ANALYSIS_VERSION='5.1.0-1'
-app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
+app=FastAPI(title='Sustainable Catalyst Product Support and Feedback Intelligence',version=VERSION)
 
 class Submission(BaseModel):
     submission_id:str
@@ -536,4 +536,3 @@ def connected_operations_action_plan(payload: OperationsActionEvidence, x_scfs_a
 def connected_operations_report_verify(payload: OperationsReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_connected_operations_report(payload)
-

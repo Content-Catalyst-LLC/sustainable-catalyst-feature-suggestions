@@ -1,4 +1,14 @@
-# Sustainable Catalyst Feature Suggestions
+# Sustainable Catalyst Product Support and Feedback Platform
+
+## Current release: v5.2.5
+
+**Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles**
+
+Version 5.2.5 presents the plugin publicly as the Sustainable Catalyst Product Support and Feedback Platform while preserving the legacy repository slug, text domain, `scfs_*` contracts, custom post types, REST routes, options, data, and URLs. It repairs executable Knowledge Base rendering, introduces a compact two-panel library browser, and gives Support Articles the same editorial visual language as Sustainable Catalyst publications.
+
+- Primary public shortcode: `[scfs_product_support_center]`
+- Dedicated Knowledge Base shortcode: `[scfs_support_knowledge_base]`
+- Compact library shortcode: `[scfs_support_library_compact]`
 
 ## Version 5.1.0 — Integrated Knowledge Base and Documentation Library
 
@@ -19,7 +29,7 @@ A WordPress and FastAPI Product Support and Feedback Platform for collecting fea
 
 Version 5.0.0 coordinates public support when an incident, dependency, shared component, release, or resolution path spans more than one Sustainable Catalyst product.
 
-Open **Feature Suggestions → Cross-Product Support** to configure the product dependency graph, publish governed Platform Incident records, review shared-component relationships, and manage related-product support pathways. The Product Support Center gains a **Platform status** workspace, and `[scfs_cross_product_support]` can render the orchestration view independently.
+Open **Support & Feedback → Cross-Product Support** to configure the product dependency graph, publish governed Platform Incident records, review shared-component relationships, and manage related-product support pathways. The Product Support Center gains a **Platform status** workspace, and `[scfs_cross_product_support]` can render the orchestration view independently.
 
 The orchestration layer can recommend related products and build public resolution journeys. It cannot declare incidents automatically, block releases automatically, change the roadmap, expose private case content, or create private support cases.
 
@@ -29,7 +39,7 @@ See `docs/cross-product-support-orchestration.md`.
 
 Version 4.3.0 maps Sustainable Catalyst products to public GitHub repositories and inspects README files, CHANGELOG files, documentation directories, and published GitHub releases. Remote changes become approval-gated WordPress drafts with commit, path, URL, and content-hash provenance.
 
-Open **Feature Suggestions → Repository Sync** to configure product mappings, inspect remote sources, create review drafts, detect local/remote documentation drift, check public links, and export synchronization logs. Published records are never overwritten, conflicting local edits create review copies, private repository access is disabled, and automatic approval or publication remains prohibited.
+Open **Support & Feedback → Repository Sync** to configure product mappings, inspect remote sources, create review drafts, detect local/remote documentation drift, check public links, and export synchronization logs. Published records are never overwritten, conflicting local edits create review copies, private repository access is disabled, and automatic approval or publication remains prohibited.
 
 See `docs/repository-release-synchronization.md`.
 
@@ -41,7 +51,7 @@ See `docs/documentation-workflow-editorial-governance.md`.
 
 ## Version 4.1.1 — Content Operations Reliability Patch
 
-Version 4.1.1 hardens **Feature Suggestions → Content Operations** with recoverable import batches, malformed-source inspection, refined duplicate detection, restored starter drafts, product-context integrity checks, operation progress, scheduled validation health, checksummed exports, accessibility improvements, and administrator capability controls.
+Version 4.1.1 hardens **Support & Feedback → Content Operations** with recoverable import batches, malformed-source inspection, refined duplicate detection, restored starter drafts, product-context integrity checks, operation progress, scheduled validation health, checksummed exports, accessibility improvements, and administrator capability controls.
 
 Successful imports retain a time-limited **Roll back batch** action that moves created records to WordPress Trash. Strict import validation can roll back the whole batch automatically when any record fails. Private Contact and Engagement case content remains excluded.
 
@@ -69,7 +79,7 @@ The plugin gives visitors a structured way to suggest new platform modules, demo
 
 ## Where submissions and settings appear
 
-Submitted ideas are stored as the `sc_feature_suggest` custom post type. Review them in WordPress Admin → Feature Suggestions, or open `/wp-admin/edit.php?post_type=sc_feature_suggest`. Configure the plugin in Feature Suggestions → Settings, Settings → Feature Suggestions, or from the plugin-row Settings link on the Installed Plugins screen.
+Submitted ideas are stored as the `sc_feature_suggest` custom post type. Review them in WordPress Admin → Support & Feedback, or open `/wp-admin/edit.php?post_type=sc_feature_suggest`. Configure the plugin in Support & Feedback → Settings, Settings → Support & Feedback, or from the plugin-row Settings link on the Installed Plugins screen.
 
 
 ## Shortcode
@@ -92,7 +102,7 @@ Version 4.0.2 adds a site-native embedded mode and a configurable branding syste
 [scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve"]
 ```
 
-Administrators can select **Platform**, **Sustainable Catalyst**, **Inherit active theme**, or **Custom** branding under **Feature Suggestions → Support Platform**. Custom controls cover colors, typography, border radius, shadow, maximum width, navigation columns, embedded chrome, and zero-value status visibility. The same scoped tokens flow into Guided Resolution, Knowledge Base, Known Issues, releases, public ideas, suggestion forms, and surveys.
+Administrators can select **Platform**, **Sustainable Catalyst**, **Inherit active theme**, or **Custom** branding under **Support & Feedback → Support Platform**. Custom controls cover colors, typography, border radius, shadow, maximum width, navigation columns, embedded chrome, and zero-value status visibility. The same scoped tokens flow into Guided Resolution, Knowledge Base, Known Issues, releases, public ideas, suggestion forms, and surveys.
 
 Embedded mode removes duplicate application chrome, uses the containing page width, preserves product/view context, and includes CSS safeguards against broad Astra or page-level link and button rules. See `docs/embedded-support-center-branding.md`.
 
@@ -110,13 +120,13 @@ The new public `sc_release_record` post type publishes release lifecycle state, 
 
 Feature Suggestions remains the public support and feedback system. Contact and Engagement remains the private case, communication, document, and lifecycle system of record. Automatic private case creation is disabled.
 
-Administration: **Feature Suggestions → Support Platform**. See `docs/product-support-feedback-platform.md`.
+Administration: **Support & Feedback → Support Platform**. See `docs/product-support-feedback-platform.md`.
 
 ## Version 3.4.0 — Documentation and Feature Intelligence
 
 Version 3.4.0 adds Support Article feedback, privacy-minimized documentation-gap detection, protected case-to-article and case-to-suggestion relationships, and a distinct Support Demand signal in opportunity scoring. Contact and Engagement remains the private case-management system; Feature Suggestions stores only public-record relationships and opaque case references.
 
-Administration: **Feature Suggestions → Documentation Intelligence**.
+Administration: **Support & Feedback → Documentation Intelligence**.
 
 ## Version 3.3.0 — Search and Guided Resolution
 
@@ -143,7 +153,7 @@ Default archive routes:
 
 Support Articles and Known Issues reuse the shared Product, Product Version, Component, Issue Type, and Release taxonomies from v3.1.0. They may be connected to reviewed feature suggestions, but private suggestion text and contact information are never exposed publicly. Contact and Engagement remains the private support-case and communication platform.
 
-Manage the foundation under **Feature Suggestions → Knowledge Base**. See `docs/support-knowledge-base-foundation.md`.
+Manage the foundation under **Support & Feedback → Knowledge Base**. See `docs/support-knowledge-base-foundation.md`.
 
 ## Version 2.2 highlights
 
@@ -154,7 +164,7 @@ Manage the foundation under **Feature Suggestions → Knowledge Base**. See `doc
 - Sensitive-information and abuse flags, duplicate keys, confidence, rationale, and version metadata.
 - Manual per-submission analysis and optional automatic analysis in WordPress.
 - Human review remains mandatory; AI never changes workflow or roadmap status automatically.
-- Real **Feature Suggestions → Settings** screen.
+- Real **Support & Feedback → Settings** screen.
 - Public REST health, schema, and feature-suggestion submission endpoints.
 - Protected REST listing, detail, and workflow-update endpoints for authenticated administrators.
 - Stable UUIDs, source labels, correlation IDs, and schema-version metadata.
@@ -188,10 +198,10 @@ feature_suggestions_manifest.json                    Repository manifest
 1. Download `dist/sustainable-catalyst-feature-suggestions.zip`.
 2. In WordPress, go to **Plugins → Add New → Upload Plugin**.
 3. Upload and activate the plugin.
-4. Go to **Feature Suggestions → Settings** and configure the form.
+4. Go to **Support & Feedback → Settings** and configure the form.
 5. Create a page at `/platform/feature-suggestions/`.
 6. Add the shortcode: `[sustainable_catalyst_feature_suggestions]`.
-7. Review **Feature Suggestions → Integration** and configure REST/API-key or webhook settings as needed.
+7. Review **Support & Feedback → Integration** and configure REST/API-key or webhook settings as needed.
 8. Optionally paste the surrounding page HTML from `docs/feature-suggestions-page.html` and site CSS from `docs/feature-suggestions-site.css`.
 
 ## Important v2 save fix
@@ -243,7 +253,7 @@ Version 3.1.0 adds shared Product, Product Version, Component, Issue Type, and R
 
 Existing suggestions are migrated idempotently from their current category, roadmap area, AI triage, product-version, and target-release metadata. Product context now appears in the public form, authenticated suggestion records, events, AI triage payloads, intelligence filters and charts, and CSV exports.
 
-Administration is available under **Feature Suggestions → Products & Integration**. A complete migration can also be run with:
+Administration is available under **Support & Feedback → Products & Integration**. A complete migration can also be run with:
 
 ```bash
 wp scfs migrate-product-taxonomies --batch=200

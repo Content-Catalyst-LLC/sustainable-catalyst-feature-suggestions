@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Sustainable Catalyst Feature Suggestions
- * Description: Connected product support operations, documentation, known issues, releases, feature suggestions, surveys, editorial governance, repository synchronization, reliability analytics, cross-product orchestration, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 5.2.4
+ * Plugin Name: Sustainable Catalyst Product Support and Feedback Platform
+ * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
+ * Version: 5.2.5
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '5.2.4';
+    const VERSION = '5.2.5';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -172,7 +172,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $labels = array(
             'name' => __('Feature Suggestions', 'sustainable-catalyst-feature-suggestions'),
             'singular_name' => __('Feature Suggestion', 'sustainable-catalyst-feature-suggestions'),
-            'menu_name' => __('Feature Suggestions', 'sustainable-catalyst-feature-suggestions'),
+            'menu_name' => __('Support & Feedback', 'sustainable-catalyst-feature-suggestions'),
             'add_new_item' => __('Add Feature Suggestion', 'sustainable-catalyst-feature-suggestions'),
             'edit_item' => __('Review Feature Suggestion', 'sustainable-catalyst-feature-suggestions'),
             'new_item' => __('New Feature Suggestion', 'sustainable-catalyst-feature-suggestions'),
@@ -1161,23 +1161,23 @@ final class Sustainable_Catalyst_Feature_Suggestions {
 
         add_submenu_page(
             'edit.php?post_type=' . self::POST_TYPE,
-            __('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'),
+            __('Product Support and Feedback Settings', 'sustainable-catalyst-feature-suggestions'),
             __('Settings', 'sustainable-catalyst-feature-suggestions'),
             $settings_capability,
             'scfs-settings',
             array($this, 'render_settings_page')
         );
         add_options_page(
-            __('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'),
-            __('Feature Suggestions', 'sustainable-catalyst-feature-suggestions'),
+            __('Product Support and Feedback Settings', 'sustainable-catalyst-feature-suggestions'),
+            __('Support & Feedback', 'sustainable-catalyst-feature-suggestions'),
             $settings_capability,
             'scfs-settings',
             array($this, 'render_settings_page')
         );
         add_submenu_page(
             null,
-            __('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'),
-            __('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'),
+            __('Product Support and Feedback Settings', 'sustainable-catalyst-feature-suggestions'),
+            __('Product Support and Feedback Settings', 'sustainable-catalyst-feature-suggestions'),
             $settings_capability,
             'scfs-settings-standalone',
             array($this, 'render_settings_page')
@@ -1235,7 +1235,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $settings = $this->settings();
         ?>
         <div class="wrap scfs-settings-page">
-            <h1><?php esc_html_e('Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions'); ?></h1>
+            <h1><?php esc_html_e('Product Support and Feedback Settings', 'sustainable-catalyst-feature-suggestions'); ?></h1>
             <?php if (!empty($_GET['settings-updated'])) : ?>
                 <div class="notice notice-success is-dismissible"><p><?php esc_html_e('Settings saved.', 'sustainable-catalyst-feature-suggestions'); ?></p></div>
             <?php endif; ?>
@@ -1332,7 +1332,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
                     </section>
                 </div>
 
-                <?php submit_button(__('Save Feature Suggestion Settings', 'sustainable-catalyst-feature-suggestions')); ?>
+                <?php submit_button(__('Save Product Support and Feedback Settings', 'sustainable-catalyst-feature-suggestions')); ?>
             </form>
         </div>
         <?php
@@ -1370,7 +1370,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $sent = false;
         if ($to && is_email($to)) {
             $subject = '[Sustainable Catalyst] Feature suggestions test email';
-            $body = "This is a test email from Sustainable Catalyst Feature Suggestions.\n\nIf you received this, WordPress mail delivery is working for plugin notifications.";
+            $body = "This is a test email from the Sustainable Catalyst Product Support and Feedback Platform.\n\nIf you received this, WordPress mail delivery is working for plugin notifications.";
             $headers = array('Content-Type: text/plain; charset=UTF-8');
             $sent = wp_mail($to, $subject, $body, $headers);
         }
@@ -1877,7 +1877,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $queue = get_option(self::WEBHOOK_QUEUE_KEY, array());
         ?>
         <div class="wrap scfs-settings-page">
-            <h1><?php esc_html_e('Feature Suggestions Integration', 'sustainable-catalyst-feature-suggestions'); ?></h1>
+            <h1><?php esc_html_e('Product Support and Feedback Integration', 'sustainable-catalyst-feature-suggestions'); ?></h1>
             <div class="scfs-settings-grid">
                 <section class="scfs-settings-card">
                     <h2><?php esc_html_e('REST API', 'sustainable-catalyst-feature-suggestions'); ?></h2>
@@ -2087,8 +2087,8 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         $url = wp_nonce_url(admin_url('admin-post.php?action=scfs_export_csv'), 'scfs_export_csv');
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Export Feature Suggestions', 'sustainable-catalyst-feature-suggestions'); ?></h1>
-            <p><?php esc_html_e('Download all feature suggestions as a CSV file for review, backlog planning, GitHub issue creation, or archival.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+            <h1><?php esc_html_e('Export Product Feedback', 'sustainable-catalyst-feature-suggestions'); ?></h1>
+            <p><?php esc_html_e('Download all product feedback records as a CSV file for review, backlog planning, GitHub issue creation, or archival.', 'sustainable-catalyst-feature-suggestions'); ?></p>
             <p><a class="button button-primary" href="<?php echo esc_url($url); ?>"><?php esc_html_e('Download CSV', 'sustainable-catalyst-feature-suggestions'); ?></a></p>
         </div>
         <?php

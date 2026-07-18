@@ -1,4 +1,14 @@
-# Sustainable Catalyst Feature Suggestions
+# Sustainable Catalyst Product Support and Feedback Platform
+
+## Current release: v5.2.5
+
+**Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles**
+
+Version 5.2.5 presents the plugin publicly as the Sustainable Catalyst Product Support and Feedback Platform while preserving the legacy repository slug, text domain, `scfs_*` contracts, custom post types, REST routes, options, data, and URLs. It repairs executable Knowledge Base rendering, introduces a compact two-panel library browser, and gives Support Articles the same editorial visual language as Sustainable Catalyst publications.
+
+Primary public shortcode: `[scfs_product_support_center]`
+Dedicated Knowledge Base shortcode: `[scfs_support_knowledge_base]`
+Compact library shortcode: `[scfs_support_library_compact]`
 
 ## Version 5.1.0 — Integrated Knowledge Base and Documentation Library
 
@@ -19,7 +29,7 @@ Recommended integration:
 
 ## Cross-Product Support Orchestration
 
-Use **Feature Suggestions → Cross-Product Support** to configure dependencies and publish human-reviewed Platform Incidents. The Product Support Center includes a **Platform status** workspace. Standalone shortcode:
+Use **Support & Feedback → Cross-Product Support** to configure dependencies and publish human-reviewed Platform Incidents. The Product Support Center includes a **Platform status** workspace. Standalone shortcode:
 
 ```text
 [scfs_cross_product_support product="research-librarian"]
@@ -30,20 +40,20 @@ Private Contact and Engagement case content is never copied into public orchestr
 
 ## Support Analytics and Product Reliability Center
 
-Use **Feature Suggestions → Product Reliability** to compare support health across products, inspect score dimensions and blockers, review recurring unresolved searches and issues, prioritize documentation gaps, and export integrity-protected reports. Reliability intelligence is aggregate and advisory; it does not expose private case content or make automatic roadmap, publication, or incident decisions.
+Use **Support & Feedback → Product Reliability** to compare support health across products, inspect score dimensions and blockers, review recurring unresolved searches and issues, prioritize documentation gaps, and export integrity-protected reports. Reliability intelligence is aggregate and advisory; it does not expose private case content or make automatic roadmap, publication, or incident decisions.
 
 ## Repository and Release Synchronization
 
-Use **Feature Suggestions → Repository Sync** to map each Product term to a public GitHub repository, inspect documentation and releases, create review drafts, detect local/remote drift, check links, and export synchronization logs. Optional GitHub credentials and webhook secrets are supplied through constants or environment variables, not WordPress options.
+Use **Support & Feedback → Repository Sync** to map each Product term to a public GitHub repository, inspect documentation and releases, create review drafts, detect local/remote drift, check links, and export synchronization logs. Optional GitHub credentials and webhook secrets are supplied through constants or environment variables, not WordPress options.
 
 ## Documentation Workflow and Editorial Governance
 
-Use **Feature Suggestions → Editorial Governance** to assign authors, reviewers, and approvers; manage review queues; require approval before publication; assess documentation standards; approve product versions; schedule publication; manage expiration and review dates; add private editorial comments; and export governance audit history.
+Use **Support & Feedback → Editorial Governance** to assign authors, reviewers, and approvers; manage review queues; require approval before publication; assess documentation standards; approve product versions; schedule publication; manage expiration and review dates; add private editorial comments; and export governance audit history.
 
 
 ## Support Content Operations
 
-Use **Feature Suggestions → Content Operations** to onboard products, create missing starter records, import README/CHANGELOG/JSON sources, validate support content, roll back recent import batches, inspect scheduled validation health, and export checksummed product support records. Human review remains mandatory and imported content defaults to draft.
+Use **Support & Feedback → Content Operations** to onboard products, create missing starter records, import README/CHANGELOG/JSON sources, validate support content, roll back recent import batches, inspect scheduled validation health, and export checksummed product support records. Human review remains mandatory and imported content defaults to draft.
 
 ## Embedded Support Center and branding
 
@@ -53,7 +63,7 @@ Version 4.0.2 adds a reliable embedded mode and configurable design tokens for m
 [scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="resolve"]
 ```
 
-Branding presets, custom colors, typography, shape, width, navigation density, and embedded-layout controls are available under **Feature Suggestions → Support Platform**. Theme inheritance and shortcode-level overrides are supported.
+Branding presets, custom colors, typography, shape, width, navigation density, and embedded-layout controls are available under **Support & Feedback → Support Platform**. Theme inheritance and shortcode-level overrides are supported.
 
 ## Unified Product Support Center
 
@@ -74,7 +84,7 @@ Version 3.2.0 adds:
 - published-content REST endpoints under `/wp-json/scfs/v1/knowledge-base/*`;
 - related release and privacy-safe feature-suggestion relationships.
 
-Manage these records under **Feature Suggestions → Knowledge Base**, **Support Articles**, and **Known Issues**.
+Manage these records under **Support & Feedback → Knowledge Base**, **Support Articles**, and **Known Issues**.
 
 ## Shortcode
 
@@ -97,7 +107,7 @@ Optional category preselection:
 - Supports optional HMAC-signed webhooks with retry delivery and integration diagnostics.
 - Assigns stable submission UUIDs and accepts source and correlation metadata.
 - Saves submissions as WordPress Feature Suggestion records.
-- Adds a real **Feature Suggestions → Settings** screen, plus a standalone fallback settings route for hosts with unusual admin capabilities.
+- Adds a real **Support & Feedback → Settings** screen, plus a standalone fallback settings route for hosts with unusual admin capabilities.
 - Lets you configure categories, priorities, messages, visible fields, notification email, saved post status, rate limits, duplicate detection, link limits, blocked terms, and nonce behavior.
 - Defaults new submissions to **Pending Review** instead of private records, which avoids common front-end save failures on some WordPress installs.
 - Keeps strict WordPress nonce validation off by default because cached public pages can break nonce-based forms.
@@ -121,7 +131,7 @@ Use the shortcode on:
 After activation, go to:
 
 ```text
-Feature Suggestions → Settings
+Support & Feedback → Settings
 ```
 
 If WordPress blocks that route, use the plugin-row Settings link or this direct fallback URL:
@@ -147,7 +157,7 @@ The form is for non-confidential suggestions only. Visitors should not submit co
 
 ## Where submissions and settings appear
 
-Submitted ideas are stored as the `sc_feature_suggest` custom post type. Review them in WordPress Admin → Feature Suggestions. Configure the plugin from Feature Suggestions → Settings, Settings → Feature Suggestions, the plugin-row Settings link on the Installed Plugins screen, or `/wp-admin/admin.php?page=scfs-settings-standalone`.
+Submitted ideas are stored as the `sc_feature_suggest` custom post type. Review them in WordPress Admin → Support & Feedback. Configure the plugin from Support & Feedback → Settings, Settings → Support & Feedback, the plugin-row Settings link on the Installed Plugins screen, or `/wp-admin/admin.php?page=scfs-settings-standalone`.
 
 
 ## Feedback Intelligence Dashboard
@@ -174,7 +184,7 @@ Version 3.0.0 adds configurable evidence-weighted opportunity scoring, minimum-e
 
 ## Product taxonomy and platform integration
 
-Version 3.1.0 registers shared Product, Product Version, Component, Issue Type, and Release taxonomies; migrates existing suggestions; adds product-aware analytics and exports; and defines a protected Contact and Engagement support handoff contract. Manage the layer from **Feature Suggestions → Products & Integration**.
+Version 3.1.0 registers shared Product, Product Version, Component, Issue Type, and Release taxonomies; migrates existing suggestions; adds product-aware analytics and exports; and defines a protected Contact and Engagement support handoff contract. Manage the layer from **Support & Feedback → Products & Integration**.
 
 ## Guided Resolution
 
