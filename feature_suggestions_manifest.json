@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/support/",
-  "version": "5.2.5",
+  "version": "5.2.6",
   "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -347,10 +347,15 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 5.2.5 rebrands the public platform without changing legacy identifiers; repairs dedicated Knowledge Base shortcode execution; replaces the oversized folder browser with a compact two-panel product, version, and category navigator; and renders Support Articles with the same editorial visual language as Sustainable Catalyst publications.",
-  "release_name": "Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles",
-  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.2.5 — Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles",
+  "notes": "Version 5.2.6 consolidates the complete Knowledge Base browser into the main Support Center, exposes Support Articles directly in both overview and guided-resolution views, and permanently redirects legacy Knowledge Base landing routes while preserving article permalinks, shortcodes, REST endpoints, settings, taxonomies, and existing data.",
+  "release_name": "Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation",
+  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.2.6 — Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation",
   "features": [
+    "Publication-parity Support Article URLs and rendering preserved",
+    "Permanent legacy landing-route redirects with filter preservation",
+    "Legacy /support/knowledge-base/ and /support-documentation/ route consolidation",
+    "Support Article browser visible in overview and guided-resolution views",
+    "Unified Support Center with embedded full Knowledge Base browser",
     {
       "name": "Public rebrand",
       "status": "complete",
@@ -399,10 +404,29 @@
     "[scfs_cross_product_support]"
   ],
   "support_center_shortcode": "[scfs_product_support_center]",
-  "public_support_archive": "/support/knowledge-base/",
+  "public_support_archive": "/support/#knowledge-base",
   "release_date": "2026-07-18",
   "compact_support_library_shortcode": "[scfs_support_library_compact]",
   "dedicated_knowledge_base_shortcode": "[scfs_support_knowledge_base]",
   "legacy_name": "Sustainable Catalyst Feature Suggestions",
-  "legacy_public_page": "/platform/feature-suggestions/"
+  "legacy_public_page": "/platform/feature-suggestions/",
+  "knowledge_base_location": "/support/#knowledge-base",
+  "legacy_public_support_archive": "/support/knowledge-base/",
+  "legacy_support_documentation_archive": "/support-documentation/",
+  "legacy_knowledge_base_redirect_status": 301,
+  "compatibility": {
+    "legacy_php_class": "Sustainable_Catalyst_Feature_Suggestions",
+    "legacy_repository_slug": "sustainable-catalyst-feature-suggestions",
+    "legacy_text_domain": "sustainable-catalyst-feature-suggestions",
+    "suggestion_post_type": "sc_feature_suggest",
+    "support_article_post_type": "sc_support_article",
+    "known_issue_post_type": "sc_known_issue",
+    "rest_namespace": "scfs/v1",
+    "settings_option": "scfs_settings",
+    "support_center_shortcode": "[scfs_product_support_center]",
+    "knowledge_base_shortcode": "[scfs_support_knowledge_base]",
+    "article_url_base": "/support/guides/",
+    "existing_article_urls_preserved": true,
+    "database_migration_required": false
+  }
 }

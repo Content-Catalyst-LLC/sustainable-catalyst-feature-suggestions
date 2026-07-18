@@ -1,14 +1,15 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.2.5
+## Current release: v5.2.6
 
-**Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles**
+**Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation**
 
-Version 5.2.5 presents the plugin publicly as the Sustainable Catalyst Product Support and Feedback Platform while preserving the legacy repository slug, text domain, `scfs_*` contracts, custom post types, REST routes, options, data, and URLs. It repairs executable Knowledge Base rendering, introduces a compact two-panel library browser, and gives Support Articles the same editorial visual language as Sustainable Catalyst publications.
+Version 5.2.6 makes the main `/support/` page the canonical destination for the complete support experience. Guided Resolution and the two-panel Support Article browser now appear together, while the former `/support/knowledge-base/` and `/support-documentation/` landing routes redirect to `/support/?scfs_support_view=documentation#knowledge-base`. Existing Support Article URLs, shortcodes, CPTs, REST routes, settings, taxonomies, and data remain unchanged.
 
-Primary public shortcode: `[scfs_product_support_center]`
-Dedicated Knowledge Base shortcode: `[scfs_support_knowledge_base]`
-Compact library shortcode: `[scfs_support_library_compact]`
+- Primary public shortcode: `[scfs_product_support_center]`
+- Standalone Knowledge Base shortcode retained: `[scfs_support_knowledge_base]`
+- Canonical Support Articles location: `/support/#knowledge-base`
+- Existing Support Article permalink base retained: `/support/guides/`
 
 ## Version 5.1.0 — Integrated Knowledge Base and Documentation Library
 
@@ -80,7 +81,8 @@ Version 3.2.0 adds:
 - product documentation collections and article types;
 - Getting Started, How-to, Troubleshooting, Technical Reference, and Known Issue Companion templates;
 - `[scfs_support_knowledge_base]`;
-- `/support-knowledge-base/` and `/known-issues/` archives;
+- canonical Support Articles at `/support/#knowledge-base`; legacy Knowledge Base landing routes redirect there;
+- `/known-issues/` archive;
 - published-content REST endpoints under `/wp-json/scfs/v1/knowledge-base/*`;
 - related release and privacy-safe feature-suggestion relationships.
 

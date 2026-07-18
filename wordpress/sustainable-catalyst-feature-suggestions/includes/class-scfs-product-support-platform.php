@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Support_Platform {
-    const VERSION = '5.1.0';
+    const VERSION = '5.2.6';
     const SCHEMA_VERSION = '1.0';
     const RELEASE_POST_TYPE = 'sc_release_record';
     const SHORTCODE = 'scfs_product_support_center';
@@ -825,7 +825,11 @@ final class SCFS_Product_Support_Platform {
         }
         $base = $this->active_base_url !== '' ? $this->active_base_url : $this->support_base_url();
         $url = add_query_arg($args, $base);
-        $anchor = $anchor === null ? $this->active_anchor : $this->normalized_anchor($anchor);
+        if ($anchor === null) {
+            $anchor = $view === 'documentation' ? 'knowledge-base' : $this->active_anchor;
+        } else {
+            $anchor = $this->normalized_anchor($anchor);
+        }
         return $anchor !== '' ? $url . '#' . rawurlencode($anchor) : $url;
     }
 
@@ -862,7 +866,7 @@ final class SCFS_Product_Support_Platform {
         $items = array(
             'overview' => array('label' => __('Support overview', 'sustainable-catalyst-feature-suggestions'), 'description' => __('Status and starting points', 'sustainable-catalyst-feature-suggestions')),
             'resolve' => array('label' => __('Find a resolution', 'sustainable-catalyst-feature-suggestions'), 'description' => __('Guided search and known issues', 'sustainable-catalyst-feature-suggestions')),
-            'documentation' => array('label' => __('Knowledge Base', 'sustainable-catalyst-feature-suggestions'), 'description' => __('How-to and reference articles', 'sustainable-catalyst-feature-suggestions')),
+            'documentation' => array('label' => __('Support Articles', 'sustainable-catalyst-feature-suggestions'), 'description' => __('Search the complete Knowledge Base', 'sustainable-catalyst-feature-suggestions')),
             'issues' => array('label' => __('Known issues', 'sustainable-catalyst-feature-suggestions'), 'description' => __('Current product problems', 'sustainable-catalyst-feature-suggestions')),
             'releases' => array('label' => __('Releases', 'sustainable-catalyst-feature-suggestions'), 'description' => __('Changes and compatibility', 'sustainable-catalyst-feature-suggestions')),
             'ideas' => array('label' => __('Public ideas', 'sustainable-catalyst-feature-suggestions'), 'description' => __('Vote and follow decisions', 'sustainable-catalyst-feature-suggestions')),
@@ -1066,11 +1070,10 @@ final class SCFS_Product_Support_Platform {
                 echo $this->with_request_value('scfs_resolution_product', $context['product'], function () {
                     return SCFS_Guided_Resolution::instance()->render_shortcode(array('title' => __('Find a resolution', 'sustainable-catalyst-feature-suggestions'), 'compact' => '1', 'show_handoff' => '1'));
                 }); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                $this->render_embedded_knowledge_base($context['product']);
                 break;
             case 'documentation':
-                echo $this->with_request_value('scfs_kb_product', $context['product'], function () {
-                    return SCFS_Knowledge_Base_Foundation::instance()->render_shortcode(array('title' => __('Support Knowledge Base', 'sustainable-catalyst-feature-suggestions'), 'show_known_issues' => '0'));
-                }); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                $this->render_embedded_knowledge_base($context['product'], true);
                 break;
             case 'issues':
                 $this->render_known_issues($context['product']);
@@ -1104,18 +1107,32 @@ final class SCFS_Product_Support_Platform {
         }
     }
 
+    private function render_embedded_knowledge_base($product = '', $dedicated_view = false) {
+        $classes = array('scfs-support-platform__knowledge-base');
+        if ($dedicated_view) $classes[] = 'scfs-support-platform__knowledge-base--dedicated';
+        echo '<section id="knowledge-base" class="' . esc_attr(implode(' ', $classes)) . '" aria-label="' . esc_attr__('Support Articles', 'sustainable-catalyst-feature-suggestions') . '">';
+        echo $this->with_request_value('scfs_kb_product', $product, function () {
+            return SCFS_Knowledge_Base_Foundation::instance()->render_shortcode(array(
+                'title' => __('Browse Support Articles', 'sustainable-catalyst-feature-suggestions'),
+                'intro' => __('Search publication-grade product guidance by product, version, category, component, task, or error message.', 'sustainable-catalyst-feature-suggestions'),
+                'show_known_issues' => '0',
+            ));
+        }); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo '</section>';
+    }
+
     private function render_overview($overview, $product, $settings, $display = array()) {
         echo '<div class="scfs-support-platform__overview"><section><h3>' . esc_html__('Start with guided resolution', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Describe the task, symptom, or exact error fragment. Current known issues are prioritized before general documentation.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         echo $this->with_request_value('scfs_resolution_product', $product, function () {
             return SCFS_Guided_Resolution::instance()->render_shortcode(array('title' => __('Search product support', 'sustainable-catalyst-feature-suggestions'), 'compact' => '1', 'show_handoff' => '1'));
         }); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo '</section>';
+        $this->render_embedded_knowledge_base($product);
         $content_counts = class_exists('SCFS_Support_Content_Operations') ? SCFS_Support_Content_Operations::instance()->product_content_counts($product, false) : array();
         $hide_empty = class_exists('SCFS_Support_Content_Operations') && !empty(SCFS_Support_Content_Operations::instance()->settings()['hide_empty_support_sections']);
         if (!isset($display['show_overview_pathways']) || $display['show_overview_pathways']) {
             echo '<section class="scfs-support-platform__pathways"><h3>' . esc_html__('Choose another support pathway', 'sustainable-catalyst-feature-suggestions') . '</h3><div class="scfs-support-platform__cards">';
         $cards = array(
-            'documentation' => array(__('Browse documentation', 'sustainable-catalyst-feature-suggestions'), __('Read task-based guidance, troubleshooting, technical references, and product collections.', 'sustainable-catalyst-feature-suggestions')),
             'issues' => array(__('Check known issues', 'sustainable-catalyst-feature-suggestions'), __('Review verified problems, current status, workarounds, and planned resolutions.', 'sustainable-catalyst-feature-suggestions')),
             'ideas' => array(__('Review and support ideas', 'sustainable-catalyst-feature-suggestions'), __('Vote on moderated public suggestions and follow official roadmap decisions.', 'sustainable-catalyst-feature-suggestions')),
             'suggest' => array(__('Suggest an improvement', 'sustainable-catalyst-feature-suggestions'), __('Submit a structured, non-confidential feature or documentation request.', 'sustainable-catalyst-feature-suggestions')),

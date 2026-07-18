@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Integrated_Knowledge_Base {
-    const VERSION = '5.2.5';
+    const VERSION = '5.2.6';
     const CONTENT_VERSION = '1.0.0';
     const IMPORT_OPTION = 'scfs_integrated_kb_import_version';
     const REPORT_OPTION = 'scfs_integrated_kb_last_report';
@@ -30,7 +30,8 @@ final class SCFS_Integrated_Knowledge_Base {
     const COMPACT_LEGACY_SHORTCODE = 'sustainable_catalyst_support_library_compact';
     const DEDICATED_PAGE_OPTION = 'scfs_kb_dedicated_page_id';
     const ROUTE_VERSION_OPTION = 'scfs_kb_route_version';
-    const ROUTE_VERSION = '2.1.0';
+    const ROUTE_VERSION = '3.0.0';
+    const LEGACY_ROUTE_META = '_scfs_kb_legacy_route_version';
 
     private static $instance = null;
     private $rendering_article = false;
@@ -48,6 +49,7 @@ final class SCFS_Integrated_Knowledge_Base {
         add_action('admin_enqueue_scripts', array($this, 'register_admin_assets'));
         add_action('admin_menu', array($this, 'register_admin_page'), 32);
         add_action('admin_init', array($this, 'maybe_repair_dedicated_page_route'), 5);
+        add_action('template_redirect', array($this, 'redirect_legacy_knowledge_base_routes'), 1);
         add_action('admin_init', array($this, 'maybe_import_documentation'), 45);
         add_action('admin_post_scfs_kb510_import', array($this, 'handle_import'));
         add_action('init', array($this, 'register_shortcodes'), 25);
@@ -72,7 +74,10 @@ final class SCFS_Integrated_Knowledge_Base {
 
     public static function activate() {
         $instance = self::instance();
-        $instance->ensure_dedicated_knowledge_base_page();
+        $page_id = $instance->ensure_dedicated_knowledge_base_page();
+        if ($page_id) {
+            $instance->persist_legacy_route_fallback($page_id);
+        }
         update_option(self::ROUTE_VERSION_OPTION, self::ROUTE_VERSION, false);
         $report = $instance->import_documentation('publish');
         update_option(self::REPORT_OPTION, $report, false);
@@ -81,11 +86,11 @@ final class SCFS_Integrated_Knowledge_Base {
         }
     }
 
-
     /**
-     * Repair the dedicated Knowledge Base page and rewrite rules once per route
-     * contract version. This also runs after in-place plugin upgrades where the
-     * WordPress activation hook is not called.
+     * Consolidate the former /support/knowledge-base/ page into the main
+     * Support Center once per route contract version. The published child page
+     * is retained as a compatibility target, but normal public requests are
+     * redirected to the embedded browser on /support/#knowledge-base.
      */
     public function maybe_repair_dedicated_page_route() {
         $page_id = $this->ensure_dedicated_knowledge_base_page();
@@ -98,14 +103,14 @@ final class SCFS_Integrated_Knowledge_Base {
         }
         if ($page_id) {
             update_option(self::DEDICATED_PAGE_OPTION, (int) $page_id, false);
-            $this->persist_dedicated_page_shortcode_repair($page_id);
+            $this->persist_legacy_route_fallback($page_id);
         }
     }
 
     /**
-     * Ensure /support/knowledge-base/ is a real published WordPress page. The
-     * support-article rewrite base is intentionally /support/guides/ so it can
-     * never capture this child-page route.
+     * Retain a published compatibility page for old bookmarks and environments
+     * where redirects are disabled. It no longer hosts a second Knowledge Base
+     * interface or duplicates the Support Center.
      */
     public function ensure_dedicated_knowledge_base_page() {
         if (!function_exists('get_page_by_path') || !function_exists('wp_insert_post')) {
@@ -118,31 +123,35 @@ final class SCFS_Integrated_Knowledge_Base {
             return 0;
         }
 
+        $fallback = $this->default_page_content();
         if ($page instanceof WP_Post) {
             $changes = array('ID' => $page->ID);
             if ($page->post_status !== 'publish') $changes['post_status'] = 'publish';
             if ((int) $page->post_parent !== (int) $support->ID) $changes['post_parent'] = (int) $support->ID;
             if ($page->post_name !== 'knowledge-base') $changes['post_name'] = 'knowledge-base';
-            if (trim((string) $page->post_title) === '' || $page->post_title === 'Knowledge Base') {
-                $changes['post_title'] = __('Support Knowledge Base', 'sustainable-catalyst-feature-suggestions');
+            if (trim((string) $page->post_title) === '' || in_array($page->post_title, array('Knowledge Base', 'Support Knowledge Base'), true)) {
+                $changes['post_title'] = __('Support Articles', 'sustainable-catalyst-feature-suggestions');
             }
-            if (trim((string) $page->post_content) === '') {
-                $changes['post_content'] = $this->default_page_content();
+            if ($this->is_managed_legacy_page_content($page->post_content) && trim((string) $page->post_content) !== trim($fallback)) {
+                $changes['post_content'] = $fallback;
             }
             if (count($changes) > 1) wp_update_post(wp_slash($changes));
+            update_post_meta($page->ID, self::LEGACY_ROUTE_META, self::ROUTE_VERSION);
             return (int) $page->ID;
         }
 
         $page_id = wp_insert_post(wp_slash(array(
             'post_type' => 'page',
             'post_status' => 'publish',
-            'post_title' => __('Support Knowledge Base', 'sustainable-catalyst-feature-suggestions'),
+            'post_title' => __('Support Articles', 'sustainable-catalyst-feature-suggestions'),
             'post_name' => 'knowledge-base',
             'post_parent' => (int) $support->ID,
-            'post_content' => $this->default_page_content(),
+            'post_content' => $fallback,
             'comment_status' => 'closed',
         )), true);
-        return is_wp_error($page_id) ? 0 : (int) $page_id;
+        if (is_wp_error($page_id)) return 0;
+        update_post_meta($page_id, self::LEGACY_ROUTE_META, self::ROUTE_VERSION);
+        return (int) $page_id;
     }
 
     private function default_page_content() {
@@ -151,7 +160,17 @@ final class SCFS_Integrated_Knowledge_Base {
             $content = file_get_contents($path);
             if (is_string($content) && trim($content) !== '') return $content;
         }
-        return '<main class="sc-kb-page"><header class="sc-kb-page__hero"><p class="sc-kb-page__eyebrow">' . esc_html__('Sustainable Catalyst Support', 'sustainable-catalyst-feature-suggestions') . '</p><h1>' . esc_html__('Support Knowledge Base', 'sustainable-catalyst-feature-suggestions') . '</h1><p class="sc-kb-page__lede">' . esc_html__('Browse verified product guidance, worked examples, troubleshooting, and release-aware support articles.', 'sustainable-catalyst-feature-suggestions') . '</p></header><section class="sc-kb-page__library">[scfs_support_knowledge_base]</section></main>';
+        $url = $this->dedicated_knowledge_base_url();
+        return '<main class="sc-kb-legacy-route"><p class="scfs-kb-eyebrow">' . esc_html__('Sustainable Catalyst Support', 'sustainable-catalyst-feature-suggestions') . '</p><h1>' . esc_html__('Support Articles have moved', 'sustainable-catalyst-feature-suggestions') . '</h1><p>' . esc_html__('The complete Knowledge Base now lives inside the unified Support Center.', 'sustainable-catalyst-feature-suggestions') . '</p><p><a href="' . esc_url($url) . '">' . esc_html__('Open Support Articles', 'sustainable-catalyst-feature-suggestions') . ' →</a></p></main>';
+    }
+
+    private function is_managed_legacy_page_content($content) {
+        $content = (string) $content;
+        return trim($content) === ''
+            || strpos($content, 'sc-kb-page') !== false
+            || strpos($content, 'sc-kb-legacy-route') !== false
+            || has_shortcode($content, SCFS_Knowledge_Base_Foundation::SHORTCODE)
+            || has_shortcode($content, SCFS_Knowledge_Base_Foundation::LEGACY_SHORTCODE);
     }
 
     private function is_dedicated_knowledge_base_page() {
@@ -165,33 +184,86 @@ final class SCFS_Integrated_Knowledge_Base {
         return $parent instanceof WP_Post && $parent->post_name === 'support';
     }
 
+    /**
+     * Legacy filter entry point retained for backward compatibility. v5.2.6 no
+     * longer injects a second browser into the former Knowledge Base page.
+     */
     public function repair_dedicated_page_shortcode($content) {
-        if (!$this->is_dedicated_knowledge_base_page()) return $content;
-        $without_comments = preg_replace('/<!--.*?-->/s', '', (string) $content);
-        if (has_shortcode((string) $without_comments, SCFS_Knowledge_Base_Foundation::SHORTCODE)
-            || has_shortcode((string) $without_comments, SCFS_Knowledge_Base_Foundation::LEGACY_SHORTCODE)) {
-            return $content;
-        }
-        $shortcode = '[' . SCFS_Knowledge_Base_Foundation::SHORTCODE . ']';
-        $repaired = preg_replace('/<!--(?:(?!-->).)*\[' . preg_quote(SCFS_Knowledge_Base_Foundation::SHORTCODE, '/') . '(?:[^\]]*)\](?:(?!-->).)*-->/s', $shortcode, (string) $content, 1, $count);
-        if ($count > 0) return $repaired;
-        $pattern = '/(<section\b[^>]*class=(?:"[^"]*\bsc-kb-page__library\b[^"]*"|\'[^\']*\bsc-kb-page__library\b[^\']*\')[^>]*>)(.*?)(<\/section>)/is';
-        if (preg_match($pattern, (string) $content)) {
-            return preg_replace($pattern, '$1' . "\n" . $shortcode . "\n" . '$3', (string) $content, 1);
-        }
-        return (string) $content . "\n<section class=\"sc-kb-page__library\" aria-label=\"Sustainable Catalyst Support Knowledge Base\">\n" . $shortcode . "\n</section>";
+        return $content;
     }
 
+    /**
+     * Legacy method name retained for third-party calls. It now writes the
+     * compact route-consolidation fallback rather than reinserting a shortcode.
+     */
     private function persist_dedicated_page_shortcode_repair($page_id) {
+        $this->persist_legacy_route_fallback($page_id);
+    }
+
+    private function persist_legacy_route_fallback($page_id) {
         $page = get_post(absint($page_id));
         if (!($page instanceof WP_Post)) return;
-        $without_comments = preg_replace('/<!--.*?-->/s', '', (string) $page->post_content);
-        if (has_shortcode((string) $without_comments, SCFS_Knowledge_Base_Foundation::SHORTCODE)) return;
-        $shortcode = '[' . SCFS_Knowledge_Base_Foundation::SHORTCODE . ']';
-        $repaired = preg_replace('/<!--(?:(?!-->).)*\[' . preg_quote(SCFS_Knowledge_Base_Foundation::SHORTCODE, '/') . '(?:[^\]]*)\](?:(?!-->).)*-->/s', $shortcode, (string) $page->post_content, 1, $count);
-        if ($count > 0 && $repaired !== $page->post_content) {
-            wp_update_post(wp_slash(array('ID' => $page->ID, 'post_content' => $repaired)));
+        $fallback = $this->default_page_content();
+        if ($this->is_managed_legacy_page_content($page->post_content) && trim((string) $page->post_content) !== trim($fallback)) {
+            wp_update_post(wp_slash(array('ID' => $page->ID, 'post_content' => $fallback)));
         }
+        update_post_meta($page->ID, self::LEGACY_ROUTE_META, self::ROUTE_VERSION);
+    }
+
+    /**
+     * Redirect old Knowledge Base landing routes to the browser embedded in the
+     * main Support page. Support Article permalinks under /support/guides/ are
+     * deliberately excluded and remain unchanged.
+     */
+    public function redirect_legacy_knowledge_base_routes() {
+        if (is_admin() || (function_exists('wp_doing_ajax') && wp_doing_ajax()) || (defined('REST_REQUEST') && REST_REQUEST)) return;
+        $is_legacy_page = $this->is_dedicated_knowledge_base_page();
+        $is_legacy_archive = function_exists('is_post_type_archive') && is_post_type_archive(SCFS_Knowledge_Base_Foundation::ARTICLE_POST_TYPE);
+        if (!$is_legacy_page && !$is_legacy_archive && !$this->request_matches_legacy_knowledge_base_path()) return;
+        $target = $this->legacy_route_target_url();
+        if ($target === '') return;
+        wp_safe_redirect($target, 301, 'Sustainable Catalyst Product Support and Feedback Platform');
+        exit;
+    }
+
+    private function request_matches_legacy_knowledge_base_path() {
+        if (empty($_SERVER['REQUEST_URI'])) return false;
+        $path = wp_parse_url(wp_unslash($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+        if (!is_string($path)) return false;
+        $home_path = wp_parse_url(home_url('/'), PHP_URL_PATH);
+        $home_path = is_string($home_path) ? untrailingslashit($home_path) : '';
+        $path = trailingslashit('/' . ltrim($path, '/'));
+        $legacy_paths = array(
+            trailingslashit($home_path . '/support/knowledge-base'),
+            trailingslashit($home_path . '/support-documentation'),
+        );
+        return in_array($path, $legacy_paths, true);
+    }
+
+    private function legacy_route_target_url() {
+        $args = array('scfs_support_view' => 'documentation');
+        $text_keys = array('scfs_kb_search');
+        $slug_keys = array('scfs_kb_product', 'scfs_kb_version', 'scfs_kb_section', 'scfs_kb_component', 'scfs_kb_type');
+        foreach ($text_keys as $key) {
+            if (isset($_GET[$key]) && trim((string) $_GET[$key]) !== '') $args[$key] = sanitize_text_field(wp_unslash($_GET[$key]));
+        }
+        foreach ($slug_keys as $key) {
+            if (isset($_GET[$key]) && trim((string) $_GET[$key]) !== '') $args[$key] = sanitize_title(wp_unslash($_GET[$key]));
+        }
+        if (!empty($_GET['scfs_kb_page'])) $args['scfs_kb_page'] = max(1, absint($_GET['scfs_kb_page']));
+        return add_query_arg($args, $this->support_page_url()) . '#knowledge-base';
+    }
+
+    private function support_page_url() {
+        $base = home_url('/support/');
+        if (function_exists('get_page_by_path')) {
+            $support = get_page_by_path('support', OBJECT, 'page');
+            if ($support instanceof WP_Post && $support->post_status === 'publish') {
+                $resolved = get_permalink($support);
+                if ($resolved) $base = $resolved;
+            }
+        }
+        return apply_filters('scfs_integrated_kb_support_url', $base);
     }
 
     public function register_assets() {
@@ -222,8 +294,8 @@ final class SCFS_Integrated_Knowledge_Base {
     public function keep_knowledge_base_navigation($items, $settings, $product, $respect_content) {
         if (!isset($items['documentation'])) {
             $documentation = array(
-                'label' => __('Knowledge Base', 'sustainable-catalyst-feature-suggestions'),
-                'description' => __('Product guides and troubleshooting', 'sustainable-catalyst-feature-suggestions'),
+                'label' => __('Support Articles', 'sustainable-catalyst-feature-suggestions'),
+                'description' => __('Search product guides and troubleshooting', 'sustainable-catalyst-feature-suggestions'),
             );
             $rebuilt = array();
             foreach ((array) $items as $key => $item) {
@@ -727,25 +799,11 @@ final class SCFS_Integrated_Knowledge_Base {
     }
 
     private function dedicated_knowledge_base_url($product_slug = '', $section_slug = '') {
-        $base = home_url('/support/knowledge-base/');
-        $page_id = absint(get_option(self::DEDICATED_PAGE_OPTION, 0));
-        if ($page_id && get_post_status($page_id) === 'publish') {
-            $resolved = get_permalink($page_id);
-            if ($resolved) $base = $resolved;
-        } elseif (function_exists('get_page_by_path')) {
-            $page = get_page_by_path('support/knowledge-base', OBJECT, 'page');
-            if ($page instanceof WP_Post && $page->post_status === 'publish') {
-                $resolved = get_permalink($page);
-                if ($resolved) $base = $resolved;
-            }
-        }
-        $base = apply_filters('scfs_integrated_kb_dedicated_url', $base);
-        $args = array();
+        $base = apply_filters('scfs_integrated_kb_dedicated_url', $this->support_page_url());
+        $args = array('scfs_support_view' => 'documentation');
         if ($product_slug !== '') $args['scfs_kb_product'] = sanitize_title($product_slug);
         if ($section_slug !== '') $args['scfs_kb_section'] = sanitize_title($section_slug);
-        $url = $args ? add_query_arg($args, $base) : $base;
-        if ($product_slug !== '' && $section_slug !== '') $url .= '#scfs-kb-' . sanitize_title($product_slug) . '-' . sanitize_title($section_slug);
-        return $url;
+        return add_query_arg($args, $base) . '#knowledge-base';
     }
 
     private function article_matches_search($post, $search) {
@@ -850,7 +908,7 @@ final class SCFS_Integrated_Knowledge_Base {
             'intro' => __('Open a product, choose a documentation category, or search the complete Support Knowledge Base.', 'sustainable-catalyst-feature-suggestions'),
             'products' => '6',
             'open_first' => '1',
-            'button_label' => __('Open the full Knowledge Base', 'sustainable-catalyst-feature-suggestions'),
+            'button_label' => __('Browse all support articles', 'sustainable-catalyst-feature-suggestions'),
             'knowledge_base_url' => '',
         ), $atts, self::COMPACT_SHORTCODE);
         wp_enqueue_style('scfs-knowledge-base');
@@ -881,13 +939,13 @@ final class SCFS_Integrated_Knowledge_Base {
                 if (!$articles) continue;
                 echo '<details class="scfs-support-library-compact__topic"><summary><span><strong>' . esc_html($section['name']) . '</strong><small>' . esc_html($section['description']) . '</small></span><em>' . esc_html(sprintf(_n('%d guide', '%d guides', count($articles), 'sustainable-catalyst-feature-suggestions'), count($articles))) . '</em></summary><div class="scfs-support-library-compact__articles">';
                 foreach ($articles as $post) $this->render_library_article_row($post);
-                echo '<a class="scfs-support-library-compact__category-link" href="' . esc_url($this->dedicated_knowledge_base_url($product_slug, $section_slug)) . '">' . esc_html__('View this category in the full Knowledge Base', 'sustainable-catalyst-feature-suggestions') . ' →</a>';
+                echo '<a class="scfs-support-library-compact__category-link" href="' . esc_url($this->dedicated_knowledge_base_url($product_slug, $section_slug)) . '">' . esc_html__('View this category in Support', 'sustainable-catalyst-feature-suggestions') . ' →</a>';
                 echo '</div></details>';
             }
             echo '</div></details>';
             $shown++;
         }
-        echo '</div><div class="scfs-support-library-compact__footer"><p>' . esc_html__('Browse every product, category, known issue, and verified guide in the complete documentation catalog.', 'sustainable-catalyst-feature-suggestions') . '</p><a class="scfs-support-library-compact__button" href="' . esc_url($base_url) . '">' . esc_html($atts['button_label']) . ' →</a></div></section>';
+        echo '</div><div class="scfs-support-library-compact__footer"><p>' . esc_html__('Browse every product, version, category, and verified guide without leaving the Support Center.', 'sustainable-catalyst-feature-suggestions') . '</p><a class="scfs-support-library-compact__button" href="' . esc_url($base_url) . '">' . esc_html($atts['button_label']) . ' →</a></div></section>';
         return ob_get_clean();
     }
 
@@ -971,7 +1029,7 @@ final class SCFS_Integrated_Knowledge_Base {
         }
         echo '</div></section></aside>';
 
-        echo '<main class="scfs-kb-library-results">';
+        echo '<div class="scfs-kb-library-results" role="region" aria-label="' . esc_attr__('Support Article results', 'sustainable-catalyst-feature-suggestions') . '">';
         $active_product = $product_filter !== '' && isset($available_products[$product_filter]) ? $available_products[$product_filter] : null;
         echo '<header class="scfs-kb-library-results-header"><div><p class="scfs-kb-eyebrow">' . esc_html__('Support Articles', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html($active_product ? $active_product['name'] : __('All products', 'sustainable-catalyst-feature-suggestions')) . '</h3>' . ($active_product ? '<p>' . esc_html($active_product['description']) . '</p>' : '') . '</div><span>' . esc_html(sprintf(_n('%d result', '%d results', count($results), 'sustainable-catalyst-feature-suggestions'), count($results))) . '</span></header>';
 
@@ -983,7 +1041,7 @@ final class SCFS_Integrated_Knowledge_Base {
         echo '<div class="scfs-kb-library-results-list">';
         if (!$results) echo '<div class="scfs-kb-empty"><h3>' . esc_html__('No matching support articles', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Try a different product, version, category, component, or search phrase.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         else foreach ($results as $post) $this->render_library_article_row($post);
-        echo '</div></main></div></section>';
+        echo '</div></div></div></section>';
         return ob_get_clean();
     }
 
@@ -1055,7 +1113,7 @@ final class SCFS_Integrated_Knowledge_Base {
 
         ob_start();
         echo '<article class="scfs-kb-publication">';
-        echo '<nav class="scfs-kb-publication-breadcrumbs" aria-label="' . esc_attr__('Breadcrumbs', 'sustainable-catalyst-feature-suggestions') . '"><a href="' . esc_url($kb_url) . '">' . esc_html__('Knowledge Base', 'sustainable-catalyst-feature-suggestions') . '</a><span aria-hidden="true">/</span><a href="' . esc_url($product_url) . '">' . esc_html($meta['product_name']) . '</a><span aria-hidden="true">/</span><span aria-current="page">' . esc_html($meta['section_name']) . '</span></nav>';
+        echo '<nav class="scfs-kb-publication-breadcrumbs" aria-label="' . esc_attr__('Breadcrumbs', 'sustainable-catalyst-feature-suggestions') . '"><a href="' . esc_url($kb_url) . '">' . esc_html__('Support Articles', 'sustainable-catalyst-feature-suggestions') . '</a><span aria-hidden="true">/</span><a href="' . esc_url($product_url) . '">' . esc_html($meta['product_name']) . '</a><span aria-hidden="true">/</span><span aria-current="page">' . esc_html($meta['section_name']) . '</span></nav>';
         echo '<header class="scfs-kb-publication-header"><p class="scfs-kb-publication-kicker">' . esc_html($meta['section_name']) . '</p><h1>' . esc_html(get_the_title($post_id)) . '</h1>' . ($summary ? '<p class="scfs-kb-publication-deck">' . esc_html($summary) . '</p>' : '') . '<div class="scfs-kb-publication-meta">';
         foreach ($this->publication_meta_items($post_id, $meta) as $item) echo '<span><strong>' . esc_html($item[0]) . '</strong>' . esc_html($item[1]) . '</span>';
         echo '</div></header>';

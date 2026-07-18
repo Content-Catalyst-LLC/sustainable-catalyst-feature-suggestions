@@ -868,3 +868,47 @@ body .scfs-support-platform :where(.scfs-form input, .scfs-form select, .scfs-fo
     animation-iteration-count: 1 !important;
   }
 }
+
+/* v5.2.6 Unified Support Center and embedded Knowledge Base browser */
+
+.scfs-support-platform__knowledge-base {
+  min-width: 0;
+  scroll-margin-top: 96px;
+}
+
+.scfs-support-platform__workspace > .scfs-support-platform__knowledge-base {
+  margin-top: 42px;
+  padding-top: 38px;
+  border-top: 1px solid var(--scfs-token-line);
+}
+
+.scfs-support-platform__workspace > .scfs-support-platform__knowledge-base--dedicated {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.scfs-support-platform__knowledge-base .scfs-kb-library-masthead {
+  margin-top: 0;
+}
+
+.scfs-support-platform__knowledge-base .scfs-kb-library-layout {
+  width: 100%;
+  min-width: 0;
+}
+
+.scfs-support-platform__knowledge-base .scfs-kb-library-results {
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .scfs-support-platform__workspace > .scfs-support-platform__knowledge-base {
+    margin-top: 30px;
+    padding-top: 26px;
+  }
+
+  .scfs-support-platform__workspace > .scfs-support-platform__knowledge-base--dedicated {
+    margin-top: 0;
+    padding-top: 0;
+  }
+}

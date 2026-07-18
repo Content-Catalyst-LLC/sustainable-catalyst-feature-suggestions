@@ -1,5 +1,5 @@
 /*
- * Sustainable Catalyst Feature Suggestions v5.0.0
+ * Sustainable Catalyst Product Support and Feedback Platform v5.2.6
  * Navigation and Embedded Pathway Reliability
  */
 (function () {
@@ -28,7 +28,7 @@
     if (survey) {
       url.searchParams.set('scfs_support_survey', survey);
     }
-    url.hash = root.dataset.scfsAnchor || 'support-center';
+    url.hash = view === 'documentation' ? 'knowledge-base' : (root.dataset.scfsAnchor || 'support-center');
     return url.toString();
   }
 
@@ -141,6 +141,14 @@
         survey: payload.survey || survey,
         workspace: workspace
       });
+      if ((payload.view || view) === 'documentation') {
+        window.requestAnimationFrame(function () {
+          var browser = root.querySelector('#knowledge-base');
+          if (browser) {
+            browser.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+          }
+        });
+      }
     } catch (error) {
       window.location.assign(targetUrl);
     } finally {

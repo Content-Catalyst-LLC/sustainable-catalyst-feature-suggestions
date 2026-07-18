@@ -1,14 +1,15 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.2.5
+## Current release: v5.2.6
 
-**Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles**
+**Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation**
 
-Version 5.2.5 presents the plugin publicly as the Sustainable Catalyst Product Support and Feedback Platform while preserving the legacy repository slug, text domain, `scfs_*` contracts, custom post types, REST routes, options, data, and URLs. It repairs executable Knowledge Base rendering, introduces a compact two-panel library browser, and gives Support Articles the same editorial visual language as Sustainable Catalyst publications.
+Version 5.2.6 makes the main `/support/` page the canonical destination for the complete support experience. Guided Resolution and the two-panel Support Article browser now appear together, while the former `/support/knowledge-base/` and `/support-documentation/` landing routes redirect to `/support/?scfs_support_view=documentation#knowledge-base`. Existing Support Article URLs, shortcodes, CPTs, REST routes, settings, taxonomies, and data remain unchanged.
 
 - Primary public shortcode: `[scfs_product_support_center]`
-- Dedicated Knowledge Base shortcode: `[scfs_support_knowledge_base]`
-- Compact library shortcode: `[scfs_support_library_compact]`
+- Standalone Knowledge Base shortcode retained: `[scfs_support_knowledge_base]`
+- Canonical Support Articles location: `/support/#knowledge-base`
+- Existing Support Article permalink base retained: `/support/guides/`
 
 ## Version 5.1.0 — Integrated Knowledge Base and Documentation Library
 
@@ -144,12 +145,14 @@ Public Knowledge Base shortcode:
 [scfs_support_knowledge_base]
 ```
 
-Default archive routes:
+Current public routes:
 
 ```text
-/support-knowledge-base/
+/support/#knowledge-base
 /known-issues/
 ```
+
+The historical `/support-knowledge-base/`, `/support-documentation/`, and `/support/knowledge-base/` landing routes are retained only for compatibility and redirect to the unified Support Center.
 
 Support Articles and Known Issues reuse the shared Product, Product Version, Component, Issue Type, and Release taxonomies from v3.1.0. They may be connected to reviewed feature suggestions, but private suggestion text and contact information are never exposed publicly. Contact and Engagement remains the private support-case and communication platform.
 
@@ -260,3 +263,7 @@ wp scfs migrate-product-taxonomies --batch=200
 ```
 
 The release also defines the private, review-gated `sc-contact-engagement-handoff/1.0` contract. It allows an authorized integration to create or enrich a Contact and Engagement support case without merging private case management into the public feedback platform. See `docs/product-taxonomy-platform-integration.md` and `docs/contact-engagement-handoff-contract.md`.
+
+## macOS validation runtime
+
+The repaired v5.2.6 installer uses Python 3.12 or 3.13 for the isolated FastAPI validation environment. Python 3.14 is intentionally rejected for this release because the pinned `pydantic-core` dependency would otherwise fall back to a local Rust build on affected systems. Install the recommended interpreter with `brew install python@3.13`.

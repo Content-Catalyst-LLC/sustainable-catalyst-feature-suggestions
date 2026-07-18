@@ -1,5 +1,16 @@
 # Changelog
 
+## 5.2.6 — Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation
+
+- Makes the main `/support/` page the canonical public Support Center and embeds the complete two-panel Support Article browser directly below Guided Resolution and inside the Support overview.
+- Renames the public documentation navigation item to Support Articles and removes the now-redundant documentation pathway card.
+- Consolidates `/support/knowledge-base/` and `/support-documentation/` into `/support/?scfs_support_view=documentation#knowledge-base` using permanent redirects.
+- Preserves Knowledge Base search and filter parameters during legacy-route redirects.
+- Replaces plugin-managed legacy page content with a compact compatibility fallback instead of a second browser.
+- Preserves all Support Article URLs under `/support/guides/`, CPTs, REST routes, options, shortcodes, taxonomies, metadata, relationships, and publication-parity rendering.
+- Replaces the nested results `<main>` landmark with an embeddable region for valid page structure.
+- Adds v5.2.6 route, unified-interface, backward-compatibility, CSS, manifest, and package validation.
+
 ## 5.2.5 — Product Support and Feedback Platform Rebrand, Knowledge Base Rendering Repair, Library Browser Redesign, and Publication-Parity Support Articles
 
 - Rebrands the public plugin and WordPress navigation as the Sustainable Catalyst Product Support and Feedback Platform while retaining the `sustainable-catalyst-feature-suggestions` slug, text domain, main PHP class, `scfs_*` identifiers, custom post types, settings, REST routes, database records, and existing URLs.

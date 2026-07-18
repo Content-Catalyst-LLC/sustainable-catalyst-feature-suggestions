@@ -56,7 +56,7 @@ $checks = array(
     'anchor exposed' => strpos($html, 'data-scfs-anchor="support-center"') !== false,
     'current view exposed' => strpos($html, 'data-scfs-current-view="private-support"') !== false,
     'navigation links carry view data' => strpos($html, 'data-scfs-support-view="documentation"') !== false,
-    'fallback link returns to support center' => strpos($html, 'scfs_support_view=documentation#support-center') !== false,
+    'documentation fallback targets embedded browser' => strpos($html, 'scfs_support_view=documentation#knowledge-base') !== false,
     'workspace announces updates' => strpos($html, 'aria-live="polite"') !== false,
     'workspace exposes active view' => strpos($html, 'data-scfs-view="private-support"') !== false,
 );
