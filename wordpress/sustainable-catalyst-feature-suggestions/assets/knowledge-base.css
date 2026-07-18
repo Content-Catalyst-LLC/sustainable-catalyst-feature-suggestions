@@ -654,7 +654,7 @@ body.single-sc_support_article.scfs-kb-full-width .entry-content {
 }
 
 /* ================================================================
-   v5.2.0 Support Documentation Library and expandable category index
+   v5.2.1 Support Documentation Library and expandable category index
    ================================================================ */
 .scfs-support-library{--scfs-library-paper:#fbfaf7;--scfs-library-panel:#f4f1eb;--scfs-library-border:#d8d2c8;--scfs-library-maroon:#6f1225;max-width:1240px;margin-inline:auto}
 .scfs-support-library-controls{display:grid;grid-template-columns:auto auto 1fr auto auto;gap:8px;align-items:center;margin:22px 0 16px;padding:10px;border:1px solid var(--scfs-library-border);background:#fff}
@@ -708,4 +708,134 @@ body.single-sc_support_article.scfs-kb-full-width .entry-content {
   .scfs-support-library-controls{display:none!important}
   .scfs-support-library-view[hidden]{display:block!important}
   .scfs-support-library-category,.scfs-kb-product-folder,.scfs-kb-section-folder{display:block!important}
+}
+
+/* v5.2.1 Support page library interface */
+.scfs-support-page-library-entry {
+  width: 100%;
+  margin: 0 0 2rem;
+}
+.scfs-support-page-library-entry + * {
+  margin-top: 2rem;
+}
+.scfs-support-library {
+  --scfs-library-cream: #f7f1e7;
+  --scfs-library-border: #d7cec0;
+  --scfs-library-red: #a51d2d;
+  background: #fff;
+  border-top: 4px solid #111;
+  color: #111;
+}
+.scfs-support-library .scfs-kb-modern-hero {
+  background: #fff;
+  border-bottom: 1px solid #111;
+  padding: clamp(1.5rem, 3vw, 2.6rem);
+}
+.scfs-support-library .scfs-kb-modern-hero h2 {
+  max-width: 900px;
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  line-height: .98;
+  letter-spacing: -.045em;
+}
+.scfs-support-library .scfs-kb-modern-search {
+  background: #111;
+  color: #fff;
+  border: 0;
+  border-radius: 0;
+  padding: 1rem;
+  grid-template-columns: minmax(0, 2fr) minmax(180px, .8fr) auto;
+}
+.scfs-support-library .scfs-kb-modern-search input,
+.scfs-support-library .scfs-kb-modern-search select {
+  background: #fff;
+  border: 1px solid #fff;
+  min-height: 46px;
+}
+.scfs-support-library .scfs-kb-modern-search button {
+  background: var(--scfs-library-red);
+  border-color: var(--scfs-library-red);
+  min-height: 46px;
+}
+.scfs-support-library-controls {
+  border: 1px solid var(--scfs-library-border);
+  background: var(--scfs-library-cream);
+  padding: .55rem;
+}
+.scfs-support-library-controls button {
+  border-radius: 0;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+}
+.scfs-support-library-controls button.is-active {
+  background: #111;
+  color: #fff;
+}
+.scfs-support-library-heading {
+  border-bottom: 4px solid #111;
+  padding-bottom: 1rem;
+  margin-bottom: 0;
+}
+.scfs-kb-product-folders {
+  border: 1px solid var(--scfs-library-border);
+  border-top: 0;
+}
+.scfs-kb-product-folder {
+  background: #fff;
+  border: 0;
+  border-bottom: 1px solid var(--scfs-library-border);
+  border-radius: 0;
+}
+.scfs-kb-product-folder > summary {
+  min-height: 72px;
+  padding: 1rem 1.1rem;
+  background: #fff;
+}
+.scfs-kb-product-folder[open] > summary {
+  background: var(--scfs-library-cream);
+  border-left: 4px solid var(--scfs-library-red);
+}
+.scfs-kb-product-folder > summary::after,
+.scfs-kb-section-folder > summary::after {
+  content: '+';
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-left: .75rem;
+}
+.scfs-kb-product-folder[open] > summary::after,
+.scfs-kb-section-folder[open] > summary::after {
+  content: '−';
+}
+.scfs-kb-folder-mark { display: none; }
+.scfs-kb-section-folders {
+  padding: .75rem 1rem 1rem;
+  background: #fff;
+}
+.scfs-kb-section-folder {
+  border: 1px solid var(--scfs-library-border);
+  border-radius: 0;
+  margin-top: .55rem;
+}
+.scfs-kb-section-folder > summary {
+  padding: .8rem 1rem;
+  background: #fff;
+}
+.scfs-kb-section-folder[open] > summary {
+  background: #f4f4f4;
+}
+.scfs-support-library-article {
+  border-radius: 0;
+  border-left: 3px solid var(--scfs-library-red);
+  background: var(--scfs-library-cream);
+}
+.scfs-support-library-product,
+.scfs-support-library .scfs-kb-eyebrow {
+  color: var(--scfs-library-red);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+@media (max-width: 760px) {
+  .scfs-support-library .scfs-kb-modern-search { grid-template-columns: 1fr; }
+  .scfs-support-library-controls { align-items: stretch; }
+  .scfs-support-library-controls button { width: 100%; }
 }

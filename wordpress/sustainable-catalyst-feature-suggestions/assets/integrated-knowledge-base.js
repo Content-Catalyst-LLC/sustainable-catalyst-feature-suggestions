@@ -29,11 +29,11 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.scfs-support-library').forEach(function (library) {
-      var stored = 'categories';
+      var stored = 'products';
       try {
-        stored = window.sessionStorage.getItem('scfs-support-library-view') || 'categories';
+        stored = window.sessionStorage.getItem('scfs-support-library-view') || 'products';
       } catch (error) {}
-      if (!library.querySelector('[data-scfs-library-panel="' + stored + '"]')) stored = 'categories';
+      if (!library.querySelector('[data-scfs-library-panel="' + stored + '"]')) stored = 'products';
       setView(library, stored);
     });
   });

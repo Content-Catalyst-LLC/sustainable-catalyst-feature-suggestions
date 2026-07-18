@@ -12,8 +12,8 @@ $checks = array(
     'publication style section rule' => strpos($css, '.scfs-kb-article-content h2::after') !== false,
     'publication style breakout tables' => strpos($css, '.sckb-table-wrap') !== false && strpos($css, 'transform:translateX(-50%)') !== false,
     'directory expanded by default' => strpos($php, 'data-scfs-kb-category open') !== false,
-    'product folders expanded by default' => strpos($php, 'data-scfs-kb-product open') !== false,
-    'section folders expanded by default' => strpos($php, 'class="scfs-kb-section-folder" open') !== false,
+    'first product opens by default' => strpos($php, '$product_index === 0') !== false,
+    'section folders compact by default' => strpos($php, 'class="scfs-kb-section-folder"><summary>') !== false,
 );
 foreach ($checks as $label => $ok) { if (!$ok) { fwrite(STDERR, "FAIL: $label\n"); exit(1); } }
 echo 'PASS - ' . count($checks) . " Knowledge Base article header checks\n";

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-VERSION="5.2.0"
+VERSION="5.2.1"
 INSTALLER_REVISION="V5_2_0"
-RELEASE_NAME="Support Documentation Library and Expandable Category Index"
+RELEASE_NAME="Support Page Library Interface and Automatic Knowledge Base Rendering"
 REPOSITORY="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${HOME}/Downloads"
 WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v520.XXXXXX")"
@@ -64,8 +64,8 @@ SOURCE_ARCHIVE="$($PYTHON_BIN - "$DOWNLOADS_DIR" <<'PY'
 from pathlib import Path
 import sys
 root=Path(sys.argv[1])
-files=list(root.glob('sustainable-catalyst-feature-suggestions-v5.2.0-repo*.zip'))
-files+=list(root.glob('sustainable-catalyst-feature-suggestions-v5.2.0-release-bundle*.zip'))
+files=list(root.glob('sustainable-catalyst-feature-suggestions-v5.2.1-repo*.zip'))
+files+=list(root.glob('sustainable-catalyst-feature-suggestions-v5.2.1-release-bundle*.zip'))
 if files:
     repaired=[p for p in files if 'REPAIRED' in p.name.upper()]
     candidates=repaired or files
@@ -73,7 +73,7 @@ if files:
 PY
 )"
 if [ -z "$SOURCE_ARCHIVE" ] || [ ! -f "$SOURCE_ARCHIVE" ]; then
-  echo "ERROR: No v5.2.0 repository ZIP or release bundle was found in ~/Downloads."
+  echo "ERROR: No v5.2.1 repository ZIP or release bundle was found in ~/Downloads."
   exit 1
 fi
 
@@ -83,7 +83,7 @@ unzip -q "$SOURCE_ARCHIVE" -d "$STAGE_DIR"
 # A release bundle contains its own manifest plus an embedded repository ZIP.
 # Always prefer the embedded repository ZIP when present; the bundle root is
 # packaging metadata, not the source tree that should replace GitHub main.
-INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.2.0-repo*.zip' -print -quit)"
+INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.2.1-repo*.zip' -print -quit)"
 if [ -n "$INNER_ZIP" ]; then
   mkdir -p "$STAGE_DIR/repository-package"
   unzip -q "$INNER_ZIP" -d "$STAGE_DIR/repository-package"
@@ -92,7 +92,7 @@ else
   MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 fi
 if [ -z "$MANIFEST_PATH" ]; then
-  echo "ERROR: Could not locate the v5.2.0 repository root."
+  echo "ERROR: Could not locate the v5.2.1 repository root."
   exit 1
 fi
 PACKAGE_ROOT="$(dirname "$MANIFEST_PATH")"
@@ -145,7 +145,7 @@ KB_JS="wordpress/sustainable-catalyst-feature-suggestions/assets/integrated-know
 KB_CORPUS="wordpress/sustainable-catalyst-feature-suggestions/content/knowledge-base/articles.json"
 BACKEND_MAIN="backend/app/main.py"
 if [ ! -f "$MAIN_PLUGIN" ] || [ ! -f "$KB_CLASS" ] || [ ! -f "$KB_CSS" ] || [ ! -f "$KB_JS" ] || [ ! -f "$KB_CORPUS" ] || [ ! -f "$BACKEND_MAIN" ]; then
-  echo "ERROR: Required WordPress, Knowledge Base, corpus, or FastAPI v5.2.0 files are missing."
+  echo "ERROR: Required WordPress, Knowledge Base, corpus, or FastAPI v5.2.1 files are missing."
   exit 1
 fi
 MARKER_RESULT="$($PYTHON_BIN - "$MAIN_PLUGIN" "$KB_CLASS" "$BACKEND_MAIN" <<'PY'
@@ -165,12 +165,12 @@ $MARKER_RESULT
 EOF
 
 echo "Detected versions: WordPress=${WP_VERSION:-missing}; Knowledge Base=${KB_VERSION:-missing}; FastAPI=${BACKEND_VERSION:-missing}"
-if [ "$WP_VERSION" != "5.2.0" ] || [ "$KB_VERSION" != "5.2.0" ]; then
-  echo "ERROR: Expected WordPress and Knowledge Base v5.2.0."
+if [ "$WP_VERSION" != "5.2.1" ] || [ "$KB_VERSION" != "5.2.1" ]; then
+  echo "ERROR: Expected WordPress and Knowledge Base v5.2.1."
   exit 1
 fi
 
-# v5.2.0 is a WordPress/Knowledge Base presentation patch. The unchanged
+# v5.2.1 is a WordPress/Knowledge Base presentation patch. The unchanged
 # FastAPI service intentionally remains at v5.1.0.
 if [ "$BACKEND_VERSION" != "5.1.0" ]; then
   echo "ERROR: Expected compatible FastAPI backend v5.1.0."
@@ -211,15 +211,15 @@ fi
 echo "PASS - $PHP_TESTS WordPress test files, $PHP_CHECKS checks"
 
 if [ ! -f tests/test-v520-support-documentation-library.php ]; then
-  echo "ERROR: The v5.2.0 Support Documentation Library contract test is missing."
+  echo "ERROR: The v5.2.1 Support Documentation Library contract test is missing."
   exit 1
 fi
 LAYOUT_OUTPUT="$(php tests/test-v520-support-documentation-library.php)"
 printf '%s
 ' "$LAYOUT_OUTPUT"
 if ! printf '%s
-' "$LAYOUT_OUTPUT" | grep -Fq 'v5.2.0 support documentation library contract passed (18 checks).'; then
-  echo "ERROR: The v5.2.0 Support Documentation Library contract did not pass all 18 checks."
+' "$LAYOUT_OUTPUT" | grep -Fq 'v5.2.1 support documentation library contract passed (18 checks).'; then
+  echo "ERROR: The v5.2.1 Support Documentation Library contract did not pass all 18 checks."
   exit 1
 fi
 
@@ -294,12 +294,12 @@ HEADER_FILE="$WORK_DIR/plugin-header.php"
 KB_ZIP_FILE="$WORK_DIR/full-width-knowledge-base-class.php"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php > "$HEADER_FILE"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/includes/class-scfs-integrated-knowledge-base.php > "$KB_ZIP_FILE"
-if ! grep -Fq 'Version: 5.2.0' "$HEADER_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain plugin version 5.2.0."
+if ! grep -Fq 'Version: 5.2.1' "$HEADER_FILE"; then
+  echo "ERROR: WordPress distribution ZIP does not contain plugin version 5.2.1."
   exit 1
 fi
-if ! grep -Fq "const VERSION = '5.2.0';" "$KB_ZIP_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain the v5.2.0 Knowledge Base class."
+if ! grep -Fq "const VERSION = '5.2.1';" "$KB_ZIP_FILE"; then
+  echo "ERROR: WordPress distribution ZIP does not contain the v5.2.1 Knowledge Base class."
   exit 1
 fi
 ROOT_ENTRY_COUNT="$(zipinfo -1 dist/sustainable-catalyst-feature-suggestions.zip | awk -F/ 'NF && $1!=""{print $1}' | sort -u | wc -l | tr -d ' ')"
@@ -317,9 +317,9 @@ fi
 
 git add -A
 if git diff --cached --quiet; then
-  echo "No repository changes remain. v5.2.0 may already be installed."
+  echo "No repository changes remain. v5.2.1 may already be installed."
 else
-  git commit -m "Release Feature Suggestions v5.2.0 — Support Documentation Library and Expandable Category Index"
+  git commit -m "Release Feature Suggestions v5.2.1 — Support Page Library Interface and Automatic Knowledge Base Rendering"
 fi
 
 echo "Rebasing over any newer remote commits..."
@@ -330,5 +330,5 @@ git push origin main
 SUCCESS=1
 
 echo
-echo "Feature Suggestions v5.2.0 was validated, committed, and pushed successfully."
+echo "Feature Suggestions v5.2.1 was validated, committed, and pushed successfully."
 echo "Repository: $REPOSITORY"
