@@ -1,12 +1,10 @@
-## 5.1.1 - 2026-07-17
+## 5.1.2 - 2026-07-17
 
-- Converted public Knowledge Base archives and support articles to a full-width, no-sidebar layout.
-- Added Astra layout filters that remove the Publications sidebar at render time.
-- Added scoped compatibility CSS for Astra and common WordPress sidebar wrappers.
-- Expanded article, archive, table, related-guide, and sequence layouts while preserving readable line lengths.
-- Improved responsive article typography and mobile spacing.
-
-# Changelog
+### Changed
+- Matched Knowledge Base article presentation to Sustainable Catalyst publication articles while retaining support-specific metadata and controls.
+- Repaired the article title/header and removed duplicate theme-generated headings.
+- Expanded the Knowledge Base directory, product folders, and section folders by default.
+- Added publication-style tables, code blocks, contents, related guides, and previous/next navigation.
 
 ## 5.1.0 — Integrated Knowledge Base and Documentation Library
 

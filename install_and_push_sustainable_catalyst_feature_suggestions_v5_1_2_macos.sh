@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-VERSION="5.1.1"
-INSTALLER_REVISION="REPAIRED_V3"
-RELEASE_NAME="Knowledge Base Full-Width Reading Experience"
+VERSION="5.1.2"
+INSTALLER_REVISION="V5_1_2"
+RELEASE_NAME="Knowledge Base Publication-Parity Article Experience"
 REPOSITORY="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions.git"
 DOWNLOADS_DIR="${HOME}/Downloads"
-WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v511.XXXXXX")"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/scfs-v512.XXXXXX")"
 STAGE_DIR="${WORK_DIR}/stage"
 CLONE_DIR="${WORK_DIR}/repository"
 VENV_DIR="${WORK_DIR}/venv"
@@ -64,8 +64,8 @@ SOURCE_ARCHIVE="$($PYTHON_BIN - "$DOWNLOADS_DIR" <<'PY'
 from pathlib import Path
 import sys
 root=Path(sys.argv[1])
-files=list(root.glob('sustainable-catalyst-feature-suggestions-v5.1.1-repo*.zip'))
-files+=list(root.glob('sustainable-catalyst-feature-suggestions-v5.1.1-release-bundle*.zip'))
+files=list(root.glob('sustainable-catalyst-feature-suggestions-v5.1.2-repo*.zip'))
+files+=list(root.glob('sustainable-catalyst-feature-suggestions-v5.1.2-release-bundle*.zip'))
 if files:
     repaired=[p for p in files if 'REPAIRED' in p.name.upper()]
     candidates=repaired or files
@@ -73,7 +73,7 @@ if files:
 PY
 )"
 if [ -z "$SOURCE_ARCHIVE" ] || [ ! -f "$SOURCE_ARCHIVE" ]; then
-  echo "ERROR: No v5.1.1 repository ZIP or release bundle was found in ~/Downloads."
+  echo "ERROR: No v5.1.2 repository ZIP or release bundle was found in ~/Downloads."
   exit 1
 fi
 
@@ -82,9 +82,9 @@ unzip -q "$SOURCE_ARCHIVE" -d "$STAGE_DIR"
 
 MANIFEST_PATH="$(find "$STAGE_DIR" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 if [ -z "$MANIFEST_PATH" ]; then
-  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.1.1-repo*.zip' -print -quit)"
+  INNER_ZIP="$(find "$STAGE_DIR" -maxdepth 8 -type f -name 'sustainable-catalyst-feature-suggestions-v5.1.2-repo*.zip' -print -quit)"
   if [ -z "$INNER_ZIP" ]; then
-    echo "ERROR: The release archive does not contain the v5.1.1 repository."
+    echo "ERROR: The release archive does not contain the v5.1.2 repository."
     exit 1
   fi
   mkdir -p "$STAGE_DIR/repository-package"
@@ -92,7 +92,7 @@ if [ -z "$MANIFEST_PATH" ]; then
   MANIFEST_PATH="$(find "$STAGE_DIR/repository-package" -maxdepth 8 -type f -name feature_suggestions_manifest.json -print -quit)"
 fi
 if [ -z "$MANIFEST_PATH" ]; then
-  echo "ERROR: Could not locate the v5.1.1 repository root."
+  echo "ERROR: Could not locate the v5.1.2 repository root."
   exit 1
 fi
 PACKAGE_ROOT="$(dirname "$MANIFEST_PATH")"
@@ -145,7 +145,7 @@ KB_JS="wordpress/sustainable-catalyst-feature-suggestions/assets/integrated-know
 KB_CORPUS="wordpress/sustainable-catalyst-feature-suggestions/content/knowledge-base/articles.json"
 BACKEND_MAIN="backend/app/main.py"
 if [ ! -f "$MAIN_PLUGIN" ] || [ ! -f "$KB_CLASS" ] || [ ! -f "$KB_CSS" ] || [ ! -f "$KB_JS" ] || [ ! -f "$KB_CORPUS" ] || [ ! -f "$BACKEND_MAIN" ]; then
-  echo "ERROR: Required WordPress, Knowledge Base, corpus, or FastAPI v5.1.1 files are missing."
+  echo "ERROR: Required WordPress, Knowledge Base, corpus, or FastAPI v5.1.2 files are missing."
   exit 1
 fi
 MARKER_RESULT="$($PYTHON_BIN - "$MAIN_PLUGIN" "$KB_CLASS" "$BACKEND_MAIN" <<'PY'
@@ -165,12 +165,12 @@ $MARKER_RESULT
 EOF
 
 echo "Detected versions: WordPress=${WP_VERSION:-missing}; Knowledge Base=${KB_VERSION:-missing}; FastAPI=${BACKEND_VERSION:-missing}"
-if [ "$WP_VERSION" != "5.1.1" ] || [ "$KB_VERSION" != "5.1.1" ]; then
-  echo "ERROR: Expected WordPress and Knowledge Base v5.1.1."
+if [ "$WP_VERSION" != "5.1.2" ] || [ "$KB_VERSION" != "5.1.2" ]; then
+  echo "ERROR: Expected WordPress and Knowledge Base v5.1.2."
   exit 1
 fi
 
-# v5.1.1 is a WordPress/Knowledge Base presentation patch. The unchanged
+# v5.1.2 is a WordPress/Knowledge Base presentation patch. The unchanged
 # FastAPI service intentionally remains at v5.1.0.
 if [ "$BACKEND_VERSION" != "5.1.0" ]; then
   echo "ERROR: Expected compatible FastAPI backend v5.1.0."
@@ -210,14 +210,14 @@ if [ "$PHP_TESTS" -lt 39 ] || [ "$PHP_CHECKS" -lt 639 ]; then
 fi
 echo "PASS - $PHP_TESTS WordPress test files, $PHP_CHECKS checks"
 
-if [ ! -f tests/test-v511-layout.php ]; then
-  echo "ERROR: The v5.1.1 full-width layout contract test is missing."
+if [ ! -f tests/test-v512-article-header.php ]; then
+  echo "ERROR: The v5.1.2 publication-parity Knowledge Base contract test is missing."
   exit 1
 fi
-LAYOUT_OUTPUT="$(php tests/test-v511-layout.php)"
+LAYOUT_OUTPUT="$(php tests/test-v512-article-header.php)"
 printf '%s\n' "$LAYOUT_OUTPUT"
-if ! printf '%s\n' "$LAYOUT_OUTPUT" | grep -Fq '15 checks passed'; then
-  echo "ERROR: The v5.1.1 full-width layout contract did not pass all 15 checks."
+if ! printf '%s\n' "$LAYOUT_OUTPUT" | grep -Fq 'PASS - 11 Knowledge Base article header checks'; then
+  echo "ERROR: The v5.1.2 publication-parity and expanded-default contract did not pass all 11 checks."
   exit 1
 fi
 
@@ -263,7 +263,7 @@ if [ "$JSON_COUNT" -lt 57 ]; then
 fi
 echo "PASS - $JSON_COUNT JSON files"
 
-echo "Validating full-width Knowledge Base corpus..."
+echo "Validating publication-parity Knowledge Base corpus..."
 CORPUS_COUNTS="$($VENV_DIR/bin/python - "$KB_CORPUS" <<'PY'
 import json,sys
 from pathlib import Path
@@ -292,12 +292,12 @@ HEADER_FILE="$WORK_DIR/plugin-header.php"
 KB_ZIP_FILE="$WORK_DIR/full-width-knowledge-base-class.php"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php > "$HEADER_FILE"
 unzip -p dist/sustainable-catalyst-feature-suggestions.zip sustainable-catalyst-feature-suggestions/includes/class-scfs-integrated-knowledge-base.php > "$KB_ZIP_FILE"
-if ! grep -Fq 'Version: 5.1.1' "$HEADER_FILE"; then
+if ! grep -Fq 'Version: 5.1.2' "$HEADER_FILE"; then
   echo "ERROR: WordPress distribution ZIP does not contain plugin version 5.1.0."
   exit 1
 fi
-if ! grep -Fq "const VERSION = '5.1.1';" "$KB_ZIP_FILE"; then
-  echo "ERROR: WordPress distribution ZIP does not contain the v5.1.1 full-width Knowledge Base class."
+if ! grep -Fq "const VERSION = '5.1.2';" "$KB_ZIP_FILE"; then
+  echo "ERROR: WordPress distribution ZIP does not contain the v5.1.2 full-width Knowledge Base class."
   exit 1
 fi
 ROOT_ENTRY_COUNT="$(zipinfo -1 dist/sustainable-catalyst-feature-suggestions.zip | awk -F/ 'NF && $1!=""{print $1}' | sort -u | wc -l | tr -d ' ')"
@@ -315,9 +315,9 @@ fi
 
 git add -A
 if git diff --cached --quiet; then
-  echo "No repository changes remain. v5.1.1 may already be installed."
+  echo "No repository changes remain. v5.1.2 may already be installed."
 else
-  git commit -m "Release Feature Suggestions v5.1.1 — Knowledge Base Full-Width Reading Experience"
+  git commit -m "Release Feature Suggestions v5.1.2 — Knowledge Base Publication-Parity Article Experience"
 fi
 
 echo "Rebasing over any newer remote commits..."
@@ -328,5 +328,5 @@ git push origin main
 SUCCESS=1
 
 echo
-echo "Feature Suggestions v5.1.1 was validated, committed, and pushed successfully."
+echo "Feature Suggestions v5.1.2 was validated, committed, and pushed successfully."
 echo "Repository: $REPOSITORY"

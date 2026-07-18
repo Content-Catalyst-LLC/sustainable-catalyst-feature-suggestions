@@ -9,12 +9,12 @@ $feedback = file_get_contents($plugin . '/includes/class-scfs-documentation-inte
 $editorial = file_get_contents($plugin . '/includes/class-scfs-editorial-governance.php');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version header' => strpos($main, 'Version: 5.1.1') !== false,
-    'main version constant' => strpos($main, "const VERSION = '5.1.1';") !== false,
+    'plugin version header' => strpos($main, 'Version: 5.1.2') !== false,
+    'main version constant' => strpos($main, "const VERSION = '5.1.2';") !== false,
     'integrated class included' => strpos($main, 'class-scfs-integrated-knowledge-base.php') !== false,
     'integrated class instantiated' => strpos($main, 'SCFS_Integrated_Knowledge_Base::instance();') !== false,
     'integrated activation included' => strpos($main, 'SCFS_Integrated_Knowledge_Base::activate();') !== false,
-    'integrated class version' => strpos($integrated, "const VERSION = '5.1.1';") !== false,
+    'integrated class version' => strpos($integrated, "const VERSION = '5.1.2';") !== false,
     'expandable directory' => strpos($integrated, 'Browse the Knowledge Base') !== false && strpos($integrated, 'scfs-kb-directory') !== false,
     'nested product folders' => strpos($integrated, 'scfs-kb-product-folder') !== false && strpos($integrated, 'scfs-kb-section-folder') !== false,
     'search and product filters' => strpos($integrated, 'Search the Knowledge Base') !== false && strpos($integrated, 'scfs_kb_product') !== false,
@@ -36,8 +36,8 @@ $checks = array(
     'documentation intelligence CSS exists' => file_exists($plugin . '/assets/documentation-intelligence.css'),
     'documentation guide exists' => file_exists($root . '/docs/integrated-knowledge-base-documentation-library.md'),
     'release notes exist' => file_exists($root . '/RELEASE_NOTES_5.1.0.md'),
-    'manifest version' => ($manifest['version'] ?? '') === '5.1.1',
-    'manifest release name' => ($manifest['release_name'] ?? '') === 'Knowledge Base Full-Width Reading Experience',
+    'manifest version' => ($manifest['version'] ?? '') === '5.1.2',
+    'manifest release name' => ($manifest['release_name'] ?? '') === 'Knowledge Base Publication-Parity Article Experience',
     'manifest integrated corpus capability' => in_array('integrated first-party 96-article Knowledge Base corpus', $manifest['capabilities'] ?? array(), true),
     'manifest usefulness capability' => in_array('anonymous visitor usefulness ratings with duplicate protection', $manifest['capabilities'] ?? array(), true),
 );

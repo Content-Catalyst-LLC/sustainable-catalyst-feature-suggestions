@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Integrated_Knowledge_Base {
-    const VERSION = '5.1.1';
+    const VERSION = '5.1.2';
     const CONTENT_VERSION = '1.0.0';
     const IMPORT_OPTION = 'scfs_integrated_kb_import_version';
     const REPORT_OPTION = 'scfs_integrated_kb_last_report';
@@ -605,19 +605,17 @@ final class SCFS_Integrated_Knowledge_Base {
             echo '</section>';
         }
 
-        $open_directory = $product_filter !== '' || $search !== '';
-        echo '<details class="scfs-kb-directory" ' . ($open_directory ? 'open' : '') . '><summary><span class="scfs-kb-directory-icon" aria-hidden="true">+</span><span><strong>' . esc_html__('Browse the Knowledge Base', 'sustainable-catalyst-feature-suggestions') . '</strong><small>' . esc_html__('Expand the complete product documentation directory', 'sustainable-catalyst-feature-suggestions') . '</small></span><span class="scfs-kb-directory-count">' . esc_html((string) $total) . '</span></summary>';
+        echo '<details class="scfs-kb-directory" open><summary><span class="scfs-kb-directory-icon" aria-hidden="true">+</span><span><strong>' . esc_html__('Browse the Knowledge Base', 'sustainable-catalyst-feature-suggestions') . '</strong><small>' . esc_html__('Expand the complete product documentation directory', 'sustainable-catalyst-feature-suggestions') . '</small></span><span class="scfs-kb-directory-count">' . esc_html((string) $total) . '</span></summary>';
         echo '<div class="scfs-kb-directory-body"><div class="scfs-kb-directory-tools"><button type="button" data-scfs-kb-expand>' . esc_html__('Expand all', 'sustainable-catalyst-feature-suggestions') . '</button><button type="button" data-scfs-kb-collapse>' . esc_html__('Collapse all', 'sustainable-catalyst-feature-suggestions') . '</button></div><div class="scfs-kb-product-folders">';
         foreach ($products as $product_slug => $product) {
             if ($product_filter !== '' && $product_filter !== $product_slug) continue;
             $product_groups = isset($groups[$product_slug]) ? $groups[$product_slug] : array();
             $article_count = 0;
             foreach ($product_groups as $articles) $article_count += count($articles);
-            $open_product = $product_filter === $product_slug;
-            echo '<details class="scfs-kb-product-folder" data-scfs-kb-product ' . ($open_product ? 'open' : '') . '><summary><span class="scfs-kb-folder-mark" aria-hidden="true"></span><span class="scfs-kb-folder-copy"><strong>' . esc_html($product['name']) . '</strong><small>' . esc_html($product['description']) . '</small></span><span class="scfs-kb-folder-count">' . esc_html(sprintf(_n('%d article', '%d articles', $article_count, 'sustainable-catalyst-feature-suggestions'), $article_count)) . '</span></summary><div class="scfs-kb-section-folders">';
+            echo '<details class="scfs-kb-product-folder" data-scfs-kb-product open><summary><span class="scfs-kb-folder-mark" aria-hidden="true"></span><span class="scfs-kb-folder-copy"><strong>' . esc_html($product['name']) . '</strong><small>' . esc_html($product['description']) . '</small></span><span class="scfs-kb-folder-count">' . esc_html(sprintf(_n('%d article', '%d articles', $article_count, 'sustainable-catalyst-feature-suggestions'), $article_count)) . '</span></summary><div class="scfs-kb-section-folders">';
             foreach ($sections as $section_slug => $section) {
                 $articles = isset($product_groups[$section_slug]) ? $product_groups[$section_slug] : array();
-                echo '<details class="scfs-kb-section-folder" ' . ($open_product && $section_slug === 'start-here' ? 'open' : '') . '><summary><span><strong>' . esc_html($section['name']) . '</strong><small>' . esc_html($section['description']) . '</small></span><span>' . esc_html((string) count($articles)) . '</span></summary><div class="scfs-kb-folder-articles">';
+                echo '<details class="scfs-kb-section-folder" open><summary><span><strong>' . esc_html($section['name']) . '</strong><small>' . esc_html($section['description']) . '</small></span><span>' . esc_html((string) count($articles)) . '</span></summary><div class="scfs-kb-folder-articles">';
                 if (!$articles) {
                     echo '<p class="scfs-kb-folder-empty">' . esc_html__('No published articles in this section yet.', 'sustainable-catalyst-feature-suggestions') . '</p>';
                 } else {
@@ -680,7 +678,8 @@ final class SCFS_Integrated_Knowledge_Base {
         $related = array_values(array_filter($siblings, function ($sibling) use ($post_id) { return (int) $sibling->ID !== (int) $post_id; }));
         $related = array_slice($related, 0, 3);
 
-        $before = '<div class="scfs-kb-article-shell"><nav class="scfs-kb-breadcrumbs" aria-label="' . esc_attr__('Breadcrumbs', 'sustainable-catalyst-feature-suggestions') . '"><a href="' . esc_url($kb_url) . '">' . esc_html__('Knowledge Base', 'sustainable-catalyst-feature-suggestions') . '</a><span aria-hidden="true">/</span><a href="' . esc_url($product_url) . '">' . esc_html($product_name) . '</a><span aria-hidden="true">/</span><span aria-current="page">' . esc_html($section_name) . '</span></nav><div class="scfs-kb-article-tools"><a href="' . esc_url($product_url) . '">← ' . esc_html__('Back to product guides', 'sustainable-catalyst-feature-suggestions') . '</a><button type="button" data-scfs-kb-print>' . esc_html__('Print article', 'sustainable-catalyst-feature-suggestions') . '</button></div><div class="scfs-kb-article-content">';
+        $summary = get_post_meta($post_id, '_scfs_kb_summary', true) ?: get_the_excerpt($post_id);
+        $before = '<div class="scfs-kb-article-shell"><header class="scfs-kb-article-header"><p class="scfs-kb-article-eyebrow">' . esc_html($product_name . ' · ' . $section_name) . '</p><h1 class="scfs-kb-article-title">' . esc_html(get_the_title($post_id)) . '</h1>' . ($summary ? '<p class="scfs-kb-article-summary">' . esc_html($summary) . '</p>' : '') . '</header><nav class="scfs-kb-breadcrumbs" aria-label="' . esc_attr__('Breadcrumbs', 'sustainable-catalyst-feature-suggestions') . '"><a href="' . esc_url($kb_url) . '">' . esc_html__('Knowledge Base', 'sustainable-catalyst-feature-suggestions') . '</a><span aria-hidden="true">/</span><a href="' . esc_url($product_url) . '">' . esc_html($product_name) . '</a><span aria-hidden="true">/</span><span aria-current="page">' . esc_html($section_name) . '</span></nav><div class="scfs-kb-article-tools"><a href="' . esc_url($product_url) . '">← ' . esc_html__('Back to product guides', 'sustainable-catalyst-feature-suggestions') . '</a><button type="button" data-scfs-kb-print>' . esc_html__('Print article', 'sustainable-catalyst-feature-suggestions') . '</button></div><div class="scfs-kb-article-content">';
         $after = '</div>';
         if ($related) {
             $after .= '<aside class="scfs-kb-related"><h2>' . esc_html__('Related guides', 'sustainable-catalyst-feature-suggestions') . '</h2><div>';
