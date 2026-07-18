@@ -4,7 +4,7 @@ $plugin = $root . '/wordpress/sustainable-catalyst-feature-suggestions';
 $class = file_get_contents($plugin . '/includes/class-scfs-integrated-knowledge-base.php');
 $page = file_get_contents($plugin . '/content/knowledge-base/page.html');
 $checks = array(
-    'route version 3' => strpos($class, "const ROUTE_VERSION = '3.0.0';") !== false,
+    'route version 3' => strpos($class, "const ROUTE_VERSION = '3.1.0';") !== false,
     'template redirect hook' => strpos($class, "add_action('template_redirect', array(\$this, 'redirect_legacy_knowledge_base_routes'), 1)") !== false,
     'legacy child route recognized' => strpos($class, "'/support/knowledge-base'") !== false,
     'legacy archive route recognized' => strpos($class, "'/support-documentation'") !== false,
@@ -19,4 +19,4 @@ $checks = array(
 $failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
-echo 'v5.2.6 legacy route consolidation contract passed (' . count($checks) . " checks).\n";
+echo 'v5.2.7 legacy route consolidation contract passed (' . count($checks) . " checks).\n";

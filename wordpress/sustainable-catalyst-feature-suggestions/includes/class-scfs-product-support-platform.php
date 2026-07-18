@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Support_Platform {
-    const VERSION = '5.2.6';
+    const VERSION = '5.2.7';
     const SCHEMA_VERSION = '1.0';
     const RELEASE_POST_TYPE = 'sc_release_record';
     const SHORTCODE = 'scfs_product_support_center';
@@ -23,9 +23,14 @@ final class SCFS_Product_Support_Platform {
     const SCHEMA_OPTION = 'scfs_product_support_schema_version';
     const NONCE_ACTION = 'scfs_save_release_intelligence';
     const NONCE_NAME = 'scfs_release_intelligence_nonce';
+    const SUPPORT_PAGE_SLUG = 'support';
+    const INTEGRATION_VERSION = '1.0.0';
+    const INTEGRATION_REPORT_OPTION = 'scfs_support_center_integration_report';
 
     private static $instance = null;
     private static $render_count = 0;
+    private static $render_signatures = array();
+    private static $used_root_ids = array();
     private $active_base_url = '';
     private $active_anchor = 'support-center';
     private $active_show_overview_pathways = true;
@@ -42,6 +47,7 @@ final class SCFS_Product_Support_Platform {
         add_action('init', array($this, 'register_release_meta'), 9);
         add_action('init', array($this, 'register_shortcodes'), 31);
         add_action('wp_enqueue_scripts', array($this, 'register_assets'));
+        add_action('wp_enqueue_scripts', array($this, 'maybe_enqueue_support_page_assets'), 35);
         add_action('admin_enqueue_scripts', array($this, 'admin_assets'));
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post_' . self::RELEASE_POST_TYPE, array($this, 'save_release'), 20, 2);
@@ -49,7 +55,9 @@ final class SCFS_Product_Support_Platform {
         add_action('admin_post_scfs_save_product_support_settings', array($this, 'save_settings'));
         add_action('rest_api_init', array($this, 'register_rest_routes'));
         add_filter('template_include', array($this, 'template_include'));
+        add_filter('the_content', array($this, 'integrate_support_page_content'), 8);
         add_filter('the_content', array($this, 'decorate_release_content'), 22);
+        add_filter('body_class', array($this, 'support_page_body_classes'));
         add_filter('manage_' . self::RELEASE_POST_TYPE . '_posts_columns', array($this, 'release_columns'));
         add_action('manage_' . self::RELEASE_POST_TYPE . '_posts_custom_column', array($this, 'release_column_content'), 10, 2);
     }
@@ -99,6 +107,8 @@ final class SCFS_Product_Support_Platform {
             'embedded_use_page_width' => '1',
             'hide_zero_status' => '1',
             'nav_columns' => '3',
+            'auto_integrate_support_page' => '1',
+            'suppress_duplicate_centers' => '1',
         );
     }
 
@@ -364,6 +374,117 @@ final class SCFS_Product_Support_Platform {
         }
     }
 
+    /**
+     * Resolve the canonical Support page without changing its content or ID.
+     */
+    private function support_page() {
+        if (!function_exists('get_page_by_path')) {
+            return null;
+        }
+        $page = get_page_by_path(self::SUPPORT_PAGE_SLUG, OBJECT, 'page');
+        return $page instanceof WP_Post ? $page : null;
+    }
+
+    public function is_support_page_request() {
+        if (!function_exists('is_page') || !is_page()) {
+            return false;
+        }
+        $page = $this->support_page();
+        if ($page instanceof WP_Post && (int) get_queried_object_id() === (int) $page->ID) {
+            return true;
+        }
+        return is_page(self::SUPPORT_PAGE_SLUG);
+    }
+
+    /**
+     * Enqueue the complete Support Center dependency chain in wp_head. Shortcode
+     * rendering can occur after wp_head, so relying on late enqueue calls caused
+     * intermittent unstyled browser output on production themes and caches.
+     */
+    public function maybe_enqueue_support_page_assets() {
+        if (!$this->is_support_page_request()) {
+            return;
+        }
+        wp_enqueue_style('scfs-product-support-platform');
+        wp_enqueue_script('scfs-product-support-platform');
+        wp_enqueue_style('scfs-knowledge-base');
+        wp_enqueue_script('scfs-integrated-knowledge-base');
+        $this->enqueue_child_assets();
+        if (class_exists('SCFS_Cross_Product_Support_Orchestration')) {
+            wp_enqueue_style('scfs-cross-product-orchestration');
+        }
+    }
+
+    private function support_center_shortcode_markup($source = 'automatic') {
+        $source = sanitize_key((string) $source);
+        return '[scfs_product_support_center mode="embedded" branding="sustainable-catalyst" default_view="overview" show_header="0" show_status="0" use_page_width="1" anchor="support-center" integration_source="' . $source . '"]';
+    }
+
+    private function content_has_support_center_shortcode($content) {
+        return has_shortcode((string) $content, self::SHORTCODE)
+            || has_shortcode((string) $content, self::LEGACY_SHORTCODE);
+    }
+
+    private function content_has_legacy_knowledge_base_shortcode($content) {
+        if (!class_exists('SCFS_Knowledge_Base_Foundation')) {
+            return false;
+        }
+        return has_shortcode((string) $content, SCFS_Knowledge_Base_Foundation::SHORTCODE)
+            || has_shortcode((string) $content, SCFS_Knowledge_Base_Foundation::LEGACY_SHORTCODE);
+    }
+
+    /**
+     * Make /support/ self-healing. Existing Support Center shortcodes remain
+     * untouched. A standalone Knowledge Base shortcode is replaced with the
+     * unified center, and pages with neither shortcode receive one at the end.
+     */
+    public function integrate_support_page_content($content) {
+        if (is_admin() || !$this->is_support_page_request() || !in_the_loop() || !is_main_query()) {
+            return $content;
+        }
+        if (function_exists('is_feed') && is_feed()) {
+            return $content;
+        }
+        $settings = $this->settings();
+        if (empty($settings['auto_integrate_support_page'])) {
+            return $content;
+        }
+        $source = get_post_field('post_content', get_queried_object_id());
+        $source = is_string($source) ? $source : (string) $content;
+        if ($this->content_has_support_center_shortcode($source) || strpos((string) $content, 'scfs-support-platform') !== false) {
+            return $content;
+        }
+        $shortcode = $this->support_center_shortcode_markup('automatic');
+        if ($this->content_has_legacy_knowledge_base_shortcode($source)) {
+            $pattern = '/\[(?:scfs_support_knowledge_base|sustainable_catalyst_support_knowledge_base)(?:\s[^\]]*)?\]/i';
+            $replaced = preg_replace($pattern, $shortcode, (string) $content, 1, $count);
+            if ($count > 0 && is_string($replaced)) {
+                return $replaced;
+            }
+        }
+        return rtrim((string) $content) . "\n\n" . $shortcode;
+    }
+
+    public function support_page_body_classes($classes) {
+        if ($this->is_support_page_request()) {
+            $classes[] = 'scfs-unified-support-center-page';
+            $classes[] = 'scfs-support-integration-v527';
+        }
+        return array_values(array_unique($classes));
+    }
+
+    private function render_signature($atts, $display, $anchor) {
+        $page_id = function_exists('get_queried_object_id') ? absint(get_queried_object_id()) : 0;
+        return implode('|', array($page_id, $anchor, $display['mode']));
+    }
+
+    private function duplicate_render_notice($signature) {
+        if (function_exists('current_user_can') && current_user_can('manage_options') && isset($_GET['scfs_support_debug'])) {
+            return '<aside class="scfs-support-platform__diagnostic scfs-support-platform__diagnostic--duplicate" role="status"><strong>' . esc_html__('Duplicate Support Center suppressed.', 'sustainable-catalyst-feature-suggestions') . '</strong><span>' . esc_html($signature) . '</span></aside>';
+        }
+        return '<!-- Sustainable Catalyst v5.2.7: duplicate Support Center render suppressed. -->';
+    }
+
     public function admin_assets($hook) {
         if (strpos((string) $hook, 'scfs-product-support-platform') !== false || strpos((string) $hook, self::RELEASE_POST_TYPE) !== false) {
             wp_enqueue_style('scfs-admin');
@@ -492,6 +613,18 @@ final class SCFS_Product_Support_Platform {
                 'anchored_fallback' => true,
                 'product_context_preserved' => true,
                 'empty_sections_hidden_until_published' => class_exists('SCFS_Support_Content_Operations') ? !empty(SCFS_Support_Content_Operations::instance()->settings()['hide_empty_support_sections']) : false,
+                'canonical_root_anchor' => 'support-center',
+                'knowledge_base_anchor' => 'knowledge-base',
+                'duplicate_render_suppression' => true,
+                'automatic_support_page_integration' => true,
+            ),
+            'support_page_integration' => array(
+                'version' => self::INTEGRATION_VERSION,
+                'canonical_slug' => self::SUPPORT_PAGE_SLUG,
+                'auto_integration' => true,
+                'legacy_knowledge_base_shortcodes_consolidated' => true,
+                'early_asset_loading' => true,
+                'theme_width_hardening' => true,
             ),
             'routes' => array(
                 '/product-support/schema',
@@ -940,6 +1073,8 @@ final class SCFS_Product_Support_Platform {
             'class' => '',
             'anchor' => 'support-center',
             'interactive' => '1',
+            'allow_duplicate' => '0',
+            'integration_source' => 'shortcode',
         ), $raw_atts, self::SHORTCODE);
         $atts = apply_filters('scfs_product_support_center_atts', $atts, $raw_atts, $settings);
         wp_enqueue_style('scfs-product-support-platform');
@@ -952,6 +1087,13 @@ final class SCFS_Product_Support_Platform {
         }
         $display = $this->display_context($settings, $raw_atts, $atts);
         $branding = $this->branding_context($settings, $atts, $raw_atts);
+        $anchor = $this->normalized_anchor($atts['anchor']);
+        $signature = $this->render_signature($atts, $display, $anchor);
+        $suppress_duplicates = !empty($settings['suppress_duplicate_centers']) && !$this->bool_value($atts['allow_duplicate'], false);
+        if ($suppress_duplicates && isset(self::$render_signatures[$signature])) {
+            return $this->duplicate_render_notice($signature);
+        }
+        self::$render_signatures[$signature] = true;
         $context = $this->current_context();
         if (!isset($_GET['scfs_support_view'])) {
             $context['view'] = $display['default_view'];
@@ -959,8 +1101,9 @@ final class SCFS_Product_Support_Platform {
         $overview = $this->overview_record($context['product']);
         self::$render_count++;
         $instance_id = 'scfs-support-platform-' . self::$render_count;
+        $root_id = !isset(self::$used_root_ids[$anchor]) ? $anchor : $anchor . '-' . self::$render_count;
+        self::$used_root_ids[$root_id] = true;
         $base_url = $this->support_base_url();
-        $anchor = $this->normalized_anchor($atts['anchor']);
         $interactive = $this->bool_value($atts['interactive'], true);
         $previous_base_url = $this->active_base_url;
         $previous_anchor = $this->active_anchor;
@@ -996,7 +1139,7 @@ final class SCFS_Product_Support_Platform {
             : ' aria-label="' . esc_attr($atts['title']) . '"';
         ob_start();
         $endpoint = function_exists('rest_url') ? rest_url(Sustainable_Catalyst_Feature_Suggestions::REST_NAMESPACE . '/product-support/view') : '';
-        echo '<section id="' . esc_attr($instance_id) . '" class="' . esc_attr(implode(' ', array_unique($classes))) . '" data-scfs-mode="' . esc_attr($display['mode']) . '" data-scfs-branding="' . esc_attr($branding['preset']) . '" data-scfs-interactive="' . ($interactive ? '1' : '0') . '" data-scfs-endpoint="' . esc_url($endpoint) . '" data-scfs-base-url="' . esc_url($base_url) . '" data-scfs-anchor="' . esc_attr($anchor) . '" data-scfs-current-view="' . esc_attr($context['view']) . '" data-scfs-show-overview-pathways="' . ($display['show_overview_pathways'] ? '1' : '0') . '" style="' . esc_attr($style) . '"' . $aria . '>';
+        echo '<section id="' . esc_attr($root_id) . '" class="' . esc_attr(implode(' ', array_unique($classes))) . '" data-scfs-mode="' . esc_attr($display['mode']) . '" data-scfs-branding="' . esc_attr($branding['preset']) . '" data-scfs-interactive="' . ($interactive ? '1' : '0') . '" data-scfs-endpoint="' . esc_url($endpoint) . '" data-scfs-base-url="' . esc_url($base_url) . '" data-scfs-anchor="' . esc_attr($anchor) . '" data-scfs-current-view="' . esc_attr($context['view']) . '" data-scfs-instance-id="' . esc_attr($instance_id) . '" data-scfs-integration-version="' . esc_attr(self::INTEGRATION_VERSION) . '" data-scfs-integration-source="' . esc_attr(sanitize_key((string) $atts['integration_source'])) . '" data-scfs-allow-duplicate="' . ($this->bool_value($atts['allow_duplicate'], false) ? '1' : '0') . '" data-scfs-show-overview-pathways="' . ($display['show_overview_pathways'] ? '1' : '0') . '" style="' . esc_attr($style) . '"' . $aria . '>';
         if ($display['show_header']) {
             echo '<header class="scfs-support-platform__hero"><p class="scfs-support-platform__eyebrow">' . esc_html__('Product Support and Feedback Platform', 'sustainable-catalyst-feature-suggestions') . '</p><h2 id="' . esc_attr($instance_id . '-title') . '">' . esc_html($atts['title']) . '</h2><p>' . esc_html($atts['intro']) . '</p>';
             echo '<div class="scfs-support-platform__boundary"><strong>' . esc_html__('Public support center:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html__('Documentation, known issues, releases, feature ideas, voting, and surveys live here. Private cases, messages, contact details, and documents remain in Contact and Engagement.', 'sustainable-catalyst-feature-suggestions') . '</div></header>';
@@ -1041,7 +1184,11 @@ final class SCFS_Product_Support_Platform {
         }
         echo '<div class="scfs-support-platform__workspace" data-scfs-view="' . esc_attr($context['view']) . '" aria-live="polite" aria-busy="false">';
         $this->render_view($context, $overview, $settings, $display);
-        echo '</div></section>';
+        echo '</div>';
+        if (function_exists('current_user_can') && current_user_can('manage_options') && isset($_GET['scfs_support_debug'])) {
+            echo '<aside class="scfs-support-platform__diagnostic" aria-label="' . esc_attr__('Support Center integration diagnostics', 'sustainable-catalyst-feature-suggestions') . '"><strong>' . esc_html__('v5.2.7 production integration active', 'sustainable-catalyst-feature-suggestions') . '</strong><span>' . esc_html(sprintf(__('Source: %1$s · View: %2$s · Product: %3$s', 'sustainable-catalyst-feature-suggestions'), sanitize_key((string) $atts['integration_source']), $context['view'], $context['product'] !== '' ? $context['product'] : 'all')) . '</span></aside>';
+        }
+        echo '</section>';
         $html = ob_get_clean();
         $this->active_base_url = $previous_base_url;
         $this->active_anchor = $previous_anchor;
@@ -1067,9 +1214,11 @@ final class SCFS_Product_Support_Platform {
     private function render_view($context, $overview, $settings, $display = array()) {
         switch ($context['view']) {
             case 'resolve':
+                echo '<section id="guided-resolution" class="scfs-support-platform__guided-resolution" aria-label="' . esc_attr__('Guided Resolution', 'sustainable-catalyst-feature-suggestions') . '">';
                 echo $this->with_request_value('scfs_resolution_product', $context['product'], function () {
                     return SCFS_Guided_Resolution::instance()->render_shortcode(array('title' => __('Find a resolution', 'sustainable-catalyst-feature-suggestions'), 'compact' => '1', 'show_handoff' => '1'));
                 }); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                echo '</section>';
                 $this->render_embedded_knowledge_base($context['product']);
                 break;
             case 'documentation':
@@ -1122,7 +1271,7 @@ final class SCFS_Product_Support_Platform {
     }
 
     private function render_overview($overview, $product, $settings, $display = array()) {
-        echo '<div class="scfs-support-platform__overview"><section><h3>' . esc_html__('Start with guided resolution', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Describe the task, symptom, or exact error fragment. Current known issues are prioritized before general documentation.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<div class="scfs-support-platform__overview"><section id="guided-resolution" class="scfs-support-platform__guided-resolution"><h3>' . esc_html__('Start with guided resolution', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Describe the task, symptom, or exact error fragment. Current known issues are prioritized before general documentation.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         echo $this->with_request_value('scfs_resolution_product', $product, function () {
             return SCFS_Guided_Resolution::instance()->render_shortcode(array('title' => __('Search product support', 'sustainable-catalyst-feature-suggestions'), 'compact' => '1', 'show_handoff' => '1'));
         }); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -1171,7 +1320,7 @@ final class SCFS_Product_Support_Platform {
             $args['tax_query'] = array(array('taxonomy' => SCFS_Product_Integration::PRODUCT_TAXONOMY, 'field' => 'slug', 'terms' => $product));
         }
         $query = new WP_Query($args);
-        echo '<section class="scfs-support-platform__issues"><header><p class="scfs-support-platform__kicker">' . esc_html__('Verified product status', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html__('Known issues', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Published issue records show status, severity, visible symptoms, workarounds, and release relationships.', 'sustainable-catalyst-feature-suggestions') . '</p></header><div class="scfs-support-platform__issue-grid">';
+        echo '<section id="known-issues" class="scfs-support-platform__issues"><header><p class="scfs-support-platform__kicker">' . esc_html__('Verified product status', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html__('Known issues', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Published issue records show status, severity, visible symptoms, workarounds, and release relationships.', 'sustainable-catalyst-feature-suggestions') . '</p></header><div class="scfs-support-platform__issue-grid">';
         if (!$query->have_posts()) {
             echo '<div class="scfs-support-platform__empty"><h4>' . esc_html__('No published known issues match this product', 'sustainable-catalyst-feature-suggestions') . '</h4><p>' . esc_html__('Use Guided Resolution for broader troubleshooting or continue to private support when the problem is not documented.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -1195,7 +1344,7 @@ final class SCFS_Product_Support_Platform {
     private function render_releases($product, $limit = 12, $embedded = false) {
         $query = $this->release_query($product, $limit);
         if (!$embedded) {
-            echo '<section class="scfs-support-platform__releases"><header><p class="scfs-support-platform__kicker">' . esc_html__('Product change intelligence', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html__('Releases', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Review current, planned, maintenance, superseded, and retired releases with support implications and linked public records.', 'sustainable-catalyst-feature-suggestions') . '</p></header>';
+            echo '<section id="release-intelligence" class="scfs-support-platform__releases"><header><p class="scfs-support-platform__kicker">' . esc_html__('Product change intelligence', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html__('Releases', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Review current, planned, maintenance, superseded, and retired releases with support implications and linked public records.', 'sustainable-catalyst-feature-suggestions') . '</p></header>';
         }
         echo '<div class="scfs-support-platform__release-grid">';
         if (!$query->have_posts()) {

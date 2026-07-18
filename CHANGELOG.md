@@ -395,3 +395,16 @@
 ## 5.2.2
 - Repaired duplicate Knowledge Base titles and Astra bylines.
 - Added structural theme filters plus a scoped CSS fallback.
+
+## 5.2.7 — 2026-07-18
+
+- Added automatic canonical `/support/` integration when the Support Center shortcode is absent.
+- Consolidated standalone Knowledge Base shortcodes into the unified Support Center on the Support page.
+- Added early asset loading to prevent unstyled production output.
+- Added request-scoped and client-side duplicate Support Center suppression.
+- Made `#support-center` the real root ID and added stable section anchors.
+- Added abortable REST navigation, dynamic Knowledge Base reinitialization, and hash restoration.
+- Added WordPress/Astra width, overflow, tablet, mobile, accessibility, and print hardening.
+- Added administrator integration diagnostics.
+- Added redirect-loop protection and no-cache headers for legacy Knowledge Base routes.
+- Preserved all existing identifiers, data, settings, REST endpoints, shortcodes, CPTs, and Support Article URLs.

@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Integrated_Knowledge_Base {
-    const VERSION = '5.2.6';
+    const VERSION = '5.2.7';
     const CONTENT_VERSION = '1.0.0';
     const IMPORT_OPTION = 'scfs_integrated_kb_import_version';
     const REPORT_OPTION = 'scfs_integrated_kb_last_report';
@@ -30,7 +30,7 @@ final class SCFS_Integrated_Knowledge_Base {
     const COMPACT_LEGACY_SHORTCODE = 'sustainable_catalyst_support_library_compact';
     const DEDICATED_PAGE_OPTION = 'scfs_kb_dedicated_page_id';
     const ROUTE_VERSION_OPTION = 'scfs_kb_route_version';
-    const ROUTE_VERSION = '3.0.0';
+    const ROUTE_VERSION = '3.1.0';
     const LEGACY_ROUTE_META = '_scfs_kb_legacy_route_version';
 
     private static $instance = null;
@@ -185,7 +185,7 @@ final class SCFS_Integrated_Knowledge_Base {
     }
 
     /**
-     * Legacy filter entry point retained for backward compatibility. v5.2.6 no
+     * Legacy filter entry point retained for backward compatibility. v5.2.7 no
      * longer injects a second browser into the former Knowledge Base page.
      */
     public function repair_dedicated_page_shortcode($content) {
@@ -221,9 +221,23 @@ final class SCFS_Integrated_Knowledge_Base {
         $is_legacy_archive = function_exists('is_post_type_archive') && is_post_type_archive(SCFS_Knowledge_Base_Foundation::ARTICLE_POST_TYPE);
         if (!$is_legacy_page && !$is_legacy_archive && !$this->request_matches_legacy_knowledge_base_path()) return;
         $target = $this->legacy_route_target_url();
-        if ($target === '') return;
+        if ($target === '' || $this->request_is_redirect_target($target)) return;
+        if (function_exists('nocache_headers')) nocache_headers();
         wp_safe_redirect($target, 301, 'Sustainable Catalyst Product Support and Feedback Platform');
         exit;
+    }
+
+    private function request_is_redirect_target($target) {
+        if (empty($_SERVER['REQUEST_URI'])) return false;
+        $current = home_url(wp_unslash($_SERVER['REQUEST_URI']));
+        $normalize = static function ($url) {
+            $parts = wp_parse_url((string) $url);
+            if (!is_array($parts)) return '';
+            $path = isset($parts['path']) ? trailingslashit($parts['path']) : '/';
+            $query = isset($parts['query']) ? $parts['query'] : '';
+            return $path . ($query !== '' ? '?' . $query : '');
+        };
+        return $normalize($current) === $normalize($target);
     }
 
     private function request_matches_legacy_knowledge_base_path() {
@@ -267,11 +281,13 @@ final class SCFS_Integrated_Knowledge_Base {
     }
 
     public function register_assets() {
+        $script_path = dirname(__DIR__) . '/assets/integrated-knowledge-base.js';
+        $script_version = is_readable($script_path) ? (string) filemtime($script_path) : self::VERSION;
         wp_register_script(
             'scfs-integrated-knowledge-base',
             plugins_url('../assets/integrated-knowledge-base.js', __FILE__),
             array(),
-            self::VERSION,
+            $script_version,
             true
         );
         if ($this->is_dedicated_knowledge_base_page()) {

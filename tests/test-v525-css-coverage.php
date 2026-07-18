@@ -35,4 +35,4 @@ if ($missing) {
     fwrite(STDERR, 'Missing CSS selectors: ' . implode(', ', $missing) . "\n");
     exit(1);
 }
-echo 'v5.2.6 Knowledge Base CSS coverage passed (' . count($classes) . " classes).\n";
+echo 'v5.2.7 Knowledge Base CSS coverage passed (' . count($classes) . " classes).\n";

@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/support/",
-  "version": "5.2.6",
+  "version": "5.2.7",
   "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -337,7 +337,19 @@
     "previous and next Support Article navigation",
     "single-renderer Support Article decoration without nested headers",
     "responsive and print publication layouts",
-    "Knowledge Base HTML-to-CSS class coverage validation"
+    "Knowledge Base HTML-to-CSS class coverage validation",
+    "automatic canonical Support page integration",
+    "legacy Knowledge Base shortcode consolidation on /support/",
+    "early Support Center asset loading in wp_head",
+    "server-side duplicate Support Center render suppression",
+    "client-side duplicate root guard",
+    "canonical support-center, guided-resolution, knowledge-base, known-issues, and release-intelligence anchors",
+    "abortable REST view navigation requests",
+    "dynamic Knowledge Base browser reinitialization after view changes",
+    "hash focus and reduced-motion-aware scrolling",
+    "legacy route redirect-loop protection",
+    "Astra and WordPress content-width hardening",
+    "administrator integration diagnostics"
   ],
   "boundaries": [
     "no confidential information",
@@ -347,9 +359,9 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 5.2.6 consolidates the complete Knowledge Base browser into the main Support Center, exposes Support Articles directly in both overview and guided-resolution views, and permanently redirects legacy Knowledge Base landing routes while preserving article permalinks, shortcodes, REST endpoints, settings, taxonomies, and existing data.",
-  "release_name": "Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation",
-  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.2.6 — Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation",
+  "notes": "Version 5.2.7 hardens the unified Support Center for production WordPress rendering with automatic /support/ integration, early asset loading, legacy Knowledge Base shortcode consolidation, duplicate-render suppression, canonical anchors, AJAX navigation race protection, dynamic browser reinitialization, redirect-loop protection, and Astra-responsive interface safeguards.",
+  "release_name": "Support Center Production Integration and Interface Hardening",
+  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.2.7 \u2014 Support Center Production Integration and Interface Hardening",
   "features": [
     "Publication-parity Support Article URLs and rendering preserved",
     "Permanent legacy landing-route redirects with filter preservation",
@@ -404,7 +416,7 @@
     "[scfs_cross_product_support]"
   ],
   "support_center_shortcode": "[scfs_product_support_center]",
-  "public_support_archive": "/support/#knowledge-base",
+  "public_support_archive": "/support/?scfs_support_view=documentation#knowledge-base",
   "release_date": "2026-07-18",
   "compact_support_library_shortcode": "[scfs_support_library_compact]",
   "dedicated_knowledge_base_shortcode": "[scfs_support_knowledge_base]",
@@ -428,5 +440,51 @@
     "article_url_base": "/support/guides/",
     "existing_article_urls_preserved": true,
     "database_migration_required": false
+  },
+  "integration": {
+    "version": "1.0.0",
+    "canonical_page": "/support/",
+    "auto_integrates_when_shortcode_missing": true,
+    "replaces_legacy_knowledge_base_shortcode": true,
+    "duplicate_render_suppression": true,
+    "early_asset_loading": true,
+    "canonical_anchors": [
+      "support-center",
+      "guided-resolution",
+      "knowledge-base",
+      "known-issues",
+      "release-intelligence"
+    ],
+    "theme_hardening": [
+      "Astra",
+      "WordPress block content",
+      "responsive",
+      "print"
+    ],
+    "debug_query": "scfs_support_debug=1"
+  },
+  "installer_revision": "V5_2_7_R1_PRODUCTION_INTEGRATION",
+  "validation_runtime": {
+    "supported_python": [
+      "3.12",
+      "3.13"
+    ],
+    "rejected_python": [
+      "3.14"
+    ],
+    "pydantic_core_install": "binary-wheel-required",
+    "recommended_macos_install": "brew install python@3.13"
+  },
+  "validation": {
+    "plugin_php_files": 22,
+    "wordpress_contract_files": 60,
+    "javascript_files": 10,
+    "json_files": 60,
+    "python_files": 22,
+    "knowledge_base_css_lines": 2108,
+    "product_support_css_lines": 1175,
+    "fastapi_tests_passed": 67,
+    "source_whitespace": "passed",
+    "status": "passed"
   }
 }

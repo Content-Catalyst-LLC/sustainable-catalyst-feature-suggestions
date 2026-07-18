@@ -4,8 +4,8 @@ $plugin = $root . '/wordpress/sustainable-catalyst-feature-suggestions';
 $class = file_get_contents($plugin . '/includes/class-scfs-integrated-knowledge-base.php');
 $kb = file_get_contents($plugin . '/includes/class-scfs-knowledge-base.php');
 $checks = array(
-    'knowledge base version' => strpos($kb, "const VERSION = '5.2.6';") !== false,
-    'integrated version' => strpos($class, "const VERSION = '5.2.6';") !== false,
+    'knowledge base version' => strpos($kb, "const VERSION = '5.2.7';") !== false,
+    'integrated version' => strpos($class, "const VERSION = '5.2.7';") !== false,
     'two-panel browser retained' => strpos($class, 'scfs-kb-library-layout') !== false && strpos($class, 'scfs-kb-library-navigation') !== false,
     'browser results use embeddable region' => strpos($class, '<div class="scfs-kb-library-results" role="region"') !== false,
     'browser no nested main landmark' => strpos($class, "echo '<main class=\"scfs-kb-library-results\">';") === false,
@@ -17,4 +17,4 @@ $checks = array(
 $failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
-echo 'v5.2.6 embedded Knowledge Base browser contract passed (' . count($checks) . " checks).\n";
+echo 'v5.2.7 embedded Knowledge Base browser contract passed (' . count($checks) . " checks).\n";

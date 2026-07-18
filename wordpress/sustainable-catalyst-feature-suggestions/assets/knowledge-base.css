@@ -2017,7 +2017,7 @@ body.single-sc_support_article .entry-content { margin: 0 !important; padding: 0
   min-width: 0;
 }
 
-/* v5.2.6 Legacy Knowledge Base route consolidation fallback */
+/* v5.2.7 Legacy Knowledge Base route consolidation fallback */
 
 .sc-kb-legacy-route {
   width: min(100% - 40px, 920px);
@@ -2063,4 +2063,46 @@ body.single-sc_support_article .entry-content { margin: 0 !important; padding: 0
   border-color: #000000;
 }
 
-/* v5.2.6 Dynamic records, permalink integrity, refined full browser */
+/* v5.2.7 Dynamic records, permalink integrity, refined full browser */
+
+/* v5.2.7 embedded browser production hardening */
+.scfs-support-platform .scfs-kb--library-browser {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  overflow: visible;
+}
+
+.scfs-support-platform .scfs-kb-library-masthead,
+.scfs-support-platform .scfs-kb-library-layout,
+.scfs-support-platform .scfs-kb-library-navigation,
+.scfs-support-platform .scfs-kb-library-results,
+.scfs-support-platform .scfs-kb-library-search,
+.scfs-support-platform .scfs-kb-library-results-list {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.scfs-support-platform .scfs-kb-library-nav-list a:focus-visible,
+.scfs-support-platform .scfs-kb-library-search :where(input, select, button, a):focus-visible,
+.scfs-support-platform .scfs-support-library-article:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--scfs-editorial-accent) 35%, transparent);
+  outline-offset: 2px;
+}
+
+@supports not (color: color-mix(in srgb, black 10%, transparent)) {
+  .scfs-support-platform .scfs-kb-library-nav-list a:focus-visible,
+  .scfs-support-platform .scfs-kb-library-search :where(input, select, button, a):focus-visible,
+  .scfs-support-platform .scfs-support-library-article:focus-visible {
+    outline-color: #9b1111;
+  }
+}
+
+.scfs-support-platform .scfs-kb-library-results-list:empty::before {
+  content: "No Support Articles are available for the selected filters.";
+  display: block;
+  padding: 20px;
+  background: var(--scfs-editorial-cream);
+  border-left: 4px solid var(--scfs-editorial-accent);
+}

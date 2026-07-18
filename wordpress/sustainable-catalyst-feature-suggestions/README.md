@@ -1,10 +1,10 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.2.6
+## Current release: v5.2.7
 
 **Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation**
 
-Version 5.2.6 makes the main `/support/` page the canonical destination for the complete support experience. Guided Resolution and the two-panel Support Article browser now appear together, while the former `/support/knowledge-base/` and `/support-documentation/` landing routes redirect to `/support/?scfs_support_view=documentation#knowledge-base`. Existing Support Article URLs, shortcodes, CPTs, REST routes, settings, taxonomies, and data remain unchanged.
+Version 5.2.7 hardens the canonical `/support/` experience for production. The plugin now self-integrates the unified Support Center when the page is missing a shortcode, consolidates standalone Knowledge Base shortcodes, loads assets before content rendering, suppresses duplicate interfaces, provides stable section anchors, and protects responsive layouts without changing existing Support Article URLs, shortcodes, CPTs, REST routes, settings, taxonomies, or data.
 
 - Primary public shortcode: `[scfs_product_support_center]`
 - Standalone Knowledge Base shortcode retained: `[scfs_support_knowledge_base]`

@@ -267,3 +267,9 @@ The release also defines the private, review-gated `sc-contact-engagement-handof
 ## macOS validation runtime
 
 The repaired v5.2.6 installer uses Python 3.12 or 3.13 for the isolated FastAPI validation environment. Python 3.14 is intentionally rejected for this release because the pinned `pydantic-core` dependency would otherwise fall back to a local Rust build on affected systems. Install the recommended interpreter with `brew install python@3.13`.
+
+## v5.2.7 production Support Center integration
+
+Version 5.2.7 makes the canonical `/support/` page self-healing. It preserves an existing Product Support Center shortcode, replaces a standalone Knowledge Base shortcode with the unified center, or appends the center when no support shortcode is present. Assets are loaded before page rendering, duplicate instances are suppressed, and stable anchors support direct navigation to Guided Resolution, Support Articles, Known Issues, and Release Intelligence.
+
+Administrator diagnostics are available at `/support/?scfs_support_debug=1`.

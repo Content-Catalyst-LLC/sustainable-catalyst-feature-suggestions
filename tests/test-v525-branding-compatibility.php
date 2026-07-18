@@ -6,8 +6,8 @@ $kb = file_get_contents($plugin . '/includes/class-scfs-knowledge-base.php');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
     'public plugin name' => strpos($main, 'Plugin Name: Sustainable Catalyst Product Support and Feedback Platform') !== false,
-    'version header' => strpos($main, 'Version: 5.2.6') !== false,
-    'runtime version' => strpos($main, "const VERSION = '5.2.6';") !== false,
+    'version header' => strpos($main, 'Version: 5.2.7') !== false,
+    'runtime version' => strpos($main, "const VERSION = '5.2.7';") !== false,
     'legacy text domain retained' => strpos($main, 'Text Domain: sustainable-catalyst-feature-suggestions') !== false,
     'legacy PHP class retained' => strpos($main, 'final class Sustainable_Catalyst_Feature_Suggestions') !== false,
     'legacy suggestion post type retained' => strpos($main, "const POST_TYPE = 'sc_feature_suggest';") !== false,
@@ -22,9 +22,9 @@ $checks = array(
     'manifest public name' => ($manifest['name'] ?? '') === 'Sustainable Catalyst Product Support and Feedback Platform',
     'manifest legacy name' => ($manifest['legacy_name'] ?? '') === 'Sustainable Catalyst Feature Suggestions',
     'manifest slug retained' => ($manifest['slug'] ?? '') === 'sustainable-catalyst-feature-suggestions',
-    'manifest version' => ($manifest['version'] ?? '') === '5.2.6',
+    'manifest version' => ($manifest['version'] ?? '') === '5.2.7',
 );
 $failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
-echo 'v5.2.6 branding and compatibility contract passed (' . count($checks) . " checks).\n";
+echo 'v5.2.7 branding and compatibility contract passed (' . count($checks) . " checks).\n";

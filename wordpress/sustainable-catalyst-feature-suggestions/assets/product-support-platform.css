@@ -869,7 +869,7 @@ body .scfs-support-platform :where(.scfs-form input, .scfs-form select, .scfs-fo
   }
 }
 
-/* v5.2.6 Unified Support Center and embedded Knowledge Base browser */
+/* v5.2.7 Unified Support Center and embedded Knowledge Base browser */
 
 .scfs-support-platform__knowledge-base {
   min-width: 0;
@@ -911,4 +911,265 @@ body .scfs-support-platform :where(.scfs-form input, .scfs-form select, .scfs-fo
     margin-top: 0;
     padding-top: 0;
   }
+}
+
+/* v5.2.7 Support Center production integration and interface hardening */
+
+html {
+  scroll-padding-top: 96px;
+}
+
+body.scfs-unified-support-center-page {
+  overflow-x: clip;
+}
+
+body.scfs-unified-support-center-page .entry-content,
+body.scfs-unified-support-center-page .site-main,
+body.scfs-unified-support-center-page .ast-article-single,
+body.scfs-unified-support-center-page .scfs-support-platform,
+body.scfs-unified-support-center-page .scfs-support-platform__workspace,
+body.scfs-unified-support-center-page .scfs-support-platform__knowledge-base,
+body.scfs-unified-support-center-page .scfs-kb,
+body.scfs-unified-support-center-page .scfs-kb-library-layout,
+body.scfs-unified-support-center-page .scfs-kb-library-results {
+  min-width: 0;
+  max-width: 100%;
+}
+
+body.scfs-unified-support-center-page .entry-content > .scfs-support-platform,
+body.scfs-unified-support-center-page .entry-content > .wp-block-shortcode > .scfs-support-platform {
+  width: min(100%, 1180px);
+  margin-inline: auto;
+}
+
+body.scfs-unified-support-center-page .scfs-support-platform--page-width {
+  width: 100%;
+  max-width: none;
+}
+
+body.scfs-unified-support-center-page .scfs-support-platform :where(
+  #support-center,
+  #guided-resolution,
+  #knowledge-base,
+  #known-issues,
+  #release-intelligence
+),
+body.scfs-unified-support-center-page :where(
+  #support-center,
+  #guided-resolution,
+  #knowledge-base,
+  #known-issues,
+  #release-intelligence
+) {
+  scroll-margin-top: 104px;
+}
+
+.scfs-support-platform[data-scfs-duplicate-suppressed="1"],
+.scfs-support-platform[hidden] {
+  display: none !important;
+}
+
+.scfs-support-platform__guided-resolution {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.scfs-support-platform__overview > .scfs-support-platform__guided-resolution,
+.scfs-support-platform__workspace > .scfs-support-platform__guided-resolution {
+  width: 100%;
+}
+
+.scfs-support-platform__diagnostic {
+  display: grid;
+  gap: 4px;
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  color: var(--scfs-token-ink);
+  background: #fff8e7;
+  border: 1px solid var(--scfs-token-line);
+  border-left: 4px solid var(--scfs-token-accent);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.scfs-support-platform__diagnostic--duplicate {
+  width: min(100%, 1180px);
+  margin-inline: auto;
+}
+
+.scfs-support-platform.is-loading .scfs-support-platform__workspace {
+  position: relative;
+  min-height: 220px;
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.scfs-support-platform.is-loading .scfs-support-platform__workspace::after {
+  content: "Loading support section…";
+  position: absolute;
+  inset: 18px 18px auto auto;
+  z-index: 2;
+  padding: 7px 10px;
+  color: var(--scfs-token-ink);
+  background: var(--scfs-token-soft);
+  border: 1px solid var(--scfs-token-line);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+body.scfs-unified-support-center-page .scfs-support-platform__nav {
+  position: relative;
+  z-index: 2;
+}
+
+body.scfs-unified-support-center-page .scfs-support-platform__nav a,
+body.scfs-unified-support-center-page .scfs-support-platform__pathway-card,
+body.scfs-unified-support-center-page .scfs-kb-library-nav-list a,
+body.scfs-unified-support-center-page .scfs-support-library-article {
+  overflow-wrap: anywhere;
+}
+
+body.scfs-unified-support-center-page .scfs-kb-library-layout {
+  grid-template-columns: minmax(220px, 0.31fr) minmax(0, 1fr);
+  align-items: stretch;
+  overflow: hidden;
+}
+
+body.scfs-unified-support-center-page .scfs-kb-library-navigation {
+  align-self: stretch;
+  min-width: 0;
+}
+
+body.scfs-unified-support-center-page .scfs-kb-library-results {
+  width: 100%;
+  overflow: hidden;
+}
+
+body.scfs-unified-support-center-page .scfs-kb-library-results-list,
+body.scfs-unified-support-center-page .scfs-support-library-article,
+body.scfs-unified-support-center-page .scfs-support-library-article-main,
+body.scfs-unified-support-center-page .scfs-support-library-article-meta {
+  min-width: 0;
+}
+
+body.scfs-unified-support-center-page .scfs-kb-library-search input[type="search"],
+body.scfs-unified-support-center-page .scfs-kb-library-search select,
+body.scfs-unified-support-center-page .scfs-support-product-filter select {
+  max-width: 100%;
+  appearance: auto;
+}
+
+body.scfs-unified-support-center-page .scfs-kb-empty,
+body.scfs-unified-support-center-page .scfs-support-platform__empty {
+  width: 100%;
+  min-height: 0;
+}
+
+@media (max-width: 1100px) {
+  body.scfs-unified-support-center-page .scfs-kb-library-layout {
+    grid-template-columns: minmax(205px, 0.35fr) minmax(0, 1fr);
+  }
+
+  body.scfs-unified-support-center-page .scfs-support-platform__workspace {
+    padding-inline: clamp(18px, 3vw, 30px);
+  }
+}
+
+@media (max-width: 900px) {
+  html {
+    scroll-padding-top: 82px;
+  }
+
+  body.scfs-unified-support-center-page .scfs-support-platform :where(
+    #support-center,
+    #guided-resolution,
+    #knowledge-base,
+    #known-issues,
+    #release-intelligence
+  ) {
+    scroll-margin-top: 88px;
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-layout {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-navigation {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--scfs-token-line);
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-nav-group {
+    min-width: 0;
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-nav-group + .scfs-kb-library-nav-group {
+    border-top: 0;
+    border-left: 1px solid var(--scfs-token-line);
+  }
+}
+
+@media (max-width: 700px) {
+  body.scfs-unified-support-center-page .entry-content > .scfs-support-platform,
+  body.scfs-unified-support-center-page .entry-content > .wp-block-shortcode > .scfs-support-platform {
+    width: 100%;
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-navigation {
+    grid-template-columns: 1fr;
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-nav-group + .scfs-kb-library-nav-group {
+    border-top: 1px solid var(--scfs-token-line);
+    border-left: 0;
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-results,
+  body.scfs-unified-support-center-page .scfs-support-platform__workspace {
+    padding: 16px;
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-masthead,
+  body.scfs-unified-support-center-page .scfs-kb-library-results-header,
+  body.scfs-unified-support-center-page .scfs-support-library-article {
+    grid-template-columns: 1fr;
+  }
+
+  body.scfs-unified-support-center-page .scfs-support-library-article-meta {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .scfs-support-platform.is-loading .scfs-support-platform__workspace::after {
+    inset: 10px 10px auto auto;
+  }
+}
+
+@media print {
+  body.scfs-unified-support-center-page .scfs-support-platform__nav,
+  body.scfs-unified-support-center-page .scfs-support-product-filter,
+  body.scfs-unified-support-center-page .scfs-kb-library-navigation,
+  body.scfs-unified-support-center-page .scfs-kb-library-search,
+  body.scfs-unified-support-center-page .scfs-support-platform__diagnostic {
+    display: none !important;
+  }
+
+  body.scfs-unified-support-center-page .scfs-kb-library-layout {
+    display: block;
+    border: 0;
+  }
+
+  body.scfs-unified-support-center-page .scfs-support-platform__workspace,
+  body.scfs-unified-support-center-page .scfs-kb-library-results {
+    padding: 0;
+  }
+}
+
+body.scfs-support-integration-v527 .scfs-support-platform {
+  --scfs-support-integration-version: "5.2.7";
 }

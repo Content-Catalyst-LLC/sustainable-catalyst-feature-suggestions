@@ -5,19 +5,19 @@ $css = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-sugges
 $main = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-  'plugin version' => strpos($main, 'Version: 5.2.6') !== false,
-  'runtime version' => strpos($main, "const VERSION = '5.2.6';") !== false,
+  'plugin version' => strpos($main, 'Version: 5.2.7') !== false,
+  'runtime version' => strpos($main, "const VERSION = '5.2.7';") !== false,
   'legacy automatic renderer retained as no-op' => strpos($class, 'public function automatically_render_on_support_page($content)') !== false,
   'automatic content filter removed' => strpos($class, "add_filter('the_content', array(\$this, 'automatically_render_on_support_page')") === false,
   'compact shortcode renderer' => strpos($class, 'render_compact_library') !== false,
   'dedicated knowledge base route' => strpos($class, 'dedicated_knowledge_base_url') !== false,
-  'compact library CSS' => strpos($css, 'v5.2.6 Dynamic records, permalink integrity, refined full browser') !== false,
-  'manifest version' => ($manifest['version'] ?? '') === '5.2.6',
-  'manifest release name' => ($manifest['release_name'] ?? '') === 'Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation',
-  'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.6.md'),
+  'compact library CSS' => strpos($css, 'v5.2.7 Dynamic records, permalink integrity, refined full browser') !== false,
+  'manifest version' => ($manifest['version'] ?? '') === '5.2.7',
+  'manifest release name' => ($manifest['release_name'] ?? '') === 'Support Center Production Integration and Interface Hardening',
+  'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.7.md'),
 );
 foreach ($checks as $label => $pass) {
   if (!$pass) { fwrite(STDERR, "FAIL - $label\n"); exit(1); }
   echo "PASS - $label\n";
 }
-echo 'v5.2.6 support page library contract passed (' . count($checks) . " checks).\n";
+echo 'v5.2.7 support page library contract passed (' . count($checks) . " checks).\n";

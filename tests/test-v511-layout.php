@@ -7,10 +7,10 @@ $integrated = file_get_contents($plugin . '/includes/class-scfs-integrated-knowl
 $css = file_get_contents($plugin . '/assets/knowledge-base.css');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version header' => strpos($main, 'Version: 5.2.6') !== false,
-    'main version constant' => strpos($main, "const VERSION = '5.2.6';") !== false,
-    'knowledge base version' => strpos($knowledge, "const VERSION = '5.2.6';") !== false,
-    'integrated knowledge base version' => strpos($integrated, "const VERSION = '5.2.6';") !== false,
+    'plugin version header' => strpos($main, 'Version: 5.2.7') !== false,
+    'main version constant' => strpos($main, "const VERSION = '5.2.7';") !== false,
+    'knowledge base version' => strpos($knowledge, "const VERSION = '5.2.7';") !== false,
+    'integrated knowledge base version' => strpos($integrated, "const VERSION = '5.2.7';") !== false,
     'body class filter' => strpos($knowledge, "add_filter('body_class'") !== false,
     'astra page layout filter' => strpos($knowledge, "add_filter('astra_page_layout'") !== false,
     'astra content layout filter' => strpos($knowledge, "add_filter('astra_get_content_layout'") !== false,
@@ -20,8 +20,8 @@ $checks = array(
     'publications navigation suppression' => strpos($css, '.publications-navigation') !== false,
     'full width primary content' => strpos($css, 'body.scfs-kb-full-width #primary') !== false,
     'expanded article shell' => strpos($css, 'max-width:1180px') !== false,
-    'manifest version' => ($manifest['version'] ?? '') === '5.2.6',
-    'release notes exist' => file_exists($root . '/RELEASE_NOTES_5.2.6.md'),
+    'manifest version' => ($manifest['version'] ?? '') === '5.2.7',
+    'release notes exist' => file_exists($root . '/RELEASE_NOTES_5.2.7.md'),
 );
 foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS' : 'FAIL') . " - {$label}\n";
