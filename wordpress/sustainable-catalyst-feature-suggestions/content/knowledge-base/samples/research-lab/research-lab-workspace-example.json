@@ -1,0 +1,131 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "RESEARCH-LAB-RETROFIT-001",
+  "product": "Sustainable Catalyst Research Lab",
+  "product_slug": "research-lab",
+  "product_version": "0.36.1",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "RESEARCH-LAB-001",
+      "feature": "Scientific Calculators",
+      "sample_action": "calculate a heat-transfer coefficient with units",
+      "expected_result": "a method-labeled result"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-002",
+      "feature": "Python Compute Core",
+      "sample_action": "run summary statistics through the supported backend",
+      "expected_result": "a typed compute response"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-003",
+      "feature": "Numerical Solvers",
+      "sample_action": "fit a simple energy model and inspect convergence",
+      "expected_result": "solver output and diagnostics"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-004",
+      "feature": "Visualization",
+      "sample_action": "plot measured versus predicted energy use",
+      "expected_result": "a figure tied to dataset and run IDs"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-005",
+      "feature": "Projects and Workspaces",
+      "sample_action": "create LAB-RETROFIT-001",
+      "expected_result": "a persistent research workspace"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-006",
+      "feature": "Dataset Registry",
+      "sample_action": "register monthly meter data with schema, source, license, and units",
+      "expected_result": "a versioned dataset record"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-007",
+      "feature": "Reproducible Runs",
+      "sample_action": "execute the baseline model twice with fixed inputs and seed",
+      "expected_result": "a rerunnable run record and matching fingerprint"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-008",
+      "feature": "Evidence and Provenance",
+      "sample_action": "trace a savings estimate to source files, method, and code",
+      "expected_result": "an end-to-end provenance graph"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-009",
+      "feature": "Method Review",
+      "sample_action": "document assumptions, diagnostics, limits, and reviewer decision",
+      "expected_result": "a governed method record"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-010",
+      "feature": "External Discovery",
+      "sample_action": "locate candidate weather-normalization data",
+      "expected_result": "discovery records awaiting review"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-011",
+      "feature": "Experiment Framework",
+      "sample_action": "define hypothesis, factors, controls, outcomes, and stopping rule",
+      "expected_result": "an experiment specification"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-012",
+      "feature": "Parameter Studies",
+      "sample_action": "sweep occupancy and tariff assumptions",
+      "expected_result": "a parameter-result table"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-013",
+      "feature": "Design of Experiments",
+      "sample_action": "create a factorial temperature-by-occupancy design",
+      "expected_result": "a design matrix and analysis plan"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-014",
+      "feature": "Calibration and Validation",
+      "sample_action": "calibrate a thermal model and test held-out data",
+      "expected_result": "fit and validation metrics"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-015",
+      "feature": "Distributed Compute",
+      "sample_action": "dispatch 500 approved scenario combinations",
+      "expected_result": "worker receipts and consolidated results"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-016",
+      "feature": "Persistent Queue",
+      "sample_action": "queue a long calibration run and survive restart",
+      "expected_result": "a durable job record"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-017",
+      "feature": "Workflow Orchestration",
+      "sample_action": "connect dataset, method, run, review, and export",
+      "expected_result": "a typed execution history"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-018",
+      "feature": "Instrumentation",
+      "sample_action": "register a temperature logger, channels, calibration, and custody",
+      "expected_result": "instrument and observation records"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-019",
+      "feature": "Offline Field Work",
+      "sample_action": "collect temperatures without connectivity and synchronize later",
+      "expected_result": "queued observations with conflict handling"
+    },
+    {
+      "feature_id": "RESEARCH-LAB-020",
+      "feature": "Publication Packages",
+      "sample_action": "assemble methods, data, code, figures, results, and provenance",
+      "expected_result": "a portable reproduction bundle"
+    }
+  ],
+  "human_review_required": true
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "RESEARCH-LIBRARIAN-RETROFIT-001",
+  "product": "Research Librarian",
+  "product_slug": "research-librarian",
+  "product_version": "7.0.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-001",
+      "feature": "Question Intake",
+      "sample_action": "ask how a city should compare retrofit options",
+      "expected_result": "a normalized research request"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-002",
+      "feature": "Scope Gate",
+      "sample_action": "keep the request within Sustainable Catalyst research and products",
+      "expected_result": "an in-scope route or clear boundary"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-003",
+      "feature": "Intent Classification",
+      "sample_action": "classify the request as sourcing, calculation, analysis, or decision support",
+      "expected_result": "a transparent intent record"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-004",
+      "feature": "Knowledge Library Retrieval",
+      "sample_action": "retrieve energy-efficiency and decision-method documents",
+      "expected_result": "ranked library records"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-005",
+      "feature": "Product Routing",
+      "sample_action": "route calculation to Workbench and synthesis to Decision Studio",
+      "expected_result": "a product sequence with reasons"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-006",
+      "feature": "Source Discovery",
+      "sample_action": "identify utility, building, climate, and finance source types",
+      "expected_result": "a source shortlist with provenance expectations"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-007",
+      "feature": "Research Path Assembly",
+      "sample_action": "build a six-stage retrofit research path",
+      "expected_result": "an ordered journey"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-008",
+      "feature": "Follow-up Questions",
+      "sample_action": "ask only for geography and decision deadline",
+      "expected_result": "a narrower query"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-009",
+      "feature": "Evidence Cards",
+      "sample_action": "show source, relevance, confidence, and limitations",
+      "expected_result": "compact evidence records"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-010",
+      "feature": "Citation Handoffs",
+      "sample_action": "send selected sources to Knowledge Library or Decision Studio",
+      "expected_result": "structured source handoffs"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-011",
+      "feature": "Saved Journeys",
+      "sample_action": "save the community retrofit journey",
+      "expected_result": "persistent route and state"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-012",
+      "feature": "Feedback and Ratings",
+      "sample_action": "record that the route helped but lacked procurement guidance",
+      "expected_result": "a bounded quality signal"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-013",
+      "feature": "Index Health",
+      "sample_action": "confirm indexed record count and timestamp",
+      "expected_result": "a visible index status"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-014",
+      "feature": "Endpoint Diagnostics",
+      "sample_action": "distinguish UI, network, backend, and index failures",
+      "expected_result": "an actionable diagnostic state"
+    },
+    {
+      "feature_id": "RESEARCH-LIBRARIAN-015",
+      "feature": "Human Review Boundary",
+      "sample_action": "review suggested citations before relying on them",
+      "expected_result": "an advisory route rather than authority"
+    }
+  ],
+  "human_review_required": true
+}

@@ -1,0 +1,143 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "PLATFORM-CORE-RETROFIT-001",
+  "product": "Sustainable Catalyst Platform Core",
+  "product_slug": "platform-core",
+  "product_version": "current",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "PLATFORM-CORE-001",
+      "feature": "Product Registry",
+      "sample_action": "register canonical product ID, owner, route, and lifecycle",
+      "expected_result": "a canonical product record"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-002",
+      "feature": "Version Registry",
+      "sample_action": "record installed, compatible, superseded, and retired versions",
+      "expected_result": "a version compatibility record"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-003",
+      "feature": "Shared Taxonomies",
+      "sample_action": "reuse product, version, component, issue, release, topic, and artifact terms",
+      "expected_result": "consistent cross-product context"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-004",
+      "feature": "Typed Schemas",
+      "sample_action": "validate a Decision Packet or calculation handoff",
+      "expected_result": "a schema result"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-005",
+      "feature": "Handoff Contracts",
+      "sample_action": "send a Workbench artifact to Decision Studio with minimum fields and receipt",
+      "expected_result": "a typed transfer and receipt"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-006",
+      "feature": "Artifact Registry",
+      "sample_action": "register a dataset, model, decision, document, or report",
+      "expected_result": "a discoverable artifact record"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-007",
+      "feature": "Identity and Access",
+      "sample_action": "grant an editor documentation rights without administrative control",
+      "expected_result": "a least-privilege assignment"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-008",
+      "feature": "Configuration",
+      "sample_action": "set supported backend URLs and feature settings",
+      "expected_result": "a validated environment configuration"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-009",
+      "feature": "Secrets Boundaries",
+      "sample_action": "reference an environment variable instead of storing the key",
+      "expected_result": "a secret reference without secret value"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-010",
+      "feature": "Service Health",
+      "sample_action": "check version, dependencies, readiness, and time",
+      "expected_result": "a health response"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-011",
+      "feature": "Observability",
+      "sample_action": "inspect logs, metrics, traces, and handoff failures",
+      "expected_result": "an operational diagnostic"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-012",
+      "feature": "Audit Events",
+      "sample_action": "record a taxonomy migration or permission change",
+      "expected_result": "a tamper-aware event"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-013",
+      "feature": "Feature Flags",
+      "sample_action": "enable a new route for a bounded cohort and preserve rollback",
+      "expected_result": "a controlled rollout state"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-014",
+      "feature": "Compatibility",
+      "sample_action": "test old and new artifact readers",
+      "expected_result": "a compatibility decision"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-015",
+      "feature": "Migration",
+      "sample_action": "move a v1 artifact to v2 with backup and receipt",
+      "expected_result": "a migration record"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-016",
+      "feature": "Backup and Recovery",
+      "sample_action": "create and test a shared-registry recovery point",
+      "expected_result": "a verified backup"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-017",
+      "feature": "Public API Keys",
+      "sample_action": "issue a read-only scoped key",
+      "expected_result": "a revocable credential"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-018",
+      "feature": "Rate Limits",
+      "sample_action": "define fair public usage and response behavior",
+      "expected_result": "a visible limit policy"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-019",
+      "feature": "Embeds",
+      "sample_action": "serve a trusted versioned public component",
+      "expected_result": "a bounded embed contract"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-020",
+      "feature": "Release Integrity",
+      "sample_action": "verify package root, manifest, checksums, tests, and version identity",
+      "expected_result": "a release-integrity report"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-021",
+      "feature": "Cross-Product Navigation",
+      "sample_action": "preserve return paths and artifact context",
+      "expected_result": "stable navigation"
+    },
+    {
+      "feature_id": "PLATFORM-CORE-022",
+      "feature": "Governance Policies",
+      "sample_action": "enforce publication, privacy, retention, review, and automation boundaries",
+      "expected_result": "a cross-product policy decision"
+    }
+  ],
+  "human_review_required": true
+}

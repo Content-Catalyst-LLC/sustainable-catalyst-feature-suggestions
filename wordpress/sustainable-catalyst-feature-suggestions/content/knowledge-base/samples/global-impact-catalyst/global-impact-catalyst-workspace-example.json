@@ -1,0 +1,119 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "GLOBAL-IMPACT-CATALYST-RETROFIT-001",
+  "product": "Global Impact Catalyst",
+  "product_slug": "global-impact-catalyst",
+  "product_version": "1.5.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-001",
+      "feature": "Impact Workspace",
+      "sample_action": "create GIC-RETROFIT-001",
+      "expected_result": "a governed program-impact workspace"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-002",
+      "feature": "Problem and Context",
+      "sample_action": "describe energy burden, comfort inequity, affected groups, causes, and constraints",
+      "expected_result": "a contextual problem statement"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-003",
+      "feature": "Stakeholder Participation",
+      "sample_action": "record staff and community participation in framing and review",
+      "expected_result": "participation and consent records"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-004",
+      "feature": "Theory of Change",
+      "sample_action": "connect inputs, activities, outputs, outcomes, and assumptions",
+      "expected_result": "a reviewable causal pathway"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-005",
+      "feature": "Activities and Outputs",
+      "sample_action": "record control installation, envelope work, and staff training",
+      "expected_result": "activity and output records"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-006",
+      "feature": "Outcomes",
+      "sample_action": "define short-, medium-, and long-term energy and comfort changes",
+      "expected_result": "outcome definitions"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-007",
+      "feature": "Indicators",
+      "sample_action": "specify kWh, complaints, training, method, frequency, owner, and disaggregation",
+      "expected_result": "indicator records"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-008",
+      "feature": "Baselines and Targets",
+      "sample_action": "record baseline 45,000 kWh/month and a justified 36,000 target",
+      "expected_result": "baseline and target records"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-009",
+      "feature": "Evidence",
+      "sample_action": "link meter data, surveys, documents, and evaluation findings",
+      "expected_result": "evidence tied to outcomes"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-010",
+      "feature": "Contribution and Attribution",
+      "sample_action": "record weather, occupancy, and other influences",
+      "expected_result": "a contribution narrative with limits"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-011",
+      "feature": "Equity and Distribution",
+      "sample_action": "disaggregate comfort by room use and accessibility need",
+      "expected_result": "distributional findings"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-012",
+      "feature": "Risk and Safeguards",
+      "sample_action": "record disruption, exclusion, data, implementation, and reputation risks",
+      "expected_result": "risk and safeguard records"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-013",
+      "feature": "Learning Agenda",
+      "sample_action": "ask whether controls remain usable after six months",
+      "expected_result": "a prioritized learning plan"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-014",
+      "feature": "Monitoring",
+      "sample_action": "import routine monthly energy and comfort observations",
+      "expected_result": "a monitoring series"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-015",
+      "feature": "Evaluation",
+      "sample_action": "document an appropriate before/after or interrupted-time-series method",
+      "expected_result": "an evaluation plan and findings"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-016",
+      "feature": "Impact Reporting",
+      "sample_action": "publish a six-month brief with evidence and limits",
+      "expected_result": "a reviewable impact report"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-017",
+      "feature": "SDG and Framework Mapping",
+      "sample_action": "map relevant work to SDG 7 and 11 without implying certification",
+      "expected_result": "a contextual framework mapping"
+    },
+    {
+      "feature_id": "GLOBAL-IMPACT-CATALYST-018",
+      "feature": "Decision Handoffs",
+      "sample_action": "attach approved outcome and risk records to Decision Studio",
+      "expected_result": "a typed impact handoff"
+    }
+  ],
+  "human_review_required": true
+}

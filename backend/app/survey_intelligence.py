@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
-SURVEY_ANALYSIS_VERSION = "5.0.0-1"
+SURVEY_ANALYSIS_VERSION = "5.1.0-1"
 STOPWORDS = {"the","and","for","that","this","with","from","have","was","were","are","but","not","you","your","our","they","their","would","could","should","into","about","there","what","when","where","which","also","very","more","less","some","than","then","because","been","being","has","had","its","it's","just","really","survey","response","responses"}
 
 class SurveyField(BaseModel):

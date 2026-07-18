@@ -1,0 +1,21 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+RESEARCH-LAB-001,Scientific Calculators,calculate a heat-transfer coefficient with units,a method-labeled result,synthetic-demo,0.36.1
+RESEARCH-LAB-002,Python Compute Core,run summary statistics through the supported backend,a typed compute response,synthetic-demo,0.36.1
+RESEARCH-LAB-003,Numerical Solvers,fit a simple energy model and inspect convergence,solver output and diagnostics,synthetic-demo,0.36.1
+RESEARCH-LAB-004,Visualization,plot measured versus predicted energy use,a figure tied to dataset and run IDs,synthetic-demo,0.36.1
+RESEARCH-LAB-005,Projects and Workspaces,create LAB-RETROFIT-001,a persistent research workspace,synthetic-demo,0.36.1
+RESEARCH-LAB-006,Dataset Registry,"register monthly meter data with schema, source, license, and units",a versioned dataset record,synthetic-demo,0.36.1
+RESEARCH-LAB-007,Reproducible Runs,execute the baseline model twice with fixed inputs and seed,a rerunnable run record and matching fingerprint,synthetic-demo,0.36.1
+RESEARCH-LAB-008,Evidence and Provenance,"trace a savings estimate to source files, method, and code",an end-to-end provenance graph,synthetic-demo,0.36.1
+RESEARCH-LAB-009,Method Review,"document assumptions, diagnostics, limits, and reviewer decision",a governed method record,synthetic-demo,0.36.1
+RESEARCH-LAB-010,External Discovery,locate candidate weather-normalization data,discovery records awaiting review,synthetic-demo,0.36.1
+RESEARCH-LAB-011,Experiment Framework,"define hypothesis, factors, controls, outcomes, and stopping rule",an experiment specification,synthetic-demo,0.36.1
+RESEARCH-LAB-012,Parameter Studies,sweep occupancy and tariff assumptions,a parameter-result table,synthetic-demo,0.36.1
+RESEARCH-LAB-013,Design of Experiments,create a factorial temperature-by-occupancy design,a design matrix and analysis plan,synthetic-demo,0.36.1
+RESEARCH-LAB-014,Calibration and Validation,calibrate a thermal model and test held-out data,fit and validation metrics,synthetic-demo,0.36.1
+RESEARCH-LAB-015,Distributed Compute,dispatch 500 approved scenario combinations,worker receipts and consolidated results,synthetic-demo,0.36.1
+RESEARCH-LAB-016,Persistent Queue,queue a long calibration run and survive restart,a durable job record,synthetic-demo,0.36.1
+RESEARCH-LAB-017,Workflow Orchestration,"connect dataset, method, run, review, and export",a typed execution history,synthetic-demo,0.36.1
+RESEARCH-LAB-018,Instrumentation,"register a temperature logger, channels, calibration, and custody",instrument and observation records,synthetic-demo,0.36.1
+RESEARCH-LAB-019,Offline Field Work,collect temperatures without connectivity and synchronize later,queued observations with conflict handling,synthetic-demo,0.36.1
+RESEARCH-LAB-020,Publication Packages,"assemble methods, data, code, figures, results, and provenance",a portable reproduction bundle,synthetic-demo,0.36.1

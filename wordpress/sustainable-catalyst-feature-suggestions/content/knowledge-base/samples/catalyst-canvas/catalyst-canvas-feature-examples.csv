@@ -1,0 +1,19 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+CATALYST-CANVAS-001,Project Workspace,create CANVAS-RETROFIT-001 with owner and status,a persistent project,synthetic-demo,2.0.0
+CATALYST-CANVAS-002,Challenge Frame,"describe energy, comfort, users, desired change, and boundaries",a concise challenge statement,synthetic-demo,2.0.0
+CATALYST-CANVAS-003,Stakeholder Map,"map visitors, staff, facilities, funders, and contractors",a stakeholder network,synthetic-demo,2.0.0
+CATALYST-CANVAS-004,Personas,create an evidence-bounded facilities-manager persona,a persona separating evidence from inference,synthetic-demo,2.0.0
+CATALYST-CANVAS-005,Journey Map,"map room booking, comfort complaints, and facilities response",a stage-based journey,synthetic-demo,2.0.0
+CATALYST-CANVAS-006,Point of View,"synthesize user, need, and insight",a reviewable POV statement,synthetic-demo,2.0.0
+CATALYST-CANVAS-007,How Might We,ask how to reduce energy without hiding comfort tradeoffs,bounded design questions,synthetic-demo,2.0.0
+CATALYST-CANVAS-008,Evidence Ledger,"add utility bills, observations, and interviews",source-linked evidence records,synthetic-demo,2.0.0
+CATALYST-CANVAS-009,Assumption Ledger,record that staff will use a dashboard weekly,an assumption with risk and test,synthetic-demo,2.0.0
+CATALYST-CANVAS-010,Research Plan,"plan interviews, meter review, ethics, and outputs",a governed plan,synthetic-demo,2.0.0
+CATALYST-CANVAS-011,Idea Generation,"generate sensor, scheduling, controls, and training concepts",an idea set linked to needs,synthetic-demo,2.0.0
+CATALYST-CANVAS-012,Concept Selection,"score concepts on feasibility, impact, equity, and evidence",a transparent selection rationale,synthetic-demo,2.0.0
+CATALYST-CANVAS-013,Prototype Plan,define a comfort-and-energy dashboard prototype,a bounded prototype specification,synthetic-demo,2.0.0
+CATALYST-CANVAS-014,Test Plan,test whether staff can identify an overheating zone,a task script and success measures,synthetic-demo,2.0.0
+CATALYST-CANVAS-015,Learning Log,record that users misread a comfort score,a chronological learning entry,synthetic-demo,2.0.0
+CATALYST-CANVAS-016,Review Workflow,request research and accessibility review,a human review trail,synthetic-demo,2.0.0
+CATALYST-CANVAS-017,Comparison,compare two dashboard concepts using aligned criteria,a side-by-side evidence view,synthetic-demo,2.0.0
+CATALYST-CANVAS-018,Export and Handoffs,send the chosen concept to Decision Studio,a portable bundle and receipt,synthetic-demo,2.0.0

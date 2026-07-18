@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Documentation_Feature_Intelligence {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.0';
     const SCHEMA_VERSION = '1.0';
     const DB_VERSION_OPTION = 'scfs_documentation_intelligence_db_version';
     const OPTION_KEY = 'scfs_documentation_intelligence_settings';
@@ -37,7 +37,7 @@ final class SCFS_Documentation_Feature_Intelligence {
         add_action('init', array($this, 'register_meta'), 10);
         add_action('wp_enqueue_scripts', array($this, 'register_assets'));
         add_action('admin_enqueue_scripts', array($this, 'admin_assets'));
-        add_filter('the_content', array($this, 'append_article_feedback'), 35);
+        add_filter('the_content', array($this, 'append_article_feedback'), 25);
         add_action('admin_post_scfs_submit_article_feedback', array($this, 'handle_article_feedback'));
         add_action('admin_post_nopriv_scfs_submit_article_feedback', array($this, 'handle_article_feedback'));
         add_action('admin_post_scfs_refresh_documentation_gaps', array($this, 'handle_refresh_gaps'));
@@ -312,31 +312,40 @@ final class SCFS_Documentation_Feature_Intelligence {
         $article_id = get_the_ID();
         $settings = $this->settings();
         $status = isset($_GET['scfs_feedback']) ? sanitize_key(wp_unslash($_GET['scfs_feedback'])) : '';
+        $summary = $this->article_feedback_summary($article_id);
         wp_enqueue_style('scfs-documentation-intelligence');
         ob_start();
         echo '<aside class="scfs-article-feedback" aria-labelledby="scfs-article-feedback-title">';
         echo '<p class="scfs-resolution-eyebrow">' . esc_html__('Documentation feedback', 'sustainable-catalyst-feature-suggestions') . '</p>';
-        echo '<h2 id="scfs-article-feedback-title">' . esc_html__('Was this article helpful?', 'sustainable-catalyst-feature-suggestions') . '</h2>';
-        echo '<p>' . esc_html__('Your response improves documentation and product planning. Do not include contact details, credentials, private logs, or sensitive information.', 'sustainable-catalyst-feature-suggestions') . '</p>';
-        if ($status === 'received') {
-            echo '<div class="scfs-feedback-notice" role="status">' . esc_html__('Thank you. Your documentation feedback was recorded.', 'sustainable-catalyst-feature-suggestions') . '</div>';
-        } elseif ($status === 'duplicate') {
-            echo '<div class="scfs-feedback-notice" role="status">' . esc_html__('Your recent response for this article is already recorded.', 'sustainable-catalyst-feature-suggestions') . '</div>';
+        echo '<h2 id="scfs-article-feedback-title">' . esc_html__('Was this article useful?', 'sustainable-catalyst-feature-suggestions') . '</h2>';
+        echo '<p>' . esc_html__('A quick rating helps identify which guides work and which need revision. Do not include contact details, credentials, private logs, or sensitive information.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        if ($summary['total'] >= 3 && $summary['helpfulness_rate'] !== null) {
+            echo '<p class="scfs-feedback-summary"><strong>' . esc_html((string) round($summary['helpfulness_rate'] * 100)) . '%</strong> ' . esc_html__('of visitors found this article useful.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         }
-        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        if ($status === 'received') {
+            echo '<div class="scfs-feedback-notice" role="status">' . esc_html__('Thank you. Your rating was recorded.', 'sustainable-catalyst-feature-suggestions') . '</div>';
+        } elseif ($status === 'duplicate') {
+            echo '<div class="scfs-feedback-notice" role="status">' . esc_html__('Your recent rating for this article is already recorded.', 'sustainable-catalyst-feature-suggestions') . '</div>';
+        } elseif ($status === 'error') {
+            echo '<div class="scfs-feedback-notice scfs-feedback-notice--error" role="alert">' . esc_html__('The rating could not be recorded. Please try again.', 'sustainable-catalyst-feature-suggestions') . '</div>';
+        }
+        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" data-scfs-feedback-form>';
         echo '<input type="hidden" name="action" value="scfs_submit_article_feedback"><input type="hidden" name="article_id" value="' . esc_attr((string) $article_id) . '">';
         echo '<input type="hidden" name="search_id" value="' . esc_attr(isset($_GET['scfs_search_id']) ? absint($_GET['scfs_search_id']) : 0) . '">';
         echo '<input class="scfs-feedback-honeypot" type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true">';
         wp_nonce_field(self::FEEDBACK_NONCE_ACTION . '_' . $article_id, 'scfs_feedback_nonce');
-        echo '<div class="scfs-feedback-choice"><button type="submit" name="helpful" value="1">' . esc_html__('Yes, it helped', 'sustainable-catalyst-feature-suggestions') . '</button><button type="submit" name="helpful" value="0">' . esc_html__('No, not yet', 'sustainable-catalyst-feature-suggestions') . '</button></div>';
-        echo '<label><span>' . esc_html__('Reason', 'sustainable-catalyst-feature-suggestions') . '</span><select name="reason"><option value="">' . esc_html__('Select an optional reason', 'sustainable-catalyst-feature-suggestions') . '</option>';
+        echo '<fieldset class="scfs-feedback-choice"><legend>' . esc_html__('Choose a rating', 'sustainable-catalyst-feature-suggestions') . '</legend>';
+        echo '<label><input type="radio" name="helpful" value="1" required><span aria-hidden="true">✓</span><strong>' . esc_html__('Yes', 'sustainable-catalyst-feature-suggestions') . '</strong><small>' . esc_html__('This was useful', 'sustainable-catalyst-feature-suggestions') . '</small></label>';
+        echo '<label><input type="radio" name="helpful" value="0" required><span aria-hidden="true">×</span><strong>' . esc_html__('Not yet', 'sustainable-catalyst-feature-suggestions') . '</strong><small>' . esc_html__('It needs improvement', 'sustainable-catalyst-feature-suggestions') . '</small></label></fieldset>';
+        echo '<div class="scfs-feedback-followup"><label><span>' . esc_html__('Optional reason', 'sustainable-catalyst-feature-suggestions') . '</span><select name="reason"><option value="">' . esc_html__('Select a reason', 'sustainable-catalyst-feature-suggestions') . '</option>';
         foreach ($this->feedback_reasons() as $key => $label) {
             echo '<option value="' . esc_attr($key) . '">' . esc_html($label) . '</option>';
         }
         echo '</select></label>';
         if ($settings['feedback_comment_enabled'] === '1') {
-            echo '<label><span>' . esc_html__('What should be improved?', 'sustainable-catalyst-feature-suggestions') . '</span><textarea name="comment" maxlength="1000" rows="3" placeholder="Keep this brief and non-sensitive."></textarea></label>';
+            echo '<label><span>' . esc_html__('Optional improvement note', 'sustainable-catalyst-feature-suggestions') . '</span><textarea name="comment" maxlength="1000" rows="3" placeholder="' . esc_attr__('Keep this brief and non-sensitive.', 'sustainable-catalyst-feature-suggestions') . '"></textarea></label>';
         }
+        echo '<button class="scfs-feedback-submit" type="submit">' . esc_html__('Submit rating', 'sustainable-catalyst-feature-suggestions') . '</button></div>';
         echo '</form></aside>';
         return $content . ob_get_clean();
     }

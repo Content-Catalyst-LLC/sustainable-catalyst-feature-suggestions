@@ -1,0 +1,143 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "CONTACT-ENGAGEMENT-RETROFIT-001",
+  "product": "Contact and Engagement Platform",
+  "product_slug": "contact-engagement",
+  "product_version": "2.0.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-001",
+      "feature": "Compact Intake",
+      "sample_action": "submit essential advisory context with name, email, purpose, and summary",
+      "expected_result": "a private inquiry record"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-002",
+      "feature": "Advanced Intake",
+      "sample_action": "add timeline, budget range, product, goals, and institutional context",
+      "expected_result": "a routed private request"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-003",
+      "feature": "Conditional Routing",
+      "sample_action": "show fields and workflow for support, advisory, media, or collaboration",
+      "expected_result": "a purpose-specific intake path"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-004",
+      "feature": "Inquiry Records",
+      "sample_action": "preserve original submission, consent, source, and lifecycle",
+      "expected_result": "an auditable private record"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-005",
+      "feature": "Support Cases",
+      "sample_action": "create a private case from a consented support handoff",
+      "expected_result": "a case with requester and product context"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-006",
+      "feature": "Secure Document Upload",
+      "sample_action": "upload an authorized redacted project brief outside the public Media Library",
+      "expected_result": "a controlled file record"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-007",
+      "feature": "Quarantine and Validation",
+      "sample_action": "check type, size, filename, integrity, malware workflow, and access",
+      "expected_result": "a quarantined or approved file state"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-008",
+      "feature": "Review Workspace",
+      "sample_action": "review inquiries and files under least privilege",
+      "expected_result": "a permission-controlled workspace"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-009",
+      "feature": "Email Notifications",
+      "sample_action": "send receipt and internal routing notices",
+      "expected_result": "email events and delivery status"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-010",
+      "feature": "Sender Portal",
+      "sample_action": "let a requester view limited status and provide updates",
+      "expected_result": "a controlled sender-facing view"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-011",
+      "feature": "Recovery",
+      "sample_action": "issue a new time-limited portal link",
+      "expected_result": "a safe recovery flow"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-012",
+      "feature": "Microsoft Teams Scheduling",
+      "sample_action": "offer and confirm approved meeting times in Teams only",
+      "expected_result": "a Teams meeting and audit record"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-013",
+      "feature": "Calendar Coordination",
+      "sample_action": "track availability, invitations, changes, and responses",
+      "expected_result": "a synchronized event"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-014",
+      "feature": "Proposals",
+      "sample_action": "draft and revise a retrofit research proposal",
+      "expected_result": "a reviewable proposal"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-015",
+      "feature": "Statements of Work",
+      "sample_action": "define scope, deliverables, timing, responsibilities, and terms",
+      "expected_result": "a structured SOW"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-016",
+      "feature": "Approvals",
+      "sample_action": "record authorized proposal or SOW acceptance",
+      "expected_result": "an approval event"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-017",
+      "feature": "Secure Client Workspace",
+      "sample_action": "share controlled files, tasks, decisions, and messages",
+      "expected_result": "a private collaboration area"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-018",
+      "feature": "Collaboration",
+      "sample_action": "request feedback on a deliverable and preserve status",
+      "expected_result": "a controlled collaboration record"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-019",
+      "feature": "Lifecycle Management",
+      "sample_action": "move inquiry through triage, review, proposal, active, complete, or closed",
+      "expected_result": "a lifecycle history"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-020",
+      "feature": "Engagement Analytics",
+      "sample_action": "measure aggregate response and service patterns without exposing case content",
+      "expected_result": "privacy-limited service intelligence"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-021",
+      "feature": "Retention and Deletion",
+      "sample_action": "expire unused uploads and apply documented retention",
+      "expected_result": "a logged retention action"
+    },
+    {
+      "feature_id": "CONTACT-ENGAGEMENT-022",
+      "feature": "Product Support Handoff",
+      "sample_action": "receive consented product, version, component, and problem context",
+      "expected_result": "a private case with public/private separation"
+    }
+  ],
+  "human_review_required": true
+}

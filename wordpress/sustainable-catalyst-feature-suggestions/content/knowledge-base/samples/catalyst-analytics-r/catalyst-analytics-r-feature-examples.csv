@@ -1,0 +1,17 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+CATALYST-ANALYTICS-R-001,Data Intake,read the feature-example CSV or JSON,a governed R data object,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-002,Source Metadata,"attach publisher, URL, license, citation, retrieval, field, and unit metadata",a source-aware dataset,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-003,Dataset Validation,"check required fields, types, missingness, units, and duplicates",a validation report,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-004,Indicator Registry,register annual energy savings,a reusable indicator definition,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-005,Derived Indicators,calculate baseline minus retrofit kWh,derived values with method metadata,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-006,Comparison,compare baseline and retrofit groups or periods,a comparison table and effect summary,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-007,Uncertainty,apply an explicit ±8% measurement range,intervals and assumptions,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-008,Sensitivity,vary tariff and occupancy inputs,a ranked sensitivity result,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-009,Stress Testing,model 20% lower savings and 15% higher cost,stress-case outputs,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-010,Accounting,reconcile monthly and annual energy totals,a balance check,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-011,Workspaces,"save data, indicators, assumptions, and outputs",a persistent analytical state,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-012,Snapshots,freeze and restore complete workspace state,a fingerprinted snapshot,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-013,Reproducible Reports,"render methods, figures, results, and limitations",a rerunnable report,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-014,Canonical JSON Export,export the reviewed comparison,a schema-versioned JSON record,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-015,Browser Demo Parity,repeat the conceptual workflow in the public demo,a mapped result with parity limits,synthetic-demo,1.2.0
+CATALYST-ANALYTICS-R-016,Package Validation,"run tests, examples, documentation checks, and R CMD check",a release-validation report,synthetic-demo,1.2.0

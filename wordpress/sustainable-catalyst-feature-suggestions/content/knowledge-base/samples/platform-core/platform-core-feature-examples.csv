@@ -1,0 +1,23 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+PLATFORM-CORE-001,Product Registry,"register canonical product ID, owner, route, and lifecycle",a canonical product record,synthetic-demo,current
+PLATFORM-CORE-002,Version Registry,"record installed, compatible, superseded, and retired versions",a version compatibility record,synthetic-demo,current
+PLATFORM-CORE-003,Shared Taxonomies,"reuse product, version, component, issue, release, topic, and artifact terms",consistent cross-product context,synthetic-demo,current
+PLATFORM-CORE-004,Typed Schemas,validate a Decision Packet or calculation handoff,a schema result,synthetic-demo,current
+PLATFORM-CORE-005,Handoff Contracts,send a Workbench artifact to Decision Studio with minimum fields and receipt,a typed transfer and receipt,synthetic-demo,current
+PLATFORM-CORE-006,Artifact Registry,"register a dataset, model, decision, document, or report",a discoverable artifact record,synthetic-demo,current
+PLATFORM-CORE-007,Identity and Access,grant an editor documentation rights without administrative control,a least-privilege assignment,synthetic-demo,current
+PLATFORM-CORE-008,Configuration,set supported backend URLs and feature settings,a validated environment configuration,synthetic-demo,current
+PLATFORM-CORE-009,Secrets Boundaries,reference an environment variable instead of storing the key,a secret reference without secret value,synthetic-demo,current
+PLATFORM-CORE-010,Service Health,"check version, dependencies, readiness, and time",a health response,synthetic-demo,current
+PLATFORM-CORE-011,Observability,"inspect logs, metrics, traces, and handoff failures",an operational diagnostic,synthetic-demo,current
+PLATFORM-CORE-012,Audit Events,record a taxonomy migration or permission change,a tamper-aware event,synthetic-demo,current
+PLATFORM-CORE-013,Feature Flags,enable a new route for a bounded cohort and preserve rollback,a controlled rollout state,synthetic-demo,current
+PLATFORM-CORE-014,Compatibility,test old and new artifact readers,a compatibility decision,synthetic-demo,current
+PLATFORM-CORE-015,Migration,move a v1 artifact to v2 with backup and receipt,a migration record,synthetic-demo,current
+PLATFORM-CORE-016,Backup and Recovery,create and test a shared-registry recovery point,a verified backup,synthetic-demo,current
+PLATFORM-CORE-017,Public API Keys,issue a read-only scoped key,a revocable credential,synthetic-demo,current
+PLATFORM-CORE-018,Rate Limits,define fair public usage and response behavior,a visible limit policy,synthetic-demo,current
+PLATFORM-CORE-019,Embeds,serve a trusted versioned public component,a bounded embed contract,synthetic-demo,current
+PLATFORM-CORE-020,Release Integrity,"verify package root, manifest, checksums, tests, and version identity",a release-integrity report,synthetic-demo,current
+PLATFORM-CORE-021,Cross-Product Navigation,preserve return paths and artifact context,stable navigation,synthetic-demo,current
+PLATFORM-CORE-022,Governance Policies,"enforce publication, privacy, retention, review, and automation boundaries",a cross-product policy decision,synthetic-demo,current

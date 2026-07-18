@@ -1,0 +1,19 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+KNOWLEDGE-LIBRARY-001,Foundation Documents,create a stable platform methodology document,a full-page managed document with original-file link,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-002,PDF-to-Document,import a product brief PDF while retaining the original,an editable searchable document and source attachment,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-003,Collections,group the six guides into a Product Documentation collection,a browsable collection,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-004,Topics and Concepts,relate retrofit documents to energy efficiency and resilience,semantic topic and concept links,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-005,Research Pathways,build an ordered retrofit planning pathway,a reusable reading and action route,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-006,Article Maps,place the six guides in previous/current/next order,series navigation relationships,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-007,Source Records,create a bibliographic record for an energy standard,a reusable source object,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-008,Harvard Citations,generate an in-text citation and bibliography entry,consistent formatted citation text,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-009,Bibliographies,assemble a project-specific retrofit source list,an exportable bibliography,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-010,Quote and Evidence Capture,capture a recommendation with page and context,a source-linked evidence excerpt,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-011,Claims,link a controls-savings claim to supporting and challenging evidence,a reviewable claim-evidence graph,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-012,Project Source Libraries,share selected utility and engineering sources,a governed project library,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-013,Scholarly Connectors,"search Crossref, OpenAlex, or DataCite for retrofit research",candidate sources awaiting review,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-014,Library Discovery,"use library profiles, WorldCat, OpenURL, ILL, and open-access routes",a lawful access route,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-015,Versioning and Integrity,supersede a 2025 method with a 2026 edition,preserved version relationships and checks,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-016,Collaborative Review,request technical and editorial review,a documented review trail,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-017,Public API and Export,export bibliography and document records as JSON or RIS,structured portable records,synthetic-demo,4.0.0
+KNOWLEDGE-LIBRARY-018,Institutional Collections,create a municipal resilience collection,a controlled institutional knowledge space,synthetic-demo,4.0.0

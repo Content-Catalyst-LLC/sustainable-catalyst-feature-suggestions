@@ -5,8 +5,8 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/platform/feature-suggestions/",
-  "version": "5.0.0",
-  "updated": "2026-07-15",
+  "version": "5.1.1",
+  "updated": "2026-07-17",
   "capabilities": [
     "configurable WordPress settings screen",
     "standalone settings access fallback",
@@ -300,7 +300,20 @@
     "specialist module source-of-truth preservation",
     "FastAPI connected operations scoring",
     "FastAPI governed action planning",
-    "FastAPI connected operations report verification"
+    "FastAPI connected operations report verification",
+    "integrated first-party 96-article Knowledge Base corpus",
+    "modern expandable Knowledge Base directory",
+    "product and documentation-section folder navigation",
+    "persistent Knowledge Base Support Center navigation",
+    "Knowledge Base breadcrumbs and article sequencing",
+    "related product guide recommendations",
+    "print-friendly Support Article experience",
+    "direct bundled CSV and JSON sample downloads",
+    "upgrade-safe Knowledge Base import and taxonomy repair",
+    "anonymous visitor usefulness ratings with duplicate protection",
+    "full-width Knowledge Base article and archive layouts",
+    "Astra no-sidebar Knowledge Base integration",
+    "scoped Publications sidebar suppression"
   ],
   "boundaries": [
     "no confidential information",
@@ -311,8 +324,8 @@
   ],
   "wordpress_post_type": "sc_feature_suggest",
   "notes": "Version 5.0.0 consolidates public support, content operations, repository synchronization, editorial governance, product reliability, cross-product orchestration, and consent-gated private-support handoffs into one connected operations layer while preserving specialist modules as the source of truth.",
-  "release_name": "Connected Product Support Operations Platform",
-  "release": "Feature Suggestions v5.0.0 — Connected Product Support Operations Platform",
+  "release_name": "Knowledge Base Full-Width Reading Experience",
+  "release": "Feature Suggestions v5.1.0 \u2014 Integrated Knowledge Base and Documentation Library",
   "features": [
     "Connected Product Support Operations administration workspace",
     "Unified module-health inventory across the complete support platform",

@@ -12,9 +12,9 @@ function __($text) { return $text; }
 
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
 $checks = array(
-    'main version is 5.0.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '5.0.0',
+    'main version is 5.1.1' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '5.1.1',
     'cross product orchestration loaded' => class_exists('SCFS_Cross_Product_Support_Orchestration'),
-    'cross product version' => SCFS_Cross_Product_Support_Orchestration::VERSION === '5.0.0',
+    'cross product version' => SCFS_Cross_Product_Support_Orchestration::VERSION === '5.1.0',
     'cross product schema version' => SCFS_Cross_Product_Support_Orchestration::SCHEMA_VERSION === '1.0',
     'platform incident post type declared' => SCFS_Cross_Product_Support_Orchestration::INCIDENT_POST_TYPE === 'sc_platform_incident',
     'support reliability retained' => class_exists('SCFS_Support_Reliability_Center'),

@@ -1,0 +1,119 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "KNOWLEDGE-LIBRARY-RETROFIT-001",
+  "product": "Knowledge Library",
+  "product_slug": "knowledge-library",
+  "product_version": "4.0.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-001",
+      "feature": "Foundation Documents",
+      "sample_action": "create a stable platform methodology document",
+      "expected_result": "a full-page managed document with original-file link"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-002",
+      "feature": "PDF-to-Document",
+      "sample_action": "import a product brief PDF while retaining the original",
+      "expected_result": "an editable searchable document and source attachment"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-003",
+      "feature": "Collections",
+      "sample_action": "group the six guides into a Product Documentation collection",
+      "expected_result": "a browsable collection"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-004",
+      "feature": "Topics and Concepts",
+      "sample_action": "relate retrofit documents to energy efficiency and resilience",
+      "expected_result": "semantic topic and concept links"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-005",
+      "feature": "Research Pathways",
+      "sample_action": "build an ordered retrofit planning pathway",
+      "expected_result": "a reusable reading and action route"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-006",
+      "feature": "Article Maps",
+      "sample_action": "place the six guides in previous/current/next order",
+      "expected_result": "series navigation relationships"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-007",
+      "feature": "Source Records",
+      "sample_action": "create a bibliographic record for an energy standard",
+      "expected_result": "a reusable source object"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-008",
+      "feature": "Harvard Citations",
+      "sample_action": "generate an in-text citation and bibliography entry",
+      "expected_result": "consistent formatted citation text"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-009",
+      "feature": "Bibliographies",
+      "sample_action": "assemble a project-specific retrofit source list",
+      "expected_result": "an exportable bibliography"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-010",
+      "feature": "Quote and Evidence Capture",
+      "sample_action": "capture a recommendation with page and context",
+      "expected_result": "a source-linked evidence excerpt"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-011",
+      "feature": "Claims",
+      "sample_action": "link a controls-savings claim to supporting and challenging evidence",
+      "expected_result": "a reviewable claim-evidence graph"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-012",
+      "feature": "Project Source Libraries",
+      "sample_action": "share selected utility and engineering sources",
+      "expected_result": "a governed project library"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-013",
+      "feature": "Scholarly Connectors",
+      "sample_action": "search Crossref, OpenAlex, or DataCite for retrofit research",
+      "expected_result": "candidate sources awaiting review"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-014",
+      "feature": "Library Discovery",
+      "sample_action": "use library profiles, WorldCat, OpenURL, ILL, and open-access routes",
+      "expected_result": "a lawful access route"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-015",
+      "feature": "Versioning and Integrity",
+      "sample_action": "supersede a 2025 method with a 2026 edition",
+      "expected_result": "preserved version relationships and checks"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-016",
+      "feature": "Collaborative Review",
+      "sample_action": "request technical and editorial review",
+      "expected_result": "a documented review trail"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-017",
+      "feature": "Public API and Export",
+      "sample_action": "export bibliography and document records as JSON or RIS",
+      "expected_result": "structured portable records"
+    },
+    {
+      "feature_id": "KNOWLEDGE-LIBRARY-018",
+      "feature": "Institutional Collections",
+      "sample_action": "create a municipal resilience collection",
+      "expected_result": "a controlled institutional knowledge space"
+    }
+  ],
+  "human_review_required": true
+}

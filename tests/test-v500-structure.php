@@ -8,13 +8,13 @@ $backend = file_get_contents($root . '/backend/app/connected_support_operations.
 $backend_main = file_get_contents($root . '/backend/app/main.py');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version header' => strpos($main, 'Version: 5.0.0') !== false,
-    'main version constant' => strpos($main, "const VERSION = '5.0.0';") !== false,
+    'plugin version header' => strpos($main, 'Version: 5.1.1') !== false,
+    'main version constant' => strpos($main, "const VERSION = '5.1.1';") !== false,
     'connected operations include' => strpos($main, 'class-scfs-connected-support-operations.php') !== false,
     'connected operations instance' => strpos($main, 'SCFS_Connected_Support_Operations::instance();') !== false,
     'connected operations activation' => strpos($main, 'SCFS_Connected_Support_Operations::activate();') !== false,
     'connected operations deactivation' => strpos($main, 'SCFS_Connected_Support_Operations::deactivate();') !== false,
-    'connected operations class version' => strpos($class, "const VERSION = '5.0.0';") !== false,
+    'connected operations class version' => strpos($class, "const VERSION = '5.1.0';") !== false,
     'unified dashboard' => strpos($class, 'function dashboard_record') !== false,
     'product dossiers' => strpos($class, 'function product_record') !== false,
     'governed action queue' => strpos($class, 'function enqueue_action') !== false,
@@ -29,8 +29,8 @@ $checks = array(
     'backend action planning' => strpos($backend, 'def plan_connected_action') !== false,
     'backend report verification' => strpos($backend, 'def verify_connected_operations_report') !== false,
     'backend capabilities endpoint' => strpos($backend_main, "/v1/connected-operations/capabilities") !== false,
-    'manifest version' => ($manifest['version'] ?? '') === '5.0.0',
-    'manifest release name' => ($manifest['release_name'] ?? '') === 'Connected Product Support Operations Platform',
+    'manifest version' => ($manifest['version'] ?? '') === '5.1.1',
+    'manifest release name' => ($manifest['release_name'] ?? '') === 'Knowledge Base Full-Width Reading Experience',
     'connected operations documentation' => file_exists($root . '/docs/connected-product-support-operations-platform.md'),
     'connected dashboard example' => file_exists($root . '/examples/connected-operations-dashboard.json'),
     'connected action example' => file_exists($root . '/examples/connected-operations-action-plan.json'),

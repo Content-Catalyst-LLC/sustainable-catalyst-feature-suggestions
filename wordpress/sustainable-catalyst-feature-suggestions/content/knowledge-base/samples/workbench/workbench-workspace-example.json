@@ -1,0 +1,83 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "WORKBENCH-RETROFIT-001",
+  "product": "Sustainable Catalyst Workbench",
+  "product_slug": "workbench",
+  "product_version": "5.0.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "WORKBENCH-001",
+      "feature": "Chalkboard Translator",
+      "sample_action": "translate a plain-language energy question into variables, equations, units, and assumptions",
+      "expected_result": "a reviewable equation and variable table"
+    },
+    {
+      "feature_id": "WORKBENCH-002",
+      "feature": "Symbolic Math",
+      "sample_action": "differentiate P(t)=120+8t-0.2t² and simplify the result",
+      "expected_result": "a symbolic derivative with an equivalent-form check"
+    },
+    {
+      "feature_id": "WORKBENCH-003",
+      "feature": "Unit-Aware Calculation",
+      "sample_action": "convert 450 MWh to kWh and GJ",
+      "expected_result": "450,000 kWh and about 1,620 GJ"
+    },
+    {
+      "feature_id": "WORKBENCH-004",
+      "feature": "Graph Studio",
+      "sample_action": "plot monthly baseline and retrofit electricity use",
+      "expected_result": "a labeled chart tied to the source rows"
+    },
+    {
+      "feature_id": "WORKBENCH-005",
+      "feature": "Engineering Mode",
+      "sample_action": "estimate simple payback with stated capital cost and tariff",
+      "expected_result": "an engineering-style note with cautions"
+    },
+    {
+      "feature_id": "WORKBENCH-006",
+      "feature": "Domain Calculators",
+      "sample_action": "run a heat-loss calculation for a community-center wall",
+      "expected_result": "a domain result with inputs, units, and method limits"
+    },
+    {
+      "feature_id": "WORKBENCH-007",
+      "feature": "Parameter Sliders",
+      "sample_action": "vary electricity price from $0.08 to $0.18/kWh",
+      "expected_result": "a visible sensitivity range"
+    },
+    {
+      "feature_id": "WORKBENCH-008",
+      "feature": "Calculation Notes",
+      "sample_action": "attach tariff source, occupancy assumption, and uncertainty",
+      "expected_result": "a traceable calculation note"
+    },
+    {
+      "feature_id": "WORKBENCH-009",
+      "feature": "Export Studio",
+      "sample_action": "export the reviewed calculation as JSON, CSV, Markdown, or HTML",
+      "expected_result": "a portable bundle preserving inputs and provenance"
+    },
+    {
+      "feature_id": "WORKBENCH-010",
+      "feature": "Embedded Calculators",
+      "sample_action": "place the energy calculator inside a methodology page",
+      "expected_result": "a reusable governed calculator"
+    },
+    {
+      "feature_id": "WORKBENCH-011",
+      "feature": "Prototyping Runners",
+      "sample_action": "generate a bounded Python example from the reviewed model",
+      "expected_result": "inspectable code and execution notes"
+    },
+    {
+      "feature_id": "WORKBENCH-012",
+      "feature": "Hardware and Simulation Handoffs",
+      "sample_action": "send sensor conversion parameters to a Research Lab experiment",
+      "expected_result": "a typed handoff receipt"
+    }
+  ],
+  "human_review_required": true
+}

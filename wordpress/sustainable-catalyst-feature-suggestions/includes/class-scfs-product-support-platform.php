@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Support_Platform {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.0';
     const SCHEMA_VERSION = '1.0';
     const RELEASE_POST_TYPE = 'sc_release_record';
     const SHORTCODE = 'scfs_product_support_center';
@@ -884,7 +884,6 @@ final class SCFS_Product_Support_Platform {
             if (!empty($operations_settings['hide_empty_support_sections'])) {
                 $counts = SCFS_Support_Content_Operations::instance()->product_content_counts($product, false);
                 $content_views = array(
-                    'documentation' => 'support_articles',
                     'issues' => 'known_issues',
                     'releases' => 'release_records',
                     'ideas' => 'public_ideas',
@@ -1123,7 +1122,7 @@ final class SCFS_Product_Support_Platform {
             'surveys' => array(__('Participate in research', 'sustainable-catalyst-feature-suggestions'), __('Respond to open product surveys. Survey results inform review but do not automatically set priorities.', 'sustainable-catalyst-feature-suggestions')),
             'private-support' => array(__('Continue to private support', 'sustainable-catalyst-feature-suggestions'), __('Use Contact and Engagement for identity, correspondence, private documents, and case lifecycle management.', 'sustainable-catalyst-feature-suggestions')),
         );
-        $content_view_counts = array('documentation' => 'support_articles', 'issues' => 'known_issues', 'ideas' => 'public_ideas', 'surveys' => 'open_surveys');
+        $content_view_counts = array('issues' => 'known_issues', 'ideas' => 'public_ideas', 'surveys' => 'open_surveys');
         foreach ($cards as $view => $card) {
             if (($view === 'surveys' && empty($settings['show_surveys'])) || ($view === 'ideas' && empty($settings['show_public_ideas']))) {
                 continue;

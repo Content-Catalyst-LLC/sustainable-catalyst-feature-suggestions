@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Cross_Product_Support_Orchestration {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.0';
     const SCHEMA_VERSION = '1.0';
     const INCIDENT_POST_TYPE = 'sc_platform_incident';
     const SHORTCODE = 'scfs_cross_product_support';

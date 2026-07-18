@@ -1,0 +1,17 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+NARRATIVE-RISK-001,Case Workspace,create NR-RETROFIT-001,a persistent narrative-risk case,synthetic-demo,1.5.0
+NARRATIVE-RISK-002,Artifact Intake,"register a public retrofit announcement with URL, date, version, and custody",a source-preserved communication artifact,synthetic-demo,1.5.0
+NARRATIVE-RISK-003,Claim Decomposition,"separate cost, emissions, comfort, and timeline claims",atomic claim records,synthetic-demo,1.5.0
+NARRATIVE-RISK-004,Narrative Mapping,"map frames, causal stories, heroes, harms, omissions, and implied action",a structured narrative map,synthetic-demo,1.5.0
+NARRATIVE-RISK-005,Actor and Audience Context,"record speaker, institution, intended audience, affected groups, and power context",actor and audience records,synthetic-demo,1.5.0
+NARRATIVE-RISK-006,Source Ledger,"preserve origin, retrieval, version, and custody",a source ledger,synthetic-demo,1.5.0
+NARRATIVE-RISK-007,Evidence Ledger,"link each claim to supporting, challenging, and contextual evidence",claim-evidence relationships,synthetic-demo,1.5.0
+NARRATIVE-RISK-008,Risk Dimensions,"assess accuracy, omission, uncertainty, harm, manipulation, governance, and reputation",dimension-level evidence and scores,synthetic-demo,1.5.0
+NARRATIVE-RISK-009,Scoring Method,apply the canonical transparent scoring rubric,a method-versioned score and rationale,synthetic-demo,1.5.0
+NARRATIVE-RISK-010,Uncertainty,"record missing evidence, ambiguity, confidence, and reviewer disagreement",an uncertainty record,synthetic-demo,1.5.0
+NARRATIVE-RISK-011,Counterevidence,add contractor-capacity and timeline challenges,a balanced evidence view,synthetic-demo,1.5.0
+NARRATIVE-RISK-012,Comparison,compare draft and final announcements or two cases,a change and risk comparison,synthetic-demo,1.5.0
+NARRATIVE-RISK-013,Review Workflow,"request factual, harm, and governance review",a review trail,synthetic-demo,1.5.0
+NARRATIVE-RISK-014,Approval,require authorized approval for an official assessment,an approval record and rationale,synthetic-demo,1.5.0
+NARRATIVE-RISK-015,Governance Log,"record method changes, overrides, conflicts, and score revisions",an auditable event log,synthetic-demo,1.5.0
+NARRATIVE-RISK-016,Exports and Handoffs,send an approved risk summary to Decision Studio,a portable privacy-aware artifact,synthetic-demo,1.5.0

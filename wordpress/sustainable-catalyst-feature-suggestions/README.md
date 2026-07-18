@@ -1,5 +1,9 @@
 # Sustainable Catalyst Feature Suggestions
 
+## Version 5.1.0 — Integrated Knowledge Base and Documentation Library
+
+This release adds a modern expandable Knowledge Base browser, 96 first-party product guides, 32 sample files, article breadcrumbs and sequencing, related documentation, print support, and anonymous usefulness ratings. Documentation is stored as real `sc_support_article` records and organized through hierarchical Documentation Collections.
+
 Version 5.0.0 is a Connected Product Support Operations WordPress plugin for documentation, known issues, releases, guided resolution, feature suggestions, surveys, repository synchronization, editorial governance, product reliability intelligence, and cross-product support orchestration.
 
 Version 5.0.0 adds a Connected Operations workspace with product dossiers, unified module health, a human-approved action queue, daily snapshots, and integrity-protected reports. It also retains public Platform Incident records, a configurable product dependency graph, shared-component relationships, dependency-aware Known Issues and releases, related-product recommendations, and cross-product resolution journeys.

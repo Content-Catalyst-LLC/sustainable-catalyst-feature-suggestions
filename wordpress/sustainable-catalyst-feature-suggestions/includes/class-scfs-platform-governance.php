@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class SCFS_Platform_Governance {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.0';
     const OPTION_KEY = 'scfs_platform_governance';
     const AUDIT_KEY = 'scfs_platform_audit';
     const NONCE = 'scfs_platform_governance';

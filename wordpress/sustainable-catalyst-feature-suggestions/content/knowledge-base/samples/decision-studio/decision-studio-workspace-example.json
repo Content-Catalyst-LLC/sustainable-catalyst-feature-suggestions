@@ -1,0 +1,107 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "DECISION-STUDIO-RETROFIT-001",
+  "product": "Decision Studio",
+  "product_slug": "decision-studio",
+  "product_version": "2.0.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "DECISION-STUDIO-001",
+      "feature": "Decision Packet",
+      "sample_action": "create DS-RETROFIT-001 for a community-center retrofit choice",
+      "expected_result": "a versioned packet containing all decision artifacts"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-002",
+      "feature": "Problem Framing",
+      "sample_action": "define the decision, scope, objectives, constraints, stakeholders, and deadline",
+      "expected_result": "a bounded decision statement"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-003",
+      "feature": "Evidence Ledger",
+      "sample_action": "add utility bills and an engineering assessment with relevance and confidence",
+      "expected_result": "traceable evidence records"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-004",
+      "feature": "Scenario Studio",
+      "sample_action": "compare no action, controls-only, and whole-building retrofit",
+      "expected_result": "a scenario table with aligned measures"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-005",
+      "feature": "Impact Records",
+      "sample_action": "record cost, emissions, comfort, disruption, and equity effects",
+      "expected_result": "structured impact entries"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-006",
+      "feature": "Claim Review",
+      "sample_action": "review the claim that the project pays back in five years",
+      "expected_result": "a supported, contested, or unresolved claim state"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-007",
+      "feature": "Finance Tradeoffs",
+      "sample_action": "compare capital, operating, lifecycle, and uncertainty considerations",
+      "expected_result": "a transparent tradeoff record"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-008",
+      "feature": "Risk and Recovery",
+      "sample_action": "record contractor delay, budget overrun, rollback, and recovery",
+      "expected_result": "a risk register with owners and mitigations"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-009",
+      "feature": "Assumption Register",
+      "sample_action": "record 3% annual tariff growth with source and confidence",
+      "expected_result": "a versioned assumption"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-010",
+      "feature": "Workbench Handoffs",
+      "sample_action": "request lifecycle-cost and emissions calculations",
+      "expected_result": "a returned calculation artifact and receipt"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-011",
+      "feature": "Readiness Review",
+      "sample_action": "check evidence, privacy, unresolved issues, and approval requirements",
+      "expected_result": "an advisory readiness report"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-012",
+      "feature": "Briefing Studio",
+      "sample_action": "assemble a board briefing from reviewed packet sections",
+      "expected_result": "an executive brief"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-013",
+      "feature": "Publication Studio",
+      "sample_action": "prepare a redacted public decision summary",
+      "expected_result": "a controlled publication artifact"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-014",
+      "feature": "Outcomes Monitoring",
+      "sample_action": "track six months of post-retrofit energy and comfort data",
+      "expected_result": "outcome records and variance explanations"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-015",
+      "feature": "Reassessment",
+      "sample_action": "reopen the decision after grant or outcome changes",
+      "expected_result": "a new review cycle preserving history"
+    },
+    {
+      "feature_id": "DECISION-STUDIO-016",
+      "feature": "API and Embeds",
+      "sample_action": "expose an approved public packet summary",
+      "expected_result": "a scoped privacy-aware JSON or embed"
+    }
+  ],
+  "human_review_required": true
+}

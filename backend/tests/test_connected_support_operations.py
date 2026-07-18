@@ -26,7 +26,7 @@ def test_operational_score_requires_connected_evidence():
             private_handoff_ready=True,
         )
     )
-    assert result.version == "5.0.0"
+    assert result.version == "5.1.0"
     assert result.state == "operational"
     assert result.score >= 75
     assert result.human_review_required is True
@@ -64,12 +64,12 @@ def test_high_risk_action_is_blocked():
 
 
 def test_report_checksum_verification():
-    data = {"version": "5.0.0", "products": [{"slug": "workbench", "score": 90}]}
+    data = {"version": "5.1.0", "products": [{"slug": "workbench", "score": 90}]}
     canonical = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     checksum = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     result = verify_connected_operations_report(OperationsReportEvidence(payload=data, checksum=checksum))
     assert result.valid is True
-    assert result.version == "5.0.0"
+    assert result.version == "5.1.0"
 
 from fastapi.testclient import TestClient
 from app.main import app
@@ -79,7 +79,7 @@ def test_connected_operations_capabilities_endpoint():
     response = TestClient(app).get("/v1/connected-operations/capabilities")
     assert response.status_code == 200
     data = response.json()
-    assert data["version"] == "5.0.0"
+    assert data["version"] == "5.1.0"
     assert data["human_review_required"] is True
     assert data["automatic_private_case_creation"] is False
 

@@ -1,0 +1,107 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "CATALYST-GRIT-RETROFIT-001",
+  "product": "Catalyst Grit",
+  "product_slug": "catalyst-grit",
+  "product_version": "1.5.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "CATALYST-GRIT-001",
+      "feature": "Goal Workspace",
+      "sample_action": "create GRIT-LEARN-001",
+      "expected_result": "a user-controlled goal workspace"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-002",
+      "feature": "Goal Definition",
+      "sample_action": "define an eight-week goal to complete a reproducible energy analysis",
+      "expected_result": "a bounded goal with completion criteria"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-003",
+      "feature": "Milestones",
+      "sample_action": "break the goal into data, calculation, analysis, and briefing steps",
+      "expected_result": "a milestone plan"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-004",
+      "feature": "Effort Log",
+      "sample_action": "record a 45-minute analysis session without moral judgment",
+      "expected_result": "an effort record"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-005",
+      "feature": "Context and Constraints",
+      "sample_action": "record limited evening availability, data access, and care obligations",
+      "expected_result": "a context record"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-006",
+      "feature": "Support Map",
+      "sample_action": "add a mentor, documentation, and quiet-workspace support",
+      "expected_result": "a support plan"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-007",
+      "feature": "Recovery and Rest",
+      "sample_action": "schedule recovery and pacing",
+      "expected_result": "a sustainable effort plan"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-008",
+      "feature": "Setback Records",
+      "sample_action": "record a missed milestone caused by delayed data access",
+      "expected_result": "a contextual setback record"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-009",
+      "feature": "Strategy Experiments",
+      "sample_action": "compare 25-minute and 50-minute work sessions",
+      "expected_result": "a small learning experiment"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-010",
+      "feature": "Reflection",
+      "sample_action": "record what helped, harmed, changed, or remains uncertain",
+      "expected_result": "a qualitative learning entry"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-011",
+      "feature": "Learning Patterns",
+      "sample_action": "notice better progress with morning sessions",
+      "expected_result": "an advisory user-reviewable pattern"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-012",
+      "feature": "Progress Measures",
+      "sample_action": "track milestones, confidence, wellbeing, support, and learning",
+      "expected_result": "a multidimensional progress view"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-013",
+      "feature": "Uncertainty",
+      "sample_action": "mark low confidence when records are sparse",
+      "expected_result": "an uncertainty note"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-014",
+      "feature": "Review",
+      "sample_action": "let the user reject or revise an inaccurate suggestion",
+      "expected_result": "a human-controlled conclusion"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-015",
+      "feature": "Export",
+      "sample_action": "download only selected records",
+      "expected_result": "a consent-aware bundle"
+    },
+    {
+      "feature_id": "CATALYST-GRIT-016",
+      "feature": "Decision and Research Handoffs",
+      "sample_action": "send a voluntary learning plan to Canvas",
+      "expected_result": "a scoped handoff receipt"
+    }
+  ],
+  "human_review_required": true
+}

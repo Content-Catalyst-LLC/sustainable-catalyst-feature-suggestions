@@ -1,0 +1,17 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+SITE-INTELLIGENCE-001,Country Dossiers,open a Kenya dossier and inspect update and source metadata,a multi-domain country overview,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-002,Regional Comparison,"compare compatible indicators for Kenya, Tanzania, and Uganda",an aligned table or chart,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-003,Earth Systems Observatory,"review rainfall anomaly, vegetation, weather, and hazard signals",a time-bounded earth-systems view,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-004,Economics and Markets,"inspect inflation, fiscal, food-price, and development indicators",a sourced economic context view,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-005,Humanitarian and Conflict,review public displacement and humanitarian-need signals,a harm-aware summary,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-006,Trade and Energy,review fuel-import dependence and energy-system exposure,a trade and energy profile,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-007,Live Event Intelligence,review severe-weather events from the last seven days,timestamped event records,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-008,Alerts and Monitoring,watch a rainfall anomaly threshold,an alert candidate requiring interpretation,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-009,Scenario Studio,compare drought persistence and rainfall recovery,scenario assumptions and monitored signals,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-010,Research Paths,build an East Africa food-security research path,an ordered reusable investigation,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-011,Saved Investigations,"save filters, records, notes, and evidence",a persistent investigation workspace,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-012,Briefing Workflows,create a weekly regional brief,a source-linked briefing,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-013,Source and Provenance Panels,"inspect publisher, retrieval, method, license, and transformation",a transparent source record,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-014,Public API,request an approved country-summary response,structured rate-limited JSON,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-015,Embeds,embed a public country or indicator card,a scoped component,synthetic-demo,3.0.0
+SITE-INTELLIGENCE-016,Offline and Accessible Views,save a keyboard-readable low-bandwidth briefing,a resilient degraded-mode artifact,synthetic-demo,3.0.0

@@ -1,0 +1,21 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+CATALYST-DATA-001,Entities,create the Community Center entity,a stable entity ID,synthetic-demo,1.11.0
+CATALYST-DATA-002,Indicators,"define monthly electricity use with unit, method, and direction",a reusable indicator definition,synthetic-demo,1.11.0
+CATALYST-DATA-003,Sources,"register utility data with publisher, URL, license, retrieval, and citation",a provenance source record,synthetic-demo,1.11.0
+CATALYST-DATA-004,Evidence Ledger,attach a bill and meter export to observations,an evidence chain,synthetic-demo,1.11.0
+CATALYST-DATA-005,Questions,state whether use fell after weather normalization,a bounded analytical question,synthetic-demo,1.11.0
+CATALYST-DATA-006,Instruments,define a meter-reading or import instrument,a versioned collection instrument,synthetic-demo,1.11.0
+CATALYST-DATA-007,Datasets,create a monthly-energy dataset,a registered dataset,synthetic-demo,1.11.0
+CATALYST-DATA-008,Observations,"enter January through March kWh with time, source, and status",traceable observations,synthetic-demo,1.11.0
+CATALYST-DATA-009,Units and Methods,define kWh and the normalization method,explicit unit and method records,synthetic-demo,1.11.0
+CATALYST-DATA-010,Quality Rules,"flag negative, duplicate, missing, or out-of-range values",quality findings,synthetic-demo,1.11.0
+CATALYST-DATA-011,Review and Revision,correct a duplicate while preserving history,a revision record,synthetic-demo,1.11.0
+CATALYST-DATA-012,Persistent Workspaces,"save datasets, views, queries, and notes",a reusable workspace,synthetic-demo,1.11.0
+CATALYST-DATA-013,Saved Queries,save a query for reviewed monthly observations,a versioned query,synthetic-demo,1.11.0
+CATALYST-DATA-014,Comparison Studio,compare baseline and retrofit months,a normalized comparison,synthetic-demo,1.11.0
+CATALYST-DATA-015,Export Studio,"freeze the reviewed comparison into CSV, JSON, brief, and manifest",an integrity-protected export,synthetic-demo,1.11.0
+CATALYST-DATA-016,Public API,return approved energy observations,scoped structured data,synthetic-demo,1.11.0
+CATALYST-DATA-017,Embeds,embed an approved energy trend table,a controlled visualization,synthetic-demo,1.11.0
+CATALYST-DATA-018,Institutional Access,give reviewers access without publication rights,role-aware permissions,synthetic-demo,1.11.0
+CATALYST-DATA-019,Connectors,retrieve a public utility or indicator feed,a logged connector run,synthetic-demo,1.11.0
+CATALYST-DATA-020,Refresh Operations,refresh tariff data and reconcile exceptions,a refresh record and exception queue,synthetic-demo,1.11.0

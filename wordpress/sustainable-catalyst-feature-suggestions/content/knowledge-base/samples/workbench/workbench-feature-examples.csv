@@ -1,0 +1,13 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+WORKBENCH-001,Chalkboard Translator,"translate a plain-language energy question into variables, equations, units, and assumptions",a reviewable equation and variable table,synthetic-demo,5.0.0
+WORKBENCH-002,Symbolic Math,differentiate P(t)=120+8t-0.2t² and simplify the result,a symbolic derivative with an equivalent-form check,synthetic-demo,5.0.0
+WORKBENCH-003,Unit-Aware Calculation,convert 450 MWh to kWh and GJ,"450,000 kWh and about 1,620 GJ",synthetic-demo,5.0.0
+WORKBENCH-004,Graph Studio,plot monthly baseline and retrofit electricity use,a labeled chart tied to the source rows,synthetic-demo,5.0.0
+WORKBENCH-005,Engineering Mode,estimate simple payback with stated capital cost and tariff,an engineering-style note with cautions,synthetic-demo,5.0.0
+WORKBENCH-006,Domain Calculators,run a heat-loss calculation for a community-center wall,"a domain result with inputs, units, and method limits",synthetic-demo,5.0.0
+WORKBENCH-007,Parameter Sliders,vary electricity price from $0.08 to $0.18/kWh,a visible sensitivity range,synthetic-demo,5.0.0
+WORKBENCH-008,Calculation Notes,"attach tariff source, occupancy assumption, and uncertainty",a traceable calculation note,synthetic-demo,5.0.0
+WORKBENCH-009,Export Studio,"export the reviewed calculation as JSON, CSV, Markdown, or HTML",a portable bundle preserving inputs and provenance,synthetic-demo,5.0.0
+WORKBENCH-010,Embedded Calculators,place the energy calculator inside a methodology page,a reusable governed calculator,synthetic-demo,5.0.0
+WORKBENCH-011,Prototyping Runners,generate a bounded Python example from the reviewed model,inspectable code and execution notes,synthetic-demo,5.0.0
+WORKBENCH-012,Hardware and Simulation Handoffs,send sensor conversion parameters to a Research Lab experiment,a typed handoff receipt,synthetic-demo,5.0.0

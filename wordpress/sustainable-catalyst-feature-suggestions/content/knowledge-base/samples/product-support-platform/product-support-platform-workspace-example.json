@@ -1,0 +1,143 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "PRODUCT-SUPPORT-PLATFORM-RETROFIT-001",
+  "product": "Product Support and Feedback Platform",
+  "product_slug": "product-support-platform",
+  "product_version": "5.1.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-001",
+      "feature": "Product Taxonomy",
+      "sample_action": "assign Product, Version, Component, Issue Type, and Release",
+      "expected_result": "consistent routing context"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-002",
+      "feature": "Support Articles",
+      "sample_action": "create detailed guides as sc_support_article drafts",
+      "expected_result": "searchable product documentation"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-003",
+      "feature": "Documentation Collections",
+      "sample_action": "group six guides into a hierarchical product collection",
+      "expected_result": "a browsable documentation set"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-004",
+      "feature": "Article Types",
+      "sample_action": "classify Getting Started, How-to, Troubleshooting, and Technical Reference",
+      "expected_result": "filtered content"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-005",
+      "feature": "Guided Resolution",
+      "sample_action": "match an endpoint error to articles, issues, releases, and next steps",
+      "expected_result": "a product-aware route"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-006",
+      "feature": "Known Issues",
+      "sample_action": "publish symptom, severity, state, workaround, and resolution",
+      "expected_result": "a public issue record"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-007",
+      "feature": "Release Intelligence",
+      "sample_action": "connect current, planned, maintenance, superseded, and retired releases",
+      "expected_result": "a release record with related guidance"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-008",
+      "feature": "Public Ideas",
+      "sample_action": "publish a moderated feature proposal",
+      "expected_result": "a public idea and official status"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-009",
+      "feature": "Voting",
+      "sample_action": "record advisory support without automatic prioritization",
+      "expected_result": "a bounded support signal"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-010",
+      "feature": "Forms and Surveys",
+      "sample_action": "run a documentation-usefulness survey",
+      "expected_result": "private responses and reviewed analysis"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-011",
+      "feature": "Article Feedback",
+      "sample_action": "collect helpful/not-helpful and step-specific comments",
+      "expected_result": "a quality signal"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-012",
+      "feature": "Failed Search Intelligence",
+      "sample_action": "track searches such as restore workspace",
+      "expected_result": "a documentation-gap signal"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-013",
+      "feature": "Documentation Gaps",
+      "sample_action": "combine search, issue, support, and feedback evidence",
+      "expected_result": "a ranked editorial opportunity"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-014",
+      "feature": "Product Onboarding",
+      "sample_action": "register product owners, routes, versions, components, and readiness",
+      "expected_result": "a support profile"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-015",
+      "feature": "Content Import and Export",
+      "sample_action": "import this JSON corpus as drafts and export governed records",
+      "expected_result": "an integrity-tracked batch"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-016",
+      "feature": "Editorial Governance",
+      "sample_action": "assign standards, lifecycle, reviewers, freshness, and approval",
+      "expected_result": "a human publication trail"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-017",
+      "feature": "Repository Sync",
+      "sample_action": "compare repository documentation with Knowledge Base coverage",
+      "expected_result": "a synchronization finding"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-018",
+      "feature": "Reliability Analytics",
+      "sample_action": "combine issue, incident, support-demand, and product evidence",
+      "expected_result": "an advisory reliability dossier"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-019",
+      "feature": "Platform Incidents",
+      "sample_action": "coordinate a cross-product public incident",
+      "expected_result": "an incident record and affected products"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-020",
+      "feature": "Cross-Product Journeys",
+      "sample_action": "guide users from data to analysis to decision",
+      "expected_result": "a connected support journey"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-021",
+      "feature": "Connected Operations",
+      "sample_action": "review dossiers, blockers, readiness, actions, and snapshots",
+      "expected_result": "an operations report"
+    },
+    {
+      "feature_id": "PRODUCT-SUPPORT-PLATFORM-022",
+      "feature": "Private Support Handoff",
+      "sample_action": "send consented product/version/problem context to Contact and Engagement",
+      "expected_result": "a short-lived private handoff"
+    }
+  ],
+  "human_review_required": true
+}

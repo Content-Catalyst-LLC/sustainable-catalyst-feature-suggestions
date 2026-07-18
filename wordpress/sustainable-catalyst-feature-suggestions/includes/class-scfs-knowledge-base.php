@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Knowledge_Base_Foundation {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.1';
     const SCHEMA_VERSION = '1.0';
     const ARTICLE_POST_TYPE = 'sc_support_article';
     const ISSUE_POST_TYPE = 'sc_known_issue';
@@ -48,6 +48,9 @@ final class SCFS_Knowledge_Base_Foundation {
         add_action('wp_enqueue_scripts', array($this, 'register_assets'));
         add_action('rest_api_init', array($this, 'register_rest_routes'));
         add_filter('template_include', array($this, 'template_include'));
+        add_filter('body_class', array($this, 'knowledge_base_body_classes'));
+        add_filter('astra_page_layout', array($this, 'force_full_width_layout'));
+        add_filter('astra_get_content_layout', array($this, 'force_full_width_layout'));
         add_filter('the_content', array($this, 'decorate_single_content'), 20);
         add_filter('manage_' . self::ARTICLE_POST_TYPE . '_posts_columns', array($this, 'article_columns'));
         add_action('manage_' . self::ARTICLE_POST_TYPE . '_posts_custom_column', array($this, 'article_column_content'), 10, 2);
@@ -705,6 +708,9 @@ final class SCFS_Knowledge_Base_Foundation {
     }
 
     public function render_shortcode($atts = array()) {
+        if (class_exists('SCFS_Integrated_Knowledge_Base')) {
+            return SCFS_Integrated_Knowledge_Base::instance()->render_browser($atts);
+        }
         $atts = shortcode_atts(array(
             'title' => __('Support Knowledge Base', 'sustainable-catalyst-feature-suggestions'),
             'intro' => __('Search product documentation, browse collections, and review current known issues.', 'sustainable-catalyst-feature-suggestions'),
@@ -867,6 +873,32 @@ final class SCFS_Knowledge_Base_Foundation {
             }
         }
         echo '</nav>';
+    }
+
+
+    /**
+     * Marks public Knowledge Base views so the theme and plugin stylesheet can
+     * provide a distraction-free, full-width documentation layout.
+     */
+    public function knowledge_base_body_classes($classes) {
+        if ($this->is_public_knowledge_base_view()) {
+            $classes[] = 'scfs-kb-full-width';
+            $classes[] = 'scfs-kb-no-publications-sidebar';
+        }
+        return array_values(array_unique($classes));
+    }
+
+    /**
+     * Astra reads this filter before rendering its sidebar. Returning
+     * no-sidebar removes the Publications widget area at the layout source.
+     */
+    public function force_full_width_layout($layout) {
+        return $this->is_public_knowledge_base_view() ? 'no-sidebar' : $layout;
+    }
+
+    private function is_public_knowledge_base_view() {
+        return is_post_type_archive(self::ARTICLE_POST_TYPE)
+            || is_singular(self::ARTICLE_POST_TYPE);
     }
 
     public function template_include($template) {

@@ -1,0 +1,17 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+CATALYST-FINANCE-001,Model Workspace,create CF-RETROFIT-001,a persistent finance workspace,synthetic-demo,1.4.0
+CATALYST-FINANCE-002,Assumption Register,"record tariff, grant, discount-rate, and project-life assumptions with sources",a traceable assumption set,synthetic-demo,1.4.0
+CATALYST-FINANCE-003,Revenue and Cost Drivers,"model square footage, kWh, tariff, maintenance, and implementation timing",driver-based projections,synthetic-demo,1.4.0
+CATALYST-FINANCE-004,Three-Statement Model,"connect income statement, balance sheet, and cash flow",integrated statements and balance checks,synthetic-demo,1.4.0
+CATALYST-FINANCE-005,Cash Flow,"schedule project payments, financing, operating savings, and maintenance",periodic cash flows,synthetic-demo,1.4.0
+CATALYST-FINANCE-006,Budget and Forecast,"compare actual, budget, forecast, and variance",variance tables and explanations,synthetic-demo,1.4.0
+CATALYST-FINANCE-007,Scenario Management,"create downside, base, and upside assumption sets",scenario-specific statements and metrics,synthetic-demo,1.4.0
+CATALYST-FINANCE-008,Sensitivity,"vary tariff growth, savings realization, cost, and discount rate",a sensitivity table or chart,synthetic-demo,1.4.0
+CATALYST-FINANCE-009,Stress Testing,apply a 20% cost overrun and delayed grant,liquidity and recovery effects,synthetic-demo,1.4.0
+CATALYST-FINANCE-010,Valuation,calculate project NPV under the documented cash-flow timing,a valuation with explicit assumptions,synthetic-demo,1.4.0
+CATALYST-FINANCE-011,Capital Structure,"combine grant, debt, equity, and repayment terms",a funding structure and obligations,synthetic-demo,1.4.0
+CATALYST-FINANCE-012,Risk Register,"connect contractor, tariff, funding, and performance risks to mitigations",a finance risk record,synthetic-demo,1.4.0
+CATALYST-FINANCE-013,Evidence and Sources,"link assumptions to tariffs, contracts, studies, and historicals",a source-linked model,synthetic-demo,1.4.0
+CATALYST-FINANCE-014,Review and Approval,"record preparer, reviewer, exceptions, and approval state",a human-controlled review trail,synthetic-demo,1.4.0
+CATALYST-FINANCE-015,Exports,"produce statements, scenarios, model JSON, and audit bundles",portable inspectable files,synthetic-demo,1.4.0
+CATALYST-FINANCE-016,Decision Studio Handoff,attach the reviewed scenario comparison to DS-RETROFIT-001,a typed handoff with model version,synthetic-demo,1.4.0

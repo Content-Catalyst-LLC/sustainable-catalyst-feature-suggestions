@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Connected_Support_Operations {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.0';
     const SCHEMA_VERSION = '1.0';
     const OPTION_KEY = 'scfs_connected_support_operations';
     const ACTION_QUEUE_KEY = 'scfs_connected_operations_actions';

@@ -1,0 +1,131 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "CATALYST-DATA-RETROFIT-001",
+  "product": "Catalyst Data",
+  "product_slug": "catalyst-data",
+  "product_version": "1.11.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "CATALYST-DATA-001",
+      "feature": "Entities",
+      "sample_action": "create the Community Center entity",
+      "expected_result": "a stable entity ID"
+    },
+    {
+      "feature_id": "CATALYST-DATA-002",
+      "feature": "Indicators",
+      "sample_action": "define monthly electricity use with unit, method, and direction",
+      "expected_result": "a reusable indicator definition"
+    },
+    {
+      "feature_id": "CATALYST-DATA-003",
+      "feature": "Sources",
+      "sample_action": "register utility data with publisher, URL, license, retrieval, and citation",
+      "expected_result": "a provenance source record"
+    },
+    {
+      "feature_id": "CATALYST-DATA-004",
+      "feature": "Evidence Ledger",
+      "sample_action": "attach a bill and meter export to observations",
+      "expected_result": "an evidence chain"
+    },
+    {
+      "feature_id": "CATALYST-DATA-005",
+      "feature": "Questions",
+      "sample_action": "state whether use fell after weather normalization",
+      "expected_result": "a bounded analytical question"
+    },
+    {
+      "feature_id": "CATALYST-DATA-006",
+      "feature": "Instruments",
+      "sample_action": "define a meter-reading or import instrument",
+      "expected_result": "a versioned collection instrument"
+    },
+    {
+      "feature_id": "CATALYST-DATA-007",
+      "feature": "Datasets",
+      "sample_action": "create a monthly-energy dataset",
+      "expected_result": "a registered dataset"
+    },
+    {
+      "feature_id": "CATALYST-DATA-008",
+      "feature": "Observations",
+      "sample_action": "enter January through March kWh with time, source, and status",
+      "expected_result": "traceable observations"
+    },
+    {
+      "feature_id": "CATALYST-DATA-009",
+      "feature": "Units and Methods",
+      "sample_action": "define kWh and the normalization method",
+      "expected_result": "explicit unit and method records"
+    },
+    {
+      "feature_id": "CATALYST-DATA-010",
+      "feature": "Quality Rules",
+      "sample_action": "flag negative, duplicate, missing, or out-of-range values",
+      "expected_result": "quality findings"
+    },
+    {
+      "feature_id": "CATALYST-DATA-011",
+      "feature": "Review and Revision",
+      "sample_action": "correct a duplicate while preserving history",
+      "expected_result": "a revision record"
+    },
+    {
+      "feature_id": "CATALYST-DATA-012",
+      "feature": "Persistent Workspaces",
+      "sample_action": "save datasets, views, queries, and notes",
+      "expected_result": "a reusable workspace"
+    },
+    {
+      "feature_id": "CATALYST-DATA-013",
+      "feature": "Saved Queries",
+      "sample_action": "save a query for reviewed monthly observations",
+      "expected_result": "a versioned query"
+    },
+    {
+      "feature_id": "CATALYST-DATA-014",
+      "feature": "Comparison Studio",
+      "sample_action": "compare baseline and retrofit months",
+      "expected_result": "a normalized comparison"
+    },
+    {
+      "feature_id": "CATALYST-DATA-015",
+      "feature": "Export Studio",
+      "sample_action": "freeze the reviewed comparison into CSV, JSON, brief, and manifest",
+      "expected_result": "an integrity-protected export"
+    },
+    {
+      "feature_id": "CATALYST-DATA-016",
+      "feature": "Public API",
+      "sample_action": "return approved energy observations",
+      "expected_result": "scoped structured data"
+    },
+    {
+      "feature_id": "CATALYST-DATA-017",
+      "feature": "Embeds",
+      "sample_action": "embed an approved energy trend table",
+      "expected_result": "a controlled visualization"
+    },
+    {
+      "feature_id": "CATALYST-DATA-018",
+      "feature": "Institutional Access",
+      "sample_action": "give reviewers access without publication rights",
+      "expected_result": "role-aware permissions"
+    },
+    {
+      "feature_id": "CATALYST-DATA-019",
+      "feature": "Connectors",
+      "sample_action": "retrieve a public utility or indicator feed",
+      "expected_result": "a logged connector run"
+    },
+    {
+      "feature_id": "CATALYST-DATA-020",
+      "feature": "Refresh Operations",
+      "sample_action": "refresh tariff data and reconcile exceptions",
+      "expected_result": "a refresh record and exception queue"
+    }
+  ],
+  "human_review_required": true
+}

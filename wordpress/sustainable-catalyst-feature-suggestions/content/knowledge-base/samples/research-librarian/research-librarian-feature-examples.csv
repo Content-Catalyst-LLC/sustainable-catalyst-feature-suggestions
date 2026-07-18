@@ -1,0 +1,16 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+RESEARCH-LIBRARIAN-001,Question Intake,ask how a city should compare retrofit options,a normalized research request,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-002,Scope Gate,keep the request within Sustainable Catalyst research and products,an in-scope route or clear boundary,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-003,Intent Classification,"classify the request as sourcing, calculation, analysis, or decision support",a transparent intent record,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-004,Knowledge Library Retrieval,retrieve energy-efficiency and decision-method documents,ranked library records,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-005,Product Routing,route calculation to Workbench and synthesis to Decision Studio,a product sequence with reasons,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-006,Source Discovery,"identify utility, building, climate, and finance source types",a source shortlist with provenance expectations,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-007,Research Path Assembly,build a six-stage retrofit research path,an ordered journey,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-008,Follow-up Questions,ask only for geography and decision deadline,a narrower query,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-009,Evidence Cards,"show source, relevance, confidence, and limitations",compact evidence records,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-010,Citation Handoffs,send selected sources to Knowledge Library or Decision Studio,structured source handoffs,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-011,Saved Journeys,save the community retrofit journey,persistent route and state,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-012,Feedback and Ratings,record that the route helped but lacked procurement guidance,a bounded quality signal,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-013,Index Health,confirm indexed record count and timestamp,a visible index status,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-014,Endpoint Diagnostics,"distinguish UI, network, backend, and index failures",an actionable diagnostic state,synthetic-demo,7.0.0
+RESEARCH-LIBRARIAN-015,Human Review Boundary,review suggested citations before relying on them,an advisory route rather than authority,synthetic-demo,7.0.0

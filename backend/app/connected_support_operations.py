@@ -31,7 +31,7 @@ class ConnectedOperationsEvidence(BaseModel):
 class ConnectedOperationsScore(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-connected-product-support-operations/1.0", alias="schema")
-    version: str = "5.0.0"
+    version: str = "5.1.0"
     product: str
     score: int = Field(ge=0, le=100)
     state: Literal["operational", "attention", "not_ready"]
@@ -60,7 +60,7 @@ class OperationsActionEvidence(BaseModel):
 class OperationsActionPlan(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-connected-operations-action-plan/1.0", alias="schema")
-    version: str = "5.0.0"
+    version: str = "5.1.0"
     action_type: str
     product: str
     permitted: bool
@@ -80,7 +80,7 @@ class OperationsReportEvidence(BaseModel):
 class OperationsReportResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-connected-operations-report-integrity/1.0", alias="schema")
-    version: str = "5.0.0"
+    version: str = "5.1.0"
     valid: bool
     expected_checksum: str
     supplied_checksum: str

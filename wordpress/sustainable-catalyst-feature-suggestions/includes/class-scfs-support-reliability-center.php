@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Support_Reliability_Center {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.0';
     const SCHEMA_VERSION = '1.0';
     const OPTION_KEY = 'scfs_support_reliability_settings';
     const SNAPSHOT_OPTION = 'scfs_support_reliability_snapshots';

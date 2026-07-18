@@ -1,4 +1,25 @@
+## 5.1.1 - 2026-07-17
+
+- Converted public Knowledge Base archives and support articles to a full-width, no-sidebar layout.
+- Added Astra layout filters that remove the Publications sidebar at render time.
+- Added scoped compatibility CSS for Astra and common WordPress sidebar wrappers.
+- Expanded article, archive, table, related-guide, and sequence layouts while preserving readable line lengths.
+- Improved responsive article typography and mobile spacing.
+
 # Changelog
+
+## 5.1.0 — Integrated Knowledge Base and Documentation Library
+
+- Added a modern expandable Knowledge Base directory modeled on Sustainable Catalyst's clean Library interaction pattern.
+- Bundled and integrated 96 detailed HTML Support Articles across 16 products.
+- Added 32 direct-download CSV and JSON sample files without Media Library MIME dependencies.
+- Added standardized product and documentation-section folder navigation.
+- Added persistent Knowledge Base navigation in the Support Center.
+- Added breadcrumbs, previous/next navigation, related guides, article printing, and product return paths.
+- Modernized anonymous visitor usefulness ratings with optional reasons and comments.
+- Added idempotent import, manual-edit protection, taxonomy repair, validation, and editorially scoped system publication.
+- Preserved existing Support Articles, Known Issues, Releases, Feature Suggestions, surveys, guided resolution, and private-support boundaries.
+- Excluded all legacy KnowledgeBuilder runtime code and database assumptions.
 
 ## 5.0.0 — Connected Product Support Operations Platform
 

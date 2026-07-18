@@ -1,0 +1,23 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+PRODUCT-SUPPORT-PLATFORM-001,Product Taxonomy,"assign Product, Version, Component, Issue Type, and Release",consistent routing context,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-002,Support Articles,create detailed guides as sc_support_article drafts,searchable product documentation,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-003,Documentation Collections,group six guides into a hierarchical product collection,a browsable documentation set,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-004,Article Types,"classify Getting Started, How-to, Troubleshooting, and Technical Reference",filtered content,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-005,Guided Resolution,"match an endpoint error to articles, issues, releases, and next steps",a product-aware route,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-006,Known Issues,"publish symptom, severity, state, workaround, and resolution",a public issue record,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-007,Release Intelligence,"connect current, planned, maintenance, superseded, and retired releases",a release record with related guidance,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-008,Public Ideas,publish a moderated feature proposal,a public idea and official status,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-009,Voting,record advisory support without automatic prioritization,a bounded support signal,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-010,Forms and Surveys,run a documentation-usefulness survey,private responses and reviewed analysis,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-011,Article Feedback,collect helpful/not-helpful and step-specific comments,a quality signal,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-012,Failed Search Intelligence,track searches such as restore workspace,a documentation-gap signal,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-013,Documentation Gaps,"combine search, issue, support, and feedback evidence",a ranked editorial opportunity,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-014,Product Onboarding,"register product owners, routes, versions, components, and readiness",a support profile,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-015,Content Import and Export,import this JSON corpus as drafts and export governed records,an integrity-tracked batch,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-016,Editorial Governance,"assign standards, lifecycle, reviewers, freshness, and approval",a human publication trail,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-017,Repository Sync,compare repository documentation with Knowledge Base coverage,a synchronization finding,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-018,Reliability Analytics,"combine issue, incident, support-demand, and product evidence",an advisory reliability dossier,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-019,Platform Incidents,coordinate a cross-product public incident,an incident record and affected products,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-020,Cross-Product Journeys,guide users from data to analysis to decision,a connected support journey,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-021,Connected Operations,"review dossiers, blockers, readiness, actions, and snapshots",an operations report,synthetic-demo,5.1.0
+PRODUCT-SUPPORT-PLATFORM-022,Private Support Handoff,send consented product/version/problem context to Contact and Engagement,a short-lived private handoff,synthetic-demo,5.1.0

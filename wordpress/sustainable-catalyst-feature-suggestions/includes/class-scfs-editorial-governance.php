@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Editorial_Governance {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.0';
     const SCHEMA_VERSION = '1.0';
     const OPTION_KEY = 'scfs_editorial_governance_settings';
     const AUDIT_OPTION = 'scfs_editorial_governance_audit';
@@ -657,6 +657,9 @@ final class SCFS_Editorial_Governance {
     }
 
     public function enforce_publication_gate($data, $postarr) {
+        if (apply_filters('scfs_editorial_allow_system_publication', false, $data, $postarr)) {
+            return $data;
+        }
         if ($this->transition_in_progress || !in_array($data['post_type'] ?? '', $this->managed_post_types(), true)) {
             return $data;
         }

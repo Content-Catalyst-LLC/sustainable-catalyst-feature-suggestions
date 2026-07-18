@@ -15,8 +15,8 @@ from .support_reliability import ProductReliabilityEvidence, ProductReliabilityS
 from .cross_product_orchestration import IncidentImpactEvidence, IncidentImpactResult, ProductRouteEvidence, ProductRouteResult, ResolutionJourneyEvidence, ResolutionJourneyResult, OrchestrationReportEvidence, OrchestrationReportResult, evaluate_incident_impact, recommend_product_routes, build_resolution_journey, verify_orchestration_report
 from .connected_support_operations import ConnectedOperationsEvidence, ConnectedOperationsScore, OperationsActionEvidence, OperationsActionPlan, OperationsReportEvidence, OperationsReportResult, score_connected_operations, plan_connected_action, verify_connected_operations_report
 
-VERSION='5.0.0'
-ANALYSIS_VERSION='5.0.0-1'
+VERSION='5.1.0'
+ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Feature Suggestions AI',version=VERSION)
 
 class Submission(BaseModel):
@@ -151,7 +151,7 @@ def survey_analyze(payload: SurveyAnalysisRequest, x_scfs_ai_key:Optional[str]=H
 @app.get('/v1/surveys/methodology')
 def survey_methodology(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {'ok':True,'analysis_version':'5.0.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
+    return {'ok':True,'analysis_version':'5.1.0-1','descriptive_statistics':True,'cross_tabs':True,'cronbach_alpha':True,'open_text_coding':'deterministic term-frequency','statistical_significance':False,'causal_inference':False,'human_review_required':True}
 
 
 @app.get('/v1/platform/capabilities')

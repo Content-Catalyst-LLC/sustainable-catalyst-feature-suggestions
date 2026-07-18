@@ -1,0 +1,17 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+CATALYST-GRIT-001,Goal Workspace,create GRIT-LEARN-001,a user-controlled goal workspace,synthetic-demo,1.5.0
+CATALYST-GRIT-002,Goal Definition,define an eight-week goal to complete a reproducible energy analysis,a bounded goal with completion criteria,synthetic-demo,1.5.0
+CATALYST-GRIT-003,Milestones,"break the goal into data, calculation, analysis, and briefing steps",a milestone plan,synthetic-demo,1.5.0
+CATALYST-GRIT-004,Effort Log,record a 45-minute analysis session without moral judgment,an effort record,synthetic-demo,1.5.0
+CATALYST-GRIT-005,Context and Constraints,"record limited evening availability, data access, and care obligations",a context record,synthetic-demo,1.5.0
+CATALYST-GRIT-006,Support Map,"add a mentor, documentation, and quiet-workspace support",a support plan,synthetic-demo,1.5.0
+CATALYST-GRIT-007,Recovery and Rest,schedule recovery and pacing,a sustainable effort plan,synthetic-demo,1.5.0
+CATALYST-GRIT-008,Setback Records,record a missed milestone caused by delayed data access,a contextual setback record,synthetic-demo,1.5.0
+CATALYST-GRIT-009,Strategy Experiments,compare 25-minute and 50-minute work sessions,a small learning experiment,synthetic-demo,1.5.0
+CATALYST-GRIT-010,Reflection,"record what helped, harmed, changed, or remains uncertain",a qualitative learning entry,synthetic-demo,1.5.0
+CATALYST-GRIT-011,Learning Patterns,notice better progress with morning sessions,an advisory user-reviewable pattern,synthetic-demo,1.5.0
+CATALYST-GRIT-012,Progress Measures,"track milestones, confidence, wellbeing, support, and learning",a multidimensional progress view,synthetic-demo,1.5.0
+CATALYST-GRIT-013,Uncertainty,mark low confidence when records are sparse,an uncertainty note,synthetic-demo,1.5.0
+CATALYST-GRIT-014,Review,let the user reject or revise an inaccurate suggestion,a human-controlled conclusion,synthetic-demo,1.5.0
+CATALYST-GRIT-015,Export,download only selected records,a consent-aware bundle,synthetic-demo,1.5.0
+CATALYST-GRIT-016,Decision and Research Handoffs,send a voluntary learning plan to Canvas,a scoped handoff receipt,synthetic-demo,1.5.0

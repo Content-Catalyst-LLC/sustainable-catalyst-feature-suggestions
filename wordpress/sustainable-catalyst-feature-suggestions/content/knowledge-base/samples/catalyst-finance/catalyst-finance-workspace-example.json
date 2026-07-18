@@ -1,0 +1,107 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "CATALYST-FINANCE-RETROFIT-001",
+  "product": "Catalyst Finance",
+  "product_slug": "catalyst-finance",
+  "product_version": "1.4.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "CATALYST-FINANCE-001",
+      "feature": "Model Workspace",
+      "sample_action": "create CF-RETROFIT-001",
+      "expected_result": "a persistent finance workspace"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-002",
+      "feature": "Assumption Register",
+      "sample_action": "record tariff, grant, discount-rate, and project-life assumptions with sources",
+      "expected_result": "a traceable assumption set"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-003",
+      "feature": "Revenue and Cost Drivers",
+      "sample_action": "model square footage, kWh, tariff, maintenance, and implementation timing",
+      "expected_result": "driver-based projections"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-004",
+      "feature": "Three-Statement Model",
+      "sample_action": "connect income statement, balance sheet, and cash flow",
+      "expected_result": "integrated statements and balance checks"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-005",
+      "feature": "Cash Flow",
+      "sample_action": "schedule project payments, financing, operating savings, and maintenance",
+      "expected_result": "periodic cash flows"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-006",
+      "feature": "Budget and Forecast",
+      "sample_action": "compare actual, budget, forecast, and variance",
+      "expected_result": "variance tables and explanations"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-007",
+      "feature": "Scenario Management",
+      "sample_action": "create downside, base, and upside assumption sets",
+      "expected_result": "scenario-specific statements and metrics"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-008",
+      "feature": "Sensitivity",
+      "sample_action": "vary tariff growth, savings realization, cost, and discount rate",
+      "expected_result": "a sensitivity table or chart"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-009",
+      "feature": "Stress Testing",
+      "sample_action": "apply a 20% cost overrun and delayed grant",
+      "expected_result": "liquidity and recovery effects"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-010",
+      "feature": "Valuation",
+      "sample_action": "calculate project NPV under the documented cash-flow timing",
+      "expected_result": "a valuation with explicit assumptions"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-011",
+      "feature": "Capital Structure",
+      "sample_action": "combine grant, debt, equity, and repayment terms",
+      "expected_result": "a funding structure and obligations"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-012",
+      "feature": "Risk Register",
+      "sample_action": "connect contractor, tariff, funding, and performance risks to mitigations",
+      "expected_result": "a finance risk record"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-013",
+      "feature": "Evidence and Sources",
+      "sample_action": "link assumptions to tariffs, contracts, studies, and historicals",
+      "expected_result": "a source-linked model"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-014",
+      "feature": "Review and Approval",
+      "sample_action": "record preparer, reviewer, exceptions, and approval state",
+      "expected_result": "a human-controlled review trail"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-015",
+      "feature": "Exports",
+      "sample_action": "produce statements, scenarios, model JSON, and audit bundles",
+      "expected_result": "portable inspectable files"
+    },
+    {
+      "feature_id": "CATALYST-FINANCE-016",
+      "feature": "Decision Studio Handoff",
+      "sample_action": "attach the reviewed scenario comparison to DS-RETROFIT-001",
+      "expected_result": "a typed handoff with model version"
+    }
+  ],
+  "human_review_required": true
+}

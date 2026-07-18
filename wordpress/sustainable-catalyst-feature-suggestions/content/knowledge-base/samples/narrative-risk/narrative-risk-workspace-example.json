@@ -1,0 +1,107 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "NARRATIVE-RISK-RETROFIT-001",
+  "product": "Catalyst Narrative Risk",
+  "product_slug": "narrative-risk",
+  "product_version": "1.5.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "NARRATIVE-RISK-001",
+      "feature": "Case Workspace",
+      "sample_action": "create NR-RETROFIT-001",
+      "expected_result": "a persistent narrative-risk case"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-002",
+      "feature": "Artifact Intake",
+      "sample_action": "register a public retrofit announcement with URL, date, version, and custody",
+      "expected_result": "a source-preserved communication artifact"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-003",
+      "feature": "Claim Decomposition",
+      "sample_action": "separate cost, emissions, comfort, and timeline claims",
+      "expected_result": "atomic claim records"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-004",
+      "feature": "Narrative Mapping",
+      "sample_action": "map frames, causal stories, heroes, harms, omissions, and implied action",
+      "expected_result": "a structured narrative map"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-005",
+      "feature": "Actor and Audience Context",
+      "sample_action": "record speaker, institution, intended audience, affected groups, and power context",
+      "expected_result": "actor and audience records"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-006",
+      "feature": "Source Ledger",
+      "sample_action": "preserve origin, retrieval, version, and custody",
+      "expected_result": "a source ledger"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-007",
+      "feature": "Evidence Ledger",
+      "sample_action": "link each claim to supporting, challenging, and contextual evidence",
+      "expected_result": "claim-evidence relationships"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-008",
+      "feature": "Risk Dimensions",
+      "sample_action": "assess accuracy, omission, uncertainty, harm, manipulation, governance, and reputation",
+      "expected_result": "dimension-level evidence and scores"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-009",
+      "feature": "Scoring Method",
+      "sample_action": "apply the canonical transparent scoring rubric",
+      "expected_result": "a method-versioned score and rationale"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-010",
+      "feature": "Uncertainty",
+      "sample_action": "record missing evidence, ambiguity, confidence, and reviewer disagreement",
+      "expected_result": "an uncertainty record"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-011",
+      "feature": "Counterevidence",
+      "sample_action": "add contractor-capacity and timeline challenges",
+      "expected_result": "a balanced evidence view"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-012",
+      "feature": "Comparison",
+      "sample_action": "compare draft and final announcements or two cases",
+      "expected_result": "a change and risk comparison"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-013",
+      "feature": "Review Workflow",
+      "sample_action": "request factual, harm, and governance review",
+      "expected_result": "a review trail"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-014",
+      "feature": "Approval",
+      "sample_action": "require authorized approval for an official assessment",
+      "expected_result": "an approval record and rationale"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-015",
+      "feature": "Governance Log",
+      "sample_action": "record method changes, overrides, conflicts, and score revisions",
+      "expected_result": "an auditable event log"
+    },
+    {
+      "feature_id": "NARRATIVE-RISK-016",
+      "feature": "Exports and Handoffs",
+      "sample_action": "send an approved risk summary to Decision Studio",
+      "expected_result": "a portable privacy-aware artifact"
+    }
+  ],
+  "human_review_required": true
+}

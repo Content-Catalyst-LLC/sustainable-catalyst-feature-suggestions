@@ -1,0 +1,119 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "CATALYST-CANVAS-RETROFIT-001",
+  "product": "Catalyst Canvas",
+  "product_slug": "catalyst-canvas",
+  "product_version": "2.0.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "CATALYST-CANVAS-001",
+      "feature": "Project Workspace",
+      "sample_action": "create CANVAS-RETROFIT-001 with owner and status",
+      "expected_result": "a persistent project"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-002",
+      "feature": "Challenge Frame",
+      "sample_action": "describe energy, comfort, users, desired change, and boundaries",
+      "expected_result": "a concise challenge statement"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-003",
+      "feature": "Stakeholder Map",
+      "sample_action": "map visitors, staff, facilities, funders, and contractors",
+      "expected_result": "a stakeholder network"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-004",
+      "feature": "Personas",
+      "sample_action": "create an evidence-bounded facilities-manager persona",
+      "expected_result": "a persona separating evidence from inference"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-005",
+      "feature": "Journey Map",
+      "sample_action": "map room booking, comfort complaints, and facilities response",
+      "expected_result": "a stage-based journey"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-006",
+      "feature": "Point of View",
+      "sample_action": "synthesize user, need, and insight",
+      "expected_result": "a reviewable POV statement"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-007",
+      "feature": "How Might We",
+      "sample_action": "ask how to reduce energy without hiding comfort tradeoffs",
+      "expected_result": "bounded design questions"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-008",
+      "feature": "Evidence Ledger",
+      "sample_action": "add utility bills, observations, and interviews",
+      "expected_result": "source-linked evidence records"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-009",
+      "feature": "Assumption Ledger",
+      "sample_action": "record that staff will use a dashboard weekly",
+      "expected_result": "an assumption with risk and test"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-010",
+      "feature": "Research Plan",
+      "sample_action": "plan interviews, meter review, ethics, and outputs",
+      "expected_result": "a governed plan"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-011",
+      "feature": "Idea Generation",
+      "sample_action": "generate sensor, scheduling, controls, and training concepts",
+      "expected_result": "an idea set linked to needs"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-012",
+      "feature": "Concept Selection",
+      "sample_action": "score concepts on feasibility, impact, equity, and evidence",
+      "expected_result": "a transparent selection rationale"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-013",
+      "feature": "Prototype Plan",
+      "sample_action": "define a comfort-and-energy dashboard prototype",
+      "expected_result": "a bounded prototype specification"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-014",
+      "feature": "Test Plan",
+      "sample_action": "test whether staff can identify an overheating zone",
+      "expected_result": "a task script and success measures"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-015",
+      "feature": "Learning Log",
+      "sample_action": "record that users misread a comfort score",
+      "expected_result": "a chronological learning entry"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-016",
+      "feature": "Review Workflow",
+      "sample_action": "request research and accessibility review",
+      "expected_result": "a human review trail"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-017",
+      "feature": "Comparison",
+      "sample_action": "compare two dashboard concepts using aligned criteria",
+      "expected_result": "a side-by-side evidence view"
+    },
+    {
+      "feature_id": "CATALYST-CANVAS-018",
+      "feature": "Export and Handoffs",
+      "sample_action": "send the chosen concept to Decision Studio",
+      "expected_result": "a portable bundle and receipt"
+    }
+  ],
+  "human_review_required": true
+}

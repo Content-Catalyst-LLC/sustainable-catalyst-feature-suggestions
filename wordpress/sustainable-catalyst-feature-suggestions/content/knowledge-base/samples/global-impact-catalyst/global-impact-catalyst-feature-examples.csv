@@ -1,0 +1,19 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+GLOBAL-IMPACT-CATALYST-001,Impact Workspace,create GIC-RETROFIT-001,a governed program-impact workspace,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-002,Problem and Context,"describe energy burden, comfort inequity, affected groups, causes, and constraints",a contextual problem statement,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-003,Stakeholder Participation,record staff and community participation in framing and review,participation and consent records,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-004,Theory of Change,"connect inputs, activities, outputs, outcomes, and assumptions",a reviewable causal pathway,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-005,Activities and Outputs,"record control installation, envelope work, and staff training",activity and output records,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-006,Outcomes,"define short-, medium-, and long-term energy and comfort changes",outcome definitions,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-007,Indicators,"specify kWh, complaints, training, method, frequency, owner, and disaggregation",indicator records,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-008,Baselines and Targets,"record baseline 45,000 kWh/month and a justified 36,000 target",baseline and target records,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-009,Evidence,"link meter data, surveys, documents, and evaluation findings",evidence tied to outcomes,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-010,Contribution and Attribution,"record weather, occupancy, and other influences",a contribution narrative with limits,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-011,Equity and Distribution,disaggregate comfort by room use and accessibility need,distributional findings,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-012,Risk and Safeguards,"record disruption, exclusion, data, implementation, and reputation risks",risk and safeguard records,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-013,Learning Agenda,ask whether controls remain usable after six months,a prioritized learning plan,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-014,Monitoring,import routine monthly energy and comfort observations,a monitoring series,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-015,Evaluation,document an appropriate before/after or interrupted-time-series method,an evaluation plan and findings,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-016,Impact Reporting,publish a six-month brief with evidence and limits,a reviewable impact report,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-017,SDG and Framework Mapping,map relevant work to SDG 7 and 11 without implying certification,a contextual framework mapping,synthetic-demo,1.5.0
+GLOBAL-IMPACT-CATALYST-018,Decision Handoffs,attach approved outcome and risk records to Decision Studio,a typed impact handoff,synthetic-demo,1.5.0

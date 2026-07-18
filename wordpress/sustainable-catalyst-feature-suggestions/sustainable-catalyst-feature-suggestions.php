@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Feature Suggestions
  * Description: Connected product support operations, documentation, known issues, releases, feature suggestions, surveys, editorial governance, repository synchronization, reliability analytics, cross-product orchestration, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 5.0.0
+ * Version: 5.1.1
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.1';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -74,6 +74,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
         if (class_exists('SCFS_Knowledge_Base_Foundation')) {
             SCFS_Knowledge_Base_Foundation::activate();
+        }
+        if (class_exists('SCFS_Integrated_Knowledge_Base')) {
+            SCFS_Integrated_Knowledge_Base::activate();
         }
         if (class_exists('SCFS_Guided_Resolution')) {
             SCFS_Guided_Resolution::activate();
@@ -2162,6 +2165,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-product-integratio
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-knowledge-base.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-guided-resolution.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-documentation-intelligence.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-integrated-knowledge-base.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-forms.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-survey-intelligence.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-research-librarian-feedback.php';
@@ -2179,6 +2183,7 @@ SCFS_Product_Integration::instance();
 SCFS_Knowledge_Base_Foundation::instance();
 SCFS_Guided_Resolution::instance();
 SCFS_Documentation_Feature_Intelligence::instance();
+SCFS_Integrated_Knowledge_Base::instance();
 SCFS_Forms_Foundation::instance();
 SCFS_Survey_Intelligence::instance();
 SCFS_Research_Librarian_Feedback::instance();

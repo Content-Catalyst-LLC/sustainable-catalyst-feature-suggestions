@@ -1,0 +1,23 @@
+feature_id,feature,sample_action,expected_result,classification,product_version
+CONTACT-ENGAGEMENT-001,Compact Intake,"submit essential advisory context with name, email, purpose, and summary",a private inquiry record,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-002,Advanced Intake,"add timeline, budget range, product, goals, and institutional context",a routed private request,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-003,Conditional Routing,"show fields and workflow for support, advisory, media, or collaboration",a purpose-specific intake path,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-004,Inquiry Records,"preserve original submission, consent, source, and lifecycle",an auditable private record,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-005,Support Cases,create a private case from a consented support handoff,a case with requester and product context,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-006,Secure Document Upload,upload an authorized redacted project brief outside the public Media Library,a controlled file record,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-007,Quarantine and Validation,"check type, size, filename, integrity, malware workflow, and access",a quarantined or approved file state,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-008,Review Workspace,review inquiries and files under least privilege,a permission-controlled workspace,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-009,Email Notifications,send receipt and internal routing notices,email events and delivery status,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-010,Sender Portal,let a requester view limited status and provide updates,a controlled sender-facing view,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-011,Recovery,issue a new time-limited portal link,a safe recovery flow,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-012,Microsoft Teams Scheduling,offer and confirm approved meeting times in Teams only,a Teams meeting and audit record,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-013,Calendar Coordination,"track availability, invitations, changes, and responses",a synchronized event,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-014,Proposals,draft and revise a retrofit research proposal,a reviewable proposal,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-015,Statements of Work,"define scope, deliverables, timing, responsibilities, and terms",a structured SOW,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-016,Approvals,record authorized proposal or SOW acceptance,an approval event,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-017,Secure Client Workspace,"share controlled files, tasks, decisions, and messages",a private collaboration area,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-018,Collaboration,request feedback on a deliverable and preserve status,a controlled collaboration record,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-019,Lifecycle Management,"move inquiry through triage, review, proposal, active, complete, or closed",a lifecycle history,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-020,Engagement Analytics,measure aggregate response and service patterns without exposing case content,privacy-limited service intelligence,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-021,Retention and Deletion,expire unused uploads and apply documented retention,a logged retention action,synthetic-demo,2.0.0
+CONTACT-ENGAGEMENT-022,Product Support Handoff,"receive consented product, version, component, and problem context",a private case with public/private separation,synthetic-demo,2.0.0

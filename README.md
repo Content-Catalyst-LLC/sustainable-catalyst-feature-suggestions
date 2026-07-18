@@ -1,5 +1,13 @@
 # Sustainable Catalyst Feature Suggestions
 
+## Version 5.1.0 — Integrated Knowledge Base and Documentation Library
+
+Version 5.1.0 turns the Support Center Knowledge Base into a modern, first-party documentation library. A clean expandable directory organizes 96 detailed guides across 16 products, with standardized sections, search, breadcrumbs, previous/next navigation, related guides, direct sample downloads, print support, and anonymous usefulness ratings.
+
+The documentation corpus is bundled with the plugin and imported through an idempotent, editorially governed migration. Existing human edits are protected. Knowledge Base navigation remains visible even before content is available, so Support never loses its documentation pathway. No legacy KnowledgeBuilder runtime code is included.
+
+See `docs/integrated-knowledge-base-documentation-library.md`.
+
 ## Version 5.0.0 — Connected Product Support Operations Platform
 
 Version 5.0.0 consolidates the complete public support and operational roadmap into one governed operations layer. It adds a Connected Operations workspace, product operations dossiers, unified module health, human-approved action queues, daily snapshots, and integrity-protected reports while preserving each specialist module as the source of truth.

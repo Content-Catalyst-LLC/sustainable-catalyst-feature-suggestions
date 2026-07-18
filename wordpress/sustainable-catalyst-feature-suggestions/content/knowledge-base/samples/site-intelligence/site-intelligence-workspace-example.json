@@ -1,0 +1,107 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "SITE-INTELLIGENCE-RETROFIT-001",
+  "product": "Site Intelligence",
+  "product_slug": "site-intelligence",
+  "product_version": "3.0.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "SITE-INTELLIGENCE-001",
+      "feature": "Country Dossiers",
+      "sample_action": "open a Kenya dossier and inspect update and source metadata",
+      "expected_result": "a multi-domain country overview"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-002",
+      "feature": "Regional Comparison",
+      "sample_action": "compare compatible indicators for Kenya, Tanzania, and Uganda",
+      "expected_result": "an aligned table or chart"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-003",
+      "feature": "Earth Systems Observatory",
+      "sample_action": "review rainfall anomaly, vegetation, weather, and hazard signals",
+      "expected_result": "a time-bounded earth-systems view"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-004",
+      "feature": "Economics and Markets",
+      "sample_action": "inspect inflation, fiscal, food-price, and development indicators",
+      "expected_result": "a sourced economic context view"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-005",
+      "feature": "Humanitarian and Conflict",
+      "sample_action": "review public displacement and humanitarian-need signals",
+      "expected_result": "a harm-aware summary"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-006",
+      "feature": "Trade and Energy",
+      "sample_action": "review fuel-import dependence and energy-system exposure",
+      "expected_result": "a trade and energy profile"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-007",
+      "feature": "Live Event Intelligence",
+      "sample_action": "review severe-weather events from the last seven days",
+      "expected_result": "timestamped event records"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-008",
+      "feature": "Alerts and Monitoring",
+      "sample_action": "watch a rainfall anomaly threshold",
+      "expected_result": "an alert candidate requiring interpretation"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-009",
+      "feature": "Scenario Studio",
+      "sample_action": "compare drought persistence and rainfall recovery",
+      "expected_result": "scenario assumptions and monitored signals"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-010",
+      "feature": "Research Paths",
+      "sample_action": "build an East Africa food-security research path",
+      "expected_result": "an ordered reusable investigation"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-011",
+      "feature": "Saved Investigations",
+      "sample_action": "save filters, records, notes, and evidence",
+      "expected_result": "a persistent investigation workspace"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-012",
+      "feature": "Briefing Workflows",
+      "sample_action": "create a weekly regional brief",
+      "expected_result": "a source-linked briefing"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-013",
+      "feature": "Source and Provenance Panels",
+      "sample_action": "inspect publisher, retrieval, method, license, and transformation",
+      "expected_result": "a transparent source record"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-014",
+      "feature": "Public API",
+      "sample_action": "request an approved country-summary response",
+      "expected_result": "structured rate-limited JSON"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-015",
+      "feature": "Embeds",
+      "sample_action": "embed a public country or indicator card",
+      "expected_result": "a scoped component"
+    },
+    {
+      "feature_id": "SITE-INTELLIGENCE-016",
+      "feature": "Offline and Accessible Views",
+      "sample_action": "save a keyboard-readable low-bandwidth briefing",
+      "expected_result": "a resilient degraded-mode artifact"
+    }
+  ],
+  "human_review_required": true
+}

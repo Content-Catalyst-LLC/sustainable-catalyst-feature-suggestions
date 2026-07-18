@@ -1,0 +1,107 @@
+{
+  "schema": "sckb-feature-demo/1.0",
+  "workspace_id": "CATALYST-ANALYTICS-R-RETROFIT-001",
+  "product": "Catalyst Analytics R",
+  "product_slug": "catalyst-analytics-r",
+  "product_version": "1.2.0",
+  "classification": "synthetic-demo",
+  "features": [
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-001",
+      "feature": "Data Intake",
+      "sample_action": "read the feature-example CSV or JSON",
+      "expected_result": "a governed R data object"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-002",
+      "feature": "Source Metadata",
+      "sample_action": "attach publisher, URL, license, citation, retrieval, field, and unit metadata",
+      "expected_result": "a source-aware dataset"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-003",
+      "feature": "Dataset Validation",
+      "sample_action": "check required fields, types, missingness, units, and duplicates",
+      "expected_result": "a validation report"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-004",
+      "feature": "Indicator Registry",
+      "sample_action": "register annual energy savings",
+      "expected_result": "a reusable indicator definition"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-005",
+      "feature": "Derived Indicators",
+      "sample_action": "calculate baseline minus retrofit kWh",
+      "expected_result": "derived values with method metadata"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-006",
+      "feature": "Comparison",
+      "sample_action": "compare baseline and retrofit groups or periods",
+      "expected_result": "a comparison table and effect summary"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-007",
+      "feature": "Uncertainty",
+      "sample_action": "apply an explicit ±8% measurement range",
+      "expected_result": "intervals and assumptions"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-008",
+      "feature": "Sensitivity",
+      "sample_action": "vary tariff and occupancy inputs",
+      "expected_result": "a ranked sensitivity result"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-009",
+      "feature": "Stress Testing",
+      "sample_action": "model 20% lower savings and 15% higher cost",
+      "expected_result": "stress-case outputs"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-010",
+      "feature": "Accounting",
+      "sample_action": "reconcile monthly and annual energy totals",
+      "expected_result": "a balance check"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-011",
+      "feature": "Workspaces",
+      "sample_action": "save data, indicators, assumptions, and outputs",
+      "expected_result": "a persistent analytical state"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-012",
+      "feature": "Snapshots",
+      "sample_action": "freeze and restore complete workspace state",
+      "expected_result": "a fingerprinted snapshot"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-013",
+      "feature": "Reproducible Reports",
+      "sample_action": "render methods, figures, results, and limitations",
+      "expected_result": "a rerunnable report"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-014",
+      "feature": "Canonical JSON Export",
+      "sample_action": "export the reviewed comparison",
+      "expected_result": "a schema-versioned JSON record"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-015",
+      "feature": "Browser Demo Parity",
+      "sample_action": "repeat the conceptual workflow in the public demo",
+      "expected_result": "a mapped result with parity limits"
+    },
+    {
+      "feature_id": "CATALYST-ANALYTICS-R-016",
+      "feature": "Package Validation",
+      "sample_action": "run tests, examples, documentation checks, and R CMD check",
+      "expected_result": "a release-validation report"
+    }
+  ],
+  "human_review_required": true
+}
