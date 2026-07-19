@@ -1,0 +1,117 @@
+{
+  "schema": "scfs-feedback-product-signals/1.0",
+  "version": "5.6.0",
+  "generated_at": "2026-07-18T21:00:00+00:00",
+  "lookback_days": 180,
+  "totals": {
+    "products": 2,
+    "evidence": 56,
+    "feature_requests": 16,
+    "public_votes": 22,
+    "negative_feedback": 7,
+    "unresolved_searches": 11,
+    "documentation_gaps": 4,
+    "active_known_issues": 3
+  },
+  "state_counts": {
+    "critical_review": 1,
+    "elevated": 1
+  },
+  "products": [
+    {
+      "product": "decision-studio",
+      "name": "Decision Studio",
+      "feature_requests": 10,
+      "public_votes": 16,
+      "article_feedback_total": 18,
+      "article_feedback_negative": 5,
+      "unresolved_searches": 8,
+      "low_confidence_searches": 4,
+      "failed_resolution_paths": 2,
+      "documentation_gaps": 3,
+      "high_priority_documentation_gaps": 2,
+      "active_known_issues": 2,
+      "critical_known_issues": 1,
+      "support_relationships": 5,
+      "components": {
+        "export-studio": 9
+      },
+      "versions": {
+        "v2-0-1": 6
+      },
+      "feedback_reasons": {
+        "missing_steps": 3,
+        "outdated": 2
+      },
+      "evidence_count": 35,
+      "signal_score": 100,
+      "signal_state": "critical_review",
+      "recommended_actions": [
+        "review_documentation_and_search_experience",
+        "review_known_issue_and_resolution_path",
+        "review_product_opportunity_evidence"
+      ],
+      "human_review_required": true
+    },
+    {
+      "product": "catalyst-canvas",
+      "name": "Catalyst Canvas",
+      "feature_requests": 6,
+      "public_votes": 6,
+      "article_feedback_total": 9,
+      "article_feedback_negative": 2,
+      "unresolved_searches": 3,
+      "low_confidence_searches": 1,
+      "failed_resolution_paths": 0,
+      "documentation_gaps": 1,
+      "high_priority_documentation_gaps": 0,
+      "active_known_issues": 1,
+      "critical_known_issues": 0,
+      "support_relationships": 2,
+      "components": {
+        "workspace": 4
+      },
+      "versions": {
+        "v2-0-0": 3
+      },
+      "feedback_reasons": {
+        "unclear": 2
+      },
+      "evidence_count": 15,
+      "signal_score": 68,
+      "signal_state": "elevated",
+      "recommended_actions": [
+        "review_documentation_and_search_experience",
+        "review_known_issue_and_resolution_path",
+        "review_product_opportunity_evidence"
+      ],
+      "human_review_required": true
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_key": "gap:821",
+      "signal_type": "documentation_gap",
+      "product": "decision-studio",
+      "component": "export-studio",
+      "product_version": "v2-0-1",
+      "label": "Decision packet export instructions are incomplete",
+      "evidence_count": 8,
+      "priority_score": 84,
+      "recommended_action": "review_documentation_gap"
+    }
+  ],
+  "privacy": {
+    "public_aggregate_only": false,
+    "administrator_only": true,
+    "personal_identifiers_exposed": false,
+    "private_case_content_exposed": false,
+    "raw_search_text_exposed": false
+  },
+  "governance": {
+    "human_review_required": true,
+    "automatic_roadmap_changes": false,
+    "automatic_issue_declaration": false,
+    "automatic_publication": false
+  }
+}

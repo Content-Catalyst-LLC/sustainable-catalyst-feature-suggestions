@@ -1,3 +1,12 @@
+# Changelog
+
+## 5.6.0 — Feedback Intelligence and Product Signals
+
+- Added administrator-only product signal intelligence.
+- Added deterministic cross-signal scoring and evidence clusters.
+- Added protected WordPress REST, WP-CLI, CSV, scheduled snapshot, and FastAPI parity surfaces.
+- Preserved all existing identifiers, records, URLs, and human-authority boundaries.
+
 ## 5.5.0 — Support Content Operations and Editorial Governance
 
 - Added shared content and technical ownership across Support Articles, Known Issues, and Release Records.

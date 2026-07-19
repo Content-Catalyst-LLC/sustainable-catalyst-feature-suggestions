@@ -19,8 +19,9 @@ from .support_discovery import DiscoverySearchRequest, DiscoverySearchResult, se
 from .unified_support_search import UnifiedSupportSearchRequest, UnifiedSupportSearchResult, search_unified_support
 from .issue_release_intelligence import IssueReleaseIntelligenceRequest, IssueReleaseIntelligenceResult, evaluate_issue_release_intelligence
 from .content_governance import ContentGovernanceEvidence, ContentGovernanceAssessment, ContentGovernanceQueueEvidence, ContentGovernanceQueueSummary, ContentGovernanceBulkRequest, ContentGovernanceBulkPlan, evaluate_content_governance, summarize_content_governance_queue, plan_content_governance_bulk_action
+from .feedback_product_signals import ProductSignalEvidence, ProductSignalAssessment, ProductSignalPortfolioEvidence, ProductSignalPortfolioSummary, ProductSignalClusterEvidence, ProductSignalClusterPriority, score_product_signal, summarize_product_signal_portfolio, prioritize_product_signal_cluster
 
-VERSION='5.5.0'
+VERSION='5.6.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Product Support and Feedback Intelligence',version=VERSION)
 
@@ -166,7 +167,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','feedback_product_signal_scoring','feedback_signal_portfolio_summaries','feedback_cluster_prioritization','privacy_minimized_product_demand','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -709,3 +710,49 @@ def issue_release_intelligence_capabilities(x_scfs_ai_key:Optional[str]=Header(d
 def issue_release_intelligence_evaluate(payload: IssueReleaseIntelligenceRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return evaluate_issue_release_intelligence(payload)
+
+@app.get('/v1/feedback-product-signals/capabilities')
+def feedback_product_signals_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-feedback-product-signals/1.0',
+        'capabilities': [
+            'product_signal_scoring',
+            'portfolio_summarization',
+            'signal_cluster_prioritization',
+            'feature_request_and_vote_demand',
+            'article_feedback_quality_signals',
+            'unresolved_search_signals',
+            'documentation_gap_signals',
+            'known_issue_demand',
+        ],
+        'wordpress_source_of_truth': True,
+        'administrator_only': True,
+        'personal_identifiers_exposed': False,
+        'raw_search_text_exposed': False,
+        'private_case_content_exposed': False,
+        'automatic_roadmap_changes': False,
+        'automatic_issue_declaration': False,
+        'automatic_publication': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/feedback-product-signals/score', response_model=ProductSignalAssessment)
+def feedback_product_signal_score(payload: ProductSignalEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return score_product_signal(payload)
+
+
+@app.post('/v1/feedback-product-signals/portfolio', response_model=ProductSignalPortfolioSummary)
+def feedback_product_signal_portfolio(payload: ProductSignalPortfolioEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return summarize_product_signal_portfolio(payload)
+
+
+@app.post('/v1/feedback-product-signals/clusters/prioritize', response_model=ProductSignalClusterPriority)
+def feedback_product_signal_cluster_priority(payload: ProductSignalClusterEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return prioritize_product_signal_cluster(payload)

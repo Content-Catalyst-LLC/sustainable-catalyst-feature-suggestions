@@ -5,8 +5,8 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/support/",
-  "version": "5.5.0",
-  "updated": "2026-07-18",
+  "version": "5.6.0",
+  "updated": "2026-07-19",
   "capabilities": [
     "configurable WordPress settings screen",
     "standalone settings access fallback",
@@ -416,7 +416,19 @@
     "content governance CSV export",
     "content governance REST API",
     "content governance WP-CLI commands",
-    "deterministic content governance assessment"
+    "deterministic content governance assessment",
+    "feedback intelligence and product signal dashboard",
+    "privacy-minimized cross-signal product scoring",
+    "feature request and public vote demand summaries",
+    "Support Article feedback quality signals",
+    "unresolved support-search demand signals",
+    "failed public resolution-path signals",
+    "Documentation Gap demand aggregation",
+    "Known Issue demand aggregation",
+    "evidence cluster prioritization",
+    "scheduled product signal snapshots",
+    "administrator-only product signal REST API",
+    "FastAPI product signal scoring parity"
   ],
   "boundaries": [
     "no confidential information",
@@ -427,8 +439,8 @@
   ],
   "wordpress_post_type": "sc_feature_suggest",
   "notes": "Version 5.4.0 connects Known Issues, affected versions, components, workarounds, Support Articles, target releases, fixed releases, Release Records, and changelog evidence while preserving all existing public URLs, routes, shortcodes, records, and human-governance boundaries.",
-  "release_name": "Support Content Operations and Editorial Governance",
-  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.4.0 — Known Issues and Release Intelligence Integration",
+  "release_name": "Feedback Intelligence and Product Signals",
+  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.4.0 \u2014 Known Issues and Release Intelligence Integration",
   "features": [
     "Weighted and version-aware Support Article search",
     "Deterministic support-language synonym expansion",
@@ -496,7 +508,7 @@
   ],
   "support_center_shortcode": "[scfs_product_support_center]",
   "public_support_archive": "/support/?scfs_support_view=documentation#knowledge-base",
-  "release_date": "2026-07-18",
+  "release_date": "2026-07-19",
   "compact_support_library_shortcode": "[scfs_support_library_compact]",
   "dedicated_knowledge_base_shortcode": "[scfs_support_knowledge_base]",
   "legacy_name": "Sustainable Catalyst Feature Suggestions",
@@ -542,7 +554,7 @@
     ],
     "debug_query": "scfs_support_debug=1"
   },
-  "installer_revision": "V5_5_0_R1_CONTENT_OPERATIONS_EDITORIAL_GOVERNANCE",
+  "installer_revision": "V5_6_0_R1_FEEDBACK_INTELLIGENCE_PRODUCT_SIGNALS",
   "validation_runtime": {
     "python_min": "3.12",
     "python_max_exclusive": "3.14",
@@ -550,12 +562,12 @@
   },
   "validation": {
     "status": "passed",
-    "plugin_php_files": 27,
-    "php_contract_files": 88,
-    "javascript_files": 12,
-    "json_files": 74,
-    "python_files": 32,
-    "fastapi_tests": 98,
+    "plugin_php_files": 28,
+    "php_contract_files": 95,
+    "javascript_files": 13,
+    "json_files": 77,
+    "python_files": 34,
+    "fastapi_tests": 104,
     "source_whitespace": "passed",
     "css_lines": {
       "knowledge-base.css": 2133,
@@ -563,7 +575,8 @@
       "support-article-integrity.css": 147,
       "unified-support-search.css": 522,
       "issue-release-intelligence.css": 379,
-      "support-content-governance.css": 278
+      "support-content-governance.css": 278,
+      "feedback-product-signals.css": 273
     }
   },
   "publication_integrity": {
@@ -649,7 +662,7 @@
     "version": "1.0.0",
     "schema": "scfs-support-content-governance/1.0",
     "wordpress_class": "SCFS_Support_Content_Governance",
-    "admin_page": "Support & Feedback → Content Operations",
+    "admin_page": "Support & Feedback \u2192 Content Operations",
     "wordpress_rest_base": "/wp-json/scfs/v1/content-governance/",
     "fastapi_rest_base": "/v1/content-governance/",
     "managed_post_types": [
@@ -667,6 +680,33 @@
     "public_record_data_exposed": false,
     "automatic_publication": false,
     "automatic_editorial_approval": false,
+    "database_migration_required": false,
+    "human_review_required": true
+  },
+  "feedback_product_signals": {
+    "schema": "scfs-feedback-product-signals/1.0",
+    "wordpress_class": "SCFS_Feedback_Product_Signals",
+    "admin_page": "Support & Feedback \u2192 Product Signals",
+    "wordpress_rest_base": "/wp-json/scfs/v1/feedback-product-signals/",
+    "fastapi_rest_base": "/v1/feedback-product-signals/",
+    "feature_request_demand": true,
+    "public_vote_demand": true,
+    "article_feedback_quality_signals": true,
+    "unresolved_search_signals": true,
+    "failed_resolution_path_signals": true,
+    "documentation_gap_signals": true,
+    "known_issue_demand": true,
+    "support_relationship_counts": true,
+    "evidence_cluster_prioritization": true,
+    "scheduled_snapshots": true,
+    "csv_export": true,
+    "administrator_only": true,
+    "personal_identifiers_exposed": false,
+    "raw_search_text_exposed": false,
+    "private_case_content_exposed": false,
+    "automatic_roadmap_changes": false,
+    "automatic_issue_declaration": false,
+    "automatic_publication": false,
     "database_migration_required": false,
     "human_review_required": true
   }

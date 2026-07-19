@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-feedback-product-signals-v1.schema.json",
+  "title": "Sustainable Catalyst Feedback Product Signals",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "generated_at",
+    "totals",
+    "state_counts",
+    "products",
+    "clusters",
+    "privacy",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-feedback-product-signals/1.0"
+    },
+    "version": {
+      "const": "5.6.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lookback_days": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "state_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/productSignal"
+      }
+    },
+    "clusters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/signalCluster"
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "administrator_only",
+        "personal_identifiers_exposed",
+        "private_case_content_exposed",
+        "raw_search_text_exposed"
+      ],
+      "properties": {
+        "administrator_only": {
+          "const": true
+        },
+        "personal_identifiers_exposed": {
+          "const": false
+        },
+        "private_case_content_exposed": {
+          "const": false
+        },
+        "raw_search_text_exposed": {
+          "const": false
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "human_review_required",
+        "automatic_roadmap_changes",
+        "automatic_issue_declaration",
+        "automatic_publication"
+      ],
+      "properties": {
+        "human_review_required": {
+          "const": true
+        },
+        "automatic_roadmap_changes": {
+          "const": false
+        },
+        "automatic_issue_declaration": {
+          "const": false
+        },
+        "automatic_publication": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "productSignal": {
+      "type": "object",
+      "required": [
+        "product",
+        "name",
+        "evidence_count",
+        "signal_score",
+        "signal_state",
+        "recommended_actions",
+        "human_review_required"
+      ],
+      "properties": {
+        "product": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "feature_requests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "public_votes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "article_feedback_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "article_feedback_negative": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolved_searches": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "documentation_gaps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active_known_issues": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "support_relationships": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "signal_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "signal_state": {
+          "enum": [
+            "insufficient_evidence",
+            "monitor",
+            "emerging",
+            "elevated",
+            "critical_review"
+          ]
+        },
+        "recommended_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "human_review_required": {
+          "const": true
+        }
+      }
+    },
+    "signalCluster": {
+      "type": "object",
+      "required": [
+        "cluster_key",
+        "signal_type",
+        "product",
+        "label",
+        "evidence_count",
+        "priority_score",
+        "recommended_action"
+      ],
+      "properties": {
+        "cluster_key": {
+          "type": "string"
+        },
+        "signal_type": {
+          "type": "string"
+        },
+        "product": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "evidence_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "priority_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "recommended_action": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
