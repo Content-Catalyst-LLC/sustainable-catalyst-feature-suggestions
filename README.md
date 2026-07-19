@@ -1,14 +1,14 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.7.0
+## Current release: v5.8.0
 
-**Support Analytics and Documentation Effectiveness**
+**Cross-Product Support Graph and Platform Handoffs**
 
-Version 5.7.0 measures search success, article usefulness, publication integrity, content freshness, Known Issue guidance coverage, release documentation coverage, and Documentation Gap resolution without exposing private support records or raw searches.
+Version 5.8.0 connects products, versions, components, capabilities, Support Articles, Known Issues, releases, examples, troubleshooting guidance, and governed platform handoffs without exposing private support records or raw searches.
 
 The canonical public destination remains `/support/`, and Support Articles retain their existing `/support/guides/` URLs. Existing shortcodes, REST routes, CPTs, taxonomies, options, metadata, and records remain compatible.
 
-See `docs/support-analytics-documentation-effectiveness-v5.7.0.md` for the operating model and governance boundaries.
+See `docs/cross-product-support-graph-platform-handoffs-v5.8.0.md` for the operating model and governance boundaries.
 
 ## Primary public shortcodes
 
@@ -16,6 +16,7 @@ See `docs/support-analytics-documentation-effectiveness-v5.7.0.md` for the opera
 - `[scfs_unified_support_search]`
 - `[scfs_support_knowledge_base]`
 - `[scfs_issue_release_intelligence]`
+- `[scfs_cross_product_support_graph]`
 
 ## Repository layout
 

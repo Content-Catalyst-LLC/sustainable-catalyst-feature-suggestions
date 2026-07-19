@@ -1,3 +1,13 @@
+
+## 5.8.0 — 2026-07-19
+
+- Added a canonical cross-product support graph for the Sustainable Catalyst product ecosystem.
+- Connected product capabilities, Support Articles, Known Issues, releases, examples, and troubleshooting coverage.
+- Added governed platform handoff planning with transparent ranking reasons and no automatic redirects.
+- Added shortest support-path calculation and deterministic graph-integrity reporting.
+- Added the Support Graph administration screen, public shortcode, WordPress REST routes, FastAPI parity, WP-CLI commands, scheduled snapshots, and JSON export.
+- Preserved all legacy identifiers, routes, records, settings, and privacy boundaries without a database migration.
+
 # Changelog
 
 ## 5.7.0 — Support Analytics and Documentation Effectiveness

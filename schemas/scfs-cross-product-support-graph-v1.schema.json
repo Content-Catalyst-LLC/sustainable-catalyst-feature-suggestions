@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-cross-product-support-graph-v1.schema.json",
+  "title": "Sustainable Catalyst Cross-Product Support Graph",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "product_count",
+    "edge_count",
+    "nodes",
+    "edges",
+    "privacy",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-cross-product-support-graph/1.0"
+    },
+    "version": {
+      "const": "5.8.0"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "product_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "edge_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "average_coverage_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "slug",
+          "name",
+          "support_route",
+          "capabilities",
+          "counts",
+          "coverage_score",
+          "coverage_state"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_route": {
+            "type": "string"
+          },
+          "support_route": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "handoffs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "articles",
+              "known_issues",
+              "releases",
+              "examples",
+              "troubleshooting"
+            ],
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "coverage_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "coverage_state": {
+            "enum": [
+              "connected",
+              "strong",
+              "partial",
+              "limited",
+              "unmapped"
+            ]
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "target",
+          "relationship",
+          "active"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "relationship": {
+            "enum": [
+              "depends_on",
+              "integrates_with",
+              "shares_component",
+              "routes_to",
+              "provides_data_to"
+            ]
+          },
+          "component": {
+            "type": "string"
+          },
+          "criticality": {
+            "enum": [
+              "low",
+              "moderate",
+              "high",
+              "critical"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "public_records_only",
+        "personal_identifiers_exposed",
+        "raw_search_text_exposed",
+        "private_case_content_exposed"
+      ],
+      "properties": {
+        "public_records_only": {
+          "const": true
+        },
+        "personal_identifiers_exposed": {
+          "const": false
+        },
+        "raw_search_text_exposed": {
+          "const": false
+        },
+        "private_case_content_exposed": {
+          "const": false
+        },
+        "private_documents_exposed": {
+          "const": false
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "human_review_required",
+        "automatic_private_case_creation",
+        "automatic_product_redirect"
+      ],
+      "properties": {
+        "human_review_required": {
+          "const": true
+        },
+        "automatic_private_case_creation": {
+          "const": false
+        },
+        "automatic_product_redirect": {
+          "const": false
+        },
+        "automatic_roadmap_change": {
+          "const": false
+        },
+        "automatic_issue_resolution": {
+          "const": false
+        }
+      }
+    }
+  }
+}

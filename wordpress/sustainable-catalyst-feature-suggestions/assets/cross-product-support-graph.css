@@ -1,0 +1,300 @@
+/* Sustainable Catalyst Product Support and Feedback Platform v5.8.0 */
+.scfs-support-graph,
+.scfs-support-graph-admin {
+  --scfs-graph-ink: #151515;
+  --scfs-graph-muted: #5d5a55;
+  --scfs-graph-line: #d9d1c5;
+  --scfs-graph-cream: #fff8e7;
+  --scfs-graph-paper: #fffdf8;
+  --scfs-graph-accent: #7f1d1d;
+  color: var(--scfs-graph-ink);
+}
+
+.scfs-support-graph {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 56px);
+  background: var(--scfs-graph-paper);
+  border: 1px solid var(--scfs-graph-line);
+}
+
+.scfs-support-graph *,
+.scfs-support-graph *::before,
+.scfs-support-graph *::after {
+  box-sizing: border-box;
+}
+
+.scfs-support-graph__header {
+  max-width: 820px;
+  margin-bottom: 32px;
+}
+
+.scfs-support-graph__header h2,
+.scfs-support-graph__product h3,
+.scfs-support-graph__handoffs h3,
+.scfs-support-graph__handoff h4,
+.scfs-support-graph__catalog h3 {
+  margin-top: 0;
+  color: var(--scfs-graph-ink);
+}
+
+.scfs-support-graph__header p,
+.scfs-support-graph__product p,
+.scfs-support-graph__handoff p,
+.scfs-support-graph__catalog p {
+  line-height: 1.7;
+}
+
+.scfs-support-graph__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--scfs-graph-accent);
+}
+
+.scfs-support-graph__form {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1.4fr) minmax(160px, 0.7fr) auto;
+  gap: 14px;
+  align-items: end;
+  padding: 22px;
+  margin-bottom: 28px;
+  background: var(--scfs-graph-cream);
+  border: 1px solid var(--scfs-graph-line);
+}
+
+.scfs-support-graph__form label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  font-weight: 700;
+}
+
+.scfs-support-graph__form input,
+.scfs-support-graph__form select,
+.scfs-support-graph__form button {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #aaa197;
+  border-radius: 0;
+  font: inherit;
+}
+
+.scfs-support-graph__form input,
+.scfs-support-graph__form select {
+  padding: 9px 11px;
+  background: #fff;
+}
+
+.scfs-support-graph__form button {
+  padding: 10px 18px;
+  background: #111;
+  color: #fff;
+  border-color: #111;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.scfs-support-graph__form button:hover,
+.scfs-support-graph__form button:focus-visible {
+  background: var(--scfs-graph-accent);
+  border-color: var(--scfs-graph-accent);
+}
+
+.scfs-support-graph__product {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.8fr);
+  gap: 24px;
+  padding: 26px;
+  margin-bottom: 28px;
+  border-top: 4px solid var(--scfs-graph-accent);
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.scfs-support-graph__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.scfs-support-graph__metrics span {
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 15px 8px;
+  text-align: center;
+  background: var(--scfs-graph-cream);
+  border: 1px solid var(--scfs-graph-line);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.scfs-support-graph__metrics strong {
+  font-size: 1.45rem;
+  letter-spacing: 0;
+}
+
+.scfs-support-graph__handoffs {
+  display: grid;
+  gap: 14px;
+}
+
+.scfs-support-graph__handoff {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  padding: 20px 22px;
+  border: 1px solid var(--scfs-graph-line);
+  background: #fff;
+}
+
+.scfs-support-graph__handoff > div:last-child {
+  display: grid;
+  gap: 9px;
+  justify-items: end;
+}
+
+.scfs-support-graph__handoff a,
+.scfs-support-graph__catalog a {
+  color: var(--scfs-graph-accent);
+  font-weight: 800;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.scfs-support-graph__score {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--scfs-graph-cream);
+  border: 1px solid var(--scfs-graph-line);
+  font-weight: 800;
+}
+
+.scfs-support-graph__catalog {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.scfs-support-graph__catalog article {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--scfs-graph-line);
+  background: #fff;
+}
+
+.scfs-support-graph__privacy,
+.scfs-support-graph__empty {
+  padding: 16px 18px;
+  margin-top: 24px;
+  background: var(--scfs-graph-cream);
+  border-left: 4px solid var(--scfs-graph-accent);
+  color: var(--scfs-graph-muted);
+}
+
+.scfs-support-graph__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.scfs-support-graph__summary > div {
+  display: grid;
+  gap: 5px;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid #dcdcde;
+}
+
+.scfs-support-graph__summary strong {
+  font-size: 1.5rem;
+}
+
+.scfs-support-graph__state {
+  display: inline-block;
+  padding: 5px 8px;
+  background: #f0f0f1;
+  font-weight: 700;
+}
+
+.scfs-support-graph__state.state-connected,
+.scfs-support-graph__state.state-strong {
+  background: #e7f5ea;
+  color: #185c2d;
+}
+
+.scfs-support-graph__state.state-limited,
+.scfs-support-graph__state.state-unmapped {
+  background: #fff1f1;
+  color: #8a1f1f;
+}
+
+.scfs-support-graph__findings {
+  max-width: 900px;
+  padding: 0;
+  list-style: none;
+}
+
+.scfs-support-graph__findings li {
+  padding: 11px 14px;
+  margin: 0 0 8px;
+  border-left: 4px solid #dba617;
+  background: #fff;
+}
+
+.scfs-support-graph__findings li.severity-error {
+  border-left-color: #b32d2e;
+}
+
+@media (max-width: 980px) {
+  .scfs-support-graph__form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scfs-support-graph__catalog {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .scfs-support-graph {
+    padding: 20px;
+  }
+
+  .scfs-support-graph__form,
+  .scfs-support-graph__product,
+  .scfs-support-graph__handoff,
+  .scfs-support-graph__catalog,
+  .scfs-support-graph__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .scfs-support-graph__handoff > div:last-child {
+    justify-items: start;
+  }
+}
+
+@media print {
+  .scfs-support-graph__form,
+  .scfs-support-graph__handoff a {
+    display: none !important;
+  }
+
+  .scfs-support-graph,
+  .scfs-support-graph__product,
+  .scfs-support-graph__handoff,
+  .scfs-support-graph__catalog article {
+    box-shadow: none;
+    background: #fff;
+  }
+}

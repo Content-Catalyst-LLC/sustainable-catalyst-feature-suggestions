@@ -21,8 +21,9 @@ from .issue_release_intelligence import IssueReleaseIntelligenceRequest, IssueRe
 from .content_governance import ContentGovernanceEvidence, ContentGovernanceAssessment, ContentGovernanceQueueEvidence, ContentGovernanceQueueSummary, ContentGovernanceBulkRequest, ContentGovernanceBulkPlan, evaluate_content_governance, summarize_content_governance_queue, plan_content_governance_bulk_action
 from .feedback_product_signals import ProductSignalEvidence, ProductSignalAssessment, ProductSignalPortfolioEvidence, ProductSignalPortfolioSummary, ProductSignalClusterEvidence, ProductSignalClusterPriority, score_product_signal, summarize_product_signal_portfolio, prioritize_product_signal_cluster
 from .support_analytics_documentation_effectiveness import DocumentationEffectivenessEvidence, DocumentationEffectivenessAssessment, DocumentationEffectivenessPortfolioEvidence, DocumentationEffectivenessPortfolioSummary, DocumentationEffectivenessTrendEvidence, DocumentationEffectivenessTrend, AnalyticsReportIntegrityEvidence, AnalyticsReportIntegrityResult, evaluate_documentation_effectiveness, summarize_documentation_effectiveness_portfolio, compare_documentation_effectiveness, verify_support_analytics_report
+from .support_graph_handoffs import SupportGraphEvidence, SupportGraphSummary, HandoffPlanEvidence, HandoffPlanResult, SupportPathEvidence, SupportPathResult, SupportGraphIntegrityResult, build_support_graph, plan_platform_handoffs, find_support_path, verify_support_graph
 
-VERSION='5.7.0'
+VERSION='5.8.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Product Support and Feedback Intelligence',version=VERSION)
 
@@ -544,6 +545,58 @@ def cross_product_journeys_build(payload: ResolutionJourneyEvidence, x_scfs_ai_k
 def cross_product_reports_verify(payload: OrchestrationReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_orchestration_report(payload)
+
+
+
+@app.get('/v1/support-graph/capabilities')
+def support_graph_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-cross-product-support-graph/1.0',
+        'handoff_schema': 'scfs-platform-support-handoff/1.0',
+        'capabilities': [
+            'canonical_product_nodes',
+            'capability_registry',
+            'support_record_coverage',
+            'cross_product_dependency_edges',
+            'governed_platform_handoffs',
+            'shortest_support_paths',
+            'graph_integrity_reporting',
+        ],
+        'public_records_only': True,
+        'personal_identifiers_exposed': False,
+        'raw_search_text_exposed': False,
+        'private_case_content_exposed': False,
+        'automatic_redirect': False,
+        'automatic_private_case_creation': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/support-graph/build', response_model=SupportGraphSummary)
+def support_graph_build(payload: SupportGraphEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return build_support_graph(payload)
+
+
+@app.post('/v1/support-graph/handoffs/plan', response_model=HandoffPlanResult)
+def support_graph_handoff_plan(payload: HandoffPlanEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return plan_platform_handoffs(payload)
+
+
+@app.post('/v1/support-graph/paths/find', response_model=SupportPathResult)
+def support_graph_path_find(payload: SupportPathEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return find_support_path(payload)
+
+
+@app.post('/v1/support-graph/integrity/verify', response_model=SupportGraphIntegrityResult)
+def support_graph_integrity_verify(payload: SupportGraphEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_support_graph(payload)
 
 @app.get('/v1/connected-operations/capabilities')
 def connected_operations_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):

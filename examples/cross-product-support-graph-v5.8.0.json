@@ -1,0 +1,122 @@
+{
+  "schema": "scfs-cross-product-support-graph/1.0",
+  "version": "5.8.0",
+  "generated_at": "2026-07-19T18:00:00Z",
+  "product_count": 3,
+  "edge_count": 3,
+  "average_coverage_score": 71.3,
+  "nodes": [
+    {
+      "slug": "decision-studio",
+      "name": "Decision Studio",
+      "public_route": "https://sustainablecatalyst.com/platform/decision-studio/",
+      "support_route": "https://sustainablecatalyst.com/support/?scfs_product=decision-studio#knowledge-base",
+      "capabilities": [
+        "decision analysis",
+        "scenario comparison",
+        "decision briefs"
+      ],
+      "handoffs": [
+        "catalyst-data",
+        "site-intelligence"
+      ],
+      "counts": {
+        "articles": 12,
+        "known_issues": 2,
+        "releases": 5,
+        "examples": 3,
+        "troubleshooting": 4
+      },
+      "coverage_score": 92,
+      "coverage_state": "connected"
+    },
+    {
+      "slug": "catalyst-data",
+      "name": "Catalyst Data",
+      "public_route": "https://sustainablecatalyst.com/platform/catalyst-data/",
+      "support_route": "https://sustainablecatalyst.com/support/?scfs_product=catalyst-data#knowledge-base",
+      "capabilities": [
+        "datasets",
+        "provenance",
+        "data quality"
+      ],
+      "handoffs": [
+        "decision-studio",
+        "workbench"
+      ],
+      "counts": {
+        "articles": 8,
+        "known_issues": 1,
+        "releases": 4,
+        "examples": 2,
+        "troubleshooting": 2
+      },
+      "coverage_score": 76,
+      "coverage_state": "strong"
+    },
+    {
+      "slug": "workbench",
+      "name": "Workbench",
+      "public_route": "https://sustainablecatalyst.com/platform/workbench/",
+      "support_route": "https://sustainablecatalyst.com/support/?scfs_product=workbench#knowledge-base",
+      "capabilities": [
+        "calculations",
+        "graphs",
+        "simulations"
+      ],
+      "handoffs": [
+        "sustainable-catalyst-lab",
+        "decision-studio"
+      ],
+      "counts": {
+        "articles": 4,
+        "known_issues": 0,
+        "releases": 2,
+        "examples": 1,
+        "troubleshooting": 1
+      },
+      "coverage_score": 46,
+      "coverage_state": "partial"
+    }
+  ],
+  "edges": [
+    {
+      "source": "decision-studio",
+      "target": "catalyst-data",
+      "relationship": "routes_to",
+      "component": "data imports",
+      "criticality": "moderate",
+      "active": true
+    },
+    {
+      "source": "catalyst-data",
+      "target": "workbench",
+      "relationship": "integrates_with",
+      "component": "analytical datasets",
+      "criticality": "moderate",
+      "active": true
+    },
+    {
+      "source": "workbench",
+      "target": "decision-studio",
+      "relationship": "provides_data_to",
+      "component": "model outputs",
+      "criticality": "moderate",
+      "active": true
+    }
+  ],
+  "privacy": {
+    "public_records_only": true,
+    "personal_identifiers_exposed": false,
+    "raw_search_text_exposed": false,
+    "private_case_content_exposed": false,
+    "private_documents_exposed": false
+  },
+  "governance": {
+    "human_review_required": true,
+    "automatic_private_case_creation": false,
+    "automatic_product_redirect": false,
+    "automatic_roadmap_change": false,
+    "automatic_issue_resolution": false
+  }
+}
