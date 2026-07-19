@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Sustainable Catalyst Product Support and Feedback Platform
- * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, product-signal intelligence, documentation-effectiveness analytics, cross-product support graphs, governed platform handoffs, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 5.8.0
+ * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, product-signal intelligence, documentation-effectiveness analytics, cross-product support graphs, governed platform handoffs, controlled public support APIs, product embeds, institutional support integration, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
+ * Version: 5.9.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '5.8.0';
+    const VERSION = '5.9.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -108,6 +108,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         if (class_exists('SCFS_Cross_Product_Support_Graph')) {
             SCFS_Cross_Product_Support_Graph::activate();
         }
+        if (class_exists('SCFS_Public_Support_Integrations')) {
+            SCFS_Public_Support_Integrations::activate();
+        }
         if (class_exists('SCFS_Repository_Release_Synchronization')) {
             SCFS_Repository_Release_Synchronization::activate();
         }
@@ -149,6 +152,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
         if (class_exists('SCFS_Repository_Release_Synchronization')) {
             SCFS_Repository_Release_Synchronization::deactivate();
+        }
+        if (class_exists('SCFS_Public_Support_Integrations')) {
+            SCFS_Public_Support_Integrations::deactivate();
         }
         if (class_exists('SCFS_Cross_Product_Support_Graph')) {
             SCFS_Cross_Product_Support_Graph::deactivate();
@@ -2210,6 +2216,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-content-go
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-feedback-product-signals.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-analytics-documentation-effectiveness.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-cross-product-support-graph.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-public-support-integrations.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-discovery.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-unified-support-search.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-known-issue-release-intelligence.php';
@@ -2236,6 +2243,7 @@ SCFS_Support_Content_Governance::instance();
 SCFS_Feedback_Product_Signals::instance();
 SCFS_Support_Analytics_Documentation_Effectiveness::instance();
 SCFS_Cross_Product_Support_Graph::instance();
+SCFS_Public_Support_Integrations::instance();
 SCFS_Support_Discovery::instance();
 SCFS_Unified_Support_Search::instance();
 SCFS_Known_Issue_Release_Intelligence::instance();

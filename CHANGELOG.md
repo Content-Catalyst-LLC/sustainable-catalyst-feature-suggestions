@@ -1,3 +1,13 @@
+# Changelog
+
+## 5.9.0
+
+- Added controlled public Support APIs.
+- Added responsive product-specific support embeds.
+- Added deterministic version verification.
+- Added institutional support integration contracts and access governance.
+- Added FastAPI parity, schemas, validation, and package artifacts.
+
 
 ## 5.8.0 — 2026-07-19
 

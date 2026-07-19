@@ -22,8 +22,9 @@ from .content_governance import ContentGovernanceEvidence, ContentGovernanceAsse
 from .feedback_product_signals import ProductSignalEvidence, ProductSignalAssessment, ProductSignalPortfolioEvidence, ProductSignalPortfolioSummary, ProductSignalClusterEvidence, ProductSignalClusterPriority, score_product_signal, summarize_product_signal_portfolio, prioritize_product_signal_cluster
 from .support_analytics_documentation_effectiveness import DocumentationEffectivenessEvidence, DocumentationEffectivenessAssessment, DocumentationEffectivenessPortfolioEvidence, DocumentationEffectivenessPortfolioSummary, DocumentationEffectivenessTrendEvidence, DocumentationEffectivenessTrend, AnalyticsReportIntegrityEvidence, AnalyticsReportIntegrityResult, evaluate_documentation_effectiveness, summarize_documentation_effectiveness_portfolio, compare_documentation_effectiveness, verify_support_analytics_report
 from .support_graph_handoffs import SupportGraphEvidence, SupportGraphSummary, HandoffPlanEvidence, HandoffPlanResult, SupportPathEvidence, SupportPathResult, SupportGraphIntegrityResult, build_support_graph, plan_platform_handoffs, find_support_path, verify_support_graph
+from .public_support_integrations import VersionVerificationRequest, VersionVerificationResult, SupportEmbedPlanRequest, SupportEmbedPlanResult, InstitutionalContractEvidence, InstitutionalContractResult, PublicIntegrationReportEvidence, PublicIntegrationReportResult, verify_support_version, plan_support_embed, validate_institutional_contract, evaluate_public_integration_health
 
-VERSION='5.8.0'
+VERSION='5.9.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Product Support and Feedback Intelligence',version=VERSION)
 
@@ -169,7 +170,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','feedback_product_signal_scoring','feedback_signal_portfolio_summaries','feedback_cluster_prioritization','privacy_minimized_product_demand','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','feedback_product_signal_scoring','feedback_signal_portfolio_summaries','feedback_cluster_prioritization','privacy_minimized_product_demand','public_support_api','product_support_embeds','version_verification','institutional_support_contracts','access_governance','cross_platform_support_handoffs','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -857,3 +858,48 @@ def support_analytics_trends(payload: DocumentationEffectivenessTrendEvidence):
 @app.post('/v1/support-analytics/reports/verify', response_model=AnalyticsReportIntegrityResult)
 def support_analytics_report_verify(payload: AnalyticsReportIntegrityEvidence):
     return verify_support_analytics_report(payload)
+
+@app.get('/v1/public-support/capabilities')
+def public_support_integration_capabilities():
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-public-support-integration/1.0',
+        'embed_schema': 'scfs-support-embed/1.0',
+        'institution_schema': 'scfs-institutional-support-integration/1.0',
+        'capabilities': [
+            'public_product_catalog',
+            'version_verification',
+            'product_support_embed_planning',
+            'institutional_contract_validation',
+            'integration_health_evaluation',
+            'access_governance',
+            'cross_platform_support_handoffs',
+        ],
+        'public_records_only': True,
+        'read_only_public_api': True,
+        'personal_identifiers_exposed': False,
+        'private_case_content_exposed': False,
+        'private_documents_exposed': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/public-support/version/verify', response_model=VersionVerificationResult)
+def public_support_version_verify(payload: VersionVerificationRequest):
+    return verify_support_version(payload)
+
+
+@app.post('/v1/public-support/embed/plan', response_model=SupportEmbedPlanResult)
+def public_support_embed_plan(payload: SupportEmbedPlanRequest):
+    return plan_support_embed(payload)
+
+
+@app.post('/v1/institutional-support/contracts/validate', response_model=InstitutionalContractResult)
+def institutional_support_contract_validate(payload: InstitutionalContractEvidence):
+    return validate_institutional_contract(payload)
+
+
+@app.post('/v1/public-support/integration-health/evaluate', response_model=PublicIntegrationReportResult)
+def public_support_integration_health_evaluate(payload: PublicIntegrationReportEvidence):
+    return evaluate_public_integration_health(payload)

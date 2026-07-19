@@ -1,0 +1,36 @@
+{
+  "schema": "scfs-public-support-integration/1.0",
+  "version": "5.9.0",
+  "generated_at": "2026-07-19T00:00:00Z",
+  "product": {
+    "slug": "decision-studio",
+    "name": "Decision Studio",
+    "coverage_state": "connected",
+    "capabilities": [
+      "decision analysis",
+      "decision briefs"
+    ],
+    "support_articles": [
+      {
+        "id": 812,
+        "title": "Publish a decision brief",
+        "url": "https://sustainablecatalyst.com/support/guides/publish-a-decision-brief/"
+      }
+    ]
+  },
+  "links": {
+    "support_center": "https://sustainablecatalyst.com/support/?scfs_support_product=decision-studio",
+    "api": "https://sustainablecatalyst.com/wp-json/scfs/v1/public-support/product/decision-studio"
+  },
+  "privacy": {
+    "public_records_only": true,
+    "personal_identifiers_exposed": false,
+    "private_case_content_exposed": false,
+    "private_documents_exposed": false
+  },
+  "governance": {
+    "read_only_public_api": true,
+    "human_review_required": true,
+    "automatic_private_case_creation": false
+  }
+}

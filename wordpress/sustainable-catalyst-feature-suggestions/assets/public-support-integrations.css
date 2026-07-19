@@ -1,0 +1,102 @@
+/* Sustainable Catalyst Product Support and Feedback Platform v5.9.0 */
+.scfs-support-embed,
+.scfs-integration-admin {
+  --scfs-ink: #151311;
+  --scfs-muted: #625d56;
+  --scfs-line: #ded7ca;
+  --scfs-cream: #fff8e7;
+  --scfs-paper: #ffffff;
+  --scfs-maroon: #6f1d2b;
+  color: var(--scfs-ink);
+  font-family: Montserrat, Arial, sans-serif;
+}
+.scfs-support-embed {
+  width: 100%;
+  max-width: 1080px;
+  margin: 24px auto;
+  border: 1px solid var(--scfs-line);
+  background: var(--scfs-paper);
+  box-sizing: border-box;
+}
+.scfs-support-embed *, .scfs-integration-admin * { box-sizing: border-box; }
+.scfs-support-embed__header {
+  padding: 28px 30px 24px;
+  border-bottom: 1px solid var(--scfs-line);
+  background: var(--scfs-cream);
+}
+.scfs-support-embed__header h2 {
+  margin: 4px 0 8px;
+  font-family: Spartan, Montserrat, Arial, sans-serif;
+  font-size: clamp(1.45rem, 2.8vw, 2rem);
+  line-height: 1.18;
+}
+.scfs-support-embed__header p { margin: 0; color: var(--scfs-muted); line-height: 1.65; }
+.scfs-support-embed__eyebrow,
+.scfs-support-embed__type {
+  margin: 0;
+  color: var(--scfs-maroon);
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+.scfs-support-embed__verification {
+  padding: 13px 30px;
+  border-bottom: 1px solid var(--scfs-line);
+  background: #faf7f0;
+  font-size: .9rem;
+}
+.scfs-support-embed__verification[data-state="verified"] { border-left: 4px solid #2f6b3a; }
+.scfs-support-embed__verification:not([data-state="verified"]) { border-left: 4px solid #a05a00; }
+.scfs-support-embed__records {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+.scfs-support-embed__record {
+  min-width: 0;
+  padding: 24px 30px;
+  border-bottom: 1px solid var(--scfs-line);
+}
+.scfs-support-embed__record:nth-child(odd) { border-right: 1px solid var(--scfs-line); }
+.scfs-support-embed__record h3 {
+  margin: 7px 0 10px;
+  font-family: Spartan, Montserrat, Arial, sans-serif;
+  font-size: 1.03rem;
+  line-height: 1.35;
+}
+.scfs-support-embed__record h3 a { color: var(--scfs-ink); text-decoration: none; }
+.scfs-support-embed__record h3 a:hover,
+.scfs-support-embed__record h3 a:focus { color: var(--scfs-maroon); text-decoration: underline; }
+.scfs-support-embed__record > p:last-child { margin: 0; color: var(--scfs-muted); line-height: 1.65; }
+.scfs-support-embed__empty { grid-column: 1 / -1; margin: 0; padding: 28px 30px; color: var(--scfs-muted); }
+.scfs-support-embed__footer { padding: 18px 30px; background: #faf8f3; }
+.scfs-support-embed__footer a { color: var(--scfs-ink); font-weight: 800; text-decoration: none; }
+.scfs-support-embed__footer a:hover, .scfs-support-embed__footer a:focus { color: var(--scfs-maroon); text-decoration: underline; }
+.scfs-support-embed__notice { padding: 18px; border: 1px solid var(--scfs-line); background: var(--scfs-cream); }
+.scfs-integration-admin__metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; max-width: 980px; margin: 24px 0; }
+.scfs-integration-admin__metrics article { padding: 22px; border: 1px solid var(--scfs-line); background: var(--scfs-paper); }
+.scfs-integration-admin__metrics strong { display: block; font: 800 1.55rem/1.2 Spartan, Montserrat, sans-serif; }
+.scfs-integration-admin__metrics span { display: block; margin-top: 5px; color: var(--scfs-muted); }
+.scfs-integration-admin__routes { max-width: 980px; padding: 0; list-style: none; }
+.scfs-integration-admin__routes li { padding: 9px 12px; border-bottom: 1px solid var(--scfs-line); background: #fff; }
+@media (max-width: 860px) {
+  .scfs-support-embed__records { grid-template-columns: 1fr; }
+  .scfs-support-embed__record:nth-child(odd) { border-right: 0; }
+  .scfs-integration-admin__metrics { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .scfs-support-embed__header,
+  .scfs-support-embed__record,
+  .scfs-support-embed__footer,
+  .scfs-support-embed__verification { padding-left: 18px; padding-right: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scfs-support-embed *, .scfs-integration-admin * { scroll-behavior: auto !important; transition: none !important; }
+}
+@media print {
+  .scfs-support-embed { border-color: #777; }
+  .scfs-support-embed__footer { display: none; }
+  .scfs-support-embed__records { grid-template-columns: 1fr; }
+  .scfs-support-embed__record { border-right: 0 !important; break-inside: avoid; }
+}

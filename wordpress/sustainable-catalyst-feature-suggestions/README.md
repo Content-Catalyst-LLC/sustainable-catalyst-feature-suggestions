@@ -1,8 +1,8 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.7.0
+## Current release: v5.9.0
 
-Version 5.7.0 adds Support Analytics and Documentation Effectiveness across Guided Resolution, Support Articles, Known Issues, releases, and Documentation Gaps.
+Version 5.9.0 adds controlled public Support APIs, product-specific support embeds, version verification, institutional support contracts, access governance, and cross-platform handoffs.
 
 Primary public shortcode: `[scfs_product_support_center]`
 
@@ -12,6 +12,10 @@ Unified search shortcode: `[scfs_unified_support_search]`
 
 Issue and release intelligence shortcode: `[scfs_issue_release_intelligence]`
 
-Support Analytics is managed in **Support & Feedback → Support Analytics**.
+Cross-product support graph shortcode: `[scfs_cross_product_support_graph]`
+
+Product support embed shortcode: `[scfs_support_embed product="decision-studio"]`
+
+Public integrations are managed in **Support & Feedback → Public Integrations**.
 
 The plugin directory, text domain, PHP class, `scfs_*` identifiers, post types, REST namespace, article URLs, options, and existing records remain backward compatible.

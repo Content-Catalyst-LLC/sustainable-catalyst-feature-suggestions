@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-public-support-integration-v1.schema.json",
+  "title": "Sustainable Catalyst Public Support Integration",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "product",
+    "privacy",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-public-support-integration/1.0"
+    },
+    "version": {
+      "const": "5.9.0"
+    },
+    "product": {
+      "type": "object"
+    },
+    "privacy": {
+      "type": "object",
+      "properties": {
+        "public_records_only": {
+          "const": true
+        },
+        "personal_identifiers_exposed": {
+          "const": false
+        },
+        "private_case_content_exposed": {
+          "const": false
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "properties": {
+        "read_only_public_api": {
+          "const": true
+        },
+        "human_review_required": {
+          "const": true
+        }
+      }
+    }
+  }
+}

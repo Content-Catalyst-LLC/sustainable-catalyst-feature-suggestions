@@ -1,14 +1,14 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.8.0
+## Current release: v5.9.0
 
-**Cross-Product Support Graph and Platform Handoffs**
+**Public API, Embeds, and Institutional Support Integration**
 
-Version 5.8.0 connects products, versions, components, capabilities, Support Articles, Known Issues, releases, examples, troubleshooting guidance, and governed platform handoffs without exposing private support records or raw searches.
+Version 5.9.0 exposes privacy-safe public support contracts, responsive product embeds, deterministic version verification, institutional integration contracts, access governance, and cross-platform handoffs.
 
 The canonical public destination remains `/support/`, and Support Articles retain their existing `/support/guides/` URLs. Existing shortcodes, REST routes, CPTs, taxonomies, options, metadata, and records remain compatible.
 
-See `docs/cross-product-support-graph-platform-handoffs-v5.8.0.md` for the operating model and governance boundaries.
+See `docs/public-api-embeds-institutional-support-v5.9.0.md` for the operating model and governance boundaries.
 
 ## Primary public shortcodes
 
@@ -17,6 +17,7 @@ See `docs/cross-product-support-graph-platform-handoffs-v5.8.0.md` for the opera
 - `[scfs_support_knowledge_base]`
 - `[scfs_issue_release_intelligence]`
 - `[scfs_cross_product_support_graph]`
+- `[scfs_support_embed product="decision-studio"]`
 
 ## Repository layout
 
