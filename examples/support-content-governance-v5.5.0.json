@@ -1,0 +1,42 @@
+{
+  "schema": "scfs-support-content-governance/1.0",
+  "version": "5.5.0",
+  "record_id": 812,
+  "post_type": "sc_support_article",
+  "post_status": "publish",
+  "title": "Export a Decision Studio briefing packet",
+  "products": [
+    "Decision Studio"
+  ],
+  "owner_id": 4,
+  "technical_owner_id": 7,
+  "priority": "high",
+  "review_cadence_days": 90,
+  "verification_state": "verified",
+  "verification_note": "Verified against Decision Studio v2.0.1 using synthetic sample data.",
+  "last_verified_at": "2026-07-18",
+  "next_review_at": "2026-10-16",
+  "days_until_review": 90,
+  "workflow_state": "published",
+  "integrity_score": 96,
+  "integrity_state": "publication_ready",
+  "integrity_stale": false,
+  "supersedes_id": 0,
+  "superseded_by_id": 0,
+  "queue_state": "verified",
+  "governance_score": 100,
+  "blockers": [],
+  "required_actions": [],
+  "verification_history": [
+    {
+      "event": "verified",
+      "at": "2026-07-18 19:30:00",
+      "actor_id": 4,
+      "state": "verified",
+      "note": "Verified against Decision Studio v2.0.1 using synthetic sample data.",
+      "content_hash": "a6a9e2c23f15b58a317df12799d84fe2b6e42260ce9c6f8242bfe41efd4d9ba0"
+    }
+  ],
+  "human_review_required": true,
+  "automatic_publication": false
+}

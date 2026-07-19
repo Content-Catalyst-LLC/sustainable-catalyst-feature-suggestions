@@ -18,8 +18,9 @@ from .support_article_integrity import SupportArticleIntegrityEvidence, SupportA
 from .support_discovery import DiscoverySearchRequest, DiscoverySearchResult, search_support_articles
 from .unified_support_search import UnifiedSupportSearchRequest, UnifiedSupportSearchResult, search_unified_support
 from .issue_release_intelligence import IssueReleaseIntelligenceRequest, IssueReleaseIntelligenceResult, evaluate_issue_release_intelligence
+from .content_governance import ContentGovernanceEvidence, ContentGovernanceAssessment, ContentGovernanceQueueEvidence, ContentGovernanceQueueSummary, ContentGovernanceBulkRequest, ContentGovernanceBulkPlan, evaluate_content_governance, summarize_content_governance_queue, plan_content_governance_bulk_action
 
-VERSION='5.4.0'
+VERSION='5.5.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Product Support and Feedback Intelligence',version=VERSION)
 
@@ -165,7 +166,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -353,6 +354,48 @@ def editorial_standards_score(payload: DocumentationStandardsEvidence, x_scfs_ai
 def editorial_queue_summary(payload: EditorialQueueEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return summarize_editorial_queue(payload)
+
+@app.get('/v1/content-governance/capabilities')
+def content_governance_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-support-content-governance/1.0',
+        'capabilities': [
+            'content_owner_assignments',
+            'technical_owner_assignments',
+            'verification_history',
+            'review_cadence',
+            'overdue_and_due_soon_queues',
+            'integrity_and_editorial_workflow_fusion',
+            'supersession_governance',
+            'bulk_action_planning',
+        ],
+        'wordpress_source_of_truth': True,
+        'public_record_data_exposed': False,
+        'automatic_publication': False,
+        'automatic_editorial_approval': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/content-governance/evaluate', response_model=ContentGovernanceAssessment)
+def content_governance_evaluate(payload: ContentGovernanceEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_content_governance(payload)
+
+
+@app.post('/v1/content-governance/queue/summarize', response_model=ContentGovernanceQueueSummary)
+def content_governance_queue_summary(payload: ContentGovernanceQueueEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return summarize_content_governance_queue(payload)
+
+
+@app.post('/v1/content-governance/bulk/plan', response_model=ContentGovernanceBulkPlan)
+def content_governance_bulk_plan(payload: ContentGovernanceBulkRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return plan_content_governance_bulk_action(payload)
 
 @app.get('/v1/repository-sync/capabilities')
 def repository_sync_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):

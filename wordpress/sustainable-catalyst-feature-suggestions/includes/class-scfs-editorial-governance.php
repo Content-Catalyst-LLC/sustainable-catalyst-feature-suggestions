@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Editorial_Governance {
-    const VERSION = '5.1.0';
+    const VERSION = '5.5.0';
     const SCHEMA_VERSION = '1.0';
     const OPTION_KEY = 'scfs_editorial_governance_settings';
     const AUDIT_OPTION = 'scfs_editorial_governance_audit';

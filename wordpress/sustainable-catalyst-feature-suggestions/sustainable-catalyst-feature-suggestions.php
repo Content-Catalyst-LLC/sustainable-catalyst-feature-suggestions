@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Product Support and Feedback Platform
  * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 5.4.0
+ * Version: 5.5.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '5.4.0';
+    const VERSION = '5.5.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -96,6 +96,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         if (class_exists('SCFS_Support_Article_Integrity')) {
             SCFS_Support_Article_Integrity::activate();
         }
+        if (class_exists('SCFS_Support_Content_Governance')) {
+            SCFS_Support_Content_Governance::activate();
+        }
         if (class_exists('SCFS_Repository_Release_Synchronization')) {
             SCFS_Repository_Release_Synchronization::activate();
         }
@@ -137,6 +140,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
         if (class_exists('SCFS_Repository_Release_Synchronization')) {
             SCFS_Repository_Release_Synchronization::deactivate();
+        }
+        if (class_exists('SCFS_Support_Content_Governance')) {
+            SCFS_Support_Content_Governance::deactivate();
         }
         if (class_exists('SCFS_Editorial_Governance')) {
             SCFS_Editorial_Governance::deactivate();
@@ -2182,6 +2188,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-platform-governanc
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-content-operations.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-editorial-governance.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-article-integrity.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-content-governance.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-discovery.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-unified-support-search.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-known-issue-release-intelligence.php';
@@ -2204,6 +2211,7 @@ SCFS_Platform_Governance::instance();
 SCFS_Support_Content_Operations::instance();
 SCFS_Editorial_Governance::instance();
 SCFS_Support_Article_Integrity::instance();
+SCFS_Support_Content_Governance::instance();
 SCFS_Support_Discovery::instance();
 SCFS_Unified_Support_Search::instance();
 SCFS_Known_Issue_Release_Intelligence::instance();

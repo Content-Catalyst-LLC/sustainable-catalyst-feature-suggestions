@@ -1,14 +1,14 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.4.0
+## Current release: v5.5.0
 
-**Known Issues and Release Intelligence Integration**
+**Support Content Operations and Editorial Governance**
 
-Version 5.4.0 connects Known Issues, affected versions, components, workarounds, Support Articles, target releases, fixed releases, Release Records, and changelog evidence into one human-reviewed operational support layer.
+Version 5.5.0 coordinates content ownership, technical verification, review cadence, editorial workflow, publication integrity, supersession, and operational queues across Support Articles, Known Issues, and Release Records.
 
 The canonical public destination remains `/support/`, and publication-grade Support Articles retain their existing `/support/guides/` URLs. Existing shortcodes, REST routes, CPTs, taxonomies, options, metadata, and records remain compatible.
 
-See `docs/known-issues-release-intelligence-v5.4.0.md` for the architecture and governance boundaries.
+See `docs/support-content-operations-editorial-governance-v5.5.0.md` for the operating model and governance boundaries.
 
 ## Primary public shortcodes
 

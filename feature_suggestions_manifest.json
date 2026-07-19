@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/support/",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -402,7 +402,21 @@
     "Support Center operational issue and release context",
     "Unified Support Search operational relationship enrichment",
     "known issue and release intelligence REST API",
-    "deterministic FastAPI issue and release relationship evaluation"
+    "deterministic FastAPI issue and release relationship evaluation",
+    "shared support content governance",
+    "content owner assignments",
+    "technical owner assignments",
+    "verification states and notes",
+    "content verification history",
+    "review cadence and due dates",
+    "overdue and due-soon editorial queues",
+    "publication-blocked governance queue",
+    "support content supersession relationships",
+    "bulk content governance actions",
+    "content governance CSV export",
+    "content governance REST API",
+    "content governance WP-CLI commands",
+    "deterministic content governance assessment"
   ],
   "boundaries": [
     "no confidential information",
@@ -413,7 +427,7 @@
   ],
   "wordpress_post_type": "sc_feature_suggest",
   "notes": "Version 5.4.0 connects Known Issues, affected versions, components, workarounds, Support Articles, target releases, fixed releases, Release Records, and changelog evidence while preserving all existing public URLs, routes, shortcodes, records, and human-governance boundaries.",
-  "release_name": "Known Issues and Release Intelligence Integration",
+  "release_name": "Support Content Operations and Editorial Governance",
   "release": "Sustainable Catalyst Product Support and Feedback Platform v5.4.0 — Known Issues and Release Intelligence Integration",
   "features": [
     "Weighted and version-aware Support Article search",
@@ -528,7 +542,7 @@
     ],
     "debug_query": "scfs_support_debug=1"
   },
-  "installer_revision": "V5_4_0_R1_KNOWN_ISSUE_RELEASE_INTELLIGENCE",
+  "installer_revision": "V5_5_0_R1_CONTENT_OPERATIONS_EDITORIAL_GOVERNANCE",
   "validation_runtime": {
     "python_min": "3.12",
     "python_max_exclusive": "3.14",
@@ -536,13 +550,21 @@
   },
   "validation": {
     "status": "passed",
-    "plugin_php_files": 26,
-    "php_contract_files": 82,
-    "javascript_files": 11,
-    "json_files": 71,
-    "python_files": 30,
-    "fastapi_tests": 90,
-    "source_whitespace": "passed"
+    "plugin_php_files": 27,
+    "php_contract_files": 88,
+    "javascript_files": 12,
+    "json_files": 74,
+    "python_files": 32,
+    "fastapi_tests": 98,
+    "source_whitespace": "passed",
+    "css_lines": {
+      "knowledge-base.css": 2133,
+      "product-support-platform.css": 1175,
+      "support-article-integrity.css": 147,
+      "unified-support-search.css": 522,
+      "issue-release-intelligence.css": 379,
+      "support-content-governance.css": 278
+    }
   },
   "publication_integrity": {
     "version": "1.0.0",
@@ -620,6 +642,31 @@
     "automatic_incident_declaration": false,
     "automatic_release_status_changes": false,
     "automatic_publication": false,
+    "database_migration_required": false,
+    "human_review_required": true
+  },
+  "support_content_governance": {
+    "version": "1.0.0",
+    "schema": "scfs-support-content-governance/1.0",
+    "wordpress_class": "SCFS_Support_Content_Governance",
+    "admin_page": "Support & Feedback → Content Operations",
+    "wordpress_rest_base": "/wp-json/scfs/v1/content-governance/",
+    "fastapi_rest_base": "/v1/content-governance/",
+    "managed_post_types": [
+      "sc_support_article",
+      "sc_known_issue",
+      "sc_release_record"
+    ],
+    "content_owner_assignments": true,
+    "technical_owner_assignments": true,
+    "verification_history": true,
+    "review_cadence": true,
+    "supersession_relationships": true,
+    "bulk_actions": true,
+    "daily_scan": true,
+    "public_record_data_exposed": false,
+    "automatic_publication": false,
+    "automatic_editorial_approval": false,
     "database_migration_required": false,
     "human_review_required": true
   }

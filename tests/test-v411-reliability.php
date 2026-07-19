@@ -25,7 +25,7 @@ $ops->register_meta();
 $ops->register_rest_routes();
 $schema = $ops->schema_record();
 $checks = array(
-    'patch version' => SCFS_Support_Content_Operations::VERSION === '5.1.0',
+    'patch version' => SCFS_Support_Content_Operations::VERSION === '5.5.0',
     'reliability schema' => ($schema['schema'] ?? '') === 'scfs-support-content-operations/1.1',
     'rollback capability' => in_array('import_batch_rollback', $schema['capabilities'] ?? array(), true),
     'malformed import capability' => in_array('malformed_import_recovery', $schema['capabilities'] ?? array(), true),

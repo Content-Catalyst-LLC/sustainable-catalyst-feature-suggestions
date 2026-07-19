@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-support-content-governance-v1.schema.json",
+  "title": "Sustainable Catalyst Support Content Governance Record",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "version",
+    "record_id",
+    "post_type",
+    "queue_state",
+    "governance_score",
+    "verification_state",
+    "blockers",
+    "required_actions",
+    "human_review_required",
+    "automatic_publication"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-support-content-governance/1.0"
+    },
+    "version": {
+      "const": "5.5.0"
+    },
+    "record_id": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "post_type": {
+      "enum": [
+        "sc_support_article",
+        "sc_known_issue",
+        "sc_release_record"
+      ]
+    },
+    "post_status": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "owner_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "technical_owner_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "priority": {
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "critical"
+      ]
+    },
+    "review_cadence_days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1825
+    },
+    "verification_state": {
+      "enum": [
+        "not_verified",
+        "review_required",
+        "verified",
+        "verified_with_limitations",
+        "superseded"
+      ]
+    },
+    "last_verified_at": {
+      "type": "string",
+      "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "next_review_at": {
+      "type": "string",
+      "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "workflow_state": {
+      "type": "string"
+    },
+    "integrity_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "integrity_state": {
+      "type": "string"
+    },
+    "queue_state": {
+      "enum": [
+        "publication_blocked",
+        "overdue",
+        "due_soon",
+        "unassigned",
+        "review_required",
+        "ready_for_verification",
+        "verified",
+        "superseded"
+      ]
+    },
+    "governance_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "required_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "verification_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "event",
+          "at",
+          "actor_id",
+          "state",
+          "note",
+          "content_hash"
+        ],
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          },
+          "actor_id": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "state": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "content_hash": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "human_review_required": {
+      "const": true
+    },
+    "automatic_publication": {
+      "const": false
+    }
+  }
+}

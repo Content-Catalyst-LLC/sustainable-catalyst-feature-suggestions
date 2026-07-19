@@ -1,3 +1,11 @@
+## 5.5.0 — Support Content Operations and Editorial Governance
+
+- Added shared content and technical ownership across Support Articles, Known Issues, and Release Records.
+- Added verification states, notes, review cadence, last-verified and next-review dates, bounded history, and supersession relationships.
+- Added a unified Content Operations queue that combines editorial workflow, article integrity, ownership, freshness, and verification evidence.
+- Added bulk governance actions, CSV export, daily scans, protected REST routes, WP-CLI commands, FastAPI parity, schema, examples, tests, and release packaging.
+- Preserved all existing CPTs, URLs, routes, shortcodes, settings, metadata, and records without a database migration.
+
 ## 5.4.0 — Known Issues and Release Intelligence Integration
 
 - Connected Known Issues to affected versions, components, target releases, fixed releases, related Support Articles, and changelog evidence.
