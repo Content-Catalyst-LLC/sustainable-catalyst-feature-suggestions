@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-support-analytics-documentation-effectiveness-v1.schema.json",
+  "title": "Sustainable Catalyst Support Analytics and Documentation Effectiveness",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "product",
+    "score",
+    "state",
+    "dimensions",
+    "privacy",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-support-analytics-documentation-effectiveness/1.0"
+    },
+    "version": {
+      "const": "5.7.0"
+    },
+    "product": {
+      "type": "string"
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "state": {
+      "enum": [
+        "insufficient_evidence",
+        "effective",
+        "healthy",
+        "watch",
+        "intervention"
+      ]
+    },
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "privacy": {
+      "type": "object"
+    },
+    "governance": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

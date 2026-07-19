@@ -3,8 +3,8 @@ $root = dirname(__DIR__);
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $release = json_decode(file_get_contents($root . '/release-manifest-v5.2.8.json'), true);
 $checks = array(
-    'feature manifest version' => ($manifest['version'] ?? '') === '5.6.0',
-    'feature manifest release name' => ($manifest['release_name'] ?? '') === 'Feedback Intelligence and Product Signals',
+    'feature manifest version' => ($manifest['version'] ?? '') === '5.7.0',
+    'feature manifest release name' => ($manifest['release_name'] ?? '') === 'Support Analytics and Documentation Effectiveness',
     'integrity capability declared' => in_array('support article content integrity validation', $manifest['capabilities'] ?? array(), true),
     'release manifest version' => ($release['version'] ?? '') === '5.2.8',
     'release manifest schema' => ($release['publication_integrity']['schema'] ?? '') === 'scfs-support-article-integrity/1.0',

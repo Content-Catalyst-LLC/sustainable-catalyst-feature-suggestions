@@ -1,0 +1,73 @@
+{
+  "schema": "scfs-support-analytics-documentation-effectiveness/1.0",
+  "version": "5.7.0",
+  "product": "decision-studio",
+  "score": 82.7,
+  "state": "effective",
+  "evidence_count": 186,
+  "dimensions": [
+    {
+      "key": "search_success",
+      "score": 86.0,
+      "weight": 0.2,
+      "contribution": 17.2
+    },
+    {
+      "key": "search_engagement",
+      "score": 78.0,
+      "weight": 0.1,
+      "contribution": 7.8
+    },
+    {
+      "key": "article_helpfulness",
+      "score": 87.5,
+      "weight": 0.2,
+      "contribution": 17.5
+    },
+    {
+      "key": "publication_integrity",
+      "score": 92.0,
+      "weight": 0.15,
+      "contribution": 13.8
+    },
+    {
+      "key": "content_freshness",
+      "score": 95.0,
+      "weight": 0.1,
+      "contribution": 9.5
+    },
+    {
+      "key": "known_issue_coverage",
+      "score": 100.0,
+      "weight": 0.1,
+      "contribution": 10.0
+    },
+    {
+      "key": "release_coverage",
+      "score": 100.0,
+      "weight": 0.1,
+      "contribution": 10.0
+    },
+    {
+      "key": "gap_resolution",
+      "score": 75.0,
+      "weight": 0.05,
+      "contribution": 3.75
+    }
+  ],
+  "recommendations": [
+    "continue_monitoring_documentation_effectiveness"
+  ],
+  "privacy": {
+    "personal_identifiers_exposed": false,
+    "raw_search_text_exposed": false,
+    "private_case_content_exposed": false
+  },
+  "governance": {
+    "administrator_only": true,
+    "human_review_required": true,
+    "automatic_publication": false,
+    "automatic_issue_resolution": false,
+    "automatic_roadmap_changes": false
+  }
+}

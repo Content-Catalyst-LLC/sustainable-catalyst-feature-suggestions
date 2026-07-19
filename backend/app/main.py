@@ -20,8 +20,9 @@ from .unified_support_search import UnifiedSupportSearchRequest, UnifiedSupportS
 from .issue_release_intelligence import IssueReleaseIntelligenceRequest, IssueReleaseIntelligenceResult, evaluate_issue_release_intelligence
 from .content_governance import ContentGovernanceEvidence, ContentGovernanceAssessment, ContentGovernanceQueueEvidence, ContentGovernanceQueueSummary, ContentGovernanceBulkRequest, ContentGovernanceBulkPlan, evaluate_content_governance, summarize_content_governance_queue, plan_content_governance_bulk_action
 from .feedback_product_signals import ProductSignalEvidence, ProductSignalAssessment, ProductSignalPortfolioEvidence, ProductSignalPortfolioSummary, ProductSignalClusterEvidence, ProductSignalClusterPriority, score_product_signal, summarize_product_signal_portfolio, prioritize_product_signal_cluster
+from .support_analytics_documentation_effectiveness import DocumentationEffectivenessEvidence, DocumentationEffectivenessAssessment, DocumentationEffectivenessPortfolioEvidence, DocumentationEffectivenessPortfolioSummary, DocumentationEffectivenessTrendEvidence, DocumentationEffectivenessTrend, AnalyticsReportIntegrityEvidence, AnalyticsReportIntegrityResult, evaluate_documentation_effectiveness, summarize_documentation_effectiveness_portfolio, compare_documentation_effectiveness, verify_support_analytics_report
 
-VERSION='5.6.0'
+VERSION='5.7.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Product Support and Feedback Intelligence',version=VERSION)
 
@@ -756,3 +757,50 @@ def feedback_product_signal_portfolio(payload: ProductSignalPortfolioEvidence, x
 def feedback_product_signal_cluster_priority(payload: ProductSignalClusterEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return prioritize_product_signal_cluster(payload)
+
+
+@app.get('/v1/support-analytics/capabilities')
+def support_analytics_capabilities():
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-support-analytics-documentation-effectiveness/1.0',
+        'capabilities': [
+            'search_success_analysis',
+            'search_to_guidance_engagement',
+            'article_helpfulness_analysis',
+            'publication_integrity_analysis',
+            'content_freshness_analysis',
+            'known_issue_guidance_coverage',
+            'release_documentation_coverage',
+            'documentation_gap_resolution',
+            'portfolio_summarization',
+            'trend_comparison',
+            'sha256_report_integrity',
+        ],
+        'administrator_only': True,
+        'personal_identifiers_exposed': False,
+        'raw_search_text_exposed': False,
+        'private_case_content_exposed': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/support-analytics/evaluate', response_model=DocumentationEffectivenessAssessment)
+def support_analytics_evaluate(payload: DocumentationEffectivenessEvidence):
+    return evaluate_documentation_effectiveness(payload)
+
+
+@app.post('/v1/support-analytics/portfolio', response_model=DocumentationEffectivenessPortfolioSummary)
+def support_analytics_portfolio(payload: DocumentationEffectivenessPortfolioEvidence):
+    return summarize_documentation_effectiveness_portfolio(payload)
+
+
+@app.post('/v1/support-analytics/trends/compare', response_model=DocumentationEffectivenessTrend)
+def support_analytics_trends(payload: DocumentationEffectivenessTrendEvidence):
+    return compare_documentation_effectiveness(payload)
+
+
+@app.post('/v1/support-analytics/reports/verify', response_model=AnalyticsReportIntegrityResult)
+def support_analytics_report_verify(payload: AnalyticsReportIntegrityEvidence):
+    return verify_support_analytics_report(payload)

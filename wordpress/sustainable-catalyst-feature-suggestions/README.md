@@ -1,8 +1,8 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.6.0
+## Current release: v5.7.0
 
-Version 5.6.0 adds Feedback Intelligence and Product Signals across feature requests, public votes, Support Article feedback, Guided Resolution outcomes, Documentation Gaps, Known Issues, and privacy-safe support relationships.
+Version 5.7.0 adds Support Analytics and Documentation Effectiveness across Guided Resolution, Support Articles, Known Issues, releases, and Documentation Gaps.
 
 Primary public shortcode: `[scfs_product_support_center]`
 
@@ -12,8 +12,6 @@ Unified search shortcode: `[scfs_unified_support_search]`
 
 Issue and release intelligence shortcode: `[scfs_issue_release_intelligence]`
 
-Content governance is managed in **Support & Feedback → Content Operations**.
-
-Product signal intelligence is managed in **Support & Feedback → Product Signals**.
+Support Analytics is managed in **Support & Feedback → Support Analytics**.
 
 The plugin directory, text domain, PHP class, `scfs_*` identifiers, post types, REST namespace, article URLs, options, and existing records remain backward compatible.

@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.7.0 — Support Analytics and Documentation Effectiveness
+
+- Added privacy-safe Support Analytics dashboard.
+- Added product-level documentation-effectiveness scoring and trends.
+- Added search, helpfulness, integrity, freshness, issue, release, and gap metrics.
+- Added REST, WP-CLI, CSV, and FastAPI contracts.
+- Preserved all existing URLs, records, and legacy identifiers.
+
 ## 5.6.0 — Feedback Intelligence and Product Signals
 
 - Added administrator-only product signal intelligence.

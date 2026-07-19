@@ -1,14 +1,14 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.6.0
+## Current release: v5.7.0
 
-**Support Content Operations and Editorial Governance**
+**Support Analytics and Documentation Effectiveness**
 
-Version 5.6.0 coordinates content ownership, technical verification, review cadence, editorial workflow, publication integrity, supersession, and operational queues across Support Articles, Known Issues, and Release Records.
+Version 5.7.0 measures search success, article usefulness, publication integrity, content freshness, Known Issue guidance coverage, release documentation coverage, and Documentation Gap resolution without exposing private support records or raw searches.
 
-The canonical public destination remains `/support/`, and publication-grade Support Articles retain their existing `/support/guides/` URLs. Existing shortcodes, REST routes, CPTs, taxonomies, options, metadata, and records remain compatible.
+The canonical public destination remains `/support/`, and Support Articles retain their existing `/support/guides/` URLs. Existing shortcodes, REST routes, CPTs, taxonomies, options, metadata, and records remain compatible.
 
-See `docs/support-content-operations-editorial-governance-v5.6.0.md` for the operating model and governance boundaries.
+See `docs/support-analytics-documentation-effectiveness-v5.7.0.md` for the operating model and governance boundaries.
 
 ## Primary public shortcodes
 
@@ -25,7 +25,3 @@ See `docs/support-content-operations-editorial-governance-v5.6.0.md` for the ope
 - `examples/` — synthetic public examples
 - `tests/` — WordPress contract tests
 - `docs/` — implementation and governance guides
-
-## Feedback Intelligence and Product Signals
-
-Version 5.6.0 adds an administrator-only Product Signals dashboard that combines privacy-minimized feature demand, article feedback, unresolved searches, Documentation Gaps, Known Issues, and support relationships. Signals are advisory and require human review.
