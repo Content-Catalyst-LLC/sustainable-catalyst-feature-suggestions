@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/support/",
-  "version": "5.2.9",
+  "version": "5.3.0",
   "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -371,7 +371,19 @@
     "weighted support article search",
     "version-aware support discovery",
     "support browser breadcrumbs and active filters",
-    "no-results recovery guidance"
+    "no-results recovery guidance",
+    "unified Support Search and Guided Resolution",
+    "scfs_unified_support_search shortcode",
+    "legacy scfs_unified_guided_resolution shortcode alias",
+    "Support Discovery and Guided Resolution score fusion",
+    "known-issue-first resolution journey",
+    "verified Support Article routing",
+    "release-context routing",
+    "related public-improvement context",
+    "recommended starting point and transparent confidence",
+    "unified support schema, search, and journey REST endpoints",
+    "deterministic FastAPI unified-support endpoints",
+    "consent-gated private support boundary preserved"
   ],
   "boundaries": [
     "no confidential information",
@@ -381,9 +393,9 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 5.2.7 hardens the unified Support Center for production WordPress rendering with automatic /support/ integration, early asset loading, legacy Knowledge Base shortcode consolidation, duplicate-render suppression, canonical anchors, AJAX navigation race protection, dynamic browser reinitialization, redirect-loop protection, and Astra-responsive interface safeguards.",
-  "release_name": "Support Discovery, Navigation, and Search Quality",
-  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.2.9 — Support Discovery, Navigation, and Search Quality",
+  "notes": "Version 5.3.0 connects Support Discovery and Guided Resolution into one public search and an ordered evidence-based resolution journey while preserving all existing support records, routes, URLs, shortcodes, and privacy boundaries.",
+  "release_name": "Unified Search and Guided Resolution",
+  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.3.0 — Unified Search and Guided Resolution",
   "features": [
     "Weighted and version-aware Support Article search",
     "Deterministic support-language synonym expansion",
@@ -436,6 +448,8 @@
     "sc_platform_incident"
   ],
   "shortcodes": [
+    "[scfs_unified_guided_resolution]",
+    "[scfs_unified_support_search]",
     "[scfs_product_support_center]",
     "[scfs_support_center]",
     "[sustainable_catalyst_support_library_compact]",
@@ -495,7 +509,7 @@
     ],
     "debug_query": "scfs_support_debug=1"
   },
-  "installer_revision": "V5_2_9_R1_SUPPORT_DISCOVERY",
+  "installer_revision": "V5_3_0_R1_UNIFIED_SEARCH_GUIDED_RESOLUTION",
   "validation_runtime": {
     "supported_python": [
       "3.12",
@@ -508,17 +522,21 @@
     "recommended_macos_install": "brew install python@3.13"
   },
   "validation": {
-    "plugin_php_files": 24,
-    "wordpress_contract_files": 70,
-    "javascript_files": 10,
-    "json_files": 65,
-    "python_files": 26,
-    "knowledge_base_css_lines": 2133,
-    "product_support_css_lines": 1175,
-    "article_integrity_css_lines": 147,
-    "fastapi_tests_passed": 79,
+    "status": "passed",
+    "plugin_php_files": 25,
+    "php_contract_files": 76,
+    "javascript_files": 11,
+    "json_files": 68,
+    "python_files": 28,
+    "fastapi_tests": 84,
+    "css": {
+      "knowledge-base.css": 2133,
+      "product-support-platform.css": 1175,
+      "support-article-integrity.css": 147,
+      "unified-support-search.css": 504
+    },
     "source_whitespace": "passed",
-    "status": "passed"
+    "git_diff_check": "passed"
   },
   "publication_integrity": {
     "version": "1.0.0",
@@ -556,5 +574,26 @@
     "no_results_recovery": true,
     "rest_api": true,
     "personal_data_stored": false
+  },
+  "unified_support_search": {
+    "version": "1.0.0",
+    "schema": "scfs-unified-support-search/1.0",
+    "journey_schema": "scfs-support-resolution-journey/1.0",
+    "wordpress_class": "SCFS_Unified_Support_Search",
+    "shortcode": "[scfs_unified_support_search]",
+    "legacy_shortcode": "[scfs_unified_guided_resolution]",
+    "result_groups": [
+      "known_issues",
+      "support_articles",
+      "releases",
+      "public_suggestions"
+    ],
+    "known_issue_first": true,
+    "support_discovery_fusion": true,
+    "rest_api": true,
+    "fastapi_parity": true,
+    "personal_data_stored": false,
+    "automatic_case_creation": false,
+    "human_review_required": true
   }
 }

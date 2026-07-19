@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Knowledge_Base_Foundation {
-    const VERSION = '5.2.9';
+    const VERSION = '5.3.0';
     const SCHEMA_VERSION = '1.0';
     const ARTICLE_POST_TYPE = 'sc_support_article';
     const ISSUE_POST_TYPE = 'sc_known_issue';

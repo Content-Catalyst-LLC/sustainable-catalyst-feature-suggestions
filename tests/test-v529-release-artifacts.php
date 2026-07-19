@@ -3,8 +3,8 @@ $root = dirname(__DIR__);
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $release = json_decode(file_get_contents($root . '/release-manifest-v5.2.9.json'), true);
 $checks = array(
-    'feature manifest version' => ($manifest['version'] ?? '') === '5.2.9',
-    'feature manifest release name' => ($manifest['release_name'] ?? '') === 'Support Discovery, Navigation, and Search Quality',
+    'feature manifest version' => ($manifest['version'] ?? '') === '5.3.0',
+    'feature manifest release name' => ($manifest['release_name'] ?? '') === 'Unified Search and Guided Resolution',
     'release manifest version' => ($release['version'] ?? '') === '5.2.9',
     'discovery schema' => ($release['support_discovery']['schema'] ?? '') === 'scfs-support-discovery/1.0',
     'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.9.md'),

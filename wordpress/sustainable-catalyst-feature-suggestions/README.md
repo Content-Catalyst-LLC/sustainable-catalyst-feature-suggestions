@@ -1,17 +1,16 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.2.9
+## Current release: v5.3.0
 
-**Support Discovery, Navigation, and Search Quality**
+Version 5.3.0 unifies Support Discovery and Guided Resolution. A single query searches current Known Issues, verified Support Articles, release context, and moderated public improvement records, then organizes the evidence into a step-by-step resolution journey.
 
-Version 5.2.9 improves the unified Support Center with weighted, version-aware Support Article discovery. Exact title and summary phrases receive the strongest ranking, product and version context participates in relevance, and deterministic support-language synonyms connect common terms such as API/endpoint, install/setup, export/download, and mobile/responsive.
+Primary unified search shortcode:
 
-- Canonical browser: `/support/?scfs_support_view=documentation#knowledge-base`
-- WordPress REST base: `/wp-json/scfs/v1/knowledge-base/discovery/`
-- FastAPI REST base: `/v1/support-discovery/`
-- Sort modes: best match, recently updated, and title A–Z
-- Existing Support Article permalink base retained: `/support/guides/`
-- No personal search-history database is created
+```text
+[scfs_unified_support_search]
+```
+
+The existing `[scfs_guided_resolution]`, `[scfs_support_knowledge_base]`, and Support Center shortcodes remain supported.
 
 ## Version 5.1.0 — Integrated Knowledge Base and Documentation Library
 

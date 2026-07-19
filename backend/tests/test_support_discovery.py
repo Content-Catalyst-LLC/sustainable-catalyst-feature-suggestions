@@ -5,7 +5,7 @@ def sample_articles():
     return [
         DiscoveryArticle(article_id="a1", title="Export a Decision Studio briefing", summary="Create PDF and CSV reports.", content="Use the export panel.", product=["Decision Studio"], version=["2.0.1"], component=["Export"], article_type=["How-to"], updated_at="2026-07-18T00:00:00Z"),
         DiscoveryArticle(article_id="a2", title="Repair API endpoint errors", summary="Troubleshoot REST failures and authentication.", content="Inspect the endpoint and API key.", product=["Site Intelligence"], version=["3.0.0"], component=["REST API"], article_type=["Troubleshooting"], updated_at="2026-07-17T00:00:00Z"),
-        DiscoveryArticle(article_id="a3", title="Configure mobile layouts", summary="Responsive phone and tablet support.", content="Test mobile navigation.", product=["Support Platform"], version=["5.2.9"], component=["Interface"], article_type=["Configuration"], updated_at="2026-07-19T00:00:00Z"),
+        DiscoveryArticle(article_id="a3", title="Configure mobile layouts", summary="Responsive phone and tablet support.", content="Test mobile navigation.", product=["Support Platform"], version=["5.3.0"], component=["Interface"], article_type=["Configuration"], updated_at="2026-07-19T00:00:00Z"),
     ]
 
 
@@ -24,7 +24,7 @@ def test_exact_title_outweighs_content_only_match():
 
 
 def test_version_context_is_searchable():
-    match = score_article(sample_articles()[2], "5.2.9")
+    match = score_article(sample_articles()[2], "5.3.0")
     assert match.score > 0
     assert "exact product or version context" in match.reasons
 

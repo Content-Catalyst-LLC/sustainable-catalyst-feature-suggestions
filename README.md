@@ -1,8 +1,18 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.2.9
+## Current release: v5.3.0
 
-**Support Discovery, Navigation, and Search Quality**
+**Unified Search and Guided Resolution**
+
+Version 5.3.0 connects Support Discovery with Guided Resolution. The canonical Support Center now uses one query to prioritize current Known Issues, publication-grade Support Articles, release context, and related public improvements, then produces a transparent resolution journey.
+
+```text
+[scfs_unified_support_search]
+```
+
+The existing Guided Resolution and Knowledge Base shortcodes, REST routes, post types, URLs, settings, and data remain compatible. See `docs/unified-search-guided-resolution-v5.3.0.md`.
+
+## Version 5.2.9 — Support Discovery, Navigation, and Search Quality
 
 Version 5.2.9 improves the unified Support Center with weighted, version-aware Support Article discovery. Exact title and summary phrases receive the strongest ranking, product and version context participates in relevance, and deterministic support-language synonyms connect common terms such as API/endpoint, install/setup, export/download, and mobile/responsive.
 

@@ -51,7 +51,7 @@ class DiscoverySearchResultItem(BaseModel):
 class DiscoverySearchResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-support-discovery/1.0", alias="schema")
-    version: str = "5.2.9"
+    version: str = "5.3.0"
     query: str
     sort: str
     count: int

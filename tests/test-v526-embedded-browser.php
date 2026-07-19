@@ -4,8 +4,8 @@ $plugin = $root . '/wordpress/sustainable-catalyst-feature-suggestions';
 $class = file_get_contents($plugin . '/includes/class-scfs-integrated-knowledge-base.php');
 $kb = file_get_contents($plugin . '/includes/class-scfs-knowledge-base.php');
 $checks = array(
-    'knowledge base version' => strpos($kb, "const VERSION = '5.2.9';") !== false,
-    'integrated version' => strpos($class, "const VERSION = '5.2.9';") !== false,
+    'knowledge base version' => strpos($kb, "const VERSION = '5.3.0';") !== false,
+    'integrated version' => strpos($class, "const VERSION = '5.3.0';") !== false,
     'two-panel browser retained' => strpos($class, 'scfs-kb-library-layout') !== false && strpos($class, 'scfs-kb-library-navigation') !== false,
     'browser results use embeddable region' => strpos($class, '<div class="scfs-kb-library-results" role="region"') !== false,
     'browser no nested main landmark' => strpos($class, "echo '<main class=\"scfs-kb-library-results\">';") === false,

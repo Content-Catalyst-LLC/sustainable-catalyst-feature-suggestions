@@ -1,3 +1,10 @@
+## 5.3.0 — Unified Search and Guided Resolution
+
+- Unified Support Discovery and Guided Resolution in the public Support Center.
+- Added ordered resolution journeys across Known Issues, Support Articles, releases, public improvements, and private handoff.
+- Added WordPress and FastAPI unified-support contracts and endpoints.
+- Preserved all legacy routes, shortcodes, post types, URLs, settings, and data.
+
 # Changelog
 
 ## 5.2.9 — Support Discovery, Navigation, and Search Quality

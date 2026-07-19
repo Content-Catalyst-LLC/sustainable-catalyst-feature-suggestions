@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Integrated_Knowledge_Base {
-    const VERSION = '5.2.9';
+    const VERSION = '5.3.0';
     const CONTENT_VERSION = '1.0.0';
     const IMPORT_OPTION = 'scfs_integrated_kb_import_version';
     const REPORT_OPTION = 'scfs_integrated_kb_last_report';
@@ -1088,7 +1088,7 @@ final class SCFS_Integrated_Knowledge_Base {
         $base_args = array('scfs_kb_product' => $product_filter, 'scfs_kb_search' => $search, 'scfs_kb_version' => $version_filter, 'scfs_kb_section' => $selected_section, 'scfs_kb_component' => $component_filter, 'scfs_kb_type' => $type_filter, 'scfs_kb_sort' => $sort);
 
         ob_start();
-        echo '<section class="scfs-kb scfs-kb--library-browser" aria-labelledby="scfs-kb-title" data-scfs-discovery-version="5.2.9">';
+        echo '<section class="scfs-kb scfs-kb--library-browser" aria-labelledby="scfs-kb-title" data-scfs-discovery-version="5.3.0">';
         echo '<header class="scfs-kb-library-masthead"><div><p class="scfs-kb-eyebrow">' . esc_html__('Product Support and Feedback Platform', 'sustainable-catalyst-feature-suggestions') . '</p><h2 id="scfs-kb-title">' . esc_html($atts['title']) . '</h2><p>' . esc_html($atts['intro']) . '</p></div><span>' . esc_html(sprintf(__('%1$d support articles across %2$d products', 'sustainable-catalyst-feature-suggestions'), $total, count($available_products))) . '</span></header>';
         $this->render_discovery_breadcrumbs($product_filter, $selected_section, $version_filter, $action, $base_args);
         echo '<div class="scfs-kb-library-layout">';

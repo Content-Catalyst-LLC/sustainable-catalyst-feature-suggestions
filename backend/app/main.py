@@ -16,8 +16,9 @@ from .cross_product_orchestration import IncidentImpactEvidence, IncidentImpactR
 from .connected_support_operations import ConnectedOperationsEvidence, ConnectedOperationsScore, OperationsActionEvidence, OperationsActionPlan, OperationsReportEvidence, OperationsReportResult, score_connected_operations, plan_connected_action, verify_connected_operations_report
 from .support_article_integrity import SupportArticleIntegrityEvidence, SupportArticleIntegrityResult, assess_support_article_integrity
 from .support_discovery import DiscoverySearchRequest, DiscoverySearchResult, search_support_articles
+from .unified_support_search import UnifiedSupportSearchRequest, UnifiedSupportSearchResult, search_unified_support
 
-VERSION='5.1.0'
+VERSION='5.3.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Product Support and Feedback Intelligence',version=VERSION)
 
@@ -163,7 +164,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','error_signature_matching','known_issue_prioritization','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -578,7 +579,7 @@ def support_discovery_capabilities(x_scfs_ai_key:Optional[str]=Header(default=No
     auth(x_scfs_ai_key)
     return {
         'ok': True,
-        'version': '5.2.9',
+        'version': '5.3.0',
         'schema': 'scfs-support-discovery/1.0',
         'capabilities': [
             'weighted_support_article_search',
@@ -597,3 +598,39 @@ def support_discovery_capabilities(x_scfs_ai_key:Optional[str]=Header(default=No
 def support_discovery_search(payload: DiscoverySearchRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return search_support_articles(payload)
+
+@app.get('/v1/unified-support/capabilities')
+def unified_support_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': '5.3.0',
+        'schema': 'scfs-unified-support-search/1.0',
+        'journey_schema': 'scfs-support-resolution-journey/1.0',
+        'capabilities': [
+            'guided_resolution_and_discovery_fusion',
+            'known_issue_first_routing',
+            'verified_guidance_routing',
+            'release_context_routing',
+            'public_improvement_context',
+            'deterministic_resolution_journey',
+            'consent_gated_private_support_boundary',
+        ],
+        'wordpress_source_of_truth': True,
+        'personal_data_stored': False,
+        'private_case_storage': False,
+        'automatic_case_creation': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/unified-support/search', response_model=UnifiedSupportSearchResult)
+def unified_support_search(payload: UnifiedSupportSearchRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return search_unified_support(payload)
+
+
+@app.post('/v1/unified-support/journey', response_model=UnifiedSupportSearchResult)
+def unified_support_journey(payload: UnifiedSupportSearchRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return search_unified_support(payload)
