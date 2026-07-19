@@ -5,18 +5,18 @@ $class = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-sugg
 $css = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/assets/knowledge-base.css');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version' => strpos($main, 'Version: 5.2.7') !== false,
-    'runtime version' => strpos($main, "const VERSION = '5.2.7';") !== false,
+    'plugin version' => strpos($main, 'Version: 5.2.8') !== false,
+    'runtime version' => strpos($main, "const VERSION = '5.2.8';") !== false,
     'compact shortcode constant' => strpos($class, "const COMPACT_SHORTCODE = 'scfs_support_library_compact';") !== false,
     'compact shortcode registration' => strpos($class, "add_shortcode(self::COMPACT_SHORTCODE") !== false,
     'compact renderer' => strpos($class, 'public function render_compact_library') !== false,
     'automatic injector disabled' => strpos($class, 'public function automatically_render_on_support_page($content)') !== false && strpos($class, "return '<div class=\"scfs-support-page-library-entry\"'") === false,
     'dedicated full shortcode remains' => strpos(file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-knowledge-base.php'), "const SHORTCODE = 'scfs_support_knowledge_base';") !== false,
     'library parity compact css' => strpos($css, 'v5.2.7 Dynamic records, permalink integrity, refined full browser') !== false,
-    'manifest version' => ($manifest['version'] ?? '') === '5.2.7',
-    'manifest release name' => ($manifest['release_name'] ?? '') === 'Support Center Production Integration and Interface Hardening',
+    'manifest version' => ($manifest['version'] ?? '') === '5.2.8',
+    'manifest release name' => ($manifest['release_name'] ?? '') === 'Support Article Content Integrity and Publication Validation',
     'manifest compact shortcode' => in_array('[scfs_support_library_compact]', $manifest['shortcodes'] ?? array(), true),
-    'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.7.md'),
+    'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.8.md'),
 );
 $failed = array_keys(array_filter($checks, static function($pass){ return !$pass; }));
 if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }

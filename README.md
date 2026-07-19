@@ -1,14 +1,15 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.2.6
+## Current release: v5.2.8
 
-**Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation**
+**Support Article Content Integrity and Publication Validation**
 
-Version 5.2.6 makes the main `/support/` page the canonical destination for the complete support experience. Guided Resolution and the two-panel Support Article browser now appear together, while the former `/support/knowledge-base/` and `/support-documentation/` landing routes redirect to `/support/?scfs_support_view=documentation#knowledge-base`. Existing Support Article URLs, shortcodes, CPTs, REST routes, settings, taxonomies, and data remain unchanged.
+Version 5.2.8 adds publication-readiness validation to every existing Support Article. It checks article completeness, summaries, product and version metadata, verified-version assignments, heading hierarchy, required editorial sections, template placeholders, internal links, image and table accessibility, relationship context, freshness, and overdue review dates without changing article URLs or publishing content automatically.
 
-- Primary public shortcode: `[scfs_product_support_center]`
-- Standalone Knowledge Base shortcode retained: `[scfs_support_knowledge_base]`
-- Canonical Support Articles location: `/support/#knowledge-base`
+- Administration: **Support & Feedback → Article Integrity**
+- Article editor panel: **Publication Readiness**
+- REST base: `/wp-json/scfs/v1/support-article-integrity/`
+- WP-CLI: `wp scfs article-integrity scan`
 - Existing Support Article permalink base retained: `/support/guides/`
 
 ## Version 5.1.0 — Integrated Knowledge Base and Documentation Library

@@ -1,0 +1,26 @@
+{
+  "schema": "scfs-support-article-integrity/1.0",
+  "version": "5.2.8",
+  "post_id": 812,
+  "title": "Validate a Decision Studio export bundle",
+  "score": 94,
+  "state": "ready",
+  "stale": false,
+  "word_count": 842,
+  "reading_minutes": 4,
+  "counts": {
+    "error": 0,
+    "warning": 1,
+    "info": 0
+  },
+  "issues": [
+    {
+      "code": "verified_version_unassigned",
+      "severity": "warning",
+      "message": "The verified version should match an assigned Product Version term."
+    }
+  ],
+  "automatic_content_changes": false,
+  "automatic_publication": false,
+  "human_review_required": true
+}

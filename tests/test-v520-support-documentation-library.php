@@ -6,9 +6,9 @@ $js = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggest
 $main = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-    'plugin version header' => strpos($main, 'Version: 5.2.7') !== false,
-    'runtime version constant' => strpos($main, "const VERSION = '5.2.7';") !== false,
-    'knowledge base version' => strpos($class, "const VERSION = '5.2.7';") !== false,
+    'plugin version header' => strpos($main, 'Version: 5.2.8') !== false,
+    'runtime version constant' => strpos($main, "const VERSION = '5.2.8';") !== false,
+    'knowledge base version' => strpos($class, "const VERSION = '5.2.8';") !== false,
     'category grouping' => strpos($class, 'browser_category_groups') !== false,
     'category navigation' => strpos($class, 'scfs-kb-library-nav-group') !== false,
     'product navigator' => strpos($class, 'scfs-kb-library-navigation') !== false,
@@ -21,9 +21,9 @@ $checks = array(
     'native details behavior' => strpos($class, '<details class="scfs-support-library-compact__topic"') !== false,
     'refined library styling' => strpos($css, '.scfs-kb-refined__layout') !== false,
     'article list styling' => strpos($css, '.scfs-support-library-article') !== false,
-    'manifest version' => ($manifest['version'] ?? '') === '5.2.7',
-    'manifest release name' => ($manifest['release_name'] ?? '') === 'Support Center Production Integration and Interface Hardening',
-    'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.7.md'),
+    'manifest version' => ($manifest['version'] ?? '') === '5.2.8',
+    'manifest release name' => ($manifest['release_name'] ?? '') === 'Support Article Content Integrity and Publication Validation',
+    'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.8.md'),
 );
 $failed = array_keys(array_filter($checks, function ($value) { return !$value; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";

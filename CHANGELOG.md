@@ -1,5 +1,26 @@
 # Changelog
 
+## 5.2.8 — Support Article Content Integrity and Publication Validation
+
+- Adds a versioned Support Article publication-readiness engine for the existing `sc_support_article` post type.
+- Validates titles, article length, excerpts or summaries, products, versions, components, Article Types, collections, and verified-version assignments.
+- Detects invalid heading hierarchy, missing required editorial sections, unreplaced template placeholders, invalid internal links, missing image alternative text, uncaptained figures, and tables without header cells.
+- Evaluates release, Known Issue, article, and reviewed-suggestion relationship context.
+- Flags stale content and overdue editorial reviews.
+- Stores advisory 0–100 scores and Publication ready, Review recommended, Needs work, Publication blocked, or Not validated states.
+- Adds **Support & Feedback → Article Integrity**, an article-editor readiness panel, list-table status column and filter, bulk validation, CSV export, REST routes, and WP-CLI commands.
+- Adds deterministic FastAPI integrity assessment and capability endpoints.
+- Preserves all existing Support Article URLs, CPTs, shortcodes, REST namespace, settings, data, publication rendering, and Support Center integration.
+- Does not rewrite content, publish automatically, expose private editorial notes, or create private support cases.
+
+## 5.2.7 — Support Center Production Integration and Interface Hardening
+
+- Automatically integrates the unified Support Center into the published `/support/` page when a shortcode is missing.
+- Consolidates legacy Knowledge Base shortcodes into the unified Support Center.
+- Loads assets before page content, suppresses duplicate interfaces, and provides stable Support Center anchors.
+- Adds abortable support navigation, dynamic Knowledge Base reinitialization, responsive hardening, route-loop protection, and administrator diagnostics.
+- Preserves all existing Support Article URLs, data, routes, settings, and public rendering.
+
 ## 5.2.6 — Unified Support Center, Embedded Knowledge Base Browser, and Legacy Knowledge Base Route Consolidation
 
 - Makes the main `/support/` page the canonical public Support Center and embeds the complete two-panel Support Article browser directly below Guided Resolution and inside the Support overview.

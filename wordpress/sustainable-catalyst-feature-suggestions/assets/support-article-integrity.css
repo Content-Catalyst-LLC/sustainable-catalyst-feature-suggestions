@@ -1,0 +1,147 @@
+/* Sustainable Catalyst Product Support and Feedback Platform v5.2.8
+ * Support Article content integrity and publication-readiness administration.
+ */
+
+.scfs-integrity-box {
+  --scfs-integrity-ready: #176b3a;
+  --scfs-integrity-review: #8a5a00;
+  --scfs-integrity-work: #9a3d00;
+  --scfs-integrity-blocked: #a11a1a;
+  --scfs-integrity-muted: #646970;
+}
+
+.scfs-integrity-score {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 4px 0 0;
+}
+
+.scfs-integrity-score strong {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.scfs-integrity-score span,
+.scfs-integrity-state {
+  color: var(--scfs-integrity-muted);
+}
+
+.scfs-integrity-state-ready .scfs-integrity-score strong,
+.scfs-integrity-badge.is-ready {
+  color: var(--scfs-integrity-ready);
+}
+
+.scfs-integrity-state-review .scfs-integrity-score strong,
+.scfs-integrity-badge.is-review {
+  color: var(--scfs-integrity-review);
+}
+
+.scfs-integrity-state-needs_work .scfs-integrity-score strong,
+.scfs-integrity-badge.is-needs_work {
+  color: var(--scfs-integrity-work);
+}
+
+.scfs-integrity-state-blocked .scfs-integrity-score strong,
+.scfs-integrity-badge.is-blocked {
+  color: var(--scfs-integrity-blocked);
+}
+
+.scfs-integrity-issues {
+  margin: 12px 0;
+  padding-left: 18px;
+}
+
+.scfs-integrity-issues li {
+  margin: 0 0 7px;
+}
+
+.scfs-integrity-issues .is-error {
+  color: var(--scfs-integrity-blocked);
+}
+
+.scfs-integrity-issues .is-warning {
+  color: var(--scfs-integrity-work);
+}
+
+.scfs-integrity-admin {
+  max-width: 1280px;
+}
+
+.scfs-integrity-actions,
+.scfs-integrity-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.scfs-integrity-summary {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.scfs-integrity-summary > div {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+}
+
+.scfs-integrity-summary span {
+  display: block;
+  color: #646970;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.scfs-integrity-summary strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.scfs-integrity-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.scfs-integrity-badge.is-unscanned {
+  color: #646970;
+}
+
+.scfs-integrity-table th,
+.scfs-integrity-table td {
+  vertical-align: top;
+}
+
+@media (max-width: 960px) {
+  .scfs-integrity-summary {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .scfs-integrity-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scfs-integrity-actions .button {
+    width: 100%;
+    text-align: center;
+  }
+}

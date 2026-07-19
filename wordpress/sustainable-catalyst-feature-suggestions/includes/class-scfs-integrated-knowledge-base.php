@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Integrated_Knowledge_Base {
-    const VERSION = '5.2.7';
+    const VERSION = '5.2.8';
     const CONTENT_VERSION = '1.0.0';
     const IMPORT_OPTION = 'scfs_integrated_kb_import_version';
     const REPORT_OPTION = 'scfs_integrated_kb_last_report';
@@ -185,7 +185,7 @@ final class SCFS_Integrated_Knowledge_Base {
     }
 
     /**
-     * Legacy filter entry point retained for backward compatibility. v5.2.7 no
+     * Legacy filter entry point retained for backward compatibility. v5.2.8 no
      * longer injects a second browser into the former Knowledge Base page.
      */
     public function repair_dedicated_page_shortcode($content) {

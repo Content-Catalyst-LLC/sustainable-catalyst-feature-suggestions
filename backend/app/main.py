@@ -14,6 +14,7 @@ from .repository_release_sync import RepositoryCandidateEvidence, RepositorySync
 from .support_reliability import ProductReliabilityEvidence, ProductReliabilityScore, ReliabilityTrendEvidence, ReliabilityTrendSummary, UnresolvedClusterEvidence, UnresolvedClusterPriority, ReliabilityReportIntegrityEvidence, ReliabilityReportIntegrityResult, score_product_reliability, summarize_reliability_trend, prioritize_unresolved_cluster, verify_reliability_report
 from .cross_product_orchestration import IncidentImpactEvidence, IncidentImpactResult, ProductRouteEvidence, ProductRouteResult, ResolutionJourneyEvidence, ResolutionJourneyResult, OrchestrationReportEvidence, OrchestrationReportResult, evaluate_incident_impact, recommend_product_routes, build_resolution_journey, verify_orchestration_report
 from .connected_support_operations import ConnectedOperationsEvidence, ConnectedOperationsScore, OperationsActionEvidence, OperationsActionPlan, OperationsReportEvidence, OperationsReportResult, score_connected_operations, plan_connected_action, verify_connected_operations_report
+from .support_article_integrity import SupportArticleIntegrityEvidence, SupportArticleIntegrityResult, assess_support_article_integrity
 
 VERSION='5.1.0'
 ANALYSIS_VERSION='5.1.0-1'
@@ -536,3 +537,36 @@ def connected_operations_action_plan(payload: OperationsActionEvidence, x_scfs_a
 def connected_operations_report_verify(payload: OperationsReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_connected_operations_report(payload)
+
+
+@app.get('/v1/support-article-integrity/capabilities')
+def support_article_integrity_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': '5.2.8',
+        'schema': 'scfs-support-article-integrity/1.0',
+        'capabilities': [
+            'content_completeness',
+            'metadata_validation',
+            'version_verification',
+            'heading_hierarchy',
+            'required_editorial_sections',
+            'template_placeholder_detection',
+            'link_integrity',
+            'image_and_table_accessibility',
+            'relationship_context',
+            'freshness_and_review_due_dates',
+            'publication_readiness_scoring',
+        ],
+        'wordpress_source_of_truth': True,
+        'automatic_content_changes': False,
+        'automatic_publication': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/support-article-integrity/assess', response_model=SupportArticleIntegrityResult)
+def support_article_integrity_assess(payload: SupportArticleIntegrityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return assess_support_article_integrity(payload)

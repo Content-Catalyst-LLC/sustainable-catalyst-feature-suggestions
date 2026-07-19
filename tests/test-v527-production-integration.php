@@ -5,9 +5,9 @@ $main = file_get_contents($plugin . '/sustainable-catalyst-feature-suggestions.p
 $support = file_get_contents($plugin . '/includes/class-scfs-product-support-platform.php');
 $manifest = json_decode(file_get_contents($root . '/release-manifest-v5.2.7.json'), true);
 $checks = array(
-    'plugin version header' => strpos($main, 'Version: 5.2.7') !== false,
-    'runtime version' => strpos($main, "const VERSION = '5.2.7';") !== false,
-    'support platform version' => strpos($support, "const VERSION = '5.2.7';") !== false,
+    'plugin version header' => strpos($main, 'Version: 5.2.8') !== false,
+    'runtime version' => strpos($main, "const VERSION = '5.2.8';") !== false,
+    'support platform version' => strpos($support, "const VERSION = '5.2.8';") !== false,
     'canonical support slug' => strpos($support, "const SUPPORT_PAGE_SLUG = 'support';") !== false,
     'integration version' => strpos($support, "const INTEGRATION_VERSION = '1.0.0';") !== false,
     'content integration hook' => strpos($support, "add_filter('the_content', array(\$this, 'integrate_support_page_content'), 8)") !== false,
