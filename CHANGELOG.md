@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.2.9 — Support Discovery, Navigation, and Search Quality
+
+- Added weighted, version-aware Support Article search and deterministic synonym expansion.
+- Added browser breadcrumbs, removable active filters, explicit relevance/recent/title sorting, and no-results recovery.
+- Added public discovery REST endpoints and deterministic FastAPI search parity.
+- Preserved all existing shortcodes, routes, CPTs, settings, data, and Support Article URLs.
+
+
 ## 5.2.8 — Support Article Content Integrity and Publication Validation
 
 - Adds a versioned Support Article publication-readiness engine for the existing `sc_support_article` post type.

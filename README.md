@@ -1,16 +1,17 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.2.8
+## Current release: v5.2.9
 
-**Support Article Content Integrity and Publication Validation**
+**Support Discovery, Navigation, and Search Quality**
 
-Version 5.2.8 adds publication-readiness validation to every existing Support Article. It checks article completeness, summaries, product and version metadata, verified-version assignments, heading hierarchy, required editorial sections, template placeholders, internal links, image and table accessibility, relationship context, freshness, and overdue review dates without changing article URLs or publishing content automatically.
+Version 5.2.9 improves the unified Support Center with weighted, version-aware Support Article discovery. Exact title and summary phrases receive the strongest ranking, product and version context participates in relevance, and deterministic support-language synonyms connect common terms such as API/endpoint, install/setup, export/download, and mobile/responsive.
 
-- Administration: **Support & Feedback → Article Integrity**
-- Article editor panel: **Publication Readiness**
-- REST base: `/wp-json/scfs/v1/support-article-integrity/`
-- WP-CLI: `wp scfs article-integrity scan`
+- Canonical browser: `/support/?scfs_support_view=documentation#knowledge-base`
+- WordPress REST base: `/wp-json/scfs/v1/knowledge-base/discovery/`
+- FastAPI REST base: `/v1/support-discovery/`
+- Sort modes: best match, recently updated, and title A–Z
 - Existing Support Article permalink base retained: `/support/guides/`
+- No personal search-history database is created
 
 ## Version 5.1.0 — Integrated Knowledge Base and Documentation Library
 

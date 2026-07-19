@@ -15,6 +15,7 @@ from .support_reliability import ProductReliabilityEvidence, ProductReliabilityS
 from .cross_product_orchestration import IncidentImpactEvidence, IncidentImpactResult, ProductRouteEvidence, ProductRouteResult, ResolutionJourneyEvidence, ResolutionJourneyResult, OrchestrationReportEvidence, OrchestrationReportResult, evaluate_incident_impact, recommend_product_routes, build_resolution_journey, verify_orchestration_report
 from .connected_support_operations import ConnectedOperationsEvidence, ConnectedOperationsScore, OperationsActionEvidence, OperationsActionPlan, OperationsReportEvidence, OperationsReportResult, score_connected_operations, plan_connected_action, verify_connected_operations_report
 from .support_article_integrity import SupportArticleIntegrityEvidence, SupportArticleIntegrityResult, assess_support_article_integrity
+from .support_discovery import DiscoverySearchRequest, DiscoverySearchResult, search_support_articles
 
 VERSION='5.1.0'
 ANALYSIS_VERSION='5.1.0-1'
@@ -570,3 +571,29 @@ def support_article_integrity_capabilities(x_scfs_ai_key:Optional[str]=Header(de
 def support_article_integrity_assess(payload: SupportArticleIntegrityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return assess_support_article_integrity(payload)
+
+
+@app.get('/v1/support-discovery/capabilities')
+def support_discovery_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': '5.2.9',
+        'schema': 'scfs-support-discovery/1.0',
+        'capabilities': [
+            'weighted_support_article_search',
+            'synonym_expansion',
+            'version_aware_matching',
+            'deterministic_sorting',
+            'no_results_recovery_support',
+        ],
+        'personal_data_stored': False,
+        'automatic_content_changes': False,
+        'human_review_required': False,
+    }
+
+
+@app.post('/v1/support-discovery/search', response_model=DiscoverySearchResult)
+def support_discovery_search(payload: DiscoverySearchRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return search_support_articles(payload)

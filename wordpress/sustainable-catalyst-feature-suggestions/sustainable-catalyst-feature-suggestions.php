@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Product Support and Feedback Platform
  * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 5.2.8
+ * Version: 5.2.9
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '5.2.8';
+    const VERSION = '5.2.9';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -2179,6 +2179,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-platform-governanc
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-content-operations.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-editorial-governance.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-article-integrity.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-discovery.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-repository-release-sync.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-reliability-center.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-cross-product-orchestration.php';
@@ -2198,6 +2199,7 @@ SCFS_Platform_Governance::instance();
 SCFS_Support_Content_Operations::instance();
 SCFS_Editorial_Governance::instance();
 SCFS_Support_Article_Integrity::instance();
+SCFS_Support_Discovery::instance();
 SCFS_Repository_Release_Synchronization::instance();
 SCFS_Support_Reliability_Center::instance();
 SCFS_Cross_Product_Support_Orchestration::instance();

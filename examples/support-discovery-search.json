@@ -1,0 +1,25 @@
+{
+  "schema": "scfs-support-discovery/1.0",
+  "version": "5.2.9",
+  "query": "api error",
+  "sort": "relevance",
+  "count": 1,
+  "results": [
+    {
+      "article_id": "site-intelligence-api-errors",
+      "title": "Repair API endpoint errors",
+      "score": 405,
+      "reasons": [
+        "exact title phrase",
+        "all query terms"
+      ],
+      "matched_tokens": [
+        "api",
+        "error",
+        "endpoint",
+        "failure"
+      ]
+    }
+  ],
+  "personal_data_stored": false
+}

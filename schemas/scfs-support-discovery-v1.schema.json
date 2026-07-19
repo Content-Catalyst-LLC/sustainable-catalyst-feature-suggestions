@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-support-discovery-v1.schema.json",
+  "title": "Sustainable Catalyst Support Discovery Result",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "query",
+    "sort",
+    "count",
+    "results"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-support-discovery/1.0"
+    },
+    "version": {
+      "const": "5.2.9"
+    },
+    "query": {
+      "type": "string"
+    },
+    "sort": {
+      "enum": [
+        "relevance",
+        "recent",
+        "title"
+      ]
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "article_id",
+          "title",
+          "score"
+        ],
+        "properties": {
+          "article_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "matched_tokens": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "personal_data_stored": {
+      "const": false
+    }
+  }
+}

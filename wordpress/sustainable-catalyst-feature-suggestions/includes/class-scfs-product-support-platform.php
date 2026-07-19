@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Support_Platform {
-    const VERSION = '5.2.8';
+    const VERSION = '5.2.9';
     const SCHEMA_VERSION = '1.0';
     const RELEASE_POST_TYPE = 'sc_release_record';
     const SHORTCODE = 'scfs_product_support_center';
@@ -482,7 +482,7 @@ final class SCFS_Product_Support_Platform {
         if (function_exists('current_user_can') && current_user_can('manage_options') && isset($_GET['scfs_support_debug'])) {
             return '<aside class="scfs-support-platform__diagnostic scfs-support-platform__diagnostic--duplicate" role="status"><strong>' . esc_html__('Duplicate Support Center suppressed.', 'sustainable-catalyst-feature-suggestions') . '</strong><span>' . esc_html($signature) . '</span></aside>';
         }
-        return '<!-- Sustainable Catalyst v5.2.8: duplicate Support Center render suppressed. -->';
+        return '<!-- Sustainable Catalyst v5.2.9: duplicate Support Center render suppressed. -->';
     }
 
     public function admin_assets($hook) {
@@ -1186,7 +1186,7 @@ final class SCFS_Product_Support_Platform {
         $this->render_view($context, $overview, $settings, $display);
         echo '</div>';
         if (function_exists('current_user_can') && current_user_can('manage_options') && isset($_GET['scfs_support_debug'])) {
-            echo '<aside class="scfs-support-platform__diagnostic" aria-label="' . esc_attr__('Support Center integration diagnostics', 'sustainable-catalyst-feature-suggestions') . '"><strong>' . esc_html__('v5.2.8 production integration active', 'sustainable-catalyst-feature-suggestions') . '</strong><span>' . esc_html(sprintf(__('Source: %1$s · View: %2$s · Product: %3$s', 'sustainable-catalyst-feature-suggestions'), sanitize_key((string) $atts['integration_source']), $context['view'], $context['product'] !== '' ? $context['product'] : 'all')) . '</span></aside>';
+            echo '<aside class="scfs-support-platform__diagnostic" aria-label="' . esc_attr__('Support Center integration diagnostics', 'sustainable-catalyst-feature-suggestions') . '"><strong>' . esc_html__('v5.2.9 production integration active', 'sustainable-catalyst-feature-suggestions') . '</strong><span>' . esc_html(sprintf(__('Source: %1$s · View: %2$s · Product: %3$s', 'sustainable-catalyst-feature-suggestions'), sanitize_key((string) $atts['integration_source']), $context['view'], $context['product'] !== '' ? $context['product'] : 'all')) . '</span></aside>';
         }
         echo '</section>';
         $html = ob_get_clean();

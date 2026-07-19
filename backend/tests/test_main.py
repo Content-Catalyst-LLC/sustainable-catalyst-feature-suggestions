@@ -1,6 +1,9 @@
 from fastapi.testclient import TestClient
 from app.main import app
 c=TestClient(app)
+
+def teardown_module():
+    c.close()
 def sample(): return {'submission_id':'abc','title':'Add a Workbench calculator','category':'New platform module','priority':'High','problem':'Readers cannot model infrastructure risk.','suggestion':'Add an infrastructure interdependency calculator.','success_criteria':'It produces validated scenarios.','beneficiaries':'Researchers and planners.'}
 def test_health(): assert c.get('/health').json()['ok'] is True
 def test_analyze():
@@ -68,3 +71,22 @@ def test_guided_resolution_ranking_prioritizes_current_issue():
     data = response.json()
     assert data['results'][0]['id'] == 'issue-1'
     assert data['resolution_state'] in {'strong_match','possible_match'}
+
+def test_support_discovery_capabilities():
+    response = c.get('/v1/support-discovery/capabilities')
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload['schema'] == 'scfs-support-discovery/1.0'
+    assert payload['personal_data_stored'] is False
+
+
+def test_support_discovery_search_endpoint():
+    response = c.post('/v1/support-discovery/search', json={
+        'query': 'api error',
+        'articles': [
+            {'article_id': '1', 'title': 'Repair API errors', 'summary': 'REST endpoint troubleshooting', 'product': ['Site Intelligence']},
+            {'article_id': '2', 'title': 'Export reports', 'summary': 'Create a PDF'}
+        ]
+    })
+    assert response.status_code == 200
+    assert response.json()['results'][0]['article_id'] == '1'

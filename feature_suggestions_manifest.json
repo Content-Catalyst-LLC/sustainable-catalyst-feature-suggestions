@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/support/",
-  "version": "5.2.8",
+  "version": "5.2.9",
   "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -367,7 +367,11 @@
     "Support Article integrity CSV export",
     "Support Article integrity REST API",
     "Support Article integrity WP-CLI commands",
-    "deterministic FastAPI Support Article integrity assessment"
+    "deterministic FastAPI Support Article integrity assessment",
+    "weighted support article search",
+    "version-aware support discovery",
+    "support browser breadcrumbs and active filters",
+    "no-results recovery guidance"
   ],
   "boundaries": [
     "no confidential information",
@@ -378,9 +382,15 @@
   ],
   "wordpress_post_type": "sc_feature_suggest",
   "notes": "Version 5.2.7 hardens the unified Support Center for production WordPress rendering with automatic /support/ integration, early asset loading, legacy Knowledge Base shortcode consolidation, duplicate-render suppression, canonical anchors, AJAX navigation race protection, dynamic browser reinitialization, redirect-loop protection, and Astra-responsive interface safeguards.",
-  "release_name": "Support Article Content Integrity and Publication Validation",
-  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.2.8 — Support Article Content Integrity and Publication Validation",
+  "release_name": "Support Discovery, Navigation, and Search Quality",
+  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.2.9 — Support Discovery, Navigation, and Search Quality",
   "features": [
+    "Weighted and version-aware Support Article search",
+    "Deterministic support-language synonym expansion",
+    "Deep-linkable product, version, category, component, type, search, and sort state",
+    "Publication-library breadcrumbs and removable active filters",
+    "No-results recovery with related queries and recent guidance",
+    "Accessible keyboard search and progressive enhancement",
     "Support Article content completeness and metadata validation",
     "Publication-readiness scores and advisory states",
     "Version, heading, accessibility, relationship, and freshness checks",
@@ -485,7 +495,7 @@
     ],
     "debug_query": "scfs_support_debug=1"
   },
-  "installer_revision": "V5_2_8_R1_ARTICLE_INTEGRITY",
+  "installer_revision": "V5_2_9_R1_SUPPORT_DISCOVERY",
   "validation_runtime": {
     "supported_python": [
       "3.12",
@@ -498,15 +508,15 @@
     "recommended_macos_install": "brew install python@3.13"
   },
   "validation": {
-    "plugin_php_files": 23,
-    "wordpress_contract_files": 65,
+    "plugin_php_files": 24,
+    "wordpress_contract_files": 70,
     "javascript_files": 10,
-    "json_files": 62,
-    "python_files": 24,
-    "knowledge_base_css_lines": 2108,
+    "json_files": 65,
+    "python_files": 26,
+    "knowledge_base_css_lines": 2133,
     "product_support_css_lines": 1175,
     "article_integrity_css_lines": 147,
-    "fastapi_tests_passed": 72,
+    "fastapi_tests_passed": 79,
     "source_whitespace": "passed",
     "status": "passed"
   },
@@ -530,5 +540,21 @@
     "automatic_content_changes": false,
     "automatic_publication": false,
     "human_review_required": true
+  },
+  "support_discovery": {
+    "version": "1.0.0",
+    "schema": "scfs-support-discovery/1.0",
+    "sorts": [
+      "relevance",
+      "recent",
+      "title"
+    ],
+    "synonym_expansion": true,
+    "version_aware": true,
+    "breadcrumbs": true,
+    "removable_filters": true,
+    "no_results_recovery": true,
+    "rest_api": true,
+    "personal_data_stored": false
   }
 }

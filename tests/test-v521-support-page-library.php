@@ -5,16 +5,16 @@ $css = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-sugges
 $main = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $checks = array(
-  'plugin version' => strpos($main, 'Version: 5.2.8') !== false,
-  'runtime version' => strpos($main, "const VERSION = '5.2.8';") !== false,
+  'plugin version' => strpos($main, 'Version: 5.2.9') !== false,
+  'runtime version' => strpos($main, "const VERSION = '5.2.9';") !== false,
   'legacy automatic renderer retained as no-op' => strpos($class, 'public function automatically_render_on_support_page($content)') !== false,
   'automatic content filter removed' => strpos($class, "add_filter('the_content', array(\$this, 'automatically_render_on_support_page')") === false,
   'compact shortcode renderer' => strpos($class, 'render_compact_library') !== false,
   'dedicated knowledge base route' => strpos($class, 'dedicated_knowledge_base_url') !== false,
   'compact library CSS' => strpos($css, 'v5.2.7 Dynamic records, permalink integrity, refined full browser') !== false,
-  'manifest version' => ($manifest['version'] ?? '') === '5.2.8',
-  'manifest release name' => ($manifest['release_name'] ?? '') === 'Support Article Content Integrity and Publication Validation',
-  'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.8.md'),
+  'manifest version' => ($manifest['version'] ?? '') === '5.2.9',
+  'manifest release name' => ($manifest['release_name'] ?? '') === 'Support Discovery, Navigation, and Search Quality',
+  'release notes' => file_exists($root . '/RELEASE_NOTES_5.2.9.md'),
 );
 foreach ($checks as $label => $pass) {
   if (!$pass) { fwrite(STDERR, "FAIL - $label\n"); exit(1); }
