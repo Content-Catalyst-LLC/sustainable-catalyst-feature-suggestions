@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Product_Support_Platform {
-    const VERSION = '5.3.0';
+    const VERSION = '5.4.0';
     const SCHEMA_VERSION = '1.0';
     const RELEASE_POST_TYPE = 'sc_release_record';
     const SHORTCODE = 'scfs_product_support_center';
@@ -486,7 +486,7 @@ final class SCFS_Product_Support_Platform {
         if (function_exists('current_user_can') && current_user_can('manage_options') && isset($_GET['scfs_support_debug'])) {
             return '<aside class="scfs-support-platform__diagnostic scfs-support-platform__diagnostic--duplicate" role="status"><strong>' . esc_html__('Duplicate Support Center suppressed.', 'sustainable-catalyst-feature-suggestions') . '</strong><span>' . esc_html($signature) . '</span></aside>';
         }
-        return '<!-- Sustainable Catalyst v5.3.0: duplicate Support Center render suppressed. -->';
+        return '<!-- Sustainable Catalyst v5.4.0: duplicate Support Center render suppressed. -->';
     }
 
     public function admin_assets($hook) {
@@ -1192,7 +1192,7 @@ final class SCFS_Product_Support_Platform {
         $this->render_view($context, $overview, $settings, $display);
         echo '</div>';
         if (function_exists('current_user_can') && current_user_can('manage_options') && isset($_GET['scfs_support_debug'])) {
-            echo '<aside class="scfs-support-platform__diagnostic" aria-label="' . esc_attr__('Support Center integration diagnostics', 'sustainable-catalyst-feature-suggestions') . '"><strong>' . esc_html__('v5.3.0 production integration active', 'sustainable-catalyst-feature-suggestions') . '</strong><span>' . esc_html(sprintf(__('Source: %1$s · View: %2$s · Product: %3$s', 'sustainable-catalyst-feature-suggestions'), sanitize_key((string) $atts['integration_source']), $context['view'], $context['product'] !== '' ? $context['product'] : 'all')) . '</span></aside>';
+            echo '<aside class="scfs-support-platform__diagnostic" aria-label="' . esc_attr__('Support Center integration diagnostics', 'sustainable-catalyst-feature-suggestions') . '"><strong>' . esc_html__('v5.4.0 production integration active', 'sustainable-catalyst-feature-suggestions') . '</strong><span>' . esc_html(sprintf(__('Source: %1$s · View: %2$s · Product: %3$s', 'sustainable-catalyst-feature-suggestions'), sanitize_key((string) $atts['integration_source']), $context['view'], $context['product'] !== '' ? $context['product'] : 'all')) . '</span></aside>';
         }
         echo '</section>';
         $html = ob_get_clean();
@@ -1321,6 +1321,9 @@ final class SCFS_Product_Support_Platform {
     }
 
     private function render_known_issues($product) {
+        if (class_exists('SCFS_Known_Issue_Release_Intelligence')) {
+            wp_enqueue_style('scfs-issue-release-intelligence');
+        }
         $args = array(
             'post_type' => SCFS_Knowledge_Base_Foundation::ISSUE_POST_TYPE,
             'post_status' => 'publish',
@@ -1341,6 +1344,9 @@ final class SCFS_Product_Support_Platform {
             $severity = get_post_meta($issue->ID, '_scfs_issue_severity', true) ?: 'moderate';
             $symptom = get_post_meta($issue->ID, '_scfs_issue_symptom', true);
             $workaround = get_post_meta($issue->ID, '_scfs_issue_workaround', true);
+            $operational = class_exists('SCFS_Known_Issue_Release_Intelligence')
+                ? SCFS_Known_Issue_Release_Intelligence::instance()->issue_record($issue->ID, true)
+                : array();
             echo '<article><div class="scfs-support-platform__badges"><span class="status-' . esc_attr($status) . '">' . esc_html(ucwords(str_replace('_', ' ', $status))) . '</span><span class="severity-' . esc_attr($severity) . '">' . esc_html(ucwords(str_replace('_', ' ', $severity))) . '</span></div><h4><a href="' . esc_url(get_permalink($issue)) . '">' . esc_html(get_the_title($issue)) . '</a></h4>';
             if ($symptom) {
                 echo '<p>' . esc_html(wp_trim_words($symptom, 35)) . '</p>';
@@ -1348,12 +1354,25 @@ final class SCFS_Product_Support_Platform {
             if ($workaround) {
                 echo '<p class="scfs-support-platform__workaround"><strong>' . esc_html__('Workaround:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html(wp_trim_words($workaround, 28)) . '</p>';
             }
+            if ($operational) {
+                $affected = wp_list_pluck($operational['affected_versions'], 'name');
+                $fixed = wp_list_pluck($operational['fixed_releases'], 'title');
+                $targets = wp_list_pluck($operational['target_releases'], 'title');
+                $details = array();
+                if ($affected) $details[] = sprintf(__('Affected: %s', 'sustainable-catalyst-feature-suggestions'), implode(', ', $affected));
+                if ($fixed) $details[] = sprintf(__('Fixed in: %s', 'sustainable-catalyst-feature-suggestions'), implode(', ', $fixed));
+                elseif ($targets) $details[] = sprintf(__('Target: %s', 'sustainable-catalyst-feature-suggestions'), implode(', ', $targets));
+                if ($details) echo '<p class="scfs-support-platform__products">' . esc_html(implode(' · ', $details)) . '</p>';
+            }
             echo '<a href="' . esc_url(get_permalink($issue)) . '">' . esc_html__('View issue details', 'sustainable-catalyst-feature-suggestions') . ' →</a></article>';
         }
         echo '</div></section>';
     }
 
     private function render_releases($product, $limit = 12, $embedded = false) {
+        if (class_exists('SCFS_Known_Issue_Release_Intelligence')) {
+            wp_enqueue_style('scfs-issue-release-intelligence');
+        }
         $query = $this->release_query($product, $limit);
         if (!$embedded) {
             echo '<section id="release-intelligence" class="scfs-support-platform__releases"><header><p class="scfs-support-platform__kicker">' . esc_html__('Product change intelligence', 'sustainable-catalyst-feature-suggestions') . '</p><h3>' . esc_html__('Releases', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html__('Review current, planned, maintenance, superseded, and retired releases with support implications and linked public records.', 'sustainable-catalyst-feature-suggestions') . '</p></header>';
@@ -1364,6 +1383,9 @@ final class SCFS_Product_Support_Platform {
         }
         foreach ($query->posts as $post) {
             $record = $this->release_record($post, false);
+            $operational = class_exists('SCFS_Known_Issue_Release_Intelligence')
+                ? SCFS_Known_Issue_Release_Intelligence::instance()->release_record($post->ID, true)
+                : array();
             echo '<article class="scfs-support-platform__release-card"><div class="scfs-support-platform__release-meta"><span class="status-' . esc_attr($record['status']) . '">' . esc_html($this->release_statuses()[$record['status']] ?? $record['status']) . '</span>';
             if ($record['release_date']) {
                 echo '<time datetime="' . esc_attr($record['release_date']) . '">' . esc_html($record['release_date']) . '</time>';
@@ -1371,6 +1393,9 @@ final class SCFS_Product_Support_Platform {
             echo '</div><h4><a href="' . esc_url($record['url']) . '">' . esc_html($record['title']) . '</a></h4><p>' . esc_html($record['summary']) . '</p>';
             if ($record['products']) {
                 echo '<p class="scfs-support-platform__products">' . esc_html(implode(' · ', wp_list_pluck($record['products'], 'name'))) . '</p>';
+            }
+            if ($operational) {
+                echo '<p class="scfs-support-platform__products">' . esc_html(sprintf(__('Open issues: %1$d · Resolved: %2$d · Verification: %3$s', 'sustainable-catalyst-feature-suggestions'), count($operational['open_issues']), count($operational['resolved_issues']), $operational['verification_state'] ? ucwords(str_replace('_', ' ', $operational['verification_state'])) : __('Not reviewed', 'sustainable-catalyst-feature-suggestions'))) . '</p>';
             }
             echo '<div class="scfs-support-platform__release-links"><a href="' . esc_url($record['url']) . '">' . esc_html__('Release details', 'sustainable-catalyst-feature-suggestions') . '</a>';
             if ($record['documentation_url']) {

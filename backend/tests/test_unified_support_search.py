@@ -105,5 +105,5 @@ def test_schema_and_human_review_contract():
     payload = result.model_dump(by_alias=True)
     assert payload["schema"] == "scfs-unified-support-search/1.0"
     assert payload["journey_schema"] == "scfs-support-resolution-journey/1.0"
-    assert payload["version"] == "5.3.0"
+    assert payload["version"] == "5.4.0"
     assert payload["human_review_required"] is True

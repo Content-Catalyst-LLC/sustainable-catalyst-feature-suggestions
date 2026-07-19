@@ -20,4 +20,4 @@ $checks = array(
 $failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
-echo 'v5.3.0 API, privacy, and compatibility contract passed (' . count($checks) . " checks).\n";
+echo 'v5.4.0 API, privacy, and compatibility contract passed (' . count($checks) . " checks).\n";

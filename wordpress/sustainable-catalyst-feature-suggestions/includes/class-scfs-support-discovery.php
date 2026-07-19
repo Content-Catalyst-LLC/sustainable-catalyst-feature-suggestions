@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Support_Discovery {
-    const VERSION = '5.3.0';
+    const VERSION = '5.4.0';
     const SCHEMA = 'scfs-support-discovery/1.0';
 
     private static $instance = null;

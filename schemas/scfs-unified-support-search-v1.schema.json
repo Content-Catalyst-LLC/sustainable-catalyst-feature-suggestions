@@ -7,7 +7,7 @@
   "properties": {
     "schema": {"const": "scfs-unified-support-search/1.0"},
     "journey_schema": {"const": "scfs-support-resolution-journey/1.0"},
-    "version": {"const": "5.3.0"},
+    "version": {"const": "5.4.0"},
     "query": {"type": "string"},
     "result_count": {"type": "integer", "minimum": 0},
     "confidence": {"type": "number", "minimum": 0, "maximum": 1},

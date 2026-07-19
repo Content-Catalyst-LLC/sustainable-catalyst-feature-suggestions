@@ -1,0 +1,18 @@
+<?php
+$root = dirname(__DIR__);
+$main = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php');
+$class = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-known-issue-release-intelligence.php');
+$checks = array(
+    'plugin header version' => strpos($main, 'Version: 5.4.0') !== false,
+    'runtime version' => strpos($main, "const VERSION = '5.4.0';") !== false,
+    'intelligence class required' => strpos($main, 'class-scfs-known-issue-release-intelligence.php') !== false,
+    'intelligence class initialized' => strpos($main, 'SCFS_Known_Issue_Release_Intelligence::instance();') !== false,
+    'activation hook retained' => strpos($main, 'SCFS_Known_Issue_Release_Intelligence::activate();') !== false,
+    'class declaration' => strpos($class, 'final class SCFS_Known_Issue_Release_Intelligence') !== false,
+    'class version' => strpos($class, "const VERSION = '5.4.0';") !== false,
+    'schema contract' => strpos($class, "const SCHEMA = 'scfs-known-issue-release-intelligence/1.0';") !== false,
+);
+$failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
+foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
+if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
+echo 'v5.4.0 issue and release intelligence bootstrap contract passed (' . count($checks) . " checks).\n";

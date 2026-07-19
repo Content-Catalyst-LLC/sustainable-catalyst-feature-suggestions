@@ -85,7 +85,7 @@ class UnifiedSupportSearchResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     schema_id: str = Field(default="scfs-unified-support-search/1.0", alias="schema")
     journey_schema: str = "scfs-support-resolution-journey/1.0"
-    version: str = "5.3.0"
+    version: str = "5.4.0"
     query: str
     result_count: int
     top_score: float

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Product Support and Feedback Platform
  * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 5.3.0
+ * Version: 5.4.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '5.3.0';
+    const VERSION = '5.4.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -98,6 +98,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
         if (class_exists('SCFS_Repository_Release_Synchronization')) {
             SCFS_Repository_Release_Synchronization::activate();
+        }
+        if (class_exists('SCFS_Known_Issue_Release_Intelligence')) {
+            SCFS_Known_Issue_Release_Intelligence::activate();
         }
         if (class_exists('SCFS_Support_Reliability_Center')) {
             SCFS_Support_Reliability_Center::activate();
@@ -2181,6 +2184,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-editorial-governan
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-article-integrity.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-discovery.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-unified-support-search.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-known-issue-release-intelligence.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-repository-release-sync.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-reliability-center.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-cross-product-orchestration.php';
@@ -2202,6 +2206,7 @@ SCFS_Editorial_Governance::instance();
 SCFS_Support_Article_Integrity::instance();
 SCFS_Support_Discovery::instance();
 SCFS_Unified_Support_Search::instance();
+SCFS_Known_Issue_Release_Intelligence::instance();
 SCFS_Repository_Release_Synchronization::instance();
 SCFS_Support_Reliability_Center::instance();
 SCFS_Cross_Product_Support_Orchestration::instance();

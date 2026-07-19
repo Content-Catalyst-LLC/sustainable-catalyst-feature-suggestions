@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/support/",
-  "version": "5.3.0",
+  "version": "5.4.0",
   "updated": "2026-07-18",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -383,7 +383,26 @@
     "recommended starting point and transparent confidence",
     "unified support schema, search, and journey REST endpoints",
     "deterministic FastAPI unified-support endpoints",
-    "consent-gated private support boundary preserved"
+    "consent-gated private support boundary preserved",
+    "known issue and release intelligence integration",
+    "affected-version coverage for Known Issues",
+    "Known Issue target-release relationships",
+    "Known Issue fixed-release relationships",
+    "Known Issue related Support Article relationships",
+    "bidirectional issue and release synchronization",
+    "derived open and resolved issue groupings",
+    "release verification state and last-verified date",
+    "release changelog coverage validation",
+    "issue and release relationship-health checks",
+    "Issue and Release Links administration screen",
+    "bulk issue and release relationship synchronization",
+    "advisory relationship review queue",
+    "scfs_issue_release_intelligence shortcode",
+    "publication-style issue and release operational metadata",
+    "Support Center operational issue and release context",
+    "Unified Support Search operational relationship enrichment",
+    "known issue and release intelligence REST API",
+    "deterministic FastAPI issue and release relationship evaluation"
   ],
   "boundaries": [
     "no confidential information",
@@ -393,9 +412,9 @@
     "no guarantee of implementation, attribution, compensation, or response"
   ],
   "wordpress_post_type": "sc_feature_suggest",
-  "notes": "Version 5.3.0 connects Support Discovery and Guided Resolution into one public search and an ordered evidence-based resolution journey while preserving all existing support records, routes, URLs, shortcodes, and privacy boundaries.",
-  "release_name": "Unified Search and Guided Resolution",
-  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.3.0 — Unified Search and Guided Resolution",
+  "notes": "Version 5.4.0 connects Known Issues, affected versions, components, workarounds, Support Articles, target releases, fixed releases, Release Records, and changelog evidence while preserving all existing public URLs, routes, shortcodes, records, and human-governance boundaries.",
+  "release_name": "Known Issues and Release Intelligence Integration",
+  "release": "Sustainable Catalyst Product Support and Feedback Platform v5.4.0 — Known Issues and Release Intelligence Integration",
   "features": [
     "Weighted and version-aware Support Article search",
     "Deterministic support-language synonym expansion",
@@ -509,34 +528,21 @@
     ],
     "debug_query": "scfs_support_debug=1"
   },
-  "installer_revision": "V5_3_0_R1_UNIFIED_SEARCH_GUIDED_RESOLUTION",
+  "installer_revision": "V5_4_0_R1_KNOWN_ISSUE_RELEASE_INTELLIGENCE",
   "validation_runtime": {
-    "supported_python": [
-      "3.12",
-      "3.13"
-    ],
-    "rejected_python": [
-      "3.14"
-    ],
-    "pydantic_core_install": "binary-wheel-required",
-    "recommended_macos_install": "brew install python@3.13"
+    "python_min": "3.12",
+    "python_max_exclusive": "3.14",
+    "binary_pydantic_core_required": true
   },
   "validation": {
     "status": "passed",
-    "plugin_php_files": 25,
-    "php_contract_files": 76,
+    "plugin_php_files": 26,
+    "php_contract_files": 82,
     "javascript_files": 11,
-    "json_files": 68,
-    "python_files": 28,
-    "fastapi_tests": 84,
-    "css": {
-      "knowledge-base.css": 2133,
-      "product-support-platform.css": 1175,
-      "support-article-integrity.css": 147,
-      "unified-support-search.css": 504
-    },
-    "source_whitespace": "passed",
-    "git_diff_check": "passed"
+    "json_files": 71,
+    "python_files": 30,
+    "fastapi_tests": 90,
+    "source_whitespace": "passed"
   },
   "publication_integrity": {
     "version": "1.0.0",
@@ -594,6 +600,27 @@
     "fastapi_parity": true,
     "personal_data_stored": false,
     "automatic_case_creation": false,
+    "human_review_required": true
+  },
+  "issue_release_intelligence": {
+    "version": "1.0.0",
+    "schema": "scfs-known-issue-release-intelligence/1.0",
+    "wordpress_class": "SCFS_Known_Issue_Release_Intelligence",
+    "shortcode": "[scfs_issue_release_intelligence]",
+    "legacy_shortcode": "[scfs_known_issue_release_intelligence]",
+    "wordpress_rest_base": "/wp-json/scfs/v1/issue-release-intelligence/",
+    "fastapi_rest_base": "/v1/issue-release-intelligence/",
+    "affected_version_taxonomy": "scfs_product_version",
+    "target_release_relationships": true,
+    "fixed_release_relationships": true,
+    "related_support_articles": true,
+    "bidirectional_synchronization": true,
+    "open_and_resolved_issue_groups": true,
+    "changelog_coverage": true,
+    "automatic_incident_declaration": false,
+    "automatic_release_status_changes": false,
+    "automatic_publication": false,
+    "database_migration_required": false,
     "human_review_required": true
   }
 }

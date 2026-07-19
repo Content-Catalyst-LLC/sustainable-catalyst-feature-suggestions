@@ -1,0 +1,62 @@
+{
+  "schema": "scfs-known-issue-release-intelligence/1.0",
+  "version": "5.4.0",
+  "summary": {
+    "issue_count": 2,
+    "active_issue_count": 1,
+    "resolved_issue_count": 1,
+    "issue_with_workaround_count": 1,
+    "issue_with_release_or_article_links_count": 2,
+    "release_count": 1,
+    "release_with_open_issues_count": 1,
+    "review_required_count": 1
+  },
+  "issues": [
+    {
+      "issue_id": "issue-export-mobile",
+      "state": "linked",
+      "relationship_count": 2,
+      "affected_version_count": 1,
+      "target_release_count": 1,
+      "fixed_release_count": 0,
+      "related_article_count": 1,
+      "warnings": []
+    },
+    {
+      "issue_id": "issue-cache-warning",
+      "state": "linked",
+      "relationship_count": 2,
+      "affected_version_count": 1,
+      "target_release_count": 0,
+      "fixed_release_count": 1,
+      "related_article_count": 1,
+      "warnings": []
+    }
+  ],
+  "releases": [
+    {
+      "release_id": "release-540",
+      "state": "blocked",
+      "open_issue_ids": ["issue-export-mobile"],
+      "resolved_issue_ids": ["issue-cache-warning"],
+      "major_open_issue_ids": ["issue-export-mobile"],
+      "related_article_count": 2,
+      "warnings": ["major_open_issues"]
+    }
+  ],
+  "warnings": [
+    {
+      "code": "major_open_issues",
+      "record_id": "release-540",
+      "record_type": "release_record",
+      "severity": "error",
+      "message": "Major open issues"
+    }
+  ],
+  "generated_at": "2026-07-19T00:00:00+00:00",
+  "wordpress_source_of_truth": true,
+  "automatic_incident_declaration": false,
+  "automatic_release_status_changes": false,
+  "automatic_publication": false,
+  "human_review_required": true
+}

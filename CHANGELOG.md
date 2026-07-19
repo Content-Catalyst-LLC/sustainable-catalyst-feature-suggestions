@@ -1,3 +1,11 @@
+## 5.4.0 — Known Issues and Release Intelligence Integration
+
+- Connected Known Issues to affected versions, components, target releases, fixed releases, related Support Articles, and changelog evidence.
+- Added derived open/resolved issue coverage for Release Records and advisory relationship-health validation.
+- Integrated operational context into the Support Center, Unified Support Search, and publication-style issue/release pages.
+- Added WordPress REST, administrative synchronization, FastAPI parity, schemas, examples, tests, and release packaging.
+- Preserved all existing CPTs, URLs, routes, shortcodes, settings, metadata, and records without a database migration.
+
 ## 5.3.0 — Unified Search and Guided Resolution
 
 - Unified Support Discovery and Guided Resolution in the public Support Center.

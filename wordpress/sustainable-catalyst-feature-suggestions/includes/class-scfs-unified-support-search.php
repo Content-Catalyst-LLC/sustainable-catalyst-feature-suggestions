@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Unified_Support_Search {
-    const VERSION = '5.3.0';
+    const VERSION = '5.4.0';
     const SCHEMA = 'scfs-unified-support-search/1.0';
     const JOURNEY_SCHEMA = 'scfs-support-resolution-journey/1.0';
     const SHORTCODE = 'scfs_unified_support_search';
@@ -174,6 +174,45 @@ final class SCFS_Unified_Support_Search {
         return $groups;
     }
 
+    /**
+     * Enrich Known Issue and Release result groups with the operational
+     * relationships introduced in v5.4.0. Existing result keys and ranking
+     * remain intact for backward compatibility.
+     */
+    private function enrich_operational_intelligence($groups) {
+        if (!class_exists('SCFS_Known_Issue_Release_Intelligence')) {
+            return $groups;
+        }
+        $intelligence = SCFS_Known_Issue_Release_Intelligence::instance();
+        foreach ((array) ($groups['known_issues'] ?? array()) as &$item) {
+            $record = !empty($item['id']) ? $intelligence->issue_record(absint($item['id']), true) : array();
+            if (!$record) continue;
+            $item['affected_versions'] = wp_list_pluck($record['affected_versions'], 'name');
+            $item['target_releases'] = wp_list_pluck($record['target_releases'], 'title');
+            $item['fixed_releases'] = wp_list_pluck($record['fixed_releases'], 'title');
+            $item['related_support_articles'] = wp_list_pluck($record['related_articles'], 'title');
+            $item['operational_health'] = $record['health'];
+            if ($record['fixed_releases']) {
+                $item['match_reasons'][] = __('Fixed-release evidence is available', 'sustainable-catalyst-feature-suggestions');
+            } elseif ($record['target_releases']) {
+                $item['match_reasons'][] = __('A target release is linked', 'sustainable-catalyst-feature-suggestions');
+            }
+        }
+        unset($item);
+        foreach ((array) ($groups['releases'] ?? array()) as &$item) {
+            $record = !empty($item['id']) ? $intelligence->release_record(absint($item['id']), true) : array();
+            if (!$record) continue;
+            $item['open_issue_count'] = count($record['open_issues']);
+            $item['resolved_issue_count'] = count($record['resolved_issues']);
+            $item['verification_state'] = $record['verification_state'];
+            $item['last_verified_at'] = $record['last_verified_at'];
+            $item['changelog_url'] = $record['changelog_url'];
+            $item['operational_health'] = $record['health'];
+        }
+        unset($item);
+        return $groups;
+    }
+
     private function top_result($groups) {
         $all = array();
         foreach (array('known_issues', 'support_articles', 'releases', 'public_suggestions') as $group) {
@@ -276,6 +315,7 @@ final class SCFS_Unified_Support_Search {
         $context = $this->normalize_context($context);
         $resolution = SCFS_Guided_Resolution::instance()->search($context, $track);
         $resolution['groups'] = $this->enrich_support_articles($resolution['groups'], $context);
+        $resolution['groups'] = $this->enrich_operational_intelligence($resolution['groups']);
 
         $all = array();
         foreach ($resolution['groups'] as $items) {
@@ -394,6 +434,16 @@ final class SCFS_Unified_Support_Search {
                 !empty($item['status']) ? ucwords(str_replace('_', ' ', $item['status'])) : '',
                 !empty($item['severity']) ? ucwords($item['severity']) : '',
             )))) . '</p>';
+        }
+        if ($item['kind'] === 'known_issue' && (!empty($item['affected_versions']) || !empty($item['fixed_releases']) || !empty($item['target_releases']))) {
+            $details = array();
+            if (!empty($item['affected_versions'])) $details[] = sprintf(__('Affected: %s', 'sustainable-catalyst-feature-suggestions'), implode(', ', (array) $item['affected_versions']));
+            if (!empty($item['fixed_releases'])) $details[] = sprintf(__('Fixed in: %s', 'sustainable-catalyst-feature-suggestions'), implode(', ', (array) $item['fixed_releases']));
+            elseif (!empty($item['target_releases'])) $details[] = sprintf(__('Target: %s', 'sustainable-catalyst-feature-suggestions'), implode(', ', (array) $item['target_releases']));
+            echo '<p class="scfs-unified-search__operational-context">' . esc_html(implode(' · ', $details)) . '</p>';
+        }
+        if ($item['kind'] === 'release' && (isset($item['open_issue_count']) || isset($item['resolved_issue_count']))) {
+            echo '<p class="scfs-unified-search__operational-context">' . esc_html(sprintf(__('Open issues: %1$d · Resolved: %2$d', 'sustainable-catalyst-feature-suggestions'), absint($item['open_issue_count'] ?? 0), absint($item['resolved_issue_count'] ?? 0))) . '</p>';
         }
         if (!empty($item['match_reasons'])) {
             echo '<ul class="scfs-unified-search__reasons">';

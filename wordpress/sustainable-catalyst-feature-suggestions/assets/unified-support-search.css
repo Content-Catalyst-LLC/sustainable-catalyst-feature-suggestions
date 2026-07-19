@@ -502,3 +502,21 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* v5.4.0 operational issue and release context */
+.scfs-unified-search__operational-context {
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 0.75rem;
+  background: #fff8e7;
+  border-left: 3px solid #6f1225;
+  color: #4f4942;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+@media print {
+  .scfs-unified-search__operational-context {
+    background: #fff;
+    border: 1px solid #999;
+  }
+}
