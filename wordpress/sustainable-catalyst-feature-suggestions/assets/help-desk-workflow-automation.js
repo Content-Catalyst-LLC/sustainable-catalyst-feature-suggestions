@@ -1,0 +1,1 @@
+(function(){'use strict';document.addEventListener('click',function(event){var button=event.target.closest('[data-scfs-workflow-confirm]');if(!button){return;}var message=button.getAttribute('data-scfs-workflow-confirm')||'Apply this governed workflow action?';if(!window.confirm(message)){event.preventDefault();}});})();

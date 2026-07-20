@@ -16,7 +16,7 @@
       "const": "scfs-help-desk-service-levels/1.0"
     },
     "version": {
-      "const": "6.6.0"
+      "const": "6.7.0"
     },
     "case_id": {
       "type": "integer",

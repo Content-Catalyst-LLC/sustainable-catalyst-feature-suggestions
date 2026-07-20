@@ -1,0 +1,39 @@
+{
+  "version": "6.7.0",
+  "schema": "scfs-help-desk-workflow-automation/1.0",
+  "case_number": "SC-2026-000301",
+  "event_type": "case_created",
+  "source_fingerprint": "3bce60c8f48da30da987fe1f030285263c64cafea7f1269e7c948f0a827f7c6b",
+  "matched_rules": [
+    "new-case-routing-review"
+  ],
+  "actions": [
+    {
+      "action_type": "suggest_assignment",
+      "risk_level": "medium",
+      "approval_required": true,
+      "automatic_execution_allowed": false,
+      "state": "pending_approval"
+    },
+    {
+      "action_type": "schedule_reminder",
+      "risk_level": "low",
+      "approval_required": false,
+      "automatic_execution_allowed": true,
+      "state": "approved"
+    }
+  ],
+  "governance": {
+    "automatic_customer_send": false,
+    "automatic_case_closure": false,
+    "automatic_priority_change": false,
+    "automatic_assignment": false,
+    "automatic_external_webhooks": false,
+    "human_approval_required": true
+  },
+  "privacy": {
+    "requester_identity_copied": false,
+    "private_message_body_copied": false,
+    "attachment_content_copied": false
+  }
+}

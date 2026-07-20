@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_Case_Foundation {
-    const VERSION = '6.6.0';
+    const VERSION = '6.7.0';
     const SCHEMA = 'scfs-help-desk-case/1.0';
     const DB_VERSION = '1.0.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_db_version';
@@ -996,7 +996,9 @@ final class SCFS_Help_Desk_Case_Foundation {
             'created_at' => $created_at,
             'integrity_hash' => $hash,
         ), array('%d','%s','%d','%s','%s','%s','%s'));
-        return (int) $wpdb->insert_id;
+        $event_id = (int) $wpdb->insert_id;
+        do_action('scfs_help_desk_case_event_recorded', absint($case_id), $payload['event_type'], $payload['event_data'], $payload['actor_user_id'], $event_id);
+        return $event_id;
     }
 
     private function record_system_event($event_type, $data) {

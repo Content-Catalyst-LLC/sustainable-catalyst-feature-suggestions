@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-workflow-automation-v1.schema.json",
+  "title": "SCFS Help Desk Workflow Automation Contract",
+  "type": "object",
+  "required": [
+    "version",
+    "schema",
+    "source_fingerprint",
+    "matched_rules",
+    "actions",
+    "governance"
+  ],
+  "properties": {
+    "version": {
+      "const": "6.7.0"
+    },
+    "schema": {
+      "const": "scfs-help-desk-workflow-automation/1.0"
+    },
+    "source_fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "matched_rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "action_type",
+          "risk_level",
+          "approval_required",
+          "automatic_execution_allowed"
+        ],
+        "properties": {
+          "action_type": {
+            "type": "string"
+          },
+          "risk_level": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "approval_required": {
+            "type": "boolean"
+          },
+          "automatic_execution_allowed": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "automatic_customer_send",
+        "automatic_case_closure",
+        "automatic_priority_change",
+        "automatic_assignment",
+        "automatic_external_webhooks",
+        "human_approval_required"
+      ],
+      "properties": {
+        "automatic_customer_send": {
+          "const": false
+        },
+        "automatic_case_closure": {
+          "const": false
+        },
+        "automatic_priority_change": {
+          "const": false
+        },
+        "automatic_assignment": {
+          "const": false
+        },
+        "automatic_external_webhooks": {
+          "const": false
+        },
+        "human_approval_required": {
+          "const": true
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

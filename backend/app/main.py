@@ -30,8 +30,9 @@ from .help_desk_customer_portal import PortalAccessLinkEvidence, PortalAccessLin
 from .help_desk_service_levels import ServicePolicyEvidence, ServicePolicyAssessment, SupportCalendarEvidence, SupportCalendarAssessment, ClockEvidence, ClockAssessment, ClockTransitionEvidence, ClockTransitionAssessment, EscalationEvidence, EscalationAssessment, ServiceLevelReportEvidence, ServiceLevelReportResult, evaluate_service_policy, evaluate_support_calendar, evaluate_clock, evaluate_clock_transition, evaluate_escalation, verify_service_level_report
 from .help_desk_secure_evidence import EvidenceIntakeEvidence, EvidenceIntakeAssessment, AttachmentMetadataEvidence, AttachmentMetadataAssessment, DiagnosticBundleEvidence, DiagnosticBundleAssessment, AccessGrantEvidence, AccessGrantAssessment, RetentionEvidence, RetentionAssessment, SecureEvidenceReportEvidence, SecureEvidenceReportResult, evaluate_evidence_intake, evaluate_attachment_metadata, evaluate_diagnostic_bundle, evaluate_access_grant, evaluate_retention, verify_secure_evidence_report
 from .help_desk_knowledge_resolution import CaseContext, KnowledgeCandidate, ResolutionAssessment, SimilarCaseEvidence, SimilarCaseAssessment, AgentDecisionEvidence, AgentDecisionAssessment, GuidedPlanEvidence, GuidedPlanAssessment, PromotionEvidence, PromotionAssessment, KnowledgeResolutionReportEvidence, KnowledgeResolutionReportResult, evaluate_resolution, evaluate_similar_cases, evaluate_agent_decision, evaluate_guided_plan, evaluate_promotion, verify_knowledge_resolution_report
+from .help_desk_workflow_automation import CaseEventContext, WorkflowRule, WorkflowPlan, ApprovalEvidence, ApprovalAssessment, TemplateEvidence, TemplateAssessment, MacroEvidence, MacroAssessment, FollowupEvidence, FollowupAssessment, WorkflowReportEvidence, WorkflowReportResult, plan_workflow, evaluate_approval, evaluate_template, evaluate_macro, evaluate_followup, verify_workflow_report
 
-VERSION='6.6.0'
+VERSION='6.7.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1329,3 +1330,59 @@ def help_desk_knowledge_resolution_promotion(payload: PromotionEvidence, x_scfs_
 def help_desk_knowledge_resolution_report_verify(payload: KnowledgeResolutionReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_knowledge_resolution_report(payload)
+
+@app.get('/v1/help-desk/workflows/capabilities')
+def help_desk_workflow_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-help-desk-workflow-automation/1.0',
+        'capabilities': [
+            'event_driven_rule_planning', 'condition_evaluation', 'action_risk_classification',
+            'approval_governance', 'response_template_rendering', 'agent_macro_evaluation',
+            'reminder_and_followup_planning', 'sha256_report_integrity',
+        ],
+        'automatic_customer_send': False,
+        'automatic_case_closure': False,
+        'automatic_priority_change': False,
+        'automatic_assignment': False,
+        'automatic_external_webhooks': False,
+        'human_approval_required': True,
+    }
+
+
+@app.post('/v1/help-desk/workflows/plans/evaluate', response_model=WorkflowPlan)
+def help_desk_workflow_plan(context: CaseEventContext, rules: list[WorkflowRule], x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return plan_workflow(context, rules)
+
+
+@app.post('/v1/help-desk/workflows/approvals/evaluate', response_model=ApprovalAssessment)
+def help_desk_workflow_approval(payload: ApprovalEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_approval(payload)
+
+
+@app.post('/v1/help-desk/workflows/templates/evaluate', response_model=TemplateAssessment)
+def help_desk_workflow_template(payload: TemplateEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_template(payload)
+
+
+@app.post('/v1/help-desk/workflows/macros/evaluate', response_model=MacroAssessment)
+def help_desk_workflow_macro(payload: MacroEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_macro(payload)
+
+
+@app.post('/v1/help-desk/workflows/followups/evaluate', response_model=FollowupAssessment)
+def help_desk_workflow_followup(payload: FollowupEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_followup(payload)
+
+
+@app.post('/v1/help-desk/workflows/reports/verify', response_model=WorkflowReportResult)
+def help_desk_workflow_report_verify(payload: WorkflowReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_workflow_report(payload)
