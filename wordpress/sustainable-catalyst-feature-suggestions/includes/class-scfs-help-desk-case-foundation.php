@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_Case_Foundation {
-    const VERSION = '6.4.0';
+    const VERSION = '6.5.0';
     const SCHEMA = 'scfs-help-desk-case/1.0';
     const DB_VERSION = '1.0.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_db_version';

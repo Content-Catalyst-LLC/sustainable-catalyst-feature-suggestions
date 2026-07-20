@@ -1,3 +1,10 @@
+# v6.5.0 — Secure Evidence, Attachments, and Diagnostic Intake
+
+- Added private evidence intake and diagnostic manifest records.
+- Added delegated Contact and Engagement attachment registration.
+- Added hash-only access grants, redaction state, retention review, and append-only evidence events.
+- Blocked Media Library storage, executable extensions, raw download URLs, and automatic deletion.
+
 # Changelog
 
 ## 6.4.0 — Service Levels, Escalation, and Response Governance

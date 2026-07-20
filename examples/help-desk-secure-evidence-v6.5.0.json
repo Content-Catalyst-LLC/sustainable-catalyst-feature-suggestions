@@ -1,0 +1,48 @@
+{
+  "schema": "scfs-help-desk-secure-evidence/1.0",
+  "version": "6.5.0",
+  "case_id": 184,
+  "case_number": "SC-2026-000184",
+  "attachment_authority": "contact-engagement",
+  "intake": {
+    "intake_key": "SC-EV-20260720-EXAMPLE001",
+    "purpose": "diagnostic_bundle",
+    "classification": "private_support",
+    "consent_state": "accepted",
+    "status": "submitted",
+    "expires_at": "2026-07-27T15:00:00Z"
+  },
+  "attachments": [
+    {
+      "external_attachment_ref": "ce:attachment:synthetic-001",
+      "filename": "decision-studio-diagnostic.json",
+      "mime_type": "application/json",
+      "size_bytes": 2048,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scan_state": "clean",
+      "redaction_state": "approved_unredacted",
+      "classification": "synthetic_sample"
+    }
+  ],
+  "diagnostic_bundles": [
+    {
+      "bundle_key": "SC-DIAG-20260720-EXAMPLE01",
+      "product": "decision-studio",
+      "product_version": "2.0.1",
+      "validation_state": "pending_review",
+      "manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "privacy": {
+    "media_library_storage": false,
+    "raw_download_urls_stored": false,
+    "raw_grant_secrets_stored": false,
+    "private_attachment_bytes_exposed": false
+  },
+  "governance": {
+    "malware_scan_required": true,
+    "human_review_required": true,
+    "automatic_redaction": false,
+    "automatic_deletion": false
+  }
+}

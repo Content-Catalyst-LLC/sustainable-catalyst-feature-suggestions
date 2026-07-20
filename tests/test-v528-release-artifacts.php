@@ -3,7 +3,7 @@ $root = dirname(__DIR__);
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $release = json_decode(file_get_contents($root . '/release-manifest-v5.2.8.json'), true);
 $checks = array(
-    'feature manifest version' => ($manifest['version'] ?? '') === '6.4.0',
+    'feature manifest version' => ($manifest['version'] ?? '') === '6.5.0',
     'feature manifest release name' => ($manifest['release_name'] ?? '') === 'Service Levels, Escalation, and Response Governance',
     'integrity capability declared' => in_array('support article content integrity validation', $manifest['capabilities'] ?? array(), true),
     'release manifest version' => ($release['version'] ?? '') === '5.2.8',

@@ -14,7 +14,7 @@ $checks = array(
     'print CSS' => strpos($css, '@media print') !== false,
     'dynamic initialization' => strpos($js, 'scfs:support-view-loaded') !== false,
     'keyboard search shortcut' => strpos($js, "event.key === '/'") !== false,
-    'manifest current version' => ($manifest['version'] ?? '') === '6.4.0',
+    'manifest current version' => ($manifest['version'] ?? '') === '6.5.0',
     'manifest release name' => ($manifest['release_name'] ?? '') === 'Service Levels, Escalation, and Response Governance',
     'release manifest current version' => ($release['version'] ?? '') === '5.4.0',
     'release notes' => file_exists($root . '/RELEASE_NOTES_5.4.0.md'),

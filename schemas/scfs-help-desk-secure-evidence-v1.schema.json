@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-secure-evidence-v1.schema.json",
+  "title": "Sustainable Catalyst Help Desk Secure Evidence Contract",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "case_id",
+    "attachment_authority",
+    "privacy",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-help-desk-secure-evidence/1.0"
+    },
+    "version": {
+      "const": "6.5.0"
+    },
+    "case_id": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "intake": {
+      "type": "object"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "diagnostic_bundles": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "attachment_authority": {
+      "const": "contact-engagement"
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "media_library_storage",
+        "raw_download_urls_stored",
+        "raw_grant_secrets_stored"
+      ],
+      "properties": {
+        "media_library_storage": {
+          "const": false
+        },
+        "raw_download_urls_stored": {
+          "const": false
+        },
+        "raw_grant_secrets_stored": {
+          "const": false
+        },
+        "private_attachment_bytes_exposed": {
+          "const": false
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "malware_scan_required",
+        "human_review_required",
+        "automatic_redaction",
+        "automatic_deletion"
+      ],
+      "properties": {
+        "malware_scan_required": {
+          "const": true
+        },
+        "human_review_required": {
+          "const": true
+        },
+        "automatic_redaction": {
+          "const": false
+        },
+        "automatic_deletion": {
+          "const": false
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

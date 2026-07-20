@@ -28,8 +28,9 @@ from .help_desk_case_foundation import CaseIntakeEvidence, CaseIntakeAssessment,
 from .help_desk_agent_workspace import QueueEvaluationRequest, QueueEvaluationResult, AssignmentPlanRequest, AssignmentPlanResult, AgentWorkloadEvidence, AgentWorkloadAssessment, SavedViewEvidence, SavedViewAssessment, WorkspaceReportIntegrityEvidence, WorkspaceReportIntegrityResult, evaluate_queue, plan_assignment, assess_workload, assess_saved_view, verify_workspace_report
 from .help_desk_customer_portal import PortalAccessLinkEvidence, PortalAccessLinkAssessment, PortalSessionEvidence, PortalSessionAssessment, ConversationVisibilityEvidence, ConversationVisibilityAssessment, RequesterTransitionEvidence, RequesterTransitionAssessment, SatisfactionEvidence, SatisfactionAssessment, PortalReportIntegrityEvidence, PortalReportIntegrityResult, assess_access_link, assess_session, assess_conversation_visibility, evaluate_requester_transition, assess_satisfaction, verify_portal_report
 from .help_desk_service_levels import ServicePolicyEvidence, ServicePolicyAssessment, SupportCalendarEvidence, SupportCalendarAssessment, ClockEvidence, ClockAssessment, ClockTransitionEvidence, ClockTransitionAssessment, EscalationEvidence, EscalationAssessment, ServiceLevelReportEvidence, ServiceLevelReportResult, evaluate_service_policy, evaluate_support_calendar, evaluate_clock, evaluate_clock_transition, evaluate_escalation, verify_service_level_report
+from .help_desk_secure_evidence import EvidenceIntakeEvidence, EvidenceIntakeAssessment, AttachmentMetadataEvidence, AttachmentMetadataAssessment, DiagnosticBundleEvidence, DiagnosticBundleAssessment, AccessGrantEvidence, AccessGrantAssessment, RetentionEvidence, RetentionAssessment, SecureEvidenceReportEvidence, SecureEvidenceReportResult, evaluate_evidence_intake, evaluate_attachment_metadata, evaluate_diagnostic_bundle, evaluate_access_grant, evaluate_retention, verify_secure_evidence_report
 
-VERSION='6.4.0'
+VERSION='6.5.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1205,3 +1206,64 @@ def help_desk_service_levels_escalation_evaluate(payload: EscalationEvidence, x_
 def help_desk_service_levels_report_verify(payload: ServiceLevelReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_service_level_report(payload)
+
+@app.get('/v1/help-desk/evidence/capabilities')
+def help_desk_evidence_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-help-desk-secure-evidence/1.0',
+        'capabilities': [
+            'evidence_intake_validation',
+            'attachment_metadata_validation',
+            'diagnostic_bundle_validation',
+            'download_grant_governance',
+            'retention_and_redaction_evaluation',
+            'sha256_report_integrity',
+        ],
+        'attachment_authority': 'contact-engagement',
+        'uploaded_files_stored_in_media_library': False,
+        'raw_download_urls_stored': False,
+        'malware_scan_hook_required': True,
+        'automatic_redaction': False,
+        'automatic_deletion': False,
+        'public_attachment_api': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/help-desk/evidence/intakes/evaluate', response_model=EvidenceIntakeAssessment)
+def help_desk_evidence_intake_evaluate(payload: EvidenceIntakeEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_evidence_intake(payload)
+
+
+@app.post('/v1/help-desk/evidence/attachments/evaluate', response_model=AttachmentMetadataAssessment)
+def help_desk_evidence_attachment_evaluate(payload: AttachmentMetadataEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_attachment_metadata(payload)
+
+
+@app.post('/v1/help-desk/evidence/diagnostics/evaluate', response_model=DiagnosticBundleAssessment)
+def help_desk_evidence_diagnostic_evaluate(payload: DiagnosticBundleEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_diagnostic_bundle(payload)
+
+
+@app.post('/v1/help-desk/evidence/access/evaluate', response_model=AccessGrantAssessment)
+def help_desk_evidence_access_evaluate(payload: AccessGrantEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_access_grant(payload)
+
+
+@app.post('/v1/help-desk/evidence/retention/evaluate', response_model=RetentionAssessment)
+def help_desk_evidence_retention_evaluate(payload: RetentionEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_retention(payload)
+
+
+@app.post('/v1/help-desk/evidence/reports/verify', response_model=SecureEvidenceReportResult)
+def help_desk_evidence_report_verify(payload: SecureEvidenceReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_secure_evidence_report(payload)

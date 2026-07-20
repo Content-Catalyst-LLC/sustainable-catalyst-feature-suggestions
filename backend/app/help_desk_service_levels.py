@@ -1,4 +1,4 @@
-"""Help Desk Service Levels, Escalation, and Response Governance v6.4.0."""
+"""Help Desk Service Levels, Escalation, and Response Governance v6.5.0."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-VERSION = "6.4.0"
+VERSION = "6.5.0"
 SCHEMA = "scfs-help-desk-service-levels/1.0"
 
 Priority = Literal["critical", "high", "normal", "low"]

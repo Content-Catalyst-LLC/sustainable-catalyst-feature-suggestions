@@ -1,14 +1,12 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v6.4.0 — Service Levels, Escalation, and Response Governance**
+## Current release: **v6.5.0 — Secure Evidence, Attachments, and Diagnostic Intake**
 
-**Customer Support Portal and Conversations**
+**Secure Evidence, Attachments, and Diagnostic Intake**
 
-Version 6.3.0 adds the secure requester-facing portal above the v6.1.0 private case foundation and v6.2.0 Agent Workspace. Expiring access links exchange hash-only tokens for short-lived HttpOnly sessions, customers can view participant-visible conversations, reply, confirm resolution, reopen recent cases, and submit private satisfaction feedback.
+Version 6.5.0 adds evidence-intake records, delegated attachment metadata, diagnostic manifests, short-lived hash-only access grants, redaction state, retention review, and append-only evidence events. Contact and Engagement remains authoritative for private file bytes, secure delivery, consent, and deletion execution; files are not placed in the WordPress Media Library.
 
-The public Support Center remains at `/support/`, Support Articles retain `/support/guides/`, and the customer portal is designed for `/support/cases/`. Contact and Engagement remains authoritative for requester identity, consent, secure attachments, and notification delivery.
-
-See `docs/help-desk-customer-portal-v6.3.0.md` for the portal architecture and privacy boundaries.
+See `docs/help-desk-secure-evidence-v6.5.0.md` for the evidence lifecycle and privacy boundary.
 
 ## Primary public shortcodes
 
@@ -30,6 +28,14 @@ See `docs/help-desk-customer-portal-v6.3.0.md` for the portal architecture and p
 - `tests/` — WordPress contract tests
 - `docs/` — implementation and governance guides
 
+
+## v6.5.0
+
+Adds secure evidence intake, delegated attachment metadata, diagnostic bundles, access governance, retention review, redaction state, and append-only evidence events.
+
+## v6.4.0
+
+Adds service policies, support calendars, response and resolution clocks, pause accounting, warnings, breaches, and escalation governance.
 
 ## v6.3.0
 
