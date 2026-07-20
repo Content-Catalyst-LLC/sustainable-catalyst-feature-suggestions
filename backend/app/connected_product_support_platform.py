@@ -8,7 +8,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-VERSION = "6.7.0"
+VERSION = "6.8.0"
 SCHEMA = "scfs-connected-product-support-feedback-platform/1.0"
 JOURNEY_SCHEMA = "scfs-connected-support-journey/1.0"
 

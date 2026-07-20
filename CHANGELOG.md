@@ -1,17 +1,31 @@
-# v6.6.0 — Knowledge-Assisted Case Resolution
+# Changelog
+
+## 6.8.0 — Email and Channel Operations
+
+- Added authenticated support-email intake and case-thread matching.
+- Added governed outbound drafts and Contact and Engagement delivery handoffs.
+- Added delivery, bounce, complaint, and failure evidence.
+- Added least-privilege channel authorization and Microsoft Teams handoffs.
+- Preserved human approval and private-data boundaries.
+
+## 6.7.0 — Workflow Automation and Operational Rules
+
+- Added governed event-driven rules, action plans, approvals, templates, macros, reminders, and follow-up tasks.
+- Restricted automatic execution to low-risk internal actions.
+- Kept customer replies, assignments, priority changes, resolution, closure, and external calls under human authorization.
+
+## 6.6.0 — Knowledge-Assisted Case Resolution
 
 - Added deterministic public-knowledge and privacy-safe case matching.
 - Added agent approval, requester-send, duplicate review, guided plans, and documentation promotion.
 - Preserved private-case, public-support, and Contact and Engagement boundaries.
 
-# v6.5.0 — Secure Evidence, Attachments, and Diagnostic Intake
+## 6.5.0 — Secure Evidence, Attachments, and Diagnostic Intake
 
 - Added private evidence intake and diagnostic manifest records.
 - Added delegated Contact and Engagement attachment registration.
 - Added hash-only access grants, redaction state, retention review, and append-only evidence events.
 - Blocked Media Library storage, executable extensions, raw download URLs, and automatic deletion.
-
-# Changelog
 
 ## 6.4.0 — Service Levels, Escalation, and Response Governance
 

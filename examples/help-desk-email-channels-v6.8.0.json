@@ -1,0 +1,39 @@
+{
+  "schema": "scfs-help-desk-email-channels/1.0",
+  "version": "6.8.0",
+  "case_number": "SC-2026-000401",
+  "channel": {
+    "type": "email",
+    "transport_authority": "contact-engagement",
+    "provider_message_ref": "message:synthetic-401",
+    "content_sha256": "d66e5451450036f3e98aebfe13c3130be823b22304aac64cce0a780e3026a351"
+  },
+  "thread_match": {
+    "method": "case_number",
+    "matched": true
+  },
+  "outbound": {
+    "draft_only": true,
+    "automatic_send": false,
+    "subject": "[SC-2026-000401] Support update"
+  },
+  "delivery": {
+    "state": "delivered",
+    "automatic_case_closure": false
+  },
+  "live_handoff": {
+    "provider": "microsoft_teams",
+    "automatic_scheduling": false,
+    "scheduling_authority": "contact-engagement"
+  },
+  "governance": {
+    "automatic_case_creation": false,
+    "automatic_customer_send": false,
+    "automatic_case_closure": false,
+    "public_inbound_webhook": false,
+    "raw_authorization_secrets_stored": false,
+    "raw_attachment_bytes_stored": false,
+    "microsoft_teams_only": true,
+    "human_review_required": true
+  }
+}

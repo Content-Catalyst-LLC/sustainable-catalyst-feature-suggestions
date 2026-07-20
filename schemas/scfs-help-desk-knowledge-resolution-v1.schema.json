@@ -16,7 +16,7 @@
       "const": "scfs-help-desk-knowledge-resolution/1.0"
     },
     "version": {
-      "const": "6.7.0"
+      "const": "6.8.0"
     },
     "case": {
       "type": "object",

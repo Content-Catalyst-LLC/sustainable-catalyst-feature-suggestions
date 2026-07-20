@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-email-channels-v1.schema.json",
+  "title": "SCFS Help Desk Email and Channel Operations",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "case_number",
+    "channel",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-help-desk-email-channels/1.0"
+    },
+    "version": {
+      "const": "6.8.0"
+    },
+    "case_number": {
+      "type": "string",
+      "pattern": "^SC-[0-9]{4}-[0-9]{6}$"
+    },
+    "channel": {
+      "type": "object",
+      "required": [
+        "type",
+        "transport_authority"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "email",
+            "microsoft_teams"
+          ]
+        },
+        "transport_authority": {
+          "const": "contact-engagement"
+        },
+        "provider_message_ref": {
+          "type": "string"
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "automatic_case_creation",
+        "automatic_customer_send",
+        "public_inbound_webhook",
+        "microsoft_teams_only"
+      ],
+      "properties": {
+        "automatic_case_creation": {
+          "const": false
+        },
+        "automatic_customer_send": {
+          "const": false
+        },
+        "automatic_case_closure": {
+          "const": false
+        },
+        "public_inbound_webhook": {
+          "const": false
+        },
+        "raw_authorization_secrets_stored": {
+          "const": false
+        },
+        "raw_attachment_bytes_stored": {
+          "const": false
+        },
+        "microsoft_teams_only": {
+          "const": true
+        },
+        "human_review_required": {
+          "const": true
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

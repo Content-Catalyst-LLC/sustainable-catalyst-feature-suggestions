@@ -1,0 +1,1 @@
+(function(){'use strict';document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-scfs-channel-panel]').forEach(function(panel){panel.setAttribute('data-channel-ready','true');});});}());

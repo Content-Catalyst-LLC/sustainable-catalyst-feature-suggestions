@@ -31,8 +31,9 @@ from .help_desk_service_levels import ServicePolicyEvidence, ServicePolicyAssess
 from .help_desk_secure_evidence import EvidenceIntakeEvidence, EvidenceIntakeAssessment, AttachmentMetadataEvidence, AttachmentMetadataAssessment, DiagnosticBundleEvidence, DiagnosticBundleAssessment, AccessGrantEvidence, AccessGrantAssessment, RetentionEvidence, RetentionAssessment, SecureEvidenceReportEvidence, SecureEvidenceReportResult, evaluate_evidence_intake, evaluate_attachment_metadata, evaluate_diagnostic_bundle, evaluate_access_grant, evaluate_retention, verify_secure_evidence_report
 from .help_desk_knowledge_resolution import CaseContext, KnowledgeCandidate, ResolutionAssessment, SimilarCaseEvidence, SimilarCaseAssessment, AgentDecisionEvidence, AgentDecisionAssessment, GuidedPlanEvidence, GuidedPlanAssessment, PromotionEvidence, PromotionAssessment, KnowledgeResolutionReportEvidence, KnowledgeResolutionReportResult, evaluate_resolution, evaluate_similar_cases, evaluate_agent_decision, evaluate_guided_plan, evaluate_promotion, verify_knowledge_resolution_report
 from .help_desk_workflow_automation import CaseEventContext, WorkflowRule, WorkflowPlan, ApprovalEvidence, ApprovalAssessment, TemplateEvidence, TemplateAssessment, MacroEvidence, MacroAssessment, FollowupEvidence, FollowupAssessment, WorkflowReportEvidence, WorkflowReportResult, plan_workflow, evaluate_approval, evaluate_template, evaluate_macro, evaluate_followup, verify_workflow_report
+from .help_desk_email_channels import InboundEmailEvidence, InboundEmailAssessment, ThreadMatchEvidence, ThreadMatchAssessment, OutboundDraftEvidence, OutboundDraftAssessment, DeliveryEventEvidence, DeliveryEventAssessment, ChannelAuthorizationEvidence, ChannelAuthorizationAssessment, TeamsHandoffEvidence, TeamsHandoffAssessment, EmailChannelReportEvidence, EmailChannelReportResult, evaluate_inbound_email, evaluate_thread_match, prepare_outbound_draft, evaluate_delivery_event, evaluate_channel_authorization, evaluate_teams_handoff, verify_email_channel_report
 
-VERSION='6.7.0'
+VERSION='6.8.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1386,3 +1387,72 @@ def help_desk_workflow_followup(payload: FollowupEvidence, x_scfs_ai_key:Optiona
 def help_desk_workflow_report_verify(payload: WorkflowReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_workflow_report(payload)
+
+
+@app.get('/v1/help-desk/channels/capabilities')
+def help_desk_channels_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-help-desk-email-channels/1.0',
+        'capabilities': [
+            'authenticated_inbound_email_assessment', 'case_number_thread_matching',
+            'message_reference_thread_matching', 'customer_safe_outbound_draft_preparation',
+            'delivery_and_bounce_event_assessment', 'least_privilege_channel_authorization',
+            'microsoft_teams_handoff_planning', 'sha256_report_integrity',
+        ],
+        'transport_authority': 'contact-engagement',
+        'identity_authority': 'contact-engagement',
+        'attachment_authority': 'contact-engagement',
+        'scheduling_authority': 'contact-engagement',
+        'automatic_case_creation': False,
+        'automatic_customer_send': False,
+        'automatic_case_closure': False,
+        'public_inbound_webhook': False,
+        'zoom_supported': False,
+        'google_meet_supported': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/help-desk/channels/inbound/evaluate', response_model=InboundEmailAssessment)
+def help_desk_channels_inbound(payload: InboundEmailEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_inbound_email(payload)
+
+
+@app.post('/v1/help-desk/channels/threading/evaluate', response_model=ThreadMatchAssessment)
+def help_desk_channels_threading(payload: ThreadMatchEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_thread_match(payload)
+
+
+@app.post('/v1/help-desk/channels/outbound/prepare', response_model=OutboundDraftAssessment)
+def help_desk_channels_outbound(payload: OutboundDraftEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return prepare_outbound_draft(payload)
+
+
+@app.post('/v1/help-desk/channels/delivery/evaluate', response_model=DeliveryEventAssessment)
+def help_desk_channels_delivery(payload: DeliveryEventEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_delivery_event(payload)
+
+
+@app.post('/v1/help-desk/channels/authorization/evaluate', response_model=ChannelAuthorizationAssessment)
+def help_desk_channels_authorization(payload: ChannelAuthorizationEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_channel_authorization(payload)
+
+
+@app.post('/v1/help-desk/channels/teams/evaluate', response_model=TeamsHandoffAssessment)
+def help_desk_channels_teams(payload: TeamsHandoffEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_teams_handoff(payload)
+
+
+@app.post('/v1/help-desk/channels/reports/verify', response_model=EmailChannelReportResult)
+def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_email_channel_report(payload)
