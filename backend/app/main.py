@@ -23,10 +23,11 @@ from .feedback_product_signals import ProductSignalEvidence, ProductSignalAssess
 from .support_analytics_documentation_effectiveness import DocumentationEffectivenessEvidence, DocumentationEffectivenessAssessment, DocumentationEffectivenessPortfolioEvidence, DocumentationEffectivenessPortfolioSummary, DocumentationEffectivenessTrendEvidence, DocumentationEffectivenessTrend, AnalyticsReportIntegrityEvidence, AnalyticsReportIntegrityResult, evaluate_documentation_effectiveness, summarize_documentation_effectiveness_portfolio, compare_documentation_effectiveness, verify_support_analytics_report
 from .support_graph_handoffs import SupportGraphEvidence, SupportGraphSummary, HandoffPlanEvidence, HandoffPlanResult, SupportPathEvidence, SupportPathResult, SupportGraphIntegrityResult, build_support_graph, plan_platform_handoffs, find_support_path, verify_support_graph
 from .public_support_integrations import VersionVerificationRequest, VersionVerificationResult, SupportEmbedPlanRequest, SupportEmbedPlanResult, InstitutionalContractEvidence, InstitutionalContractResult, PublicIntegrationReportEvidence, PublicIntegrationReportResult, verify_support_version, plan_support_embed, validate_institutional_contract, evaluate_public_integration_health
+from .connected_product_support_platform import ConnectedPlatformEvidence, ConnectedPlatformAssessment, ConnectedJourneyRequest, ConnectedJourneyPlan, ConnectedPlatformReportEvidence, ConnectedPlatformReportResult, evaluate_connected_platform, plan_connected_journey, verify_connected_platform_report
 
-VERSION='5.9.0'
+VERSION='6.0.0'
 ANALYSIS_VERSION='5.1.0-1'
-app=FastAPI(title='Sustainable Catalyst Product Support and Feedback Intelligence',version=VERSION)
+app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
 class Submission(BaseModel):
     submission_id:str
@@ -903,3 +904,56 @@ def institutional_support_contract_validate(payload: InstitutionalContractEviden
 @app.post('/v1/public-support/integration-health/evaluate', response_model=PublicIntegrationReportResult)
 def public_support_integration_health_evaluate(payload: PublicIntegrationReportEvidence):
     return evaluate_public_integration_health(payload)
+
+
+@app.get('/v1/connected-platform/capabilities')
+def connected_platform_capabilities():
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-connected-product-support-feedback-platform/1.0',
+        'journey_schema': 'scfs-connected-support-journey/1.0',
+        'layers': [
+            'support_center',
+            'publication_library',
+            'operational_intelligence',
+            'feedback_intelligence',
+            'platform_integration',
+        ],
+        'capabilities': [
+            'connected_platform_assessment',
+            'connected_product_dossiers',
+            'guided_resolution_journey_planning',
+            'known_issue_and_release_context',
+            'feedback_and_product_signals',
+            'documentation_effectiveness_analytics',
+            'cross_product_support_handoffs',
+            'public_api_and_embed_integration',
+            'sha256_report_integrity',
+        ],
+        'specialist_modules_remain_source_of_truth': True,
+        'public_records_only': True,
+        'personal_identifiers_exposed': False,
+        'private_case_content_exposed': False,
+        'automatic_publication': False,
+        'automatic_issue_resolution': False,
+        'automatic_release_change': False,
+        'automatic_roadmap_change': False,
+        'automatic_private_case_creation': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/connected-platform/evaluate', response_model=ConnectedPlatformAssessment)
+def connected_platform_evaluate(payload: ConnectedPlatformEvidence):
+    return evaluate_connected_platform(payload)
+
+
+@app.post('/v1/connected-platform/journey/plan', response_model=ConnectedJourneyPlan)
+def connected_platform_journey_plan(payload: ConnectedJourneyRequest):
+    return plan_connected_journey(payload)
+
+
+@app.post('/v1/connected-platform/reports/verify', response_model=ConnectedPlatformReportResult)
+def connected_platform_report_verify(payload: ConnectedPlatformReportEvidence):
+    return verify_connected_platform_report(payload)

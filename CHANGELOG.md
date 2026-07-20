@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.0.0 — 2026-07-19
+
+- Added the five-layer Connected Product Support and Feedback Platform contract.
+- Connected the Support Center, publication library, operational intelligence, feedback intelligence, analytics, APIs, embeds, institutional contracts, and cross-product handoffs.
+- Added connected product dossiers, platform health, journey planning, REST routes, FastAPI parity, WP-CLI commands, daily snapshots, JSON export, responsive CSS, and report-integrity validation.
+- Preserved all existing identifiers, URLs, records, settings, privacy boundaries, and specialist-module authority without a database migration.
+
 ## 5.9.0
 
 - Added controlled public Support APIs.

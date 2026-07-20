@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-connected-product-support-feedback-platform-v1.schema.json",
+  "title": "Sustainable Catalyst Connected Product Support and Feedback Platform",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "score",
+    "state",
+    "layers",
+    "privacy",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-connected-product-support-feedback-platform/1.0"
+    },
+    "version": {
+      "const": "6.0.0"
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "state": {
+      "enum": [
+        "connected",
+        "operational",
+        "attention",
+        "not_ready"
+      ]
+    },
+    "layers": {
+      "type": "object",
+      "required": [
+        "support_center",
+        "publication_library",
+        "operational_intelligence",
+        "feedback_intelligence",
+        "platform_integration"
+      ],
+      "additionalProperties": {
+        "$ref": "#/$defs/layer"
+      }
+    },
+    "product_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ready_module_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "module_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "privacy": {
+      "$ref": "#/$defs/privacy"
+    },
+    "governance": {
+      "$ref": "#/$defs/governance"
+    }
+  },
+  "$defs": {
+    "layer": {
+      "type": "object",
+      "required": [
+        "key",
+        "label",
+        "score",
+        "state",
+        "ready_modules",
+        "module_count"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "state": {
+          "enum": [
+            "connected",
+            "strong",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "ready_modules": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "module_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "public_records_only",
+        "personal_identifiers_exposed",
+        "private_case_content_exposed",
+        "private_documents_exposed"
+      ],
+      "properties": {
+        "public_records_only": {
+          "const": true
+        },
+        "personal_identifiers_exposed": {
+          "const": false
+        },
+        "raw_search_text_persisted": {
+          "const": false
+        },
+        "private_case_content_exposed": {
+          "const": false
+        },
+        "private_documents_exposed": {
+          "const": false
+        },
+        "contact_records_exposed": {
+          "const": false
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "specialist_modules_remain_source_of_truth",
+        "human_review_required",
+        "automatic_publication",
+        "automatic_private_case_creation"
+      ],
+      "properties": {
+        "specialist_modules_remain_source_of_truth": {
+          "const": true
+        },
+        "human_review_required": {
+          "const": true
+        },
+        "automatic_publication": {
+          "const": false
+        },
+        "automatic_issue_resolution": {
+          "const": false
+        },
+        "automatic_release_change": {
+          "const": false
+        },
+        "automatic_roadmap_change": {
+          "const": false
+        },
+        "automatic_private_case_creation": {
+          "const": false
+        },
+        "automatic_redirect": {
+          "const": false
+        }
+      }
+    }
+  }
+}

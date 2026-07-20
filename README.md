@@ -1,18 +1,19 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v5.9.0
+## Current release: v6.0.0
 
-**Public API, Embeds, and Institutional Support Integration**
+**Connected Product Support and Feedback Platform**
 
-Version 5.9.0 exposes privacy-safe public support contracts, responsive product embeds, deterministic version verification, institutional integration contracts, access governance, and cross-platform handoffs.
+Version 6.0.0 connects the public Support Center, publication library, Known Issues, releases, feedback intelligence, documentation-effectiveness analytics, public integrations, and cross-product handoffs through one governed platform contract.
 
 The canonical public destination remains `/support/`, and Support Articles retain their existing `/support/guides/` URLs. Existing shortcodes, REST routes, CPTs, taxonomies, options, metadata, and records remain compatible.
 
-See `docs/public-api-embeds-institutional-support-v5.9.0.md` for the operating model and governance boundaries.
+See `docs/connected-product-support-feedback-platform-v6.0.0.md` for the architecture and governance boundaries.
 
 ## Primary public shortcodes
 
 - `[scfs_product_support_center]`
+- `[scfs_connected_product_support_platform]`
 - `[scfs_unified_support_search]`
 - `[scfs_support_knowledge_base]`
 - `[scfs_issue_release_intelligence]`

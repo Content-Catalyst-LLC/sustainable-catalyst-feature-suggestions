@@ -1,0 +1,80 @@
+{
+  "schema": "scfs-connected-product-support-feedback-platform/1.0",
+  "version": "6.0.0",
+  "generated_at": "2026-07-19T00:00:00Z",
+  "score": 97,
+  "state": "connected",
+  "product_count": 14,
+  "ready_module_count": 13,
+  "module_count": 13,
+  "layers": {
+    "support_center": {
+      "key": "support_center",
+      "label": "Support Center",
+      "description": "Single public entry point for guidance and resolution.",
+      "score": 100,
+      "state": "connected",
+      "ready_modules": 2,
+      "module_count": 2,
+      "modules": []
+    },
+    "publication_library": {
+      "key": "publication_library",
+      "label": "Publication Library",
+      "description": "Publication-grade Support Articles and examples.",
+      "score": 100,
+      "state": "connected",
+      "ready_modules": 3,
+      "module_count": 3,
+      "modules": []
+    },
+    "operational_intelligence": {
+      "key": "operational_intelligence",
+      "label": "Operational Intelligence",
+      "description": "Known Issues, releases, versions, and compatibility.",
+      "score": 100,
+      "state": "connected",
+      "ready_modules": 2,
+      "module_count": 2,
+      "modules": []
+    },
+    "feedback_intelligence": {
+      "key": "feedback_intelligence",
+      "label": "Feedback Intelligence",
+      "description": "Suggestions, documentation gaps, and product signals.",
+      "score": 100,
+      "state": "connected",
+      "ready_modules": 2,
+      "module_count": 2,
+      "modules": []
+    },
+    "platform_integration": {
+      "key": "platform_integration",
+      "label": "Platform Integration",
+      "description": "Analytics, APIs, embeds, contracts, and handoffs.",
+      "score": 100,
+      "state": "connected",
+      "ready_modules": 4,
+      "module_count": 4,
+      "modules": []
+    }
+  },
+  "privacy": {
+    "public_records_only": true,
+    "personal_identifiers_exposed": false,
+    "raw_search_text_persisted": false,
+    "private_case_content_exposed": false,
+    "private_documents_exposed": false,
+    "contact_records_exposed": false
+  },
+  "governance": {
+    "specialist_modules_remain_source_of_truth": true,
+    "human_review_required": true,
+    "automatic_publication": false,
+    "automatic_issue_resolution": false,
+    "automatic_release_change": false,
+    "automatic_roadmap_change": false,
+    "automatic_private_case_creation": false,
+    "automatic_redirect": false
+  }
+}
