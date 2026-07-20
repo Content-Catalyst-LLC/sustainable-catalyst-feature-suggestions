@@ -1,14 +1,14 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v6.2.0
+## Current release: v6.3.0
 
-**Help Desk Case Foundation**
+**Customer Support Portal and Conversations**
 
-Version 6.2.0 adds the private case-record foundation required for a full help desk: dedicated case tables, human-readable case numbers, validated status transitions, participants, messages, internal notes, assignments, relationships, attachment metadata, SLA events, audit history, authenticated REST routes, and WP-CLI operations.
+Version 6.3.0 adds the secure requester-facing portal above the v6.1.0 private case foundation and v6.2.0 Agent Workspace. Expiring access links exchange hash-only tokens for short-lived HttpOnly sessions, customers can view participant-visible conversations, reply, confirm resolution, reopen recent cases, and submit private satisfaction feedback.
 
-The public Support Center remains at `/support/`, and Support Articles retain their existing `/support/guides/` URLs. Contact and Engagement remains authoritative for requester identity, consent, and secure uploaded files.
+The public Support Center remains at `/support/`, Support Articles retain `/support/guides/`, and the customer portal is designed for `/support/cases/`. Contact and Engagement remains authoritative for requester identity, consent, secure attachments, and notification delivery.
 
-See `docs/help-desk-case-foundation-v6.2.0.md` for the private-record architecture and governance boundaries.
+See `docs/help-desk-customer-portal-v6.3.0.md` for the portal architecture and privacy boundaries.
 
 ## Primary public shortcodes
 
@@ -19,6 +19,7 @@ See `docs/help-desk-case-foundation-v6.2.0.md` for the private-record architectu
 - `[scfs_issue_release_intelligence]`
 - `[scfs_cross_product_support_graph]`
 - `[scfs_support_embed product="decision-studio"]`
+- `[scfs_help_desk_customer_portal]`
 
 ## Repository layout
 
@@ -29,6 +30,10 @@ See `docs/help-desk-case-foundation-v6.2.0.md` for the private-record architectu
 - `tests/` — WordPress contract tests
 - `docs/` — implementation and governance guides
 
+
+## v6.3.0
+
+Adds secure requester access links, token-to-session exchange, participant-visible conversations, requester replies, bounded resolution and reopening actions, private satisfaction feedback, portal REST contracts, and Contact and Engagement notification handoffs.
 
 ## v6.2.0
 

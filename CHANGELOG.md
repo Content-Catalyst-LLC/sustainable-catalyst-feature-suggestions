@@ -1,5 +1,14 @@
 # Changelog
 
+## 6.3.0
+
+- Added the secure Customer Support Portal and conversation layer.
+- Added hash-only access links, token-to-session exchange, HttpOnly SameSite sessions, and clean URL redirects.
+- Added participant-visible conversations, requester replies, explicit resolution confirmation, and bounded case reopening.
+- Added private satisfaction feedback and Contact and Engagement notification-queue authority.
+- Added portal administration, agent access controls, WordPress REST, FastAPI, WP-CLI, schemas, examples, tests, CSS, and JavaScript.
+- Preserved all public support records, private case records, Agent Workspace data, URLs, identifiers, and privacy boundaries.
+
 ## 6.2.0
 
 - Added Help Desk Agent Workspace.

@@ -1,0 +1,49 @@
+{
+  "schema": "scfs-help-desk-customer-portal/1.0",
+  "version": "6.3.0",
+  "token_to_session_exchange": true,
+  "raw_access_tokens_stored": false,
+  "raw_session_secrets_stored": false,
+  "participant_visible_messages_only": true,
+  "internal_notes_exposed": false,
+  "public_case_list_api": false,
+  "case_existence_disclosure_without_session": false,
+  "identity_authority": "contact-engagement",
+  "attachment_authority": "contact-engagement",
+  "notification_authority": "contact-engagement",
+  "case": {
+    "case_number": "SC-2026-000184",
+    "subject": "Decision Studio briefing export does not complete",
+    "product": "decision-studio",
+    "product_version": "2.0.1",
+    "component": "briefing",
+    "status": "waiting_requester",
+    "created_at": "2026-07-18 14:22:00",
+    "updated_at": "2026-07-19 09:18:00"
+  },
+  "messages": [
+    {
+      "message_type": "requester_message",
+      "body": "The export stops after the evidence summary step.",
+      "created_at": "2026-07-18 14:22:00"
+    },
+    {
+      "message_type": "support_reply",
+      "body": "Please retry after clearing the saved publication profile and let us know whether the export completes.",
+      "created_at": "2026-07-19 09:18:00"
+    }
+  ],
+  "permissions": {
+    "reply": true,
+    "transition": true,
+    "satisfaction": true
+  },
+  "privacy": {
+    "internal_notes_exposed": false,
+    "requester_identity_exposed": false,
+    "organization_identity_exposed": false,
+    "private_attachment_bytes_exposed": false,
+    "raw_access_token_stored": false
+  },
+  "human_review_required": true
+}

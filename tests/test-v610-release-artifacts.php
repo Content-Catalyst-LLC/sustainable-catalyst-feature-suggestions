@@ -1,8 +1,8 @@
 <?php
 $root = dirname(__DIR__);
 $files = array(
- 'RELEASE_NOTES_6.2.0.md',
- 'SUSTAINABLE_CATALYST_PRODUCT_SUPPORT_AND_FEEDBACK_PLATFORM_V6.2.0_RELEASE_NOTES.md',
+ 'RELEASE_NOTES_6.3.0.md',
+ 'SUSTAINABLE_CATALYST_PRODUCT_SUPPORT_AND_FEEDBACK_PLATFORM_V6.3.0_RELEASE_NOTES.md',
  'docs/help-desk-case-foundation-v6.1.0.md',
  'examples/help-desk-case-foundation-v6.1.0.json',
  'schemas/scfs-help-desk-case-v1.schema.json',

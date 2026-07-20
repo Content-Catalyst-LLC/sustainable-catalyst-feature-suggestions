@@ -1,4 +1,4 @@
-"""Connected Product Support and Feedback Platform v6.2.0 contracts."""
+"""Connected Product Support and Feedback Platform v6.3.0 contracts."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-VERSION = "6.2.0"
+VERSION = "6.3.0"
 SCHEMA = "scfs-connected-product-support-feedback-platform/1.0"
 JOURNEY_SCHEMA = "scfs-connected-support-journey/1.0"
 

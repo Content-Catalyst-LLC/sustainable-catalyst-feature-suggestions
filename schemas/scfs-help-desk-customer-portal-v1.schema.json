@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-customer-portal-v1.schema.json",
+  "title": "Sustainable Catalyst Help Desk Customer Portal",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "token_to_session_exchange",
+    "participant_visible_messages_only",
+    "internal_notes_exposed",
+    "public_case_list_api",
+    "privacy"
+  ],
+  "properties": {
+    "schema": {"const": "scfs-help-desk-customer-portal/1.0"},
+    "version": {"const": "6.3.0"},
+    "token_to_session_exchange": {"const": true},
+    "raw_access_tokens_stored": {"const": false},
+    "raw_session_secrets_stored": {"const": false},
+    "participant_visible_messages_only": {"const": true},
+    "internal_notes_exposed": {"const": false},
+    "public_case_list_api": {"const": false},
+    "case_existence_disclosure_without_session": {"const": false},
+    "identity_authority": {"const": "contact-engagement"},
+    "attachment_authority": {"const": "contact-engagement"},
+    "notification_authority": {"const": "contact-engagement"},
+    "case": {
+      "type": "object",
+      "required": ["case_number", "subject", "status", "created_at", "updated_at"],
+      "properties": {
+        "case_number": {"type": "string", "pattern": "^[A-Z0-9]+-[0-9]{4}-[0-9]{6}$"},
+        "subject": {"type": "string", "minLength": 1},
+        "product": {"type": "string"},
+        "product_version": {"type": "string"},
+        "component": {"type": "string"},
+        "status": {
+          "enum": ["new", "open", "waiting_support", "waiting_requester", "escalated", "resolved", "closed", "duplicate", "cancelled"]
+        },
+        "created_at": {"type": "string"},
+        "updated_at": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["message_type", "body", "created_at"],
+        "properties": {
+          "message_type": {"enum": ["requester_message", "support_reply", "system_note"]},
+          "body": {"type": "string"},
+          "created_at": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "reply": {"type": "boolean"},
+        "transition": {"type": "boolean"},
+        "satisfaction": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "internal_notes_exposed",
+        "requester_identity_exposed",
+        "organization_identity_exposed",
+        "private_attachment_bytes_exposed",
+        "raw_access_token_stored"
+      ],
+      "properties": {
+        "internal_notes_exposed": {"const": false},
+        "requester_identity_exposed": {"const": false},
+        "organization_identity_exposed": {"const": false},
+        "private_attachment_bytes_exposed": {"const": false},
+        "raw_access_token_stored": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "human_review_required": {"const": true}
+  },
+  "additionalProperties": true
+}

@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_Agent_Workspace {
-    const VERSION = '6.2.0';
+    const VERSION = '6.3.0';
     const SCHEMA = 'scfs-help-desk-agent-workspace/1.0';
     const DB_VERSION = '1.1.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_workspace_db_version';
@@ -827,6 +827,7 @@ final class SCFS_Help_Desk_Agent_Workspace {
         }
         echo '</select></label><label><span>' . esc_html__('Reason', 'sustainable-catalyst-feature-suggestions') . '</span><textarea name="reason" rows="3"></textarea></label><button class="button">' . esc_html__('Update status', 'sustainable-catalyst-feature-suggestions') . '</button></form></section>';
         echo '<section class="scfs-agent-workspace__panel"><h3>' . esc_html__('Operational record', 'sustainable-catalyst-feature-suggestions') . '</h3><p>' . esc_html(sprintf(_n('%d participant', '%d participants', count($participants), 'sustainable-catalyst-feature-suggestions'), count($participants))) . '</p><p>' . esc_html(sprintf(_n('%d related record', '%d related records', count($relationships), 'sustainable-catalyst-feature-suggestions'), count($relationships))) . '</p><p>' . esc_html(sprintf(_n('%d assignment event', '%d assignment events', count($assignments), 'sustainable-catalyst-feature-suggestions'), count($assignments))) . '</p></section>';
+        do_action('scfs_help_desk_case_workspace_after', $case);
         echo '</aside></div>';
     }
 
