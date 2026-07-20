@@ -16,4 +16,4 @@ foreach ($files as $file) $checks[$file] = is_file($root . '/' . $file);
 $failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { fwrite(STDERR, 'Missing release artifacts: ' . implode(', ', $failed) . "\n"); exit(1); }
-echo 'v6.1.0 release artifact contract passed (' . count($checks) . " checks).\n";
+echo 'v6.2.0 release artifact contract passed (' . count($checks) . " checks).\n";

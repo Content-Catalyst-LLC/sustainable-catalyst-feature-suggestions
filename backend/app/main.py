@@ -25,8 +25,9 @@ from .support_graph_handoffs import SupportGraphEvidence, SupportGraphSummary, H
 from .public_support_integrations import VersionVerificationRequest, VersionVerificationResult, SupportEmbedPlanRequest, SupportEmbedPlanResult, InstitutionalContractEvidence, InstitutionalContractResult, PublicIntegrationReportEvidence, PublicIntegrationReportResult, verify_support_version, plan_support_embed, validate_institutional_contract, evaluate_public_integration_health
 from .connected_product_support_platform import ConnectedPlatformEvidence, ConnectedPlatformAssessment, ConnectedJourneyRequest, ConnectedJourneyPlan, ConnectedPlatformReportEvidence, ConnectedPlatformReportResult, evaluate_connected_platform, plan_connected_journey, verify_connected_platform_report
 from .help_desk_case_foundation import CaseIntakeEvidence, CaseIntakeAssessment, CaseNumberRequest, CaseNumberResult, CaseTransitionRequest, CaseTransitionResult, CaseRelationshipEvidence, CaseRelationshipResult, PrivacyBoundaryEvidence, PrivacyBoundaryResult, CaseReportIntegrityEvidence, CaseReportIntegrityResult, assess_case_intake, generate_case_number, evaluate_case_transition, evaluate_case_relationship, evaluate_privacy_boundary, verify_case_report
+from .help_desk_agent_workspace import QueueEvaluationRequest, QueueEvaluationResult, AssignmentPlanRequest, AssignmentPlanResult, AgentWorkloadEvidence, AgentWorkloadAssessment, SavedViewEvidence, SavedViewAssessment, WorkspaceReportIntegrityEvidence, WorkspaceReportIntegrityResult, evaluate_queue, plan_assignment, assess_workload, assess_saved_view, verify_workspace_report
 
-VERSION='6.1.0'
+VERSION='6.2.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1020,3 +1021,59 @@ def help_desk_evaluate_privacy(payload: PrivacyBoundaryEvidence, x_scfs_ai_key:O
 def help_desk_verify_report(payload: CaseReportIntegrityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_case_report(payload)
+
+@app.get('/v1/help-desk/workspace/capabilities')
+def help_desk_workspace_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-help-desk-agent-workspace/1.0',
+        'capabilities': [
+            'private_agent_workspace',
+            'deterministic_queue_evaluation',
+            'team_queues',
+            'assignment_planning',
+            'assignment_history',
+            'workload_assessment',
+            'saved_view_governance',
+            'bulk_operation_planning',
+            'sha256_report_integrity',
+        ],
+        'public_workspace_api': False,
+        'automatic_assignment': False,
+        'private_case_content_exposed': False,
+        'identity_authority': 'contact-engagement',
+        'attachment_authority': 'contact-engagement',
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/help-desk/workspace/queues/evaluate', response_model=QueueEvaluationResult)
+def help_desk_workspace_queue_evaluate(payload: QueueEvaluationRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_queue(payload)
+
+
+@app.post('/v1/help-desk/workspace/assignments/plan', response_model=AssignmentPlanResult)
+def help_desk_workspace_assignment_plan(payload: AssignmentPlanRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return plan_assignment(payload)
+
+
+@app.post('/v1/help-desk/workspace/workload/evaluate', response_model=AgentWorkloadAssessment)
+def help_desk_workspace_workload_evaluate(payload: AgentWorkloadEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return assess_workload(payload)
+
+
+@app.post('/v1/help-desk/workspace/views/evaluate', response_model=SavedViewAssessment)
+def help_desk_workspace_view_evaluate(payload: SavedViewEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return assess_saved_view(payload)
+
+
+@app.post('/v1/help-desk/workspace/reports/verify', response_model=WorkspaceReportIntegrityResult)
+def help_desk_workspace_report_verify(payload: WorkspaceReportIntegrityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_workspace_report(payload)

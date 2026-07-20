@@ -1,0 +1,29 @@
+{
+  "schema": "scfs-help-desk-agent-workspace/1.0",
+  "version": "6.2.0",
+  "private_agent_workspace": true,
+  "public_workspace_api": false,
+  "automatic_assignment": false,
+  "identity_authority": "contact-engagement",
+  "attachment_authority": "contact-engagement",
+  "queues": [
+    {"key": "my_open", "label": "My open cases", "count": 7},
+    {"key": "unassigned", "label": "Unassigned", "count": 3},
+    {"key": "escalated", "label": "Escalated", "count": 1},
+    {"key": "team_technical_review", "label": "Technical Review", "count": 5}
+  ],
+  "workload": {
+    "agents": [
+      {"assigned_user_id": 7, "display_name": "Support Agent", "case_count": 7, "weighted_load": 18, "escalated_count": 1, "state": "balanced"}
+    ],
+    "teams": [
+      {"assigned_team": "technical-review", "case_count": 5, "weighted_load": 16, "escalated_count": 1, "state": "balanced"}
+    ],
+    "unassigned": 3,
+    "human_review_required": true
+  },
+  "saved_views": [
+    {"name": "Decision Studio P1/P2", "visibility": "private", "query": {"product": "decision-studio", "queue": "high_priority"}}
+  ],
+  "human_review_required": true
+}

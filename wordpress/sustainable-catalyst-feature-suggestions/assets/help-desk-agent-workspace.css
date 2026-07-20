@@ -1,0 +1,385 @@
+.scfs-agent-workspace {
+  --scfs-aw-bg: #f7f5ef;
+  --scfs-aw-surface: #fff;
+  --scfs-aw-cream: #fff8e7;
+  --scfs-aw-text: #181818;
+  --scfs-aw-muted: #626262;
+  --scfs-aw-border: #ddd8ce;
+  --scfs-aw-maroon: #6e1f2a;
+  --scfs-aw-red: #c62828;
+  max-width: 1480px;
+  color: var(--scfs-aw-text);
+}
+
+.scfs-agent-workspace *,
+.scfs-agent-workspace *::before,
+.scfs-agent-workspace *::after {
+  box-sizing: border-box;
+}
+
+.scfs-agent-workspace__masthead,
+.scfs-agent-workspace__case-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin: 20px 0 24px;
+  padding: 28px 30px;
+  border: 1px solid var(--scfs-aw-border);
+  background: var(--scfs-aw-cream);
+}
+
+.scfs-agent-workspace__masthead h1,
+.scfs-agent-workspace__case-header h2 {
+  margin: 2px 0 8px;
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1.08;
+}
+
+.scfs-agent-workspace__masthead p,
+.scfs-agent-workspace__case-header p {
+  max-width: 78ch;
+  margin: 0;
+  color: var(--scfs-aw-muted);
+  line-height: 1.6;
+}
+
+.scfs-agent-workspace__eyebrow {
+  margin: 0 !important;
+  color: var(--scfs-aw-maroon) !important;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.scfs-agent-workspace__privacy {
+  flex: 0 0 auto;
+  padding: 8px 11px;
+  border: 1px solid var(--scfs-aw-maroon);
+  color: var(--scfs-aw-maroon);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.scfs-agent-workspace__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.scfs-agent-workspace__metrics article {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--scfs-aw-border);
+  background: var(--scfs-aw-surface);
+}
+
+.scfs-agent-workspace__metrics strong,
+.scfs-agent-workspace__metrics span {
+  display: block;
+}
+
+.scfs-agent-workspace__metrics strong {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.scfs-agent-workspace__metrics span {
+  margin-top: 8px;
+  color: var(--scfs-aw-muted);
+}
+
+.scfs-agent-workspace__layout {
+  display: grid;
+  grid-template-columns: minmax(235px, .68fr) minmax(0, 2.6fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.scfs-agent-workspace__layout > *,
+.scfs-agent-workspace__case-layout > * {
+  min-width: 0;
+}
+
+.scfs-agent-workspace__sidebar {
+  position: sticky;
+  top: 44px;
+}
+
+.scfs-agent-workspace__panel {
+  margin: 0 0 18px;
+  padding: 22px;
+  border: 1px solid var(--scfs-aw-border);
+  background: var(--scfs-aw-surface);
+}
+
+.scfs-agent-workspace__panel h2,
+.scfs-agent-workspace__panel h3 {
+  margin: 0 0 16px;
+}
+
+.scfs-agent-workspace__queues a,
+.scfs-agent-workspace__saved-views > div,
+.scfs-agent-workspace__workload > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #ece8df;
+  text-decoration: none;
+}
+
+.scfs-agent-workspace__queues a.is-active {
+  color: var(--scfs-aw-maroon);
+  font-weight: 800;
+}
+
+.scfs-agent-workspace__queues strong {
+  min-width: 32px;
+  padding: 3px 7px;
+  border: 1px solid var(--scfs-aw-border);
+  text-align: center;
+}
+
+.scfs-agent-workspace__saved-views .scfs-agent-workspace__delete {
+  margin-left: auto;
+  color: var(--scfs-aw-red);
+  font-size: 20px;
+  text-decoration: none;
+}
+
+.scfs-agent-workspace label,
+.scfs-agent-workspace label > span {
+  display: block;
+}
+
+.scfs-agent-workspace label > span {
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.scfs-agent-workspace input,
+.scfs-agent-workspace select,
+.scfs-agent-workspace textarea {
+  width: 100%;
+  max-width: none;
+}
+
+.scfs-agent-workspace__saved-views form,
+.scfs-agent-workspace__reply {
+  margin-top: 16px;
+}
+
+.scfs-agent-workspace__saved-views form .button,
+.scfs-agent-workspace__reply .button {
+  margin-top: 10px;
+}
+
+.scfs-agent-workspace__workload small {
+  color: var(--scfs-aw-muted);
+}
+
+.scfs-agent-workspace__filter-panel form {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(145px, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.scfs-agent-workspace__section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.scfs-agent-workspace__bulk {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.scfs-agent-workspace__bulk select,
+.scfs-agent-workspace__bulk input {
+  width: auto;
+  min-width: 150px;
+}
+
+.scfs-agent-workspace__table-wrap {
+  overflow-x: auto;
+}
+
+.scfs-agent-workspace table td small {
+  display: block;
+  margin-top: 4px;
+  color: var(--scfs-aw-muted);
+}
+
+.scfs-agent-workspace__badge {
+  display: inline-block;
+  padding: 5px 8px;
+  border: 1px solid var(--scfs-aw-border);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.scfs-agent-workspace__badge.is-p1_critical {
+  border-color: #8e1515;
+  background: #8e1515;
+  color: #fff;
+}
+
+.scfs-agent-workspace__badge.is-p2_high {
+  border-color: #c95b24;
+  background: #fff1e7;
+  color: #7a2e0d;
+}
+
+.scfs-agent-workspace__empty {
+  padding: 34px;
+  text-align: center;
+}
+
+.scfs-agent-workspace__case-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, .8fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.scfs-agent-workspace__prose {
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.scfs-agent-workspace__message {
+  margin: 14px 0;
+  padding: 18px;
+  border: 1px solid var(--scfs-aw-border);
+  background: #fff;
+}
+
+.scfs-agent-workspace__message.is-internal {
+  border-left: 5px solid var(--scfs-aw-maroon);
+  background: var(--scfs-aw-cream);
+}
+
+.scfs-agent-workspace__message header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  color: var(--scfs-aw-muted);
+  font-size: 12px;
+}
+
+.scfs-agent-workspace dl {
+  margin: 0;
+}
+
+.scfs-agent-workspace dl > div {
+  display: grid;
+  grid-template-columns: minmax(100px, .7fr) minmax(0, 1fr);
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid #ece8df;
+}
+
+.scfs-agent-workspace dt {
+  font-weight: 800;
+}
+
+.scfs-agent-workspace dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.scfs-agent-workspace .button-primary {
+  border-color: var(--scfs-aw-red);
+  background: var(--scfs-aw-red);
+}
+
+.scfs-agent-workspace .button-primary:hover,
+.scfs-agent-workspace .button-primary:focus {
+  border-color: #9d1f1f;
+  background: #9d1f1f;
+}
+
+@media (max-width: 1250px) {
+  .scfs-agent-workspace__filter-panel form {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1000px) {
+  .scfs-agent-workspace__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scfs-agent-workspace__layout,
+  .scfs-agent-workspace__case-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .scfs-agent-workspace__sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 782px) {
+  .scfs-agent-workspace__masthead,
+  .scfs-agent-workspace__case-header,
+  .scfs-agent-workspace__section-header,
+  .scfs-agent-workspace__bulk,
+  .scfs-agent-workspace__message header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .scfs-agent-workspace__metrics,
+  .scfs-agent-workspace__filter-panel form {
+    grid-template-columns: 1fr;
+  }
+
+  .scfs-agent-workspace__bulk,
+  .scfs-agent-workspace__bulk select,
+  .scfs-agent-workspace__bulk input,
+  .scfs-agent-workspace__bulk .button {
+    width: 100%;
+  }
+
+  .scfs-agent-workspace__panel,
+  .scfs-agent-workspace__masthead,
+  .scfs-agent-workspace__case-header {
+    padding: 18px;
+  }
+}
+
+@media print {
+  .scfs-agent-workspace__sidebar,
+  .scfs-agent-workspace__filter-panel,
+  .scfs-agent-workspace form,
+  .scfs-agent-workspace .button,
+  .scfs-agent-workspace .check-column {
+    display: none !important;
+  }
+
+  .scfs-agent-workspace__layout,
+  .scfs-agent-workspace__case-layout {
+    display: block;
+  }
+
+  .scfs-agent-workspace__panel,
+  .scfs-agent-workspace__masthead,
+  .scfs-agent-workspace__case-header,
+  .scfs-agent-workspace__message {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

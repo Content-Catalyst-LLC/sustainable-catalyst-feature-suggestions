@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Sustainable Catalyst Product Support and Feedback Platform
- * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, product-signal intelligence, documentation-effectiveness analytics, cross-product support graphs, governed platform handoffs, controlled public support APIs, product embeds, institutional support integration, private help-desk case foundations, connected platform governance, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 6.1.0
+ * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, product-signal intelligence, documentation-effectiveness analytics, cross-product support graphs, governed platform handoffs, controlled public support APIs, product embeds, institutional support integration, private help-desk case foundations, agent workspaces, team queues, assignment operations, connected platform governance, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
+ * Version: 6.2.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '6.1.0';
+    const VERSION = '6.2.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -117,6 +117,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         if (class_exists('SCFS_Help_Desk_Case_Foundation')) {
             SCFS_Help_Desk_Case_Foundation::activate();
         }
+        if (class_exists('SCFS_Help_Desk_Agent_Workspace')) {
+            SCFS_Help_Desk_Agent_Workspace::activate();
+        }
         if (class_exists('SCFS_Repository_Release_Synchronization')) {
             SCFS_Repository_Release_Synchronization::activate();
         }
@@ -155,6 +158,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
         if (class_exists('SCFS_Support_Reliability_Center')) {
             SCFS_Support_Reliability_Center::deactivate();
+        }
+        if (class_exists('SCFS_Help_Desk_Agent_Workspace')) {
+            SCFS_Help_Desk_Agent_Workspace::deactivate();
         }
         if (class_exists('SCFS_Help_Desk_Case_Foundation')) {
             SCFS_Help_Desk_Case_Foundation::deactivate();
@@ -2231,6 +2237,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-cross-product-supp
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-public-support-integrations.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-connected-product-support-platform.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-help-desk-case-foundation.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-help-desk-agent-workspace.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-support-discovery.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-unified-support-search.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-known-issue-release-intelligence.php';
@@ -2260,6 +2267,7 @@ SCFS_Cross_Product_Support_Graph::instance();
 SCFS_Public_Support_Integrations::instance();
 SCFS_Connected_Product_Support_Platform::instance();
 SCFS_Help_Desk_Case_Foundation::instance();
+SCFS_Help_Desk_Agent_Workspace::instance();
 SCFS_Support_Discovery::instance();
 SCFS_Unified_Support_Search::instance();
 SCFS_Known_Issue_Release_Intelligence::instance();

@@ -1,5 +1,14 @@
 # Changelog
 
+## 6.2.0
+
+- Added Help Desk Agent Workspace.
+- Added built-in and dynamic team queues.
+- Added explicit assignment, workload summaries, saved views, and bulk case operations.
+- Added private case workspace with internal notes and requester-visible replies.
+- Added authenticated REST, FastAPI, and WP-CLI contracts.
+- Preserved public support and v6.1.0 private case compatibility.
+
 ## 6.1.0 — 2026-07-19
 
 - Added eight dedicated private Help Desk tables for cases, participants, messages, events, assignments, relationships, attachment metadata, and SLA events.
