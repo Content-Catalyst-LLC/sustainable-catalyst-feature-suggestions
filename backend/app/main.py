@@ -24,8 +24,9 @@ from .support_analytics_documentation_effectiveness import DocumentationEffectiv
 from .support_graph_handoffs import SupportGraphEvidence, SupportGraphSummary, HandoffPlanEvidence, HandoffPlanResult, SupportPathEvidence, SupportPathResult, SupportGraphIntegrityResult, build_support_graph, plan_platform_handoffs, find_support_path, verify_support_graph
 from .public_support_integrations import VersionVerificationRequest, VersionVerificationResult, SupportEmbedPlanRequest, SupportEmbedPlanResult, InstitutionalContractEvidence, InstitutionalContractResult, PublicIntegrationReportEvidence, PublicIntegrationReportResult, verify_support_version, plan_support_embed, validate_institutional_contract, evaluate_public_integration_health
 from .connected_product_support_platform import ConnectedPlatformEvidence, ConnectedPlatformAssessment, ConnectedJourneyRequest, ConnectedJourneyPlan, ConnectedPlatformReportEvidence, ConnectedPlatformReportResult, evaluate_connected_platform, plan_connected_journey, verify_connected_platform_report
+from .help_desk_case_foundation import CaseIntakeEvidence, CaseIntakeAssessment, CaseNumberRequest, CaseNumberResult, CaseTransitionRequest, CaseTransitionResult, CaseRelationshipEvidence, CaseRelationshipResult, PrivacyBoundaryEvidence, PrivacyBoundaryResult, CaseReportIntegrityEvidence, CaseReportIntegrityResult, assess_case_intake, generate_case_number, evaluate_case_transition, evaluate_case_relationship, evaluate_privacy_boundary, verify_case_report
 
-VERSION='6.0.0'
+VERSION='6.1.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -171,7 +172,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','feedback_product_signal_scoring','feedback_signal_portfolio_summaries','feedback_cluster_prioritization','privacy_minimized_product_demand','public_support_api','product_support_embeds','version_verification','institutional_support_contracts','access_governance','cross_platform_support_handoffs','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','survey_descriptive_analysis','cross_tabs','scale_reliability','feedback_product_signal_scoring','feedback_signal_portfolio_summaries','feedback_cluster_prioritization','privacy_minimized_product_demand','public_support_api','product_support_embeds','version_verification','institutional_support_contracts','access_governance','cross_platform_support_handoffs','private_help_desk_case_foundation','case_intake_validation','case_status_transitions','case_relationship_governance','help_desk_privacy_boundary','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -957,3 +958,65 @@ def connected_platform_journey_plan(payload: ConnectedJourneyRequest):
 @app.post('/v1/connected-platform/reports/verify', response_model=ConnectedPlatformReportResult)
 def connected_platform_report_verify(payload: ConnectedPlatformReportEvidence):
     return verify_connected_platform_report(payload)
+
+@app.get('/v1/help-desk/capabilities')
+def help_desk_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-help-desk-case/1.0',
+        'capabilities': [
+            'private_case_intake_validation',
+            'human_readable_case_numbers',
+            'case_status_transition_evaluation',
+            'case_relationship_governance',
+            'privacy_boundary_validation',
+            'sha256_report_integrity',
+        ],
+        'wordpress_private_case_source_of_truth': True,
+        'identity_authority': 'contact-engagement',
+        'attachment_authority': 'contact-engagement',
+        'public_case_api': False,
+        'public_case_shortcode': False,
+        'private_case_content_exposed': False,
+        'automatic_case_creation': False,
+        'automatic_case_resolution': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/help-desk/cases/validate', response_model=CaseIntakeAssessment)
+def help_desk_validate_case(payload: CaseIntakeEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return assess_case_intake(payload)
+
+
+@app.post('/v1/help-desk/case-numbers/generate', response_model=CaseNumberResult)
+def help_desk_generate_case_number(payload: CaseNumberRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return generate_case_number(payload)
+
+
+@app.post('/v1/help-desk/transitions/evaluate', response_model=CaseTransitionResult)
+def help_desk_evaluate_transition(payload: CaseTransitionRequest, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_case_transition(payload)
+
+
+@app.post('/v1/help-desk/relationships/evaluate', response_model=CaseRelationshipResult)
+def help_desk_evaluate_relationship(payload: CaseRelationshipEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_case_relationship(payload)
+
+
+@app.post('/v1/help-desk/privacy/evaluate', response_model=PrivacyBoundaryResult)
+def help_desk_evaluate_privacy(payload: PrivacyBoundaryEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_privacy_boundary(payload)
+
+
+@app.post('/v1/help-desk/reports/verify', response_model=CaseReportIntegrityResult)
+def help_desk_verify_report(payload: CaseReportIntegrityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_case_report(payload)

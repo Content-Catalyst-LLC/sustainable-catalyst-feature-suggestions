@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-case-v1.schema.json",
+  "title": "Sustainable Catalyst Help Desk Case",
+  "description": "Private case contract for the Help Desk Case Foundation. Public support records remain separate.",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "case_number",
+    "subject",
+    "case_type",
+    "priority",
+    "severity",
+    "status",
+    "source",
+    "privacy_classification",
+    "consent_state",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-help-desk-case/1.0"
+    },
+    "version": {
+      "const": "6.1.0"
+    },
+    "case_number": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]+-[0-9]{4}-[0-9]{6,9}$"
+    },
+    "requester_ref": {
+      "type": "string",
+      "maxLength": 191
+    },
+    "organization_ref": {
+      "type": "string",
+      "maxLength": 191
+    },
+    "product": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "product_version": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "component": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "case_type": {
+      "enum": [
+        "how_to",
+        "configuration",
+        "unexpected_behavior",
+        "defect_report",
+        "access_problem",
+        "documentation_problem",
+        "data_problem",
+        "integration_problem",
+        "security_privacy",
+        "feature_request",
+        "other"
+      ]
+    },
+    "priority": {
+      "enum": [
+        "p1_critical",
+        "p2_high",
+        "normal",
+        "low"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "critical",
+        "major",
+        "minor",
+        "informational"
+      ]
+    },
+    "status": {
+      "enum": [
+        "new",
+        "open",
+        "waiting_support",
+        "waiting_requester",
+        "escalated",
+        "resolved",
+        "closed",
+        "duplicate",
+        "cancelled"
+      ]
+    },
+    "source": {
+      "enum": [
+        "admin",
+        "contact_engagement",
+        "authenticated_portal",
+        "email",
+        "api",
+        "import"
+      ]
+    },
+    "privacy_classification": {
+      "enum": [
+        "private_support",
+        "restricted",
+        "security_privacy",
+        "institutional_private"
+      ]
+    },
+    "consent_state": {
+      "enum": [
+        "not_recorded",
+        "recorded",
+        "withdrawn",
+        "not_required"
+      ]
+    },
+    "assigned_user_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "assigned_team": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "related_record_type"
+        ],
+        "properties": {
+          "relationship_type": {
+            "type": "string"
+          },
+          "related_record_type": {
+            "enum": [
+              "support_article",
+              "known_issue",
+              "release_record",
+              "feature_suggestion",
+              "documentation_gap",
+              "parent_case",
+              "duplicate_case",
+              "related_case",
+              "product_handoff"
+            ]
+          },
+          "related_record_id": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "related_record_key": {
+            "type": "string"
+          },
+          "public_context_only": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "public_case_api",
+        "public_case_shortcode",
+        "identity_authority",
+        "attachment_authority"
+      ],
+      "properties": {
+        "public_case_api": {
+          "const": false
+        },
+        "public_case_shortcode": {
+          "const": false
+        },
+        "identity_authority": {
+          "const": "contact-engagement"
+        },
+        "attachment_authority": {
+          "const": "contact-engagement"
+        },
+        "private_case_content_exposed": {
+          "const": false
+        },
+        "automatic_case_creation": {
+          "const": false
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Connected_Product_Support_Platform {
-    const VERSION = '6.0.0';
+    const VERSION = '6.1.0';
     const SCHEMA = 'scfs-connected-product-support-feedback-platform/1.0';
     const JOURNEY_SCHEMA = 'scfs-connected-support-journey/1.0';
     const SHORTCODE = 'scfs_connected_product_support_platform';
@@ -107,6 +107,7 @@ final class SCFS_Connected_Product_Support_Platform {
                 'connected_product_dossiers',
                 'platform_health_and_integrity',
                 'human_review_governance',
+                'private_help_desk_case_foundation',
             ),
             'shortcodes' => array(self::SHORTCODE, self::LEGACY_SHORTCODE),
             'public_routes' => array(
@@ -195,6 +196,7 @@ final class SCFS_Connected_Product_Support_Platform {
     public function module_inventory() {
         return array(
             'support_center' => $this->module_record('support_center', 'Unified Support Center', 'SCFS_Product_Support_Platform', 'support_center'),
+            'help_desk_cases' => $this->module_record('help_desk_cases', 'Private Help Desk Case Foundation', 'SCFS_Help_Desk_Case_Foundation', 'platform_integration'),
             'unified_search' => $this->module_record('unified_search', 'Unified Search and Guided Resolution', 'SCFS_Unified_Support_Search', 'support_center'),
             'knowledge_base' => $this->module_record('knowledge_base', 'Support Publication Library', 'SCFS_Integrated_Knowledge_Base', 'publication_library'),
             'article_integrity' => $this->module_record('article_integrity', 'Support Article Integrity', 'SCFS_Support_Article_Integrity', 'publication_library'),

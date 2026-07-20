@@ -1,0 +1,246 @@
+.scfs-help-desk {
+  --scfs-hd-ink: #171717;
+  --scfs-hd-muted: #626262;
+  --scfs-hd-border: #d9d4ca;
+  --scfs-hd-cream: #fff8e7;
+  --scfs-hd-surface: #ffffff;
+  --scfs-hd-maroon: #6f1727;
+  --scfs-hd-red: #c62828;
+  max-width: 1440px;
+}
+
+.scfs-help-desk,
+.scfs-help-desk input,
+.scfs-help-desk select,
+.scfs-help-desk textarea,
+.scfs-help-desk button {
+  font-family: Montserrat, Arial, sans-serif;
+}
+
+.scfs-help-desk h1,
+.scfs-help-desk h2,
+.scfs-help-desk h3 {
+  font-family: Spartan, Montserrat, Arial, sans-serif;
+  color: var(--scfs-hd-ink);
+}
+
+.scfs-help-desk__toolbar,
+.scfs-help-desk__case-header,
+.scfs-help-desk__badges,
+.scfs-help-desk__message header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.scfs-help-desk__toolbar {
+  margin: 22px 0;
+}
+
+.scfs-help-desk__privacy {
+  max-width: 76ch;
+  color: var(--scfs-hd-muted);
+  font-size: 13px;
+}
+
+.scfs-help-desk__table {
+  border-color: var(--scfs-hd-border);
+}
+
+.scfs-help-desk__table th {
+  font-family: Spartan, Montserrat, Arial, sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.scfs-help-desk__panel {
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid var(--scfs-hd-border);
+  background: var(--scfs-hd-surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
+}
+
+.scfs-help-desk__panel > h2,
+.scfs-help-desk__panel > h3 {
+  margin-top: 0;
+}
+
+.scfs-help-desk__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.scfs-help-desk label,
+.scfs-help-desk__grid label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.scfs-help-desk input,
+.scfs-help-desk select,
+.scfs-help-desk textarea {
+  width: 100%;
+  max-width: none;
+}
+
+.scfs-help-desk__full {
+  margin-top: 18px;
+}
+
+.scfs-help-desk__case-header {
+  margin: 18px 0 8px;
+  padding: 22px 24px;
+  border-left: 5px solid var(--scfs-hd-maroon);
+  background: var(--scfs-hd-cream);
+}
+
+.scfs-help-desk__case-header h2 {
+  margin: 4px 0 0;
+}
+
+.scfs-help-desk__eyebrow {
+  margin: 0;
+  color: var(--scfs-hd-maroon);
+  font-family: Spartan, Montserrat, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.scfs-help-desk__badges {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.scfs-help-desk__badges span {
+  padding: 7px 10px;
+  border: 1px solid var(--scfs-hd-border);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scfs-help-desk__case-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, .85fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.scfs-help-desk__case-layout > * {
+  min-width: 0;
+}
+
+.scfs-help-desk__message {
+  margin: 16px 0;
+  padding: 18px;
+  border: 1px solid var(--scfs-hd-border);
+  background: #fff;
+}
+
+.scfs-help-desk__message.is-internal {
+  border-left: 5px solid var(--scfs-hd-maroon);
+  background: var(--scfs-hd-cream);
+}
+
+.scfs-help-desk__message header {
+  margin-bottom: 10px;
+  color: var(--scfs-hd-muted);
+  font-size: 12px;
+}
+
+.scfs-help-desk__message time {
+  white-space: nowrap;
+}
+
+.scfs-help-desk__reply {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--scfs-hd-border);
+}
+
+.scfs-help-desk dl {
+  margin: 0;
+}
+
+.scfs-help-desk dl > div {
+  display: grid;
+  grid-template-columns: minmax(90px, .65fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #ece8df;
+}
+
+.scfs-help-desk dt {
+  font-weight: 700;
+}
+
+.scfs-help-desk dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.scfs-help-desk .button-primary {
+  border-color: var(--scfs-hd-red);
+  background: var(--scfs-hd-red);
+}
+
+.scfs-help-desk .button-primary:hover,
+.scfs-help-desk .button-primary:focus {
+  border-color: #9d1f1f;
+  background: #9d1f1f;
+}
+
+@media (max-width: 1100px) {
+  .scfs-help-desk__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scfs-help-desk__case-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 782px) {
+  .scfs-help-desk__toolbar,
+  .scfs-help-desk__case-header,
+  .scfs-help-desk__message header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .scfs-help-desk__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .scfs-help-desk__table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .scfs-help-desk__panel {
+    padding: 18px;
+  }
+}
+
+@media print {
+  .scfs-help-desk .button,
+  .scfs-help-desk form,
+  .scfs-help-desk__toolbar {
+    display: none !important;
+  }
+
+  .scfs-help-desk__panel,
+  .scfs-help-desk__case-header,
+  .scfs-help-desk__message {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

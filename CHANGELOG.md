@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.1.0 — 2026-07-19
+
+- Added eight dedicated private Help Desk tables for cases, participants, messages, events, assignments, relationships, attachment metadata, and SLA events.
+- Added human-readable case numbers, validated statuses, priorities, severities, case types, consent states, and privacy classifications.
+- Added capability-protected Help Desk administration, authenticated REST routes, deterministic FastAPI contracts, WP-CLI operations, and SHA-256 audit/report integrity.
+- Preserved all public Support records, shortcodes, URLs, settings, REST namespace, and Contact and Engagement authority for identity, consent, and secure files.
+- Added an additive activation schema; no existing public data migration is required.
+
 ## 6.0.0 — 2026-07-19
 
 - Added the five-layer Connected Product Support and Feedback Platform contract.

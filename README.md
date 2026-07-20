@@ -1,14 +1,14 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v6.0.0
+## Current release: v6.1.0
 
-**Connected Product Support and Feedback Platform**
+**Help Desk Case Foundation**
 
-Version 6.0.0 connects the public Support Center, publication library, Known Issues, releases, feedback intelligence, documentation-effectiveness analytics, public integrations, and cross-product handoffs through one governed platform contract.
+Version 6.1.0 adds the private case-record foundation required for a full help desk: dedicated case tables, human-readable case numbers, validated status transitions, participants, messages, internal notes, assignments, relationships, attachment metadata, SLA events, audit history, authenticated REST routes, and WP-CLI operations.
 
-The canonical public destination remains `/support/`, and Support Articles retain their existing `/support/guides/` URLs. Existing shortcodes, REST routes, CPTs, taxonomies, options, metadata, and records remain compatible.
+The public Support Center remains at `/support/`, and Support Articles retain their existing `/support/guides/` URLs. Contact and Engagement remains authoritative for requester identity, consent, and secure uploaded files.
 
-See `docs/connected-product-support-feedback-platform-v6.0.0.md` for the architecture and governance boundaries.
+See `docs/help-desk-case-foundation-v6.1.0.md` for the private-record architecture and governance boundaries.
 
 ## Primary public shortcodes
 
