@@ -1,12 +1,12 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v6.5.0 — Secure Evidence, Attachments, and Diagnostic Intake**
+## Current release: **v6.6.0 — Knowledge-Assisted Case Resolution**
 
-**Secure Evidence, Attachments, and Diagnostic Intake**
+**Knowledge-Assisted Case Resolution**
 
-Version 6.5.0 adds evidence-intake records, delegated attachment metadata, diagnostic manifests, short-lived hash-only access grants, redaction state, retention review, and append-only evidence events. Contact and Engagement remains authoritative for private file bytes, secure delivery, consent, and deletion execution; files are not placed in the WordPress Media Library.
+Version 6.6.0 adds privacy-minimized case recommendations across Support Articles, Known Issues, releases, similar resolved cases, duplicate review, guided plans, and documentation promotion. Agents approve every customer-visible action.
 
-See `docs/help-desk-secure-evidence-v6.5.0.md` for the evidence lifecycle and privacy boundary.
+See `docs/help-desk-knowledge-assisted-resolution-v6.6.0.md` for the recommendation lifecycle and privacy boundary.
 
 ## Primary public shortcodes
 
@@ -28,6 +28,10 @@ See `docs/help-desk-secure-evidence-v6.5.0.md` for the evidence lifecycle and pr
 - `tests/` — WordPress contract tests
 - `docs/` — implementation and governance guides
 
+
+## v6.6.0
+
+Adds agent-governed knowledge recommendations, duplicate review, similar-case signals, guided plans, and privacy-safe documentation promotion.
 
 ## v6.5.0
 

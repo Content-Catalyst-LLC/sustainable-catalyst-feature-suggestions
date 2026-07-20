@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_Service_Levels {
-    const VERSION = '6.5.0';
+    const VERSION = '6.6.0';
     const SCHEMA = 'scfs-help-desk-service-levels/1.0';
     const DB_VERSION = '1.3.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_service_levels_db_version';
@@ -475,7 +475,7 @@ final class SCFS_Help_Desk_Service_Levels {
                 'paused_at' => in_array($case['status'], $policy['pause_statuses'], true) ? current_time('mysql', true) : null,
                 'warning_at' => $warning,
                 'last_evaluated_at' => current_time('mysql', true),
-                'metadata_json' => wp_json_encode(array('priority' => $case['priority'], 'source' => 'v6.5.0')),
+                'metadata_json' => wp_json_encode(array('priority' => $case['priority'], 'source' => 'v6.6.0')),
             ), array('%d','%s','%s','%s','%s','%s','%d','%s','%s','%s','%s','%s'));
             $foundation->add_sla_event($case_id, array(
                 'event_type' => 'clock_started',

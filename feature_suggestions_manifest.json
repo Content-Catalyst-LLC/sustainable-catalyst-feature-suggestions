@@ -5,7 +5,7 @@
   "type": "wordpress-plugin-and-python-ai-service",
   "shortcode": "[scfs_product_support_center]",
   "public_page": "/support/",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "updated": "2026-07-20",
   "capabilities": [
     "configurable WordPress settings screen",
@@ -535,7 +535,16 @@
     "redaction state governance",
     "retention and legal-hold review",
     "hash-only attachment access grants",
-    "append-only evidence audit events"
+    "append-only evidence audit events",
+    "knowledge-assisted private case resolution",
+    "support article recommendation ranking",
+    "known issue and release matching",
+    "privacy-safe similar resolved case matching",
+    "duplicate-case review suggestions",
+    "agent-approved customer guidance",
+    "guided resolution planning",
+    "documentation gap promotion requests",
+    "append-only recommendation decision history"
   ],
   "boundaries": [
     "no confidential information",
@@ -661,7 +670,7 @@
     ],
     "debug_query": "scfs_support_debug=1"
   },
-  "installer_revision": "V6_3_0_REMOTE_SYNC_SAFE",
+  "installer_revision": "V6_6_0_REMOTE_SYNC_SAFE",
   "validation_runtime": {
     "python": "3.12 or 3.13",
     "python_3_14_supported": false,
@@ -670,13 +679,13 @@
   },
   "validation": {
     "status": "passed",
-    "plugin_php_files": 37,
-    "php_contract_files": 161,
-    "javascript_files": 21,
-    "json_files": 113,
-    "python_files": 53,
-    "css_layers": 30,
-    "fastapi_tests": 189
+    "plugin_php_files": 38,
+    "php_contract_files": 169,
+    "javascript_files": 22,
+    "json_files": 117,
+    "python_files": 55,
+    "css_layers": 31,
+    "fastapi_tests": 198
   },
   "publication_integrity": {
     "version": "1.0.0",
@@ -1117,6 +1126,37 @@
       "scfs_help_desk_attachment_access",
       "scfs_help_desk_attachment_events",
       "scfs_help_desk_retention_actions"
+    ]
+  },
+  "help_desk_knowledge_resolution": {
+    "schema": "scfs-help-desk-knowledge-resolution/1.0",
+    "db_version": "1.5.0",
+    "support_article_matching": true,
+    "known_issue_matching": true,
+    "release_matching": true,
+    "privacy_safe_similar_case_matching": true,
+    "duplicate_case_review": true,
+    "guided_resolution_planning": true,
+    "agent_decision_governance": true,
+    "customer_approved_guidance": true,
+    "documentation_promotion_requests": true,
+    "append_only_resolution_actions": true,
+    "authenticated_rest_api": true,
+    "wp_cli": true,
+    "private_message_content_persisted": false,
+    "requester_identity_persisted": false,
+    "similar_case_message_bodies_exposed": false,
+    "automatic_customer_send": false,
+    "automatic_duplicate_merge": false,
+    "automatic_case_resolution": false,
+    "automatic_publication": false,
+    "human_review_required": true,
+    "additive_tables": [
+      "scfs_help_desk_resolution_runs",
+      "scfs_help_desk_resolution_recommendations",
+      "scfs_help_desk_resolution_actions",
+      "scfs_help_desk_resolution_promotions",
+      "scfs_help_desk_resolution_signatures"
     ]
   }
 }

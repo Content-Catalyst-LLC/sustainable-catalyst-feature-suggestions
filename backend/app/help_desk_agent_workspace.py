@@ -1,4 +1,4 @@
-"""Private Help Desk Agent Workspace v6.5.0 contracts."""
+"""Private Help Desk Agent Workspace v6.6.0 contracts."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-VERSION = "6.5.0"
+VERSION = "6.6.0"
 SCHEMA = "scfs-help-desk-agent-workspace/1.0"
 
 QueueState = Literal[

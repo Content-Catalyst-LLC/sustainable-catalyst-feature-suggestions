@@ -1,0 +1,1 @@
+(function(){'use strict';document.addEventListener('click',function(event){var button=event.target.closest('[data-scfs-resolution-confirm]');if(!button){return;}var message=button.getAttribute('data-scfs-resolution-confirm')||'Continue with this governed action?';if(!window.confirm(message)){event.preventDefault();}});})();

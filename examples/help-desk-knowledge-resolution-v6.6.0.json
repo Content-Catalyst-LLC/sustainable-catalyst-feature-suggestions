@@ -1,0 +1,44 @@
+{
+  "schema": "scfs-help-desk-knowledge-resolution/1.0",
+  "version": "6.6.0",
+  "case": {
+    "case_number": "SC-2026-000301",
+    "product": "decision-studio",
+    "product_version": "2.0.1",
+    "component": "briefing"
+  },
+  "recommendations": [
+    {
+      "type": "known_issue",
+      "target_ref": "sc_known_issue:91",
+      "score": 89,
+      "decision_state": "pending",
+      "customer_safe": true
+    },
+    {
+      "type": "support_article",
+      "target_ref": "sc_support_article:221",
+      "score": 82,
+      "decision_state": "approved",
+      "customer_safe": true
+    },
+    {
+      "type": "active_case",
+      "target_ref": "SC-2026-000299",
+      "score": 74,
+      "decision_state": "pending",
+      "customer_safe": false
+    }
+  ],
+  "privacy": {
+    "private_message_content_persisted": false,
+    "requester_identity_persisted": false,
+    "similar_case_message_bodies_exposed": false
+  },
+  "governance": {
+    "human_review_required": true,
+    "automatic_customer_send": false,
+    "automatic_duplicate_merge": false,
+    "automatic_publication": false
+  }
+}

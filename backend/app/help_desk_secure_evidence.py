@@ -1,4 +1,4 @@
-"""Secure Evidence, Attachments, and Diagnostic Intake v6.5.0."""
+"""Secure Evidence, Attachments, and Diagnostic Intake v6.6.0."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-VERSION = "6.5.0"
+VERSION = "6.6.0"
 SCHEMA = "scfs-help-desk-secure-evidence/1.0"
 
 Classification = Literal["private_support", "confidential", "security_sensitive", "synthetic_sample"]

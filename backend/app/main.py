@@ -29,8 +29,9 @@ from .help_desk_agent_workspace import QueueEvaluationRequest, QueueEvaluationRe
 from .help_desk_customer_portal import PortalAccessLinkEvidence, PortalAccessLinkAssessment, PortalSessionEvidence, PortalSessionAssessment, ConversationVisibilityEvidence, ConversationVisibilityAssessment, RequesterTransitionEvidence, RequesterTransitionAssessment, SatisfactionEvidence, SatisfactionAssessment, PortalReportIntegrityEvidence, PortalReportIntegrityResult, assess_access_link, assess_session, assess_conversation_visibility, evaluate_requester_transition, assess_satisfaction, verify_portal_report
 from .help_desk_service_levels import ServicePolicyEvidence, ServicePolicyAssessment, SupportCalendarEvidence, SupportCalendarAssessment, ClockEvidence, ClockAssessment, ClockTransitionEvidence, ClockTransitionAssessment, EscalationEvidence, EscalationAssessment, ServiceLevelReportEvidence, ServiceLevelReportResult, evaluate_service_policy, evaluate_support_calendar, evaluate_clock, evaluate_clock_transition, evaluate_escalation, verify_service_level_report
 from .help_desk_secure_evidence import EvidenceIntakeEvidence, EvidenceIntakeAssessment, AttachmentMetadataEvidence, AttachmentMetadataAssessment, DiagnosticBundleEvidence, DiagnosticBundleAssessment, AccessGrantEvidence, AccessGrantAssessment, RetentionEvidence, RetentionAssessment, SecureEvidenceReportEvidence, SecureEvidenceReportResult, evaluate_evidence_intake, evaluate_attachment_metadata, evaluate_diagnostic_bundle, evaluate_access_grant, evaluate_retention, verify_secure_evidence_report
+from .help_desk_knowledge_resolution import CaseContext, KnowledgeCandidate, ResolutionAssessment, SimilarCaseEvidence, SimilarCaseAssessment, AgentDecisionEvidence, AgentDecisionAssessment, GuidedPlanEvidence, GuidedPlanAssessment, PromotionEvidence, PromotionAssessment, KnowledgeResolutionReportEvidence, KnowledgeResolutionReportResult, evaluate_resolution, evaluate_similar_cases, evaluate_agent_decision, evaluate_guided_plan, evaluate_promotion, verify_knowledge_resolution_report
 
-VERSION='6.5.0'
+VERSION='6.6.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1267,3 +1268,64 @@ def help_desk_evidence_retention_evaluate(payload: RetentionEvidence, x_scfs_ai_
 def help_desk_evidence_report_verify(payload: SecureEvidenceReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_secure_evidence_report(payload)
+
+@app.get('/v1/help-desk/knowledge-resolution/capabilities')
+def help_desk_knowledge_resolution_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'ok': True,
+        'version': VERSION,
+        'schema': 'scfs-help-desk-knowledge-resolution/1.0',
+        'capabilities': [
+            'support_article_matching',
+            'known_issue_and_release_matching',
+            'privacy_safe_similar_case_matching',
+            'duplicate_case_review',
+            'guided_resolution_planning',
+            'agent_decision_governance',
+            'documentation_promotion_governance',
+            'sha256_report_integrity',
+        ],
+        'automatic_customer_send': False,
+        'automatic_duplicate_merge': False,
+        'automatic_publication': False,
+        'private_message_content_persisted_in_recommendations': False,
+        'requester_identity_exposed': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/help-desk/knowledge-resolution/recommendations/evaluate', response_model=ResolutionAssessment)
+def help_desk_knowledge_resolution_evaluate(case: CaseContext, candidates: list[KnowledgeCandidate], x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_resolution(case, candidates)
+
+
+@app.post('/v1/help-desk/knowledge-resolution/similar-cases/evaluate', response_model=SimilarCaseAssessment)
+def help_desk_knowledge_resolution_similar_cases(payload: SimilarCaseEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_similar_cases(payload)
+
+
+@app.post('/v1/help-desk/knowledge-resolution/decisions/evaluate', response_model=AgentDecisionAssessment)
+def help_desk_knowledge_resolution_decision(payload: AgentDecisionEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_agent_decision(payload)
+
+
+@app.post('/v1/help-desk/knowledge-resolution/plans/evaluate', response_model=GuidedPlanAssessment)
+def help_desk_knowledge_resolution_plan(payload: GuidedPlanEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_guided_plan(payload)
+
+
+@app.post('/v1/help-desk/knowledge-resolution/promotions/evaluate', response_model=PromotionAssessment)
+def help_desk_knowledge_resolution_promotion(payload: PromotionEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_promotion(payload)
+
+
+@app.post('/v1/help-desk/knowledge-resolution/reports/verify', response_model=KnowledgeResolutionReportResult)
+def help_desk_knowledge_resolution_report_verify(payload: KnowledgeResolutionReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_knowledge_resolution_report(payload)

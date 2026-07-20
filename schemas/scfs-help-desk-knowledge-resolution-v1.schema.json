@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-knowledge-resolution-v1.schema.json",
+  "title": "Sustainable Catalyst Help Desk Knowledge-Assisted Resolution Contract",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "case",
+    "recommendations",
+    "privacy",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-help-desk-knowledge-resolution/1.0"
+    },
+    "version": {
+      "const": "6.6.0"
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "case_number",
+        "product",
+        "component"
+      ],
+      "properties": {
+        "case_number": {
+          "type": "string"
+        },
+        "product": {
+          "type": "string"
+        },
+        "product_version": {
+          "type": "string"
+        },
+        "component": {
+          "type": "string"
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "target_ref",
+          "score",
+          "decision_state",
+          "customer_safe"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "support_article",
+              "known_issue",
+              "release",
+              "resolved_case",
+              "active_case"
+            ]
+          },
+          "target_ref": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "decision_state": {
+            "enum": [
+              "pending",
+              "approved",
+              "rejected",
+              "sent",
+              "acted"
+            ]
+          },
+          "customer_safe": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "private_message_content_persisted",
+        "requester_identity_persisted",
+        "similar_case_message_bodies_exposed"
+      ],
+      "properties": {
+        "private_message_content_persisted": {
+          "const": false
+        },
+        "requester_identity_persisted": {
+          "const": false
+        },
+        "similar_case_message_bodies_exposed": {
+          "const": false
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "human_review_required",
+        "automatic_customer_send",
+        "automatic_duplicate_merge",
+        "automatic_publication"
+      ],
+      "properties": {
+        "human_review_required": {
+          "const": true
+        },
+        "automatic_customer_send": {
+          "const": false
+        },
+        "automatic_duplicate_merge": {
+          "const": false
+        },
+        "automatic_publication": {
+          "const": false
+        }
+      }
+    }
+  }
+}

@@ -1,3 +1,9 @@
+# v6.6.0 — Knowledge-Assisted Case Resolution
+
+- Added deterministic public-knowledge and privacy-safe case matching.
+- Added agent approval, requester-send, duplicate review, guided plans, and documentation promotion.
+- Preserved private-case, public-support, and Contact and Engagement boundaries.
+
 # v6.5.0 — Secure Evidence, Attachments, and Diagnostic Intake
 
 - Added private evidence intake and diagnostic manifest records.
