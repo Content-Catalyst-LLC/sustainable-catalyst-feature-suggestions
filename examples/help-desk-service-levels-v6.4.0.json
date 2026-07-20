@@ -1,0 +1,44 @@
+{
+  "schema": "scfs-help-desk-service-levels/1.0",
+  "version": "6.4.0",
+  "case_id": 184,
+  "case_number": "SC-2026-000184",
+  "priority": "high",
+  "overall_state": "at_risk",
+  "policy_key": "standard-support",
+  "calendar_key": "sustainable-catalyst-business-hours",
+  "clocks": [
+    {
+      "target_type": "first_response",
+      "state": "completed",
+      "due_at": "2026-07-20 19:00:00",
+      "completed_at": "2026-07-20 17:40:00"
+    },
+    {
+      "target_type": "next_response",
+      "state": "warning",
+      "due_at": "2026-07-21 18:00:00",
+      "paused_seconds": 0
+    },
+    {
+      "target_type": "resolution",
+      "state": "running",
+      "due_at": "2026-07-23 18:00:00",
+      "paused_seconds": 0
+    }
+  ],
+  "escalations": [
+    {
+      "event_type": "target_at_risk",
+      "severity": "notice",
+      "state": "open",
+      "human_review_required": true
+    }
+  ],
+  "automatic_priority_change": false,
+  "automatic_assignment": false,
+  "automatic_customer_notification": false,
+  "automatic_case_closure": false,
+  "contractual_commitment_created_automatically": false,
+  "human_review_required": true
+}

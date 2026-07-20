@@ -1,4 +1,4 @@
-"""Secure Help Desk Customer Portal and Conversations v6.3.0 contracts."""
+"""Secure Help Desk Customer Portal and Conversations v6.4.0 contracts."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-VERSION = "6.3.0"
+VERSION = "6.4.0"
 SCHEMA = "scfs-help-desk-customer-portal/1.0"
 
 PortalScope = Literal["view", "reply", "transition", "satisfaction"]

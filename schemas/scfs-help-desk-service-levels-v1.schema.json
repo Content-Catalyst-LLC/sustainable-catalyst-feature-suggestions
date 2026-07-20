@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-service-levels-v1.schema.json",
+  "title": "Sustainable Catalyst Help Desk Service Levels",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "case_id",
+    "overall_state",
+    "clocks",
+    "human_review_required"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-help-desk-service-levels/1.0"
+    },
+    "version": {
+      "const": "6.4.0"
+    },
+    "case_id": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "case_number": {
+      "type": "string"
+    },
+    "overall_state": {
+      "enum": [
+        "on_track",
+        "at_risk",
+        "paused",
+        "breached"
+      ]
+    },
+    "clocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "target_type",
+          "state",
+          "due_at"
+        ]
+      }
+    },
+    "automatic_priority_change": {
+      "const": false
+    },
+    "automatic_assignment": {
+      "const": false
+    },
+    "automatic_customer_notification": {
+      "const": false
+    },
+    "automatic_case_closure": {
+      "const": false
+    },
+    "human_review_required": {
+      "const": true
+    }
+  },
+  "additionalProperties": true
+}

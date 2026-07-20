@@ -1,6 +1,6 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: v6.3.0
+## Current release: **v6.4.0 — Service Levels, Escalation, and Response Governance**
 
 **Customer Support Portal and Conversations**
 

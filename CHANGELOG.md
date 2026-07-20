@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.4.0 — Service Levels, Escalation, and Response Governance
+
+- Added private service policies and support calendars.
+- Added first-response, next-response, and resolution clocks.
+- Added pause accounting, warning thresholds, breach evaluation, and escalation records.
+- Added agent, REST, WP-CLI, and FastAPI service-level interfaces.
+- Preserved human control over priority, assignment, messaging, resolution, closure, and contractual commitments.
+
 ## 6.3.0
 
 - Added the secure Customer Support Portal and conversation layer.

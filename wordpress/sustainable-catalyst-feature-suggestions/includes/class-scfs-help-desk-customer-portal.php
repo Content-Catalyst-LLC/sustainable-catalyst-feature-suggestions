@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_Customer_Portal {
-    const VERSION = '6.3.0';
+    const VERSION = '6.4.0';
     const SCHEMA = 'scfs-help-desk-customer-portal/1.0';
     const DB_VERSION = '1.2.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_portal_db_version';
@@ -628,7 +628,7 @@ final class SCFS_Help_Desk_Customer_Portal {
         if (!$case) {
             return null;
         }
-        return array(
+        $payload = array(
             'schema' => self::SCHEMA,
             'version' => self::VERSION,
             'case' => array(
@@ -660,6 +660,7 @@ final class SCFS_Help_Desk_Customer_Portal {
                 'raw_access_token_stored' => false,
             ),
         );
+        return apply_filters('scfs_help_desk_portal_case_payload', $payload, $session);
     }
 
     public function add_requester_reply($session, $body) {
@@ -899,6 +900,7 @@ final class SCFS_Help_Desk_Customer_Portal {
         }
         echo '</article></main><aside>';
         echo '<section class="scfs-customer-portal__panel"><h3>' . esc_html__('Case status', 'sustainable-catalyst-feature-suggestions') . '</h3><dl><div><dt>' . esc_html__('Status', 'sustainable-catalyst-feature-suggestions') . '</dt><dd>' . esc_html(ucwords(str_replace('_', ' ', $case['status']))) . '</dd></div><div><dt>' . esc_html__('Opened', 'sustainable-catalyst-feature-suggestions') . '</dt><dd>' . esc_html($case['created_at']) . '</dd></div><div><dt>' . esc_html__('Last updated', 'sustainable-catalyst-feature-suggestions') . '</dt><dd>' . esc_html($case['updated_at']) . '</dd></div></dl></section>';
+        do_action('scfs_help_desk_customer_portal_status_after', $case, $payload);
         if ($payload['permissions']['transition']) {
             echo '<section class="scfs-customer-portal__panel"><h3>' . esc_html__('Resolution', 'sustainable-catalyst-feature-suggestions') . '</h3>';
             if (!in_array($case['status'], array('resolved', 'closed'), true)) {

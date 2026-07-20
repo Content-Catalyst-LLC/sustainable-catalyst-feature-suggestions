@@ -45,7 +45,7 @@ def test_capabilities_endpoint():
     response = client.get('/v1/support-content/capabilities')
     assert response.status_code == 200
     data = response.json()
-    assert data['version'] == '6.3.0'
+    assert data['version'] == '6.4.0'
     assert data['product_onboarding'] is True
     assert data['automatic_publication'] is False
 
