@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-api-integrations-v1.schema.json",
+  "title": "Sustainable Catalyst Help Desk API Integrations",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "integration",
+    "subscriptions",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-help-desk-api-integrations/1.0"
+    },
+    "version": {
+      "const": "6.11.0"
+    },
+    "integration": {
+      "type": "object",
+      "required": [
+        "integration_key",
+        "integration_type",
+        "state",
+        "allowed_scopes"
+      ],
+      "properties": {
+        "integration_key": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{2,119}$"
+        },
+        "integration_type": {
+          "enum": [
+            "github",
+            "repository",
+            "monitoring",
+            "contact-engagement",
+            "institutional",
+            "custom"
+          ]
+        },
+        "state": {
+          "enum": [
+            "draft",
+            "active",
+            "paused",
+            "revoked"
+          ]
+        },
+        "allowed_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "subscriptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "event_pattern",
+          "endpoint_url",
+          "payload_profile"
+        ],
+        "properties": {
+          "event_pattern": {
+            "type": "string"
+          },
+          "endpoint_url": {
+            "type": "string",
+            "pattern": "^https://"
+          },
+          "payload_profile": {
+            "enum": [
+              "privacy_minimized",
+              "aggregate_only"
+            ]
+          },
+          "signed": {
+            "const": true
+          }
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "public_case_api",
+        "public_inbound_webhook",
+        "raw_secrets_stored",
+        "requester_identity_exposed",
+        "private_message_content_exposed",
+        "attachment_content_exposed",
+        "automatic_external_issue_creation",
+        "automatic_case_transition",
+        "automatic_customer_communication",
+        "human_authorization_required"
+      ],
+      "properties": {
+        "public_case_api": {
+          "const": false
+        },
+        "public_inbound_webhook": {
+          "const": false
+        },
+        "raw_secrets_stored": {
+          "const": false
+        },
+        "requester_identity_exposed": {
+          "const": false
+        },
+        "private_message_content_exposed": {
+          "const": false
+        },
+        "attachment_content_exposed": {
+          "const": false
+        },
+        "automatic_external_issue_creation": {
+          "const": false
+        },
+        "automatic_case_transition": {
+          "const": false
+        },
+        "automatic_customer_communication": {
+          "const": false
+        },
+        "human_authorization_required": {
+          "const": true
+        }
+      }
+    }
+  }
+}

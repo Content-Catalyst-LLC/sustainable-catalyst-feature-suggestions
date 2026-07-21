@@ -1,6 +1,6 @@
 {
   "schema": "scfs-help-desk-institutional-workspaces/1.0",
-  "version": "6.10.0",
+  "version": "6.11.0",
   "workspace": {
     "workspace_key": "civic-research-lab",
     "organization_name": "Civic Research Lab",

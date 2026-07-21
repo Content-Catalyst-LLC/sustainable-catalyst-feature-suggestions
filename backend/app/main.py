@@ -34,8 +34,9 @@ from .help_desk_workflow_automation import CaseEventContext, WorkflowRule, Workf
 from .help_desk_email_channels import InboundEmailEvidence, InboundEmailAssessment, ThreadMatchEvidence, ThreadMatchAssessment, OutboundDraftEvidence, OutboundDraftAssessment, DeliveryEventEvidence, DeliveryEventAssessment, ChannelAuthorizationEvidence, ChannelAuthorizationAssessment, TeamsHandoffEvidence, TeamsHandoffAssessment, EmailChannelReportEvidence, EmailChannelReportResult, evaluate_inbound_email, evaluate_thread_match, prepare_outbound_draft, evaluate_delivery_event, evaluate_channel_authorization, evaluate_teams_handoff, verify_email_channel_report
 from .help_desk_quality_analytics import OperationalMetricsEvidence, OperationalMetricsAssessment, CaseQualityEvidence, CaseQualityAssessment, TrendEvidence, TrendAssessment, SupportSignalEvidence, SupportSignalAssessment, PrivacyAggregateEvidence, PrivacyAggregateAssessment, QualityAnalyticsReportEvidence, QualityAnalyticsReportResult, evaluate_operational_metrics, evaluate_case_quality, evaluate_trend, evaluate_support_signal, evaluate_privacy_aggregate, verify_quality_analytics_report
 from .help_desk_institutional_workspaces import InstitutionalWorkspaceEvidence, InstitutionalWorkspaceAssessment, MemberAccessEvidence, MemberAccessAssessment, EntitlementEvidence, EntitlementAssessment, CaseVisibilityEvidence, CaseVisibilityAssessment, CollectionAccessEvidence, CollectionAccessAssessment, RetentionPolicyEvidence, RetentionPolicyAssessment, InstitutionalReportEvidence, InstitutionalReportAssessment, InstitutionalReportIntegrityEvidence, InstitutionalReportIntegrityResult, evaluate_workspace, evaluate_member_access, evaluate_entitlement, evaluate_case_visibility, evaluate_collection_access, evaluate_retention_policy, evaluate_institutional_report, verify_institutional_report
+from .help_desk_api_integrations import ApiScopeEvidence, ApiScopeAssessment, WebhookSubscriptionEvidence, WebhookSubscriptionAssessment, WebhookDeliveryEvidence, WebhookDeliverySignature, DeliveryRetryEvidence, DeliveryRetryAssessment, ExternalLinkEvidence, ExternalLinkAssessment, IntegrationPrivacyEvidence, IntegrationPrivacyAssessment, IntegrationReportEvidence, IntegrationReportResult, evaluate_api_scope, evaluate_webhook_subscription, sign_webhook_delivery, evaluate_delivery_retry, evaluate_external_link, evaluate_integration_privacy, verify_integration_report
 
-VERSION='6.10.0'
+VERSION='6.11.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1464,7 +1465,7 @@ def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key
 def help_desk_quality_analytics_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return {
-        'version':'6.10.0',
+        'version':'6.11.0',
         'schema':'scfs-help-desk-quality-analytics/1.0',
         'operational_metrics':True,
         'governed_case_quality_review':True,
@@ -1592,3 +1593,72 @@ def help_desk_institutional_report_evaluate(payload: InstitutionalReportEvidence
 def help_desk_institutional_report_verify(payload: InstitutionalReportIntegrityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_institutional_report(payload)
+
+@app.get('/v1/help-desk/integrations/capabilities')
+def help_desk_integrations_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'version': VERSION,
+        'schema': 'scfs-help-desk-api-integrations/1.0',
+        'scoped_case_api': True,
+        'signed_outbound_webhooks': True,
+        'delivery_retry_queue': True,
+        'dead_letter_review': True,
+        'external_system_links': True,
+        'github_repository_links': True,
+        'monitoring_handoffs': True,
+        'institutional_connectors': True,
+        'contact_engagement_interoperability': True,
+        'public_case_api': False,
+        'public_inbound_webhook': False,
+        'raw_secrets_stored': False,
+        'requester_identity_exposed': False,
+        'private_message_content_exposed': False,
+        'attachment_content_exposed': False,
+        'automatic_external_issue_creation': False,
+        'automatic_case_transition': False,
+        'automatic_customer_communication': False,
+        'human_authorization_required': True,
+    }
+
+
+@app.post('/v1/help-desk/integrations/scopes/evaluate', response_model=ApiScopeAssessment)
+def help_desk_integrations_scopes(payload: ApiScopeEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_api_scope(payload)
+
+
+@app.post('/v1/help-desk/integrations/subscriptions/evaluate', response_model=WebhookSubscriptionAssessment)
+def help_desk_integrations_subscriptions(payload: WebhookSubscriptionEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_webhook_subscription(payload)
+
+
+@app.post('/v1/help-desk/integrations/deliveries/sign', response_model=WebhookDeliverySignature)
+def help_desk_integrations_sign(payload: WebhookDeliveryEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return sign_webhook_delivery(payload)
+
+
+@app.post('/v1/help-desk/integrations/deliveries/retry/evaluate', response_model=DeliveryRetryAssessment)
+def help_desk_integrations_retry(payload: DeliveryRetryEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_delivery_retry(payload)
+
+
+@app.post('/v1/help-desk/integrations/external-links/evaluate', response_model=ExternalLinkAssessment)
+def help_desk_integrations_external_links(payload: ExternalLinkEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_external_link(payload)
+
+
+@app.post('/v1/help-desk/integrations/privacy/evaluate', response_model=IntegrationPrivacyAssessment)
+def help_desk_integrations_privacy(payload: IntegrationPrivacyEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_integration_privacy(payload)
+
+
+@app.post('/v1/help-desk/integrations/reports/verify', response_model=IntegrationReportResult)
+def help_desk_integrations_report(payload: IntegrationReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_integration_report(payload)

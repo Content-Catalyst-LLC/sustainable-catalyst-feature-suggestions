@@ -1,0 +1,52 @@
+{
+  "schema": "scfs-help-desk-api-integrations/1.0",
+  "version": "6.11.0",
+  "integration": {
+    "integration_key": "github-support-links",
+    "integration_type": "github",
+    "display_name": "GitHub Support Relationships",
+    "state": "active",
+    "allowed_scopes": [
+      "repository.link",
+      "events.subscribe"
+    ]
+  },
+  "subscriptions": [
+    {
+      "subscription_key": "support-events",
+      "event_pattern": "help_desk.case.*",
+      "endpoint_url": "https://integrations.example.test/scfs",
+      "payload_profile": "privacy_minimized",
+      "signed": true,
+      "maximum_attempts": 6
+    }
+  ],
+  "delivery": {
+    "event_id": "event-2026-000184",
+    "state": "retry_wait",
+    "attempt_count": 2,
+    "next_attempt_seconds": 240,
+    "payload_sha256": "8c3e4ec650a4f77a2e908e2e2d3ae99bc869c046f7f139a9fa0e2941f3d4d2a1"
+  },
+  "external_link": {
+    "local_object_type": "case",
+    "local_object_id": 184,
+    "external_object_type": "issue",
+    "external_reference": "Content-Catalyst-LLC/decision-studio#184",
+    "relationship_type": "related",
+    "human_authorized": true
+  },
+  "governance": {
+    "credential_authority": "environment-or-contact-engagement",
+    "public_case_api": false,
+    "public_inbound_webhook": false,
+    "raw_secrets_stored": false,
+    "requester_identity_exposed": false,
+    "private_message_content_exposed": false,
+    "attachment_content_exposed": false,
+    "automatic_external_issue_creation": false,
+    "automatic_case_transition": false,
+    "automatic_customer_communication": false,
+    "human_authorization_required": true
+  }
+}

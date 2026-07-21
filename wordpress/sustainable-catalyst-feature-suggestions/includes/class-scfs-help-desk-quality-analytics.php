@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_Quality_Analytics {
-    const VERSION = '6.10.0';
+    const VERSION = '6.11.0';
     const SCHEMA = 'scfs-help-desk-quality-analytics/1.0';
     const DB_VERSION = '1.8.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_quality_analytics_db_version';
@@ -275,8 +275,8 @@ final class SCFS_Help_Desk_Quality_Analytics {
     }
 
     public function register_assets() {
-        wp_register_style('scfs-help-desk-quality-analytics', plugins_url('../assets/help-desk-quality-analytics-v6.10.0.css', __FILE__), array(), self::VERSION);
-        wp_register_script('scfs-help-desk-quality-analytics', plugins_url('../assets/help-desk-quality-analytics-v6.10.0.js', __FILE__), array(), self::VERSION, true);
+        wp_register_style('scfs-help-desk-quality-analytics', plugins_url('../assets/help-desk-quality-analytics-v6.11.0.css', __FILE__), array(), self::VERSION);
+        wp_register_script('scfs-help-desk-quality-analytics', plugins_url('../assets/help-desk-quality-analytics-v6.11.0.js', __FILE__), array(), self::VERSION, true);
     }
 
     public function admin_assets($hook) {

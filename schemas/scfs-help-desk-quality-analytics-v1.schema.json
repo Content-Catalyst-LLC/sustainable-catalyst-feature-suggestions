@@ -11,7 +11,7 @@
   ],
   "properties": {
     "version": {
-      "const": "6.10.0"
+      "const": "6.11.0"
     },
     "schema": {
       "const": "scfs-help-desk-quality-analytics/1.0"

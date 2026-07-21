@@ -1,10 +1,18 @@
+# Changelog
+
+## 6.11.0 — API, Webhooks, and External Integrations
+
+- Added scoped help-desk API governance and signed outbound webhook delivery.
+- Added retry scheduling, dead-letter review, external system links, checkpoints, and integration audit evidence.
+- Kept requester identity, private messages, attachments, and raw secrets outside integration payloads.
+- Preserved human control over external issue creation, case changes, and customer communication.
+
 ## 6.10.0 — Quality Assurance, Analytics, and Support Intelligence
 
 - Added private operational metrics, daily snapshots, trend evidence, quality reviews, privacy-safe support signals, governed exports, and minimum-cohort suppression.
 - Preserved public support, private case, identity, attachment, workflow, and channel authorities.
 - Prohibited automatic personnel ranking, punitive action, case transitions, incident declarations, roadmap changes, and public disclosure.
 
-# Changelog
 
 ## 6.10.0 — Email and Channel Operations
 

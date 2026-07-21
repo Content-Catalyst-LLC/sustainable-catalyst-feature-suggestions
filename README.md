@@ -1,12 +1,12 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v6.10.0 — Workflow Automation and Operational Rules**
+## Current release: **v6.11.0 — API, Webhooks, and External Integrations**
 
-**Knowledge-Assisted Case Resolution**
+**API, Webhooks, and External Integrations**
 
-Version 6.6.0 adds privacy-minimized case recommendations across Support Articles, Known Issues, releases, similar resolved cases, duplicate review, guided plans, and documentation promotion. Agents approve every customer-visible action.
+Version 6.11.0 adds governed scoped APIs, signed outbound webhooks, retry and dead-letter operations, and human-authorized external system relationships.
 
-See `docs/help-desk-knowledge-assisted-resolution-v6.6.0.md` for the recommendation lifecycle and privacy boundary.
+See `docs/help-desk-api-integrations-v6.11.0.md` for the authority, signing, retry, privacy, and external-link contracts.
 
 ## Primary public shortcodes
 
@@ -52,3 +52,8 @@ Adds the private Agent Workspace, built-in and team queues, explicit assignment,
 ## v6.10.0 — Institutional Workspaces and Access Governance
 
 Private organizational workspaces, least-privilege membership, support entitlements, explicit case access, private knowledge collections, append-only audit evidence, retention governance, and privacy-safe institutional reporting.
+
+
+## v6.11.0 — API, Webhooks, and External Integrations
+
+Adds least-privilege integration scopes, signed outbound events, retry and dead-letter review, external relationships, and append-only integration evidence.
