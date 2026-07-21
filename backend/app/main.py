@@ -37,8 +37,10 @@ from .help_desk_institutional_workspaces import InstitutionalWorkspaceEvidence, 
 from .help_desk_api_integrations import ApiScopeEvidence, ApiScopeAssessment, WebhookSubscriptionEvidence, WebhookSubscriptionAssessment, WebhookDeliveryEvidence, WebhookDeliverySignature, DeliveryRetryEvidence, DeliveryRetryAssessment, ExternalLinkEvidence, ExternalLinkAssessment, IntegrationPrivacyEvidence, IntegrationPrivacyAssessment, IntegrationReportEvidence, IntegrationReportResult, evaluate_api_scope, evaluate_webhook_subscription, sign_webhook_delivery, evaluate_delivery_retry, evaluate_external_link, evaluate_integration_privacy, verify_integration_report
 from .help_desk_production_hardening import RateLimitEvidence, RateLimitAssessment, AbuseSignalEvidence, AbuseSignalAssessment, PrivacyOperationEvidence, PrivacyOperationAssessment, BackupSnapshotEvidence, BackupSnapshotAssessment, RecoveryDrillEvidence, RecoveryDrillAssessment, SecurityHeaderEvidence, SecurityHeaderAssessment, ProductionGateEvidence, ProductionGateAssessment, HardeningReportEvidence, HardeningReportResult, evaluate_rate_limit, evaluate_abuse_signal, evaluate_privacy_operation, evaluate_backup_snapshot, evaluate_recovery_drill, evaluate_security_headers, evaluate_production_gate, verify_hardening_report
 
-VERSION='6.12.0'
+VERSION='7.0.0'
 ANALYSIS_VERSION='5.1.0-1'
+from .connected_help_desk_platform import ModuleEvidence, PlatformEvidence, PlatformAssessment, JourneyEvidence, JourneyPlan, CommandEvidence, CommandPlan, DossierEvidence, DossierAssessment, ConnectedReportEvidence, ConnectedReportResult, evaluate_connected_help_desk, plan_support_journey, plan_connected_command, evaluate_case_dossier, verify_connected_report
+
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
 class Submission(BaseModel):
@@ -1466,7 +1468,7 @@ def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key
 def help_desk_quality_analytics_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return {
-        'version':'6.12.0',
+        'version':'7.0.0',
         'schema':'scfs-help-desk-quality-analytics/1.0',
         'operational_metrics':True,
         'governed_case_quality_review':True,
@@ -1736,3 +1738,45 @@ def help_desk_production_hardening_gates(payload: ProductionGateEvidence, x_scfs
 def help_desk_production_hardening_report(payload: HardeningReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_hardening_report(payload)
+
+@app.get("/v1/help-desk/connected-platform/capabilities")
+def connected_help_desk_capabilities():
+    return {
+        "version": "7.0.0",
+        "schema": "scfs-connected-help-desk-platform/1.0",
+        "layers": ["public_support", "customer_portal", "agent_operations", "knowledge_operations", "service_management", "product_intelligence", "institutional_integration"],
+        "automatic_customer_communication": False,
+        "automatic_case_transition": False,
+        "automatic_access_grant": False,
+        "automatic_destructive_action": False,
+        "automatic_external_issue_creation": False,
+        "automatic_deployment": False,
+        "human_command_authorization_required": True,
+        "identity_authority": "contact-engagement",
+        "attachment_authority": "contact-engagement",
+    }
+
+
+@app.post("/v1/help-desk/connected-platform/evaluate", response_model=PlatformAssessment, response_model_by_alias=True)
+def connected_help_desk_evaluate(payload: PlatformEvidence):
+    return evaluate_connected_help_desk(payload)
+
+
+@app.post("/v1/help-desk/connected-platform/journeys/plan", response_model=JourneyPlan, response_model_by_alias=True)
+def connected_help_desk_journey(payload: JourneyEvidence):
+    return plan_support_journey(payload)
+
+
+@app.post("/v1/help-desk/connected-platform/commands/plan", response_model=CommandPlan, response_model_by_alias=True)
+def connected_help_desk_command(payload: CommandEvidence):
+    return plan_connected_command(payload)
+
+
+@app.post("/v1/help-desk/connected-platform/dossiers/evaluate", response_model=DossierAssessment, response_model_by_alias=True)
+def connected_help_desk_dossier(payload: DossierEvidence):
+    return evaluate_case_dossier(payload)
+
+
+@app.post("/v1/help-desk/connected-platform/reports/verify", response_model=ConnectedReportResult, response_model_by_alias=True)
+def connected_help_desk_report(payload: ConnectedReportEvidence):
+    return verify_connected_report(payload)

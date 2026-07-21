@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-connected-help-desk-platform-v1.schema.json",
+  "title": "Connected Help Desk Platform Contract",
+  "type": "object",
+  "required": [
+    "version",
+    "schema",
+    "layers",
+    "governance"
+  ],
+  "properties": {
+    "version": {
+      "const": "7.0.0"
+    },
+    "schema": {
+      "const": "scfs-connected-help-desk-platform/1.0"
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "string"
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "human_command_authorization_required"
+      ],
+      "properties": {
+        "human_command_authorization_required": {
+          "const": true
+        },
+        "automatic_customer_communication": {
+          "const": false
+        },
+        "private_case_content_exposed": {
+          "const": false
+        }
+      }
+    }
+  }
+}

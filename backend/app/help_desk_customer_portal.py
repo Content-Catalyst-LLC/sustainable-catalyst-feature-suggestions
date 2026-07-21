@@ -8,7 +8,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-VERSION = "6.12.0"
+VERSION = "7.0.0"
 SCHEMA = "scfs-help-desk-customer-portal/1.0"
 
 PortalScope = Literal["view", "reply", "transition", "satisfaction"]

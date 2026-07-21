@@ -1,6 +1,6 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v6.12.0 — Reliability, Security, Privacy, and Production Hardening**
+## Current release: **v7.0.0 — Connected Help Desk and Support Operations Platform**
 
 **API, Webhooks, and External Integrations**
 

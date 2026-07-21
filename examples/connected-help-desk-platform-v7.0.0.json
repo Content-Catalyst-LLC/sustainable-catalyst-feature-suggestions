@@ -1,0 +1,32 @@
+{
+  "version": "7.0.0",
+  "schema": "scfs-connected-help-desk-platform/1.0",
+  "state": "connected",
+  "readiness_score": 100,
+  "layers": [
+    "public_support",
+    "customer_portal",
+    "agent_operations",
+    "knowledge_operations",
+    "service_management",
+    "product_intelligence",
+    "institutional_integration"
+  ],
+  "journey": {
+    "case_id": 184,
+    "intent": "resolve_support_need",
+    "automatic_customer_send": false,
+    "automatic_case_resolution": false
+  },
+  "governance": {
+    "human_command_authorization_required": true,
+    "automatic_customer_communication": false,
+    "automatic_case_transition": false,
+    "automatic_access_grant": false,
+    "automatic_destructive_action": false,
+    "automatic_external_issue_creation": false,
+    "automatic_deployment": false,
+    "private_case_content_exposed": false,
+    "identity_authority": "contact-engagement"
+  }
+}

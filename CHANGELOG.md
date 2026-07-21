@@ -1,3 +1,12 @@
+# Changelog
+
+## 7.0.0 — Connected Help Desk and Support Operations Platform
+
+- Unified seven public and private support operating layers.
+- Added privacy-safe case dossiers and end-to-end support journey planning.
+- Added governed cross-module command plans and human authorization boundaries.
+- Added module health, handoff contexts, daily snapshots, and integrity-verified reports.
+
 ## 6.12.0 — Reliability, Security, Privacy, and Production Hardening
 
 - Added request rate limits and abuse-signal review.

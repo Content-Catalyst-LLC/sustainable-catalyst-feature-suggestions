@@ -1,0 +1,44 @@
+.scfs-connected-help-desk,
+.scfs-connected-help-desk-admin {
+    --scfs-border: #d9dde3;
+    --scfs-ink: #15171a;
+    --scfs-muted: #5b6470;
+    --scfs-surface: #ffffff;
+    --scfs-soft: #f5f7f9;
+    color: var(--scfs-ink);
+}
+.scfs-connected-help-desk {
+    max-width: 1180px;
+    margin: 2rem auto;
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    border: 1px solid var(--scfs-border);
+    background: var(--scfs-surface);
+}
+.scfs-connected-help-desk__eyebrow {
+    margin-bottom: .75rem;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+.scfs-connected-help-desk h2 { margin: 0 0 1rem; max-width: 760px; font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.08; }
+.scfs-connected-help-desk > p { max-width: 780px; color: var(--scfs-muted); font-size: 1.05rem; line-height: 1.7; }
+.scfs-connected-help-desk__layers,
+.scfs-connected-help-desk-admin__layers,
+.scfs-connected-help-desk-admin__summary { display: grid; gap: 1rem; }
+.scfs-connected-help-desk__layers { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 1.5rem; }
+.scfs-connected-help-desk__layers article,
+.scfs-connected-help-desk-admin__layers article,
+.scfs-connected-help-desk-admin__summary article { padding: 1rem; border: 1px solid var(--scfs-border); background: var(--scfs-soft); }
+.scfs-connected-help-desk__layers h3,
+.scfs-connected-help-desk-admin__layers h3 { margin: 0 0 .5rem; font-size: 1rem; }
+.scfs-connected-help-desk__layers p { margin: 0; color: var(--scfs-muted); }
+.scfs-connected-help-desk-admin__summary { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 1.5rem 0; }
+.scfs-connected-help-desk-admin__summary span { display: block; color: var(--scfs-muted); }
+.scfs-connected-help-desk-admin__summary strong { display: block; margin-top: .35rem; font-size: 1.5rem; }
+.scfs-connected-help-desk-admin__layers { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.scfs-connected-help-desk-admin__layers p { overflow-wrap: anywhere; color: var(--scfs-muted); }
+.scfs-connected-help-desk-admin__boundary { margin-top: 1.5rem; padding: 1rem; border-left: 4px solid #000; background: var(--scfs-soft); }
+@media (max-width: 700px) { .scfs-connected-help-desk-admin__summary { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .scfs-connected-help-desk *, .scfs-connected-help-desk-admin * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+@media print { .scfs-connected-help-desk { border: 0; padding: 0; } }
