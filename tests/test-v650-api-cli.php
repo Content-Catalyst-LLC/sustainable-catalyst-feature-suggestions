@@ -8,4 +8,4 @@ $checks['private permissions'] = substr_count($class, "'permission_callback'") >
 $failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
-echo 'v6.11.0 REST and CLI contract passed.\n';
+echo 'v6.12.0 REST and CLI contract passed.\n';

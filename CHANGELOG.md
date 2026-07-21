@@ -1,3 +1,13 @@
+## 6.12.0 — Reliability, Security, Privacy, and Production Hardening
+
+- Added request rate limits and abuse-signal review.
+- Added private security-event evidence and privacy-operation governance.
+- Added privacy-safe audit-export requests.
+- Added backup snapshot integrity and isolated recovery-drill records.
+- Added security-header, accessibility, performance, monitoring, rollback, and release-authorization gates.
+- Added scheduled production-hardening health snapshots.
+- Preserved human control over permanent blocking, destructive privacy actions, production restores, and deployments.
+
 # Changelog
 
 ## 6.11.0 — API, Webhooks, and External Integrations

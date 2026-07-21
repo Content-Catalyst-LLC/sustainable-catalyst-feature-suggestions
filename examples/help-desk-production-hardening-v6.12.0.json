@@ -1,0 +1,41 @@
+{
+  "schema": "scfs-help-desk-production-hardening/1.0",
+  "version": "6.12.0",
+  "security": {
+    "rate_limits": true,
+    "abuse_review": true,
+    "public_security_event_api": false,
+    "security_headers_score": 100
+  },
+  "privacy": {
+    "identity_authority": "contact-engagement",
+    "destructive_action_automatic": false,
+    "open_requests": 2
+  },
+  "backup": {
+    "sha256_integrity": true,
+    "encrypted": true,
+    "offsite_copy": true,
+    "restore_tested": true,
+    "age_hours": 6
+  },
+  "recovery": {
+    "isolated_drill": true,
+    "automatic_production_restore": false,
+    "recovery_time_minutes": 35,
+    "recovery_point_minutes": 15
+  },
+  "production_gate": {
+    "source_validation": true,
+    "package_validation": true,
+    "rollback_plan": true,
+    "human_authorization": true,
+    "state": "ready"
+  },
+  "governance": {
+    "automatic_permanent_block": false,
+    "automatic_deployment": false,
+    "private_content_in_audit_exports": false,
+    "human_release_authorization_required": true
+  }
+}

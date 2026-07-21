@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_API_Integrations {
-    const VERSION = '6.11.0';
+    const VERSION = '6.12.0';
     const DB_VERSION = '2.0.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_api_integrations_db_version';
     const SETTINGS_OPTION = 'scfs_help_desk_api_integrations_settings';
@@ -291,8 +291,8 @@ final class SCFS_Help_Desk_API_Integrations {
         if (strpos((string) $hook, self::ADMIN_PAGE) === false) {
             return;
         }
-        wp_enqueue_style('scfs-help-desk-api-integrations', plugins_url('../assets/help-desk-api-integrations-v6.11.0.css', __FILE__), array(), self::VERSION);
-        wp_enqueue_script('scfs-help-desk-api-integrations', plugins_url('../assets/help-desk-api-integrations-v6.11.0.js', __FILE__), array(), self::VERSION, true);
+        wp_enqueue_style('scfs-help-desk-api-integrations', plugins_url('../assets/help-desk-api-integrations-v6.12.0.css', __FILE__), array(), self::VERSION);
+        wp_enqueue_script('scfs-help-desk-api-integrations', plugins_url('../assets/help-desk-api-integrations-v6.12.0.js', __FILE__), array(), self::VERSION, true);
     }
 
     public function register_rest_routes() {

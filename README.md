@@ -1,12 +1,12 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v6.11.0 — API, Webhooks, and External Integrations**
+## Current release: **v6.12.0 — Reliability, Security, Privacy, and Production Hardening**
 
 **API, Webhooks, and External Integrations**
 
-Version 6.11.0 adds governed scoped APIs, signed outbound webhooks, retry and dead-letter operations, and human-authorized external system relationships.
+Version 6.12.0 adds rate limits, abuse review, privacy operations, backup and recovery evidence, security controls, and human-authorized production release gates.
 
-See `docs/help-desk-api-integrations-v6.11.0.md` for the authority, signing, retry, privacy, and external-link contracts.
+See `docs/help-desk-production-hardening-v6.12.0.md` for the security, privacy, backup, recovery, and release-gate contracts.
 
 ## Primary public shortcodes
 
@@ -53,6 +53,10 @@ Adds the private Agent Workspace, built-in and team queues, explicit assignment,
 
 Private organizational workspaces, least-privilege membership, support entitlements, explicit case access, private knowledge collections, append-only audit evidence, retention governance, and privacy-safe institutional reporting.
 
+
+## v6.12.0 — Reliability, Security, Privacy, and Production Hardening
+
+Adds rate limits, abuse review, private security evidence, privacy operations, audit exports, backup integrity, recovery drills, security-header review, accessibility and performance checks, and human-authorized production gates.
 
 ## v6.11.0 — API, Webhooks, and External Integrations
 

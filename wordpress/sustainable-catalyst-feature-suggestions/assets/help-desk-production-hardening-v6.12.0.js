@@ -1,0 +1,1 @@
+(function(){'use strict';document.addEventListener('DOMContentLoaded',function(){var root=document.querySelector('.scfs-hardening-console');if(!root){return;}root.setAttribute('data-scfs-hardening-ready','true');var metrics=root.querySelectorAll('.scfs-hardening-metrics article');metrics.forEach(function(metric){metric.setAttribute('tabindex','0');});});})();

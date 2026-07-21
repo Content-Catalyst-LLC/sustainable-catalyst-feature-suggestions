@@ -15,7 +15,7 @@
       "const": "scfs-help-desk-api-integrations/1.0"
     },
     "version": {
-      "const": "6.11.0"
+      "const": "6.12.0"
     },
     "integration": {
       "type": "object",

@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_Institutional_Workspaces {
-    const VERSION = '6.11.0';
+    const VERSION = '6.12.0';
     const SCHEMA = 'scfs-help-desk-institutional-workspaces/1.0';
     const DB_VERSION = '1.9.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_institutional_workspaces_db_version';
@@ -580,8 +580,8 @@ final class SCFS_Help_Desk_Institutional_Workspaces {
         if (strpos((string) $hook, self::ADMIN_PAGE) === false) {
             return;
         }
-        wp_enqueue_style('scfs-help-desk-institutional-workspaces', plugins_url('../assets/help-desk-institutional-workspaces-v6.11.0.css', __FILE__), array(), self::VERSION);
-        wp_enqueue_script('scfs-help-desk-institutional-workspaces', plugins_url('../assets/help-desk-institutional-workspaces-v6.11.0.js', __FILE__), array(), self::VERSION, true);
+        wp_enqueue_style('scfs-help-desk-institutional-workspaces', plugins_url('../assets/help-desk-institutional-workspaces-v6.12.0.css', __FILE__), array(), self::VERSION);
+        wp_enqueue_script('scfs-help-desk-institutional-workspaces', plugins_url('../assets/help-desk-institutional-workspaces-v6.12.0.js', __FILE__), array(), self::VERSION, true);
     }
 
     public function render_admin_page() {

@@ -18,4 +18,4 @@ foreach ($needles as $needle) {
         exit(1);
     }
 }
-echo "v6.11.0 inbound email and threading contract passed.\n";
+echo "v6.12.0 inbound email and threading contract passed.\n";

@@ -35,8 +35,9 @@ from .help_desk_email_channels import InboundEmailEvidence, InboundEmailAssessme
 from .help_desk_quality_analytics import OperationalMetricsEvidence, OperationalMetricsAssessment, CaseQualityEvidence, CaseQualityAssessment, TrendEvidence, TrendAssessment, SupportSignalEvidence, SupportSignalAssessment, PrivacyAggregateEvidence, PrivacyAggregateAssessment, QualityAnalyticsReportEvidence, QualityAnalyticsReportResult, evaluate_operational_metrics, evaluate_case_quality, evaluate_trend, evaluate_support_signal, evaluate_privacy_aggregate, verify_quality_analytics_report
 from .help_desk_institutional_workspaces import InstitutionalWorkspaceEvidence, InstitutionalWorkspaceAssessment, MemberAccessEvidence, MemberAccessAssessment, EntitlementEvidence, EntitlementAssessment, CaseVisibilityEvidence, CaseVisibilityAssessment, CollectionAccessEvidence, CollectionAccessAssessment, RetentionPolicyEvidence, RetentionPolicyAssessment, InstitutionalReportEvidence, InstitutionalReportAssessment, InstitutionalReportIntegrityEvidence, InstitutionalReportIntegrityResult, evaluate_workspace, evaluate_member_access, evaluate_entitlement, evaluate_case_visibility, evaluate_collection_access, evaluate_retention_policy, evaluate_institutional_report, verify_institutional_report
 from .help_desk_api_integrations import ApiScopeEvidence, ApiScopeAssessment, WebhookSubscriptionEvidence, WebhookSubscriptionAssessment, WebhookDeliveryEvidence, WebhookDeliverySignature, DeliveryRetryEvidence, DeliveryRetryAssessment, ExternalLinkEvidence, ExternalLinkAssessment, IntegrationPrivacyEvidence, IntegrationPrivacyAssessment, IntegrationReportEvidence, IntegrationReportResult, evaluate_api_scope, evaluate_webhook_subscription, sign_webhook_delivery, evaluate_delivery_retry, evaluate_external_link, evaluate_integration_privacy, verify_integration_report
+from .help_desk_production_hardening import RateLimitEvidence, RateLimitAssessment, AbuseSignalEvidence, AbuseSignalAssessment, PrivacyOperationEvidence, PrivacyOperationAssessment, BackupSnapshotEvidence, BackupSnapshotAssessment, RecoveryDrillEvidence, RecoveryDrillAssessment, SecurityHeaderEvidence, SecurityHeaderAssessment, ProductionGateEvidence, ProductionGateAssessment, HardeningReportEvidence, HardeningReportResult, evaluate_rate_limit, evaluate_abuse_signal, evaluate_privacy_operation, evaluate_backup_snapshot, evaluate_recovery_drill, evaluate_security_headers, evaluate_production_gate, verify_hardening_report
 
-VERSION='6.11.0'
+VERSION='6.12.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1465,7 +1466,7 @@ def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key
 def help_desk_quality_analytics_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return {
-        'version':'6.11.0',
+        'version':'6.12.0',
         'schema':'scfs-help-desk-quality-analytics/1.0',
         'operational_metrics':True,
         'governed_case_quality_review':True,
@@ -1662,3 +1663,76 @@ def help_desk_integrations_privacy(payload: IntegrationPrivacyEvidence, x_scfs_a
 def help_desk_integrations_report(payload: IntegrationReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_integration_report(payload)
+
+@app.get('/v1/help-desk/production-hardening/capabilities')
+def help_desk_production_hardening_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'version': VERSION,
+        'schema': 'scfs-help-desk-production-hardening/1.0',
+        'rate_limits': True,
+        'abuse_signal_review': True,
+        'privacy_operations': True,
+        'privacy_safe_audit_exports': True,
+        'backup_evidence': True,
+        'recovery_drills': True,
+        'security_header_review': True,
+        'production_release_gates': True,
+        'accessibility_and_performance_gates': True,
+        'scheduled_health_snapshots': True,
+        'public_security_event_api': False,
+        'automatic_permanent_block': False,
+        'automatic_destructive_privacy_action': False,
+        'automatic_production_restore': False,
+        'automatic_deployment': False,
+        'private_content_in_audit_exports': False,
+        'human_release_authorization_required': True,
+    }
+
+
+@app.post('/v1/help-desk/production-hardening/rate-limits/evaluate', response_model=RateLimitAssessment)
+def help_desk_production_hardening_rate_limits(payload: RateLimitEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_rate_limit(payload)
+
+
+@app.post('/v1/help-desk/production-hardening/abuse/evaluate', response_model=AbuseSignalAssessment)
+def help_desk_production_hardening_abuse(payload: AbuseSignalEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_abuse_signal(payload)
+
+
+@app.post('/v1/help-desk/production-hardening/privacy/evaluate', response_model=PrivacyOperationAssessment)
+def help_desk_production_hardening_privacy(payload: PrivacyOperationEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_privacy_operation(payload)
+
+
+@app.post('/v1/help-desk/production-hardening/backups/evaluate', response_model=BackupSnapshotAssessment)
+def help_desk_production_hardening_backups(payload: BackupSnapshotEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_backup_snapshot(payload)
+
+
+@app.post('/v1/help-desk/production-hardening/recovery/evaluate', response_model=RecoveryDrillAssessment)
+def help_desk_production_hardening_recovery(payload: RecoveryDrillEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_recovery_drill(payload)
+
+
+@app.post('/v1/help-desk/production-hardening/security-headers/evaluate', response_model=SecurityHeaderAssessment)
+def help_desk_production_hardening_headers(payload: SecurityHeaderEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_security_headers(payload)
+
+
+@app.post('/v1/help-desk/production-hardening/production-gates/evaluate', response_model=ProductionGateAssessment)
+def help_desk_production_hardening_gates(payload: ProductionGateEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_production_gate(payload)
+
+
+@app.post('/v1/help-desk/production-hardening/reports/verify', response_model=HardeningReportResult)
+def help_desk_production_hardening_report(payload: HardeningReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_hardening_report(payload)

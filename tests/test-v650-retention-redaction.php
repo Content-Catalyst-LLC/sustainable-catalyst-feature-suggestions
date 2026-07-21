@@ -14,4 +14,4 @@ $checks = array(
 $failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
-echo 'v6.11.0 retention and redaction contract passed.\n';
+echo 'v6.12.0 retention and redaction contract passed.\n';

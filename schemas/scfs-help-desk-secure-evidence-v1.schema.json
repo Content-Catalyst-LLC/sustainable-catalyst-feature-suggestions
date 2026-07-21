@@ -16,7 +16,7 @@
       "const": "scfs-help-desk-secure-evidence/1.0"
     },
     "version": {
-      "const": "6.11.0"
+      "const": "6.12.0"
     },
     "case_id": {
       "type": "integer",

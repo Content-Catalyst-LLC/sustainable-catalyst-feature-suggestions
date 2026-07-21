@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-production-hardening-v1.schema.json",
+  "title": "SCFS Help Desk Production Hardening Contract",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "security",
+    "privacy",
+    "backup",
+    "recovery",
+    "production_gate",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-help-desk-production-hardening/1.0"
+    },
+    "version": {
+      "const": "6.12.0"
+    },
+    "security": {
+      "type": "object",
+      "required": [
+        "rate_limits",
+        "abuse_review",
+        "public_security_event_api"
+      ],
+      "properties": {
+        "rate_limits": {
+          "type": "boolean"
+        },
+        "abuse_review": {
+          "type": "boolean"
+        },
+        "public_security_event_api": {
+          "const": false
+        }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "identity_authority",
+        "destructive_action_automatic"
+      ],
+      "properties": {
+        "identity_authority": {
+          "const": "contact-engagement"
+        },
+        "destructive_action_automatic": {
+          "const": false
+        }
+      }
+    },
+    "backup": {
+      "type": "object",
+      "required": [
+        "sha256_integrity",
+        "encrypted",
+        "offsite_copy"
+      ],
+      "properties": {
+        "sha256_integrity": {
+          "type": "boolean"
+        },
+        "encrypted": {
+          "type": "boolean"
+        },
+        "offsite_copy": {
+          "type": "boolean"
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "required": [
+        "isolated_drill",
+        "automatic_production_restore"
+      ],
+      "properties": {
+        "isolated_drill": {
+          "type": "boolean"
+        },
+        "automatic_production_restore": {
+          "const": false
+        }
+      }
+    },
+    "production_gate": {
+      "type": "object",
+      "required": [
+        "source_validation",
+        "rollback_plan",
+        "human_authorization"
+      ],
+      "properties": {
+        "source_validation": {
+          "type": "boolean"
+        },
+        "rollback_plan": {
+          "type": "boolean"
+        },
+        "human_authorization": {
+          "const": true
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "automatic_permanent_block",
+        "automatic_deployment",
+        "private_content_in_audit_exports"
+      ],
+      "properties": {
+        "automatic_permanent_block": {
+          "const": false
+        },
+        "automatic_deployment": {
+          "const": false
+        },
+        "private_content_in_audit_exports": {
+          "const": false
+        }
+      }
+    }
+  }
+}
