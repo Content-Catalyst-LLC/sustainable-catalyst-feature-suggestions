@@ -1,5 +1,5 @@
 {
-  "version": "6.8.0",
+  "version": "6.9.0",
   "schema": "scfs-help-desk-workflow-automation/1.0",
   "case_number": "SC-2026-000301",
   "event_type": "case_created",

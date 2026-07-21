@@ -1,6 +1,6 @@
 {
   "schema": "scfs-help-desk-service-levels/1.0",
-  "version": "6.8.0",
+  "version": "6.9.0",
   "case_id": 184,
   "case_number": "SC-2026-000184",
   "priority": "high",

@@ -32,8 +32,9 @@ from .help_desk_secure_evidence import EvidenceIntakeEvidence, EvidenceIntakeAss
 from .help_desk_knowledge_resolution import CaseContext, KnowledgeCandidate, ResolutionAssessment, SimilarCaseEvidence, SimilarCaseAssessment, AgentDecisionEvidence, AgentDecisionAssessment, GuidedPlanEvidence, GuidedPlanAssessment, PromotionEvidence, PromotionAssessment, KnowledgeResolutionReportEvidence, KnowledgeResolutionReportResult, evaluate_resolution, evaluate_similar_cases, evaluate_agent_decision, evaluate_guided_plan, evaluate_promotion, verify_knowledge_resolution_report
 from .help_desk_workflow_automation import CaseEventContext, WorkflowRule, WorkflowPlan, ApprovalEvidence, ApprovalAssessment, TemplateEvidence, TemplateAssessment, MacroEvidence, MacroAssessment, FollowupEvidence, FollowupAssessment, WorkflowReportEvidence, WorkflowReportResult, plan_workflow, evaluate_approval, evaluate_template, evaluate_macro, evaluate_followup, verify_workflow_report
 from .help_desk_email_channels import InboundEmailEvidence, InboundEmailAssessment, ThreadMatchEvidence, ThreadMatchAssessment, OutboundDraftEvidence, OutboundDraftAssessment, DeliveryEventEvidence, DeliveryEventAssessment, ChannelAuthorizationEvidence, ChannelAuthorizationAssessment, TeamsHandoffEvidence, TeamsHandoffAssessment, EmailChannelReportEvidence, EmailChannelReportResult, evaluate_inbound_email, evaluate_thread_match, prepare_outbound_draft, evaluate_delivery_event, evaluate_channel_authorization, evaluate_teams_handoff, verify_email_channel_report
+from .help_desk_quality_analytics import OperationalMetricsEvidence, OperationalMetricsAssessment, CaseQualityEvidence, CaseQualityAssessment, TrendEvidence, TrendAssessment, SupportSignalEvidence, SupportSignalAssessment, PrivacyAggregateEvidence, PrivacyAggregateAssessment, QualityAnalyticsReportEvidence, QualityAnalyticsReportResult, evaluate_operational_metrics, evaluate_case_quality, evaluate_trend, evaluate_support_signal, evaluate_privacy_aggregate, verify_quality_analytics_report
 
-VERSION='6.8.0'
+VERSION='6.9.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1456,3 +1457,60 @@ def help_desk_channels_teams(payload: TeamsHandoffEvidence, x_scfs_ai_key:Option
 def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_email_channel_report(payload)
+
+
+@app.get('/v1/help-desk/quality-analytics/capabilities')
+def help_desk_quality_analytics_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'version':'6.9.0',
+        'schema':'scfs-help-desk-quality-analytics/1.0',
+        'operational_metrics':True,
+        'governed_case_quality_review':True,
+        'trend_analysis':True,
+        'support_pressure_signals':True,
+        'minimum_cohort_suppression':True,
+        'privacy_safe_aggregates':True,
+        'scheduled_snapshots':True,
+        'automatic_personnel_ranking':False,
+        'automatic_punitive_action':False,
+        'automatic_case_action':False,
+        'public_case_analytics':False,
+        'human_review_required':True,
+    }
+
+
+@app.post('/v1/help-desk/quality-analytics/metrics/evaluate', response_model=OperationalMetricsAssessment)
+def help_desk_quality_analytics_metrics(payload: OperationalMetricsEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_operational_metrics(payload)
+
+
+@app.post('/v1/help-desk/quality-analytics/quality/evaluate', response_model=CaseQualityAssessment)
+def help_desk_quality_analytics_quality(payload: CaseQualityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_case_quality(payload)
+
+
+@app.post('/v1/help-desk/quality-analytics/trends/evaluate', response_model=TrendAssessment)
+def help_desk_quality_analytics_trends(payload: TrendEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_trend(payload)
+
+
+@app.post('/v1/help-desk/quality-analytics/signals/evaluate', response_model=SupportSignalAssessment)
+def help_desk_quality_analytics_signals(payload: SupportSignalEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_support_signal(payload)
+
+
+@app.post('/v1/help-desk/quality-analytics/privacy/evaluate', response_model=PrivacyAggregateAssessment)
+def help_desk_quality_analytics_privacy(payload: PrivacyAggregateEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_privacy_aggregate(payload)
+
+
+@app.post('/v1/help-desk/quality-analytics/reports/verify', response_model=QualityAnalyticsReportResult)
+def help_desk_quality_analytics_report(payload: QualityAnalyticsReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_quality_analytics_report(payload)

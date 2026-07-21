@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-quality-analytics-v1.schema.json",
+  "title": "Sustainable Catalyst Help Desk Quality Analytics",
+  "type": "object",
+  "required": [
+    "version",
+    "schema",
+    "metrics",
+    "governance"
+  ],
+  "properties": {
+    "version": {
+      "const": "6.9.0"
+    },
+    "schema": {
+      "const": "scfs-help-desk-quality-analytics/1.0"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "portfolio",
+            "product",
+            "team",
+            "queue"
+          ]
+        },
+        "key": {
+          "type": "string"
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "total_cases": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active_cases": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reopen_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "escalation_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "sla_compliance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "backlog_pressure": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "documentation_assist_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "state": {
+          "enum": [
+            "insufficient_evidence",
+            "healthy",
+            "watch",
+            "intervention"
+          ]
+        },
+        "suppressed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "quality_review": {
+      "type": "object",
+      "properties": {
+        "case_number": {
+          "pattern": "^SC-\\d{4}-\\d{6}$"
+        },
+        "overall_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "review_fingerprint": {
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "requester_identity_exposed",
+        "private_message_content_exposed",
+        "automatic_personnel_ranking",
+        "automatic_punitive_action",
+        "automatic_case_action"
+      ],
+      "properties": {
+        "requester_identity_exposed": {
+          "const": false
+        },
+        "private_message_content_exposed": {
+          "const": false
+        },
+        "attachment_content_exposed": {
+          "const": false
+        },
+        "automatic_personnel_ranking": {
+          "const": false
+        },
+        "automatic_punitive_action": {
+          "const": false
+        },
+        "automatic_case_action": {
+          "const": false
+        },
+        "human_review_required": {
+          "const": true
+        }
+      }
+    }
+  }
+}

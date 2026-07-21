@@ -12,7 +12,7 @@ function __($text) { return $text; }
 
 require dirname(__DIR__) . '/wordpress/sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php';
 $checks = array(
-    'main version is 5.1.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '6.8.0',
+    'main version is 5.1.0' => Sustainable_Catalyst_Feature_Suggestions::VERSION === '6.9.0',
     'repository synchronization loaded' => class_exists('SCFS_Repository_Release_Synchronization'),
     'repository synchronization version' => SCFS_Repository_Release_Synchronization::VERSION === '5.1.0',
     'repository synchronization schema' => SCFS_Repository_Release_Synchronization::SCHEMA_VERSION === '1.0',

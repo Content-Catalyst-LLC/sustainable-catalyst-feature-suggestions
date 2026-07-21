@@ -1,6 +1,6 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v6.8.0 — Workflow Automation and Operational Rules**
+## Current release: **v6.9.0 — Workflow Automation and Operational Rules**
 
 **Knowledge-Assisted Case Resolution**
 

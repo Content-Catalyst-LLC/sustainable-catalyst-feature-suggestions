@@ -1,0 +1,45 @@
+{
+  "version": "6.9.0",
+  "schema": "scfs-help-desk-quality-analytics/1.0",
+  "scope": {
+    "type": "portfolio",
+    "key": "all"
+  },
+  "metrics": {
+    "total_cases": 128,
+    "active_cases": 24,
+    "reopen_rate": 8.3,
+    "escalation_rate": 6.2,
+    "sla_compliance": 93.4,
+    "backlog_pressure": 31.5,
+    "documentation_assist_rate": 58.1,
+    "score": 87.6,
+    "state": "healthy",
+    "suppressed": false
+  },
+  "quality_review": {
+    "case_number": "SC-2026-000401",
+    "overall_score": 88.5,
+    "review_fingerprint": "5884a5cc63c5b294b15149da238ecb238b994cb5bcce3953247924a02bff10ac"
+  },
+  "signals": [
+    {
+      "type": "documentation_pressure",
+      "product": "decision-studio",
+      "pressure_score": 54.2,
+      "state": "watch",
+      "human_review_required": true
+    }
+  ],
+  "governance": {
+    "requester_identity_exposed": false,
+    "private_message_content_exposed": false,
+    "attachment_content_exposed": false,
+    "automatic_personnel_ranking": false,
+    "automatic_punitive_action": false,
+    "automatic_case_action": false,
+    "automatic_incident_declaration": false,
+    "automatic_roadmap_change": false,
+    "human_review_required": true
+  }
+}

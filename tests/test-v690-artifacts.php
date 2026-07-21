@@ -1,0 +1,2 @@
+<?php
+$root=dirname(__DIR__);foreach(array('RELEASE_NOTES_6.9.0.md','SUSTAINABLE_CATALYST_PRODUCT_SUPPORT_AND_FEEDBACK_PLATFORM_V6.9.0_RELEASE_NOTES.md','docs/help-desk-quality-analytics-v6.9.0.md','schemas/scfs-help-desk-quality-analytics-v1.schema.json','examples/help-desk-quality-analytics-v6.9.0.json','feature_suggestions_manifest-v6.9.0.json','release-manifest-v6.9.0.json','validate_v6_9_0.sh','install_and_push_v6_9_0_macos.sh') as $file){if(!is_file($root.'/'.$file)){fwrite(STDERR,"FAIL artifact: $file\n");exit(1);}}echo "v6.9.0 release artifact contract passed.\n";

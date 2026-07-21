@@ -13,7 +13,7 @@
   ],
   "properties": {
     "version": {
-      "const": "6.8.0"
+      "const": "6.9.0"
     },
     "schema": {
       "const": "scfs-help-desk-workflow-automation/1.0"
