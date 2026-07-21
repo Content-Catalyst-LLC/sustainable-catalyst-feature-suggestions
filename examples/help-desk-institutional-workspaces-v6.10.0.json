@@ -1,0 +1,78 @@
+{
+  "schema": "scfs-help-desk-institutional-workspaces/1.0",
+  "version": "6.10.0",
+  "workspace": {
+    "workspace_key": "civic-research-lab",
+    "organization_name": "Civic Research Lab",
+    "state": "active",
+    "private_workspace": true,
+    "departments": [
+      "Policy",
+      "Data"
+    ],
+    "service_policy_key": "institutional-standard",
+    "retention_days": 730
+  },
+  "members": [
+    {
+      "external_subject_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "role": "workspace_admin",
+      "capabilities": [
+        "workspace.manage",
+        "case.view.department"
+      ]
+    },
+    {
+      "external_subject_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "role": "requester",
+      "capabilities": [
+        "case.create",
+        "case.view.own"
+      ]
+    }
+  ],
+  "entitlements": [
+    {
+      "entitlement_key": "research-platforms",
+      "active": true,
+      "case_limit": 100,
+      "products": [
+        "decision-studio",
+        "site-intelligence"
+      ]
+    }
+  ],
+  "case_access": [
+    {
+      "case_number": "SC-2026-000184",
+      "explicit_grant": true,
+      "scope": "view"
+    }
+  ],
+  "collections": [
+    {
+      "collection_key": "decision-guidance",
+      "visibility_scope": "workspace",
+      "private_case_content_copied": false,
+      "attachment_content_copied": false
+    }
+  ],
+  "report": {
+    "minimum_cohort": 5,
+    "suppressed": false,
+    "report_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "governance": {
+    "identity_authority": "contact-engagement",
+    "storage_authority": "contact-engagement",
+    "requester_identity_copied": false,
+    "private_message_content_copied": false,
+    "attachment_content_copied": false,
+    "automatic_access_grants": false,
+    "automatic_case_sharing": false,
+    "automatic_entitlement_changes": false,
+    "public_institutional_branding": false,
+    "sponsor_influence": false,
+    "human_review_required": true
+  }
+}

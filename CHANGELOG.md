@@ -1,4 +1,4 @@
-## 6.9.0 — Quality Assurance, Analytics, and Support Intelligence
+## 6.10.0 — Quality Assurance, Analytics, and Support Intelligence
 
 - Added private operational metrics, daily snapshots, trend evidence, quality reviews, privacy-safe support signals, governed exports, and minimum-cohort suppression.
 - Preserved public support, private case, identity, attachment, workflow, and channel authorities.
@@ -6,7 +6,7 @@
 
 # Changelog
 
-## 6.9.0 — Email and Channel Operations
+## 6.10.0 — Email and Channel Operations
 
 - Added authenticated support-email intake and case-thread matching.
 - Added governed outbound drafts and Contact and Engagement delivery handoffs.

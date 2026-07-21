@@ -17,4 +17,4 @@ $checks = array(
 $failed = array_keys(array_filter($checks, static function ($ok) { return !$ok; }));
 foreach ($checks as $label => $ok) echo ($ok ? 'PASS' : 'FAIL') . " - {$label}\n";
 if ($failed) { fwrite(STDERR, 'Failed checks: ' . implode(', ', $failed) . "\n"); exit(1); }
-echo 'v6.9.0 intake and attachment governance contract passed.\n';
+echo 'v6.10.0 intake and attachment governance contract passed.\n';

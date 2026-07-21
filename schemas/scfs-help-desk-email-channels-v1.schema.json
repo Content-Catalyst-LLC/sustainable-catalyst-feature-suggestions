@@ -15,7 +15,7 @@
       "const": "scfs-help-desk-email-channels/1.0"
     },
     "version": {
-      "const": "6.9.0"
+      "const": "6.10.0"
     },
     "case_number": {
       "type": "string",

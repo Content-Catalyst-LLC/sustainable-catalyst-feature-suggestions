@@ -33,8 +33,9 @@ from .help_desk_knowledge_resolution import CaseContext, KnowledgeCandidate, Res
 from .help_desk_workflow_automation import CaseEventContext, WorkflowRule, WorkflowPlan, ApprovalEvidence, ApprovalAssessment, TemplateEvidence, TemplateAssessment, MacroEvidence, MacroAssessment, FollowupEvidence, FollowupAssessment, WorkflowReportEvidence, WorkflowReportResult, plan_workflow, evaluate_approval, evaluate_template, evaluate_macro, evaluate_followup, verify_workflow_report
 from .help_desk_email_channels import InboundEmailEvidence, InboundEmailAssessment, ThreadMatchEvidence, ThreadMatchAssessment, OutboundDraftEvidence, OutboundDraftAssessment, DeliveryEventEvidence, DeliveryEventAssessment, ChannelAuthorizationEvidence, ChannelAuthorizationAssessment, TeamsHandoffEvidence, TeamsHandoffAssessment, EmailChannelReportEvidence, EmailChannelReportResult, evaluate_inbound_email, evaluate_thread_match, prepare_outbound_draft, evaluate_delivery_event, evaluate_channel_authorization, evaluate_teams_handoff, verify_email_channel_report
 from .help_desk_quality_analytics import OperationalMetricsEvidence, OperationalMetricsAssessment, CaseQualityEvidence, CaseQualityAssessment, TrendEvidence, TrendAssessment, SupportSignalEvidence, SupportSignalAssessment, PrivacyAggregateEvidence, PrivacyAggregateAssessment, QualityAnalyticsReportEvidence, QualityAnalyticsReportResult, evaluate_operational_metrics, evaluate_case_quality, evaluate_trend, evaluate_support_signal, evaluate_privacy_aggregate, verify_quality_analytics_report
+from .help_desk_institutional_workspaces import InstitutionalWorkspaceEvidence, InstitutionalWorkspaceAssessment, MemberAccessEvidence, MemberAccessAssessment, EntitlementEvidence, EntitlementAssessment, CaseVisibilityEvidence, CaseVisibilityAssessment, CollectionAccessEvidence, CollectionAccessAssessment, RetentionPolicyEvidence, RetentionPolicyAssessment, InstitutionalReportEvidence, InstitutionalReportAssessment, InstitutionalReportIntegrityEvidence, InstitutionalReportIntegrityResult, evaluate_workspace, evaluate_member_access, evaluate_entitlement, evaluate_case_visibility, evaluate_collection_access, evaluate_retention_policy, evaluate_institutional_report, verify_institutional_report
 
-VERSION='6.9.0'
+VERSION='6.10.0'
 ANALYSIS_VERSION='5.1.0-1'
 app=FastAPI(title='Sustainable Catalyst Connected Product Support and Feedback Platform',version=VERSION)
 
@@ -1463,7 +1464,7 @@ def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key
 def help_desk_quality_analytics_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return {
-        'version':'6.9.0',
+        'version':'6.10.0',
         'schema':'scfs-help-desk-quality-analytics/1.0',
         'operational_metrics':True,
         'governed_case_quality_review':True,
@@ -1514,3 +1515,80 @@ def help_desk_quality_analytics_privacy(payload: PrivacyAggregateEvidence, x_scf
 def help_desk_quality_analytics_report(payload: QualityAnalyticsReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return verify_quality_analytics_report(payload)
+
+@app.get('/v1/help-desk/institutional-workspaces/capabilities')
+def help_desk_institutional_workspaces_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return {
+        'version': VERSION,
+        'schema': 'scfs-help-desk-institutional-workspaces/1.0',
+        'organizations_and_departments': True,
+        'least_privilege_membership': True,
+        'authorized_requesters': True,
+        'support_entitlements': True,
+        'product_and_version_coverage': True,
+        'explicit_case_access_grants': True,
+        'private_knowledge_collections': True,
+        'append_only_audit_events': True,
+        'retention_and_legal_hold_governance': True,
+        'minimum_cohort_reporting': True,
+        'identity_authority': 'contact-engagement',
+        'storage_authority': 'contact-engagement',
+        'requester_identity_copied': False,
+        'private_message_content_copied': False,
+        'attachment_content_copied': False,
+        'automatic_access_grants': False,
+        'automatic_case_sharing': False,
+        'automatic_entitlement_changes': False,
+        'public_institutional_branding': False,
+        'sponsor_influence': False,
+        'human_review_required': True,
+    }
+
+
+@app.post('/v1/help-desk/institutional-workspaces/workspaces/evaluate', response_model=InstitutionalWorkspaceAssessment)
+def help_desk_institutional_workspace_evaluate(payload: InstitutionalWorkspaceEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_workspace(payload)
+
+
+@app.post('/v1/help-desk/institutional-workspaces/members/evaluate', response_model=MemberAccessAssessment)
+def help_desk_institutional_member_evaluate(payload: MemberAccessEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_member_access(payload)
+
+
+@app.post('/v1/help-desk/institutional-workspaces/entitlements/evaluate', response_model=EntitlementAssessment)
+def help_desk_institutional_entitlement_evaluate(payload: EntitlementEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_entitlement(payload)
+
+
+@app.post('/v1/help-desk/institutional-workspaces/case-access/evaluate', response_model=CaseVisibilityAssessment)
+def help_desk_institutional_case_access_evaluate(payload: CaseVisibilityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_case_visibility(payload)
+
+
+@app.post('/v1/help-desk/institutional-workspaces/collections/evaluate', response_model=CollectionAccessAssessment)
+def help_desk_institutional_collection_evaluate(payload: CollectionAccessEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_collection_access(payload)
+
+
+@app.post('/v1/help-desk/institutional-workspaces/retention/evaluate', response_model=RetentionPolicyAssessment)
+def help_desk_institutional_retention_evaluate(payload: RetentionPolicyEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_retention_policy(payload)
+
+
+@app.post('/v1/help-desk/institutional-workspaces/reports/evaluate', response_model=InstitutionalReportAssessment)
+def help_desk_institutional_report_evaluate(payload: InstitutionalReportEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return evaluate_institutional_report(payload)
+
+
+@app.post('/v1/help-desk/institutional-workspaces/reports/verify', response_model=InstitutionalReportIntegrityResult)
+def help_desk_institutional_report_verify(payload: InstitutionalReportIntegrityEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return verify_institutional_report(payload)

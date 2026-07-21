@@ -1,0 +1,2 @@
+<?php
+$root=dirname(__DIR__);$class=file_get_contents($root.'/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-help-desk-institutional-workspaces.php');foreach(array('create_collection','collection_items','minimum_report_cohort','generate_report','suppressed','report_sha256','hash(\'sha256\'') as $needle){if(strpos($class,$needle)===false){fwrite(STDERR,"FAIL collection/report: $needle\n");exit(1);}}echo "v6.10.0 institutional collection and reporting contract passed.\n";

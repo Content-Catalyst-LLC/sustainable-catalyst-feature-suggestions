@@ -1,6 +1,6 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v6.9.0 — Workflow Automation and Operational Rules**
+## Current release: **v6.10.0 — Workflow Automation and Operational Rules**
 
 **Knowledge-Assisted Case Resolution**
 
@@ -48,3 +48,7 @@ Adds secure requester access links, token-to-session exchange, participant-visib
 ## v6.2.0
 
 Adds the private Agent Workspace, built-in and team queues, explicit assignment, workload summaries, saved views, bulk operations, and a complete private case workspace.
+
+## v6.10.0 — Institutional Workspaces and Access Governance
+
+Private organizational workspaces, least-privilege membership, support entitlements, explicit case access, private knowledge collections, append-only audit evidence, retention governance, and privacy-safe institutional reporting.
