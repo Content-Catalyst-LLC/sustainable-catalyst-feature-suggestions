@@ -36,9 +36,10 @@ from .help_desk_quality_analytics import OperationalMetricsEvidence, Operational
 from .help_desk_institutional_workspaces import InstitutionalWorkspaceEvidence, InstitutionalWorkspaceAssessment, MemberAccessEvidence, MemberAccessAssessment, EntitlementEvidence, EntitlementAssessment, CaseVisibilityEvidence, CaseVisibilityAssessment, CollectionAccessEvidence, CollectionAccessAssessment, RetentionPolicyEvidence, RetentionPolicyAssessment, InstitutionalReportEvidence, InstitutionalReportAssessment, InstitutionalReportIntegrityEvidence, InstitutionalReportIntegrityResult, evaluate_workspace, evaluate_member_access, evaluate_entitlement, evaluate_case_visibility, evaluate_collection_access, evaluate_retention_policy, evaluate_institutional_report, verify_institutional_report
 from .help_desk_api_integrations import ApiScopeEvidence, ApiScopeAssessment, WebhookSubscriptionEvidence, WebhookSubscriptionAssessment, WebhookDeliveryEvidence, WebhookDeliverySignature, DeliveryRetryEvidence, DeliveryRetryAssessment, ExternalLinkEvidence, ExternalLinkAssessment, IntegrationPrivacyEvidence, IntegrationPrivacyAssessment, IntegrationReportEvidence, IntegrationReportResult, evaluate_api_scope, evaluate_webhook_subscription, sign_webhook_delivery, evaluate_delivery_retry, evaluate_external_link, evaluate_integration_privacy, verify_integration_report
 from .canonical_product_registry import ProductRegistryEvidence, ProductRegistryAssessment, DEFAULT_PRODUCT_IDS, registry_capabilities, validate_product_registry
+from .installed_plugin_discovery import PluginDiscoveryAssessment, PluginDiscoveryEvidence, discovery_capabilities, validate_plugin_discovery
 from .help_desk_production_hardening import RateLimitEvidence, RateLimitAssessment, AbuseSignalEvidence, AbuseSignalAssessment, PrivacyOperationEvidence, PrivacyOperationAssessment, BackupSnapshotEvidence, BackupSnapshotAssessment, RecoveryDrillEvidence, RecoveryDrillAssessment, SecurityHeaderEvidence, SecurityHeaderAssessment, ProductionGateEvidence, ProductionGateAssessment, HardeningReportEvidence, HardeningReportResult, evaluate_rate_limit, evaluate_abuse_signal, evaluate_privacy_operation, evaluate_backup_snapshot, evaluate_recovery_drill, evaluate_security_headers, evaluate_production_gate, verify_hardening_report
 
-VERSION='7.1.0'
+VERSION='7.2.0'
 ANALYSIS_VERSION='5.1.0-1'
 from .connected_help_desk_platform import ModuleEvidence, PlatformEvidence, PlatformAssessment, JourneyEvidence, JourneyPlan, CommandEvidence, CommandPlan, DossierEvidence, DossierAssessment, ConnectedReportEvidence, ConnectedReportResult, evaluate_connected_help_desk, plan_support_journey, plan_connected_command, evaluate_case_dossier, verify_connected_report
 
@@ -186,7 +187,7 @@ def platform_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
         'ok': True,
         'version': VERSION,
         'service': 'scfs-feedback-research-intelligence',
-        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','canonical_product_registry','product_registry_validation','survey_descriptive_analysis','cross_tabs','scale_reliability','feedback_product_signal_scoring','feedback_signal_portfolio_summaries','feedback_cluster_prioritization','privacy_minimized_product_demand','public_support_api','product_support_embeds','version_verification','institutional_support_contracts','access_governance','cross_platform_support_handoffs','private_help_desk_case_foundation','case_intake_validation','case_status_transitions','case_relationship_governance','help_desk_privacy_boundary','secure_customer_portal','token_to_session_exchange','participant_conversations','requester_resolution_actions','private_satisfaction_feedback','service_level_policies','support_calendars','response_and_resolution_clocks','pause_accounting','escalation_review','open_text_coding'],
+        'capabilities': ['product_support_platform','release_intelligence','release_readiness_scoring','feature_triage','documentation_feedback_intelligence','documentation_gap_scoring','case_relationship_intelligence','support_demand_opportunity_scoring','guided_resolution_ranking','unified_support_search','resolution_journey','support_discovery_fusion','error_signature_matching','known_issue_prioritization','known_issue_release_intelligence','affected_version_tracking','target_and_fixed_release_relationships','release_issue_coverage','changelog_relationships','private_support_handoff_schema','product_taxonomy_context','component_and_issue_context','release_context','support_knowledge_base_schema','support_article_records','known_issue_records','documentation_collections','related_suggestions_and_releases','editorial_governance','content_ownership','technical_ownership','verification_history','review_cadence','stale_content_queue','supersession_governance','bulk_governance_planning','documentation_standards_scoring','controlled_publication_workflow','repository_release_synchronization','documentation_drift_detection','repository_link_health','support_reliability_scoring','support_reliability_trends','unresolved_query_clustering','reliability_report_integrity','cross_product_incident_impact','product_dependency_routing','cross_product_resolution_journeys','orchestration_report_integrity','connected_operations_scoring','connected_operations_action_planning','connected_operations_report_integrity','canonical_product_registry','product_registry_validation','installed_plugin_discovery','plugin_discovery_validation','survey_descriptive_analysis','cross_tabs','scale_reliability','feedback_product_signal_scoring','feedback_signal_portfolio_summaries','feedback_cluster_prioritization','privacy_minimized_product_demand','public_support_api','product_support_embeds','version_verification','institutional_support_contracts','access_governance','cross_platform_support_handoffs','private_help_desk_case_foundation','case_intake_validation','case_status_transitions','case_relationship_governance','help_desk_privacy_boundary','secure_customer_portal','token_to_session_exchange','participant_conversations','requester_resolution_actions','private_satisfaction_feedback','service_level_policies','support_calendars','response_and_resolution_clocks','pause_accounting','escalation_review','open_text_coding'],
         'providers': ['deterministic','gemini','deepseek','openai'],
         'human_review_required': True,
         'statistical_significance': False,
@@ -1469,7 +1470,7 @@ def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key
 def help_desk_quality_analytics_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return {
-        'version':'7.1.0',
+        'version':'7.2.0',
         'schema':'scfs-help-desk-quality-analytics/1.0',
         'operational_metrics':True,
         'governed_case_quality_review':True,
@@ -1758,10 +1759,21 @@ def canonical_product_registry_validate(payload: ProductRegistryEvidence, x_scfs
     return validate_product_registry(payload)
 
 
+@app.get("/v1/product-registry/discovery/capabilities")
+def product_registry_discovery_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return discovery_capabilities()
+
+@app.post("/v1/product-registry/discovery/validate", response_model=PluginDiscoveryAssessment)
+def product_registry_discovery_validate(payload: PluginDiscoveryEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return validate_plugin_discovery(payload)
+
+
 @app.get("/v1/help-desk/connected-platform/capabilities")
 def connected_help_desk_capabilities():
     return {
-        "version": "7.1.0",
+        "version": "7.2.0",
         "schema": "scfs-connected-help-desk-platform/1.0",
         "layers": ["public_support", "customer_portal", "agent_operations", "knowledge_operations", "service_management", "product_intelligence", "institutional_integration"],
         "automatic_customer_communication": False,

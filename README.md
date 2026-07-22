@@ -1,10 +1,10 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v7.0.1 — Repository Identity Migration**
+## Current release: **v7.2.0 — Installed Plugin Discovery**
 
-v7.0.1 establishes `Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback` as the canonical repository and adds a migration-aware installer while preserving the existing WordPress plugin folder, text domain, REST namespace, shortcodes, data, and public routes.
+v7.2.0 adds safe installed-plugin discovery for the canonical product registry. It reads WordPress plugin metadata, matches only approved Sustainable Catalyst products, updates installed versions without overriding locked records, and keeps unknown Catalyst-looking plugins in an administrator-only review queue.
 
-See `docs/repository-identity-migration-v7.0.1.md` for the migration contract and safe rename sequence.
+See `docs/installed-plugin-discovery-v7.2.0.md` for the matching, caching, governance, and maintenance contract.
 
 ## Primary public shortcodes
 

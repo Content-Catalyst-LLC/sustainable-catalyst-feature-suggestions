@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-installed-plugin-discovery-v1.schema.json",
+  "title": "Sustainable Catalyst Installed Plugin Discovery",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "scanned_at",
+    "installed_plugin_count",
+    "matches",
+    "pending"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "scfs-installed-plugin-discovery/1.0"
+    },
+    "version": {
+      "const": "7.2.0"
+    },
+    "scanned_at": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "installed_plugin_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "matches": {
+      "type": "array",
+      "maxItems": 250,
+      "items": {
+        "$ref": "#/$defs/match"
+      }
+    },
+    "pending": {
+      "type": "array",
+      "maxItems": 250,
+      "items": {
+        "$ref": "#/$defs/candidate"
+      }
+    }
+  },
+  "$defs": {
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_id",
+        "plugin_file",
+        "plugin_name",
+        "version",
+        "active",
+        "match_strategy",
+        "confidence"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "plugin_file": {
+          "type": "string",
+          "pattern": "^[^/][^\\\\]*\\.php$"
+        },
+        "plugin_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string"
+        },
+        "text_domain": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "match_strategy": {
+          "enum": [
+            "exact_plugin_file",
+            "sc_product_id_header",
+            "plugin_slug",
+            "text_domain",
+            "approved_name_alias"
+          ]
+        },
+        "confidence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "discovered_at": {
+          "type": "string"
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plugin_file",
+        "name",
+        "version",
+        "active",
+        "review_state"
+      ],
+      "properties": {
+        "plugin_file": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "text_domain": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "suggested_product_id": {
+          "type": "string"
+        },
+        "review_state": {
+          "enum": [
+            "pending",
+            "duplicate_match"
+          ]
+        }
+      }
+    }
+  }
+}

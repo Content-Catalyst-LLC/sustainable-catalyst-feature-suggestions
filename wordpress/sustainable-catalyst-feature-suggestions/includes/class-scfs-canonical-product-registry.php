@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.1.0';
+    const VERSION = '7.2.0';
     const SCHEMA = 'scfs-canonical-product-registry/1.0';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
@@ -150,6 +150,16 @@ final class SCFS_Canonical_Product_Registry {
             'version_source' => 'wordpress_plugin',
             'plugin_file' => '',
             'plugin_slug' => '',
+            'plugin_text_domain' => '',
+            'discovery_enabled' => '1',
+            'discovery_locked' => '',
+            'discovery_state' => 'unscanned',
+            'discovery_match' => '',
+            'discovered_active' => '',
+            'discovered_plugin_name' => '',
+            'discovered_plugin_version' => '',
+            'discovered_text_domain' => '',
+            'last_discovered_at' => '',
             'installed_version' => '',
             'public_version' => '',
             'release_channel' => 'stable',
@@ -189,7 +199,7 @@ final class SCFS_Canonical_Product_Registry {
             'decision-studio' => $this->product('decision-studio', 'Sustainable Catalyst Decision Studio', 'Decision Studio', 'research-intelligence', 130, array('plugin_slug' => 'sustainable-catalyst-decision-studio')),
             'narrative-risk' => $this->product('narrative-risk', 'Catalyst Narrative Risk', 'Narrative Risk', 'research-intelligence', 140, array('plugin_slug' => 'catalyst-narrative-risk')),
             'catalyst-data' => $this->product('catalyst-data', 'Catalyst Data', 'Catalyst Data', 'data-analysis', 210, array('plugin_slug' => 'catalyst-data')),
-            'catalyst-analytics-r' => $this->product('catalyst-analytics-r', 'Catalyst AnalyticsR', 'Catalyst AnalyticsR', 'data-analysis', 220, array('product_type' => 'r_package', 'version_source' => 'manual')),
+            'catalyst-analytics-r' => $this->product('catalyst-analytics-r', 'Catalyst AnalyticsR', 'Catalyst AnalyticsR', 'data-analysis', 220, array('product_type' => 'r_package', 'version_source' => 'manual', 'discovery_enabled' => '')),
             'catalyst-finance' => $this->product('catalyst-finance', 'Catalyst Finance', 'Catalyst Finance', 'data-analysis', 230, array('plugin_slug' => 'catalyst-finance')),
             'global-impact-catalyst' => $this->product('global-impact-catalyst', 'Global Impact Catalyst', 'Global Impact Catalyst', 'data-analysis', 240, array('plugin_slug' => 'global-impact-catalyst')),
             'catalyst-canvas' => $this->product('catalyst-canvas', 'Catalyst Canvas', 'Catalyst Canvas', 'creation-systems', 310, array('plugin_slug' => 'catalyst-canvas')),
@@ -199,6 +209,7 @@ final class SCFS_Canonical_Product_Registry {
             'catalyst-intelligence' => $this->product('catalyst-intelligence', 'Catalyst Intelligence Platform', 'Catalyst Intelligence', 'commercial', 410, array(
                 'product_type' => 'multi_runtime_platform',
                 'version_source' => 'manual',
+                'discovery_enabled' => '',
                 'installed_version' => '',
                 'public_version' => '0.23.1',
                 'release_channel' => 'development',
@@ -287,6 +298,16 @@ final class SCFS_Canonical_Product_Registry {
             'version_source' => in_array($source, $sources, true) ? $source : 'manual',
             'plugin_file' => sanitize_text_field(isset($record['plugin_file']) ? $record['plugin_file'] : ''),
             'plugin_slug' => sanitize_key(isset($record['plugin_slug']) ? $record['plugin_slug'] : ''),
+            'plugin_text_domain' => sanitize_key(isset($record['plugin_text_domain']) ? $record['plugin_text_domain'] : ''),
+            'discovery_enabled' => !empty($record['discovery_enabled']) ? '1' : '',
+            'discovery_locked' => !empty($record['discovery_locked']) ? '1' : '',
+            'discovery_state' => sanitize_key(isset($record['discovery_state']) ? $record['discovery_state'] : 'unscanned'),
+            'discovery_match' => sanitize_key(isset($record['discovery_match']) ? $record['discovery_match'] : ''),
+            'discovered_active' => !empty($record['discovered_active']) ? '1' : '',
+            'discovered_plugin_name' => sanitize_text_field(isset($record['discovered_plugin_name']) ? $record['discovered_plugin_name'] : ''),
+            'discovered_plugin_version' => sanitize_text_field(isset($record['discovered_plugin_version']) ? $record['discovered_plugin_version'] : ''),
+            'discovered_text_domain' => sanitize_key(isset($record['discovered_text_domain']) ? $record['discovered_text_domain'] : ''),
+            'last_discovered_at' => sanitize_text_field(isset($record['last_discovered_at']) ? $record['last_discovered_at'] : ''),
             'installed_version' => sanitize_text_field(isset($record['installed_version']) ? $record['installed_version'] : ''),
             'public_version' => sanitize_text_field(isset($record['public_version']) ? $record['public_version'] : ''),
             'release_channel' => in_array($channel, $channels, true) ? $channel : 'stable',
@@ -359,6 +380,9 @@ final class SCFS_Canonical_Product_Registry {
             'private_repository_fields_publicly_exposed' => false,
             'automatic_publication' => false,
             'human_review_required' => true,
+            'installed_plugin_discovery' => true,
+            'unknown_plugins_auto_registered' => false,
+            'discovery_respects_product_lock' => true,
         );
     }
 
@@ -420,7 +444,7 @@ final class SCFS_Canonical_Product_Registry {
         $registry = $this->registry();
         $summary = $this->summary_record();
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. Installed-plugin discovery is introduced in v7.2.0.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. Installed-plugin discovery is active in v7.2.0. Use the Plugin Discovery screen to rescan safely.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -450,6 +474,8 @@ final class SCFS_Canonical_Product_Registry {
             $this->select($field . '[status]', $record['status'], $this->statuses());
             echo '</td></tr>';
             echo '<tr><th>' . esc_html__('Plugin slug', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[plugin_slug]') . '" value="' . esc_attr($record['plugin_slug']) . '"></td><th>' . esc_html__('Plugin file', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[plugin_file]') . '" value="' . esc_attr($record['plugin_file']) . '"></td></tr>';
+            echo '<tr><th>' . esc_html__('Plugin text domain', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[plugin_text_domain]') . '" value="' . esc_attr($record['plugin_text_domain']) . '"></td><th>' . esc_html__('Discovery state', 'sustainable-catalyst-feature-suggestions') . '</th><td><code>' . esc_html($record['discovery_state']) . '</code> ' . esc_html($record['discovered_plugin_version']) . '</td></tr>';
+            echo '<tr><th>' . esc_html__('Plugin discovery', 'sustainable-catalyst-feature-suggestions') . '</th><td colspan="3"><label style="margin-right:18px"><input type="checkbox" name="' . esc_attr($field . '[discovery_enabled]') . '" value="1" ' . checked(!empty($record['discovery_enabled']), true, false) . '> ' . esc_html__('Allow automatic installed-version detection', 'sustainable-catalyst-feature-suggestions') . '</label><label><input type="checkbox" name="' . esc_attr($field . '[discovery_locked]') . '" value="1" ' . checked(!empty($record['discovery_locked']), true, false) . '> ' . esc_html__('Lock version and status overrides', 'sustainable-catalyst-feature-suggestions') . '</label><p class="description">' . esc_html__('A lock keeps the discovery evidence current without replacing the configured installed version, public version, or status.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
             echo '<tr><th>' . esc_html__('Product URL', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[product_url]') . '" value="' . esc_attr($record['product_url']) . '"></td><th>' . esc_html__('Documentation URL', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[documentation_url]') . '" value="' . esc_attr($record['documentation_url']) . '"></td></tr>';
             echo '<tr><th>' . esc_html__('Support URL', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[support_url]') . '" value="' . esc_attr($record['support_url']) . '"></td><th>' . esc_html__('Release notes URL', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[release_notes_url]') . '" value="' . esc_attr($record['release_notes_url']) . '"></td></tr>';
             echo '<tr><th>' . esc_html__('Owner', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[owner]') . '" value="' . esc_attr($record['owner']) . '"></td><th>' . esc_html__('Last verified', 'sustainable-catalyst-feature-suggestions') . '</th><td><input class="regular-text" name="' . esc_attr($field . '[last_verified_at]') . '" value="' . esc_attr($record['last_verified_at']) . '"></td></tr>';
@@ -465,7 +491,7 @@ final class SCFS_Canonical_Product_Registry {
         submit_button(__('Save Product Registry', 'sustainable-catalyst-feature-suggestions'));
         echo '</form>';
         echo '<hr><p><a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.1.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.2.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

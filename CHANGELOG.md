@@ -1,5 +1,15 @@
 # Changelog
 
+## 7.2.0 — Installed Plugin Discovery
+
+- Added safe discovery of installed WordPress plugins.
+- Added exact plugin-file, product-header, slug, text-domain, and approved-name matching.
+- Added cached discovery snapshots and refresh hooks for plugin activation, deactivation, deletion, and upgrades.
+- Added an administrator-only discovery screen, rescans, authenticated REST endpoints, and WP-CLI commands.
+- Added private review handling for unknown or duplicate Catalyst-looking plugin candidates.
+- Added product-level discovery locks that preserve intentional installed-version, public-version, and status overrides.
+- Preserved the WordPress plugin folder, text domain, post types, options, routes, shortcodes, and repository identity.
+
 ## 7.0.1 — Repository Identity Migration
 
 - Migrated the active repository identity to `Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback`.

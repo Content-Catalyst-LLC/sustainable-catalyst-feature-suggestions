@@ -10,7 +10,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-VERSION = "7.1.0"
+VERSION = "7.2.0"
 SCHEMA = "scfs-help-desk-case/1.0"
 
 CaseStatus = Literal[

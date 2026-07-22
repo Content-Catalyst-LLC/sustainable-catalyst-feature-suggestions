@@ -11,4 +11,4 @@ foreach (array('foundation','research-intelligence','data-analysis','creation-sy
 if (strpos($class, "'public_version' => '0.23.1'") === false || strpos($class, "'version_source' => 'manual'") === false) {
     fwrite(STDERR, "FAIL Catalyst Intelligence manual seed\n"); exit(1);
 }
-echo "v7.1.0 seeded product catalog contract passed.\n";
+echo "v7.2.0 seeded product catalog contract passed.\n";

@@ -1,0 +1,43 @@
+{
+  "schema": "scfs-installed-plugin-discovery/1.0",
+  "version": "7.2.0",
+  "scanned_at": "2026-07-22T15:00:00Z",
+  "reason": "admin_rescan",
+  "installed_plugin_count": 28,
+  "matches": [
+    {
+      "product_id": "product-support-feedback",
+      "plugin_file": "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
+      "plugin_name": "Sustainable Catalyst Product Support and Feedback Platform",
+      "version": "7.2.0",
+      "text_domain": "sustainable-catalyst-feature-suggestions",
+      "active": true,
+      "match_strategy": "exact_plugin_file",
+      "confidence": 100,
+      "discovered_at": "2026-07-22T15:00:00Z"
+    },
+    {
+      "product_id": "knowledge-library",
+      "plugin_file": "sustainable-catalyst-library/sustainable-catalyst-library.php",
+      "plugin_name": "Sustainable Catalyst Knowledge Library",
+      "version": "4.0.2",
+      "text_domain": "sustainable-catalyst-library",
+      "active": true,
+      "match_strategy": "plugin_slug",
+      "confidence": 95,
+      "discovered_at": "2026-07-22T15:00:00Z"
+    }
+  ],
+  "pending": [
+    {
+      "plugin_file": "catalyst-experimental/catalyst-experimental.php",
+      "name": "Catalyst Experimental Module",
+      "version": "0.1.0",
+      "author": "Content Catalyst LLC",
+      "text_domain": "catalyst-experimental",
+      "active": false,
+      "suggested_product_id": "",
+      "review_state": "pending"
+    }
+  ]
+}
