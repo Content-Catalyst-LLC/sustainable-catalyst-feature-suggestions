@@ -91,7 +91,7 @@ PYTHON_BIN="$(select_python || true)"
 [ -n "$PYTHON_BIN" ] || fail "Python 3.13 or 3.12 is required. Install with: brew install python@3.13"
 for command_name in git unzip rsync zip shasum; do command -v "$command_name" >/dev/null 2>&1 || fail "$command_name is required."; done
 ARCHIVE=""
-for candidate in "$SCRIPT_DIR/$BUNDLE_ARCHIVE" "$DOWNLOADS/$BUNDLE_ARCHIVE" "$SCRIPT_DIR/$REPO_ARCHIVE" "$DOWNLOADS/$REPO_ARCHIVE"; do
+for candidate in "$SCRIPT_DIR/$REPO_ARCHIVE" "$DOWNLOADS/$REPO_ARCHIVE" "$SCRIPT_DIR/$BUNDLE_ARCHIVE" "$DOWNLOADS/$BUNDLE_ARCHIVE"; do
   if [ -f "$candidate" ]; then ARCHIVE="$candidate"; break; fi
 done
 [ -n "$ARCHIVE" ] || fail "Place the v7.0.1 repository ZIP or release bundle beside this installer or in ~/Downloads."

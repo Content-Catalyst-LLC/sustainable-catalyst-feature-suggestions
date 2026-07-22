@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-canonical-product-registry-v1.schema.json",
+  "title": "Sustainable Catalyst Canonical Product Registry",
+  "type": "object",
+  "required": ["schema", "version", "products"],
+  "properties": {
+    "schema": {"const": "scfs-canonical-product-registry/1.0"},
+    "version": {"type": "string"},
+    "products": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["canonical_id", "name", "family", "product_type", "version_source", "release_channel", "status", "public_visible", "homepage_visible", "display_order"],
+        "properties": {
+          "canonical_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "name": {"type": "string", "minLength": 2},
+          "short_name": {"type": "string"},
+          "legacy_names": {"type": "array", "items": {"type": "string"}},
+          "family": {"enum": ["foundation", "research-intelligence", "data-analysis", "creation-systems", "commercial"]},
+          "product_type": {"type": "string"},
+          "version_source": {"enum": ["wordpress_plugin", "manual", "remote_manifest", "service_endpoint", "package_manifest"]},
+          "plugin_file": {"type": "string"},
+          "plugin_slug": {"type": "string"},
+          "installed_version": {"type": "string"},
+          "public_version": {"type": "string"},
+          "release_channel": {"enum": ["stable", "development", "preview", "private_beta", "release_candidate", "maintenance"]},
+          "status": {"enum": ["current", "stable", "development", "preview", "private_beta", "release_candidate", "maintenance", "update_available", "inactive", "deprecated", "unavailable", "unverified"]},
+          "public_visible": {"type": "boolean"},
+          "homepage_visible": {"type": "boolean"},
+          "display_order": {"type": "integer", "minimum": 0},
+          "product_url": {"type": "string"},
+          "documentation_url": {"type": "string"},
+          "support_url": {"type": "string"},
+          "release_notes_url": {"type": "string"},
+          "owner": {"type": "string"},
+          "commercial": {"type": "boolean"},
+          "public_interest": {"type": "boolean"},
+          "manual_notes": {"type": "string"},
+          "last_verified_at": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": true
+}
