@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.2.0';
+    const VERSION = '7.2.1';
     const SCHEMA = 'scfs-canonical-product-registry/1.0';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
@@ -151,13 +151,19 @@ final class SCFS_Canonical_Product_Registry {
             'plugin_file' => '',
             'plugin_slug' => '',
             'plugin_text_domain' => '',
+            'legacy_plugin_files' => array(),
+            'legacy_plugin_slugs' => array(),
+            'legacy_text_domains' => array(),
             'discovery_enabled' => '1',
             'discovery_locked' => '',
             'discovery_state' => 'unscanned',
             'discovery_match' => '',
             'discovered_active' => '',
+            'discovered_activation_scope' => 'inactive',
             'discovered_plugin_name' => '',
             'discovered_plugin_version' => '',
+            'discovered_plugin_version_raw' => '',
+            'discovered_version_state' => 'unscanned',
             'discovered_text_domain' => '',
             'last_discovered_at' => '',
             'installed_version' => '',
@@ -187,6 +193,12 @@ final class SCFS_Canonical_Product_Registry {
                 'legacy_names' => array('Feature Suggestions', 'Sustainable Catalyst Feature Suggestions'),
                 'plugin_file' => $plugin_file,
                 'plugin_slug' => 'sustainable-catalyst-feature-suggestions',
+                'legacy_plugin_files' => array(
+                    'sustainable-catalyst-product-support-feedback/sustainable-catalyst-product-support-feedback.php',
+                    'sustainable-catalyst-product-support-feedback-platform/sustainable-catalyst-product-support-feedback-platform.php',
+                ),
+                'legacy_plugin_slugs' => array('sustainable-catalyst-product-support-feedback', 'sustainable-catalyst-product-support-feedback-platform'),
+                'legacy_text_domains' => array('sustainable-catalyst-product-support-feedback', 'sustainable-catalyst-product-support-feedback-platform'),
                 'installed_version' => self::VERSION,
                 'public_version' => self::VERSION,
                 'status' => 'current',
@@ -259,7 +271,7 @@ final class SCFS_Canonical_Product_Registry {
             }
             $key_id = is_string($key) ? sanitize_key($key) : '';
             $record_id = sanitize_key(isset($record['canonical_id']) ? $record['canonical_id'] : '');
-            $id = $key_id !== '' ? $key_id : $record_id;
+            $id = $record_id !== '' ? $record_id : $key_id;
             if (!$id || isset($normalized[$id])) {
                 continue;
             }
@@ -283,11 +295,27 @@ final class SCFS_Canonical_Product_Registry {
             $legacy = preg_split('/[\r\n,]+/', $legacy);
         }
         $legacy = array_values(array_unique(array_filter(array_map('sanitize_text_field', (array) $legacy))));
+        $legacy_plugin_files = isset($record['legacy_plugin_files']) ? $record['legacy_plugin_files'] : array();
+        $legacy_plugin_slugs = isset($record['legacy_plugin_slugs']) ? $record['legacy_plugin_slugs'] : array();
+        $legacy_text_domains = isset($record['legacy_text_domains']) ? $record['legacy_text_domains'] : array();
+        foreach (array('legacy_plugin_files', 'legacy_plugin_slugs', 'legacy_text_domains') as $list_key) {
+            if (is_string($$list_key)) {
+                $$list_key = preg_split('/[\r\n,]+/', $$list_key);
+            }
+        }
+        $legacy_plugin_files = array_values(array_unique(array_filter(array_map(function ($value) {
+            $value = str_replace('\\', '/', sanitize_text_field($value));
+            return ltrim(preg_replace('#/+#', '/', $value), '/');
+        }, (array) $legacy_plugin_files))));
+        $legacy_plugin_slugs = array_values(array_unique(array_filter(array_map('sanitize_key', (array) $legacy_plugin_slugs))));
+        $legacy_text_domains = array_values(array_unique(array_filter(array_map('sanitize_key', (array) $legacy_text_domains))));
         $family = sanitize_key(isset($record['family']) ? $record['family'] : 'foundation');
         $source = sanitize_key(isset($record['version_source']) ? $record['version_source'] : 'manual');
         $status = sanitize_key(isset($record['status']) ? $record['status'] : 'unverified');
         $channel = sanitize_key(isset($record['release_channel']) ? $record['release_channel'] : 'stable');
         $type = sanitize_key(isset($record['product_type']) ? $record['product_type'] : 'platform_module');
+        $activation_scope = sanitize_key(isset($record['discovered_activation_scope']) ? $record['discovered_activation_scope'] : 'inactive');
+        $version_state = sanitize_key(isset($record['discovered_version_state']) ? $record['discovered_version_state'] : 'unscanned');
         return array(
             'canonical_id' => $id,
             'name' => sanitize_text_field(isset($record['name']) ? $record['name'] : $id),
@@ -299,13 +327,19 @@ final class SCFS_Canonical_Product_Registry {
             'plugin_file' => sanitize_text_field(isset($record['plugin_file']) ? $record['plugin_file'] : ''),
             'plugin_slug' => sanitize_key(isset($record['plugin_slug']) ? $record['plugin_slug'] : ''),
             'plugin_text_domain' => sanitize_key(isset($record['plugin_text_domain']) ? $record['plugin_text_domain'] : ''),
+            'legacy_plugin_files' => $legacy_plugin_files,
+            'legacy_plugin_slugs' => $legacy_plugin_slugs,
+            'legacy_text_domains' => $legacy_text_domains,
             'discovery_enabled' => !empty($record['discovery_enabled']) ? '1' : '',
             'discovery_locked' => !empty($record['discovery_locked']) ? '1' : '',
             'discovery_state' => sanitize_key(isset($record['discovery_state']) ? $record['discovery_state'] : 'unscanned'),
             'discovery_match' => sanitize_key(isset($record['discovery_match']) ? $record['discovery_match'] : ''),
             'discovered_active' => !empty($record['discovered_active']) ? '1' : '',
+            'discovered_activation_scope' => in_array($activation_scope, array('inactive', 'site', 'network', 'both'), true) ? $activation_scope : 'inactive',
             'discovered_plugin_name' => sanitize_text_field(isset($record['discovered_plugin_name']) ? $record['discovered_plugin_name'] : ''),
             'discovered_plugin_version' => sanitize_text_field(isset($record['discovered_plugin_version']) ? $record['discovered_plugin_version'] : ''),
+            'discovered_plugin_version_raw' => sanitize_text_field(isset($record['discovered_plugin_version_raw']) ? $record['discovered_plugin_version_raw'] : ''),
+            'discovered_version_state' => in_array($version_state, array('unscanned', 'valid', 'development', 'missing', 'malformed'), true) ? $version_state : 'unscanned',
             'discovered_text_domain' => sanitize_key(isset($record['discovered_text_domain']) ? $record['discovered_text_domain'] : ''),
             'last_discovered_at' => sanitize_text_field(isset($record['last_discovered_at']) ? $record['last_discovered_at'] : ''),
             'installed_version' => sanitize_text_field(isset($record['installed_version']) ? $record['installed_version'] : ''),
@@ -444,7 +478,7 @@ final class SCFS_Canonical_Product_Registry {
         $registry = $this->registry();
         $summary = $this->summary_record();
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. Installed-plugin discovery is active in v7.2.0. Use the Plugin Discovery screen to rescan safely.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. Installed-plugin discovery is active in v7.2.1. Use the Plugin Discovery screen to rescan safely.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -485,13 +519,18 @@ final class SCFS_Canonical_Product_Registry {
             }
             echo '</td></tr>';
             echo '<tr><th>' . esc_html__('Legacy names', 'sustainable-catalyst-feature-suggestions') . '</th><td colspan="3"><input class="large-text" name="' . esc_attr($field . '[legacy_names]') . '" value="' . esc_attr(implode(', ', $record['legacy_names'])) . '"><p class="description">' . esc_html__('Comma-separated aliases used for migration and matching.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+            echo '<tr><th>' . esc_html__('Legacy plugin identifiers', 'sustainable-catalyst-feature-suggestions') . '</th><td colspan="3">';
+            echo '<label>' . esc_html__('Plugin files', 'sustainable-catalyst-feature-suggestions') . '<br><input class="large-text" name="' . esc_attr($field . '[legacy_plugin_files]') . '" value="' . esc_attr(implode(', ', $record['legacy_plugin_files'])) . '"></label><br>';
+            echo '<label>' . esc_html__('Folder slugs', 'sustainable-catalyst-feature-suggestions') . '<br><input class="large-text" name="' . esc_attr($field . '[legacy_plugin_slugs]') . '" value="' . esc_attr(implode(', ', $record['legacy_plugin_slugs'])) . '"></label><br>';
+            echo '<label>' . esc_html__('Text domains', 'sustainable-catalyst-feature-suggestions') . '<br><input class="large-text" name="' . esc_attr($field . '[legacy_text_domains]') . '" value="' . esc_attr(implode(', ', $record['legacy_text_domains'])) . '"></label>';
+            echo '<p class="description">' . esc_html__('Comma-separated compatibility identifiers used only for controlled discovery matching.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
             echo '<tr><th>' . esc_html__('Administrative notes', 'sustainable-catalyst-feature-suggestions') . '</th><td colspan="3"><textarea class="large-text" rows="3" name="' . esc_attr($field . '[manual_notes]') . '">' . esc_textarea($record['manual_notes']) . '</textarea></td></tr>';
             echo '</tbody></table></details>';
         }
         submit_button(__('Save Product Registry', 'sustainable-catalyst-feature-suggestions'));
         echo '</form>';
         echo '<hr><p><a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.2.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.2.1 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

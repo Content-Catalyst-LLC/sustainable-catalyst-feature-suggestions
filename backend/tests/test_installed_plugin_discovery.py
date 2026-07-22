@@ -1,22 +1,45 @@
+import pytest
+
 from app.installed_plugin_discovery import (
     PluginDiscoveryCandidate,
+    PluginDiscoveryDiagnostic,
     PluginDiscoveryEvidence,
     PluginDiscoveryMatch,
     discovery_capabilities,
+    normalize_plugin_version,
+    preferred_match,
     validate_plugin_discovery,
 )
 
 
-def match(product_id: str = "product-support-feedback", *, active: bool = True, plugin_file: str = "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php", strategy: str = "exact_plugin_file", confidence: int = 100, version: str = "7.2.0"):
+def match(
+    product_id: str = "product-support-feedback",
+    *,
+    active: bool = True,
+    activation_scope: str | None = None,
+    plugin_file: str = "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
+    strategy: str = "exact_plugin_file",
+    confidence: int = 100,
+    version: str = "7.2.1",
+    version_raw: str | None = None,
+    version_state: str = "valid",
+    legacy_match: bool = False,
+):
+    if activation_scope is None:
+        activation_scope = "site" if active else "inactive"
     return PluginDiscoveryMatch(
         product_id=product_id,
         plugin_file=plugin_file,
         plugin_name="Sustainable Catalyst Product Support and Feedback Platform",
         version=version,
+        version_raw=version if version_raw is None else version_raw,
+        version_state=version_state,
         text_domain="sustainable-catalyst-feature-suggestions",
         active=active,
+        activation_scope=activation_scope,
         match_strategy=strategy,
         confidence=confidence,
+        legacy_match=legacy_match,
         discovered_at="2026-07-22T15:00:00Z",
     )
 
@@ -29,50 +52,198 @@ def test_capabilities_preserve_governance_boundaries():
     assert capabilities["absolute_plugin_paths_publicly_exposed"] is False
     assert capabilities["manual_overrides_preserved"] is True
     assert capabilities["product_lock_supported"] is True
+    assert capabilities["deterministic_duplicate_resolution"] is True
+    assert capabilities["legacy_identifiers_supported"] is True
+    assert capabilities["version_normalization"] is True
+    assert capabilities["malformed_headers_quarantined"] is True
+    assert capabilities["multisite_activation_scope"] is True
     assert capabilities["human_review_required"] is True
 
 
-def test_valid_snapshot_counts_active_and_pending_records():
+def test_valid_snapshot_counts_active_pending_and_diagnostics():
     candidate = PluginDiscoveryCandidate(
         plugin_file="catalyst-experimental/catalyst-experimental.php",
         name="Catalyst Experimental",
         version="0.1.0",
+        version_raw="v0.1.0",
         author="Content Catalyst LLC",
         text_domain="catalyst-experimental",
         active=False,
+        activation_scope="inactive",
     )
-    result = validate_plugin_discovery(PluginDiscoveryEvidence(installed_plugin_count=4, matches=[match()], pending=[candidate]))
+    diagnostic = PluginDiscoveryDiagnostic(
+        level="info",
+        code="plugin_display_name_changed",
+        product_id="product-support-feedback",
+        message="Canonical name preserved.",
+    )
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=4,
+        matches=[match()],
+        pending=[candidate],
+        diagnostics=[diagnostic],
+    ))
     assert result.valid is True
     assert result.matched_product_count == 1
     assert result.pending_candidate_count == 1
     assert result.active_match_count == 1
     assert result.inactive_match_count == 0
+    assert result.diagnostic_count == 1
 
 
 def test_duplicate_product_match_is_rejected():
     result = validate_plugin_discovery(PluginDiscoveryEvidence(
         installed_plugin_count=2,
-        matches=[match(), match(plugin_file="another-support/another-support.php", strategy="approved_name_alias", confidence=80)],
+        matches=[
+            match(),
+            match(
+                plugin_file="another-support/another-support.php",
+                strategy="approved_name_alias",
+                confidence=80,
+            ),
+        ],
     ))
     assert result.valid is False
     assert any(issue.code == "duplicate_product_match" for issue in result.issues)
 
 
+def test_preferred_match_is_deterministic_and_prefers_confidence():
+    lower = match(
+        plugin_file="a-support/a-support.php",
+        strategy="approved_name_alias",
+        confidence=80,
+    )
+    canonical = match(
+        plugin_file="z-support/z-support.php",
+        strategy="exact_plugin_file",
+        confidence=100,
+        active=False,
+    )
+    assert preferred_match([lower, canonical]).plugin_file == canonical.plugin_file
+    assert preferred_match([canonical, lower]).plugin_file == canonical.plugin_file
+
+
+def test_preferred_match_prefers_active_then_valid_version():
+    inactive = match(plugin_file="a/a.php", active=False)
+    active = match(plugin_file="b/b.php", active=True)
+    assert preferred_match([inactive, active]).plugin_file == "b/b.php"
+
+    missing = match(
+        plugin_file="c/c.php",
+        version="",
+        version_raw="",
+        version_state="missing",
+    )
+    valid = match(plugin_file="d/d.php")
+    assert preferred_match([missing, valid]).plugin_file == "d/d.php"
+
+
 def test_absolute_plugin_path_is_rejected():
-    result = validate_plugin_discovery(PluginDiscoveryEvidence(installed_plugin_count=1, matches=[match(plugin_file="/var/www/wp-content/plugins/support/support.php")]))
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match(plugin_file="/var/www/wp-content/plugins/support/support.php")],
+    ))
     assert result.valid is False
     assert any(issue.code == "absolute_or_invalid_plugin_path" for issue in result.issues)
 
 
 def test_installed_plugin_count_must_cover_discovery_records():
-    candidate = PluginDiscoveryCandidate(plugin_file="catalyst-x/catalyst-x.php", name="Catalyst X")
-    result = validate_plugin_discovery(PluginDiscoveryEvidence(installed_plugin_count=1, matches=[match()], pending=[candidate]))
+    candidate = PluginDiscoveryCandidate(
+        plugin_file="catalyst-x/catalyst-x.php",
+        name="Catalyst X",
+    )
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match()],
+        pending=[candidate],
+    ))
     assert result.valid is False
     assert any(issue.code == "plugin_count_inconsistent" for issue in result.issues)
 
 
 def test_inactive_approved_plugin_is_counted_without_error():
-    result = validate_plugin_discovery(PluginDiscoveryEvidence(installed_plugin_count=1, matches=[match(active=False)]))
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match(active=False)],
+    ))
     assert result.valid is True
     assert result.active_match_count == 0
     assert result.inactive_match_count == 1
+
+
+def test_multisite_network_activation_is_counted():
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match(activation_scope="network")],
+    ))
+    assert result.valid is True
+    assert result.network_active_match_count == 1
+
+
+def test_activation_scope_consistency_is_enforced():
+    with pytest.raises(ValueError):
+        match(active=False, activation_scope="network")
+    with pytest.raises(ValueError):
+        match(active=True, activation_scope="inactive")
+
+
+def test_version_normalization_accepts_stable_and_development_versions():
+    assert normalize_plugin_version("v7.2.1") == ("7.2.1", "valid")
+    assert normalize_plugin_version(" 7.3.0-rc.1 ") == ("7.3.0-rc.1", "development")
+    assert normalize_plugin_version("0.24.0-dev.2") == ("0.24.0-dev.2", "development")
+
+
+def test_version_normalization_quarantines_missing_and_malformed_headers():
+    assert normalize_plugin_version("") == ("", "missing")
+    assert normalize_plugin_version("release seven") == ("", "malformed")
+
+    missing = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match(version="", version_raw="", version_state="missing")],
+    ))
+    assert missing.valid is True
+    assert missing.missing_version_count == 1
+    assert any(issue.code == "plugin_version_missing" for issue in missing.issues)
+
+    malformed = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match(version="", version_raw="release seven", version_state="malformed")],
+    ))
+    assert malformed.valid is True
+    assert malformed.malformed_version_count == 1
+    assert any(issue.code == "plugin_version_malformed" for issue in malformed.issues)
+
+
+def test_development_version_is_counted_without_becoming_invalid():
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match(
+            version="7.3.0-beta.1",
+            version_raw="v7.3.0-beta.1",
+            version_state="development",
+        )],
+    ))
+    assert result.valid is True
+    assert result.development_version_count == 1
+
+
+def test_legacy_match_requires_legacy_flag():
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match(
+            strategy="legacy_plugin_slug",
+            confidence=94,
+            legacy_match=False,
+        )],
+    ))
+    assert result.valid is True
+    assert any(issue.code == "legacy_match_flag_missing" for issue in result.issues)
+
+
+def test_duplicate_candidate_requires_selected_plugin_file():
+    with pytest.raises(ValueError):
+        PluginDiscoveryCandidate(
+            plugin_file="duplicate/duplicate.php",
+            name="Duplicate Support",
+            review_state="duplicate_match",
+        )

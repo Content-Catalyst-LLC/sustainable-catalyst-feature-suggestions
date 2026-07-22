@@ -17,7 +17,7 @@
       "const": "scfs-installed-plugin-discovery/1.0"
     },
     "version": {
-      "const": "7.2.0"
+      "const": "7.2.1"
     },
     "scanned_at": {
       "type": "string"
@@ -42,6 +42,13 @@
       "items": {
         "$ref": "#/$defs/candidate"
       }
+    },
+    "diagnostics": {
+      "type": "array",
+      "maxItems": 250,
+      "items": {
+        "$ref": "#/$defs/diagnostic"
+      }
     }
   },
   "$defs": {
@@ -53,9 +60,13 @@
         "plugin_file",
         "plugin_name",
         "version",
+        "version_raw",
+        "version_state",
         "active",
+        "activation_scope",
         "match_strategy",
-        "confidence"
+        "confidence",
+        "legacy_match"
       ],
       "properties": {
         "product_id": {
@@ -82,9 +93,12 @@
         "match_strategy": {
           "enum": [
             "exact_plugin_file",
+            "legacy_plugin_file",
             "sc_product_id_header",
             "plugin_slug",
+            "legacy_plugin_slug",
             "text_domain",
+            "legacy_text_domain",
             "approved_name_alias"
           ]
         },
@@ -95,6 +109,28 @@
         },
         "discovered_at": {
           "type": "string"
+        },
+        "version_raw": {
+          "type": "string"
+        },
+        "version_state": {
+          "enum": [
+            "valid",
+            "development",
+            "missing",
+            "malformed"
+          ]
+        },
+        "activation_scope": {
+          "enum": [
+            "inactive",
+            "site",
+            "network",
+            "both"
+          ]
+        },
+        "legacy_match": {
+          "type": "boolean"
         }
       }
     },
@@ -105,7 +141,10 @@
         "plugin_file",
         "name",
         "version",
+        "version_raw",
+        "version_state",
         "active",
+        "activation_scope",
         "review_state"
       ],
       "properties": {
@@ -133,8 +172,63 @@
         "review_state": {
           "enum": [
             "pending",
-            "duplicate_match"
+            "duplicate_match",
+            "malformed_header"
           ]
+        },
+        "version_raw": {
+          "type": "string"
+        },
+        "version_state": {
+          "enum": [
+            "valid",
+            "development",
+            "missing",
+            "malformed"
+          ]
+        },
+        "activation_scope": {
+          "enum": [
+            "inactive",
+            "site",
+            "network",
+            "both"
+          ]
+        },
+        "selected_plugin_file": {
+          "type": "string"
+        }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "code",
+        "product_id",
+        "plugin_file",
+        "message"
+      ],
+      "properties": {
+        "level": {
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ]
+        },
+        "code": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "plugin_file": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
         }
       }
     }

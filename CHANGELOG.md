@@ -1,5 +1,14 @@
 # Changelog
 
+## 7.2.1 — Discovery and Compatibility Patch
+
+- Added deterministic duplicate plugin selection.
+- Added legacy plugin file, folder slug, and text-domain matching.
+- Added stable and prerelease version normalization.
+- Quarantined missing and malformed plugin headers from release updates.
+- Added multisite activation scope and administrator diagnostics.
+- Preserved manual status and public-version overrides.
+
 ## 7.2.0 — Installed Plugin Discovery
 
 - Added safe discovery of installed WordPress plugins.

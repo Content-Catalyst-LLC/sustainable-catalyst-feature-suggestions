@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-plugin-discovery-diagnostics-v1.schema.json",
+  "title": "Sustainable Catalyst Plugin Discovery Diagnostics",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "generated_at",
+    "error_count",
+    "warning_count",
+    "info_count",
+    "items"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "scfs-plugin-discovery-diagnostics/1.0"
+    },
+    "version": {
+      "const": "7.2.1"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "error_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "warning_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "info_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 250,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "code",
+          "product_id",
+          "plugin_file",
+          "message"
+        ],
+        "properties": {
+          "level": {
+            "enum": [
+              "error",
+              "warning",
+              "info"
+            ]
+          },
+          "code": {
+            "type": "string"
+          },
+          "product_id": {
+            "type": "string"
+          },
+          "plugin_file": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

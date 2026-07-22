@@ -1,0 +1,100 @@
+{
+  "schema": "scfs-installed-plugin-discovery/1.0",
+  "version": "7.2.1",
+  "scanned_at": "2026-07-22T17:00:00Z",
+  "reason": "admin_rescan",
+  "installed_plugin_count": 28,
+  "matches": [
+    {
+      "product_id": "product-support-feedback",
+      "plugin_file": "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
+      "plugin_name": "Sustainable Catalyst Product Support and Feedback Platform",
+      "version": "7.2.1",
+      "version_raw": "v7.2.1",
+      "version_state": "valid",
+      "text_domain": "sustainable-catalyst-feature-suggestions",
+      "active": true,
+      "activation_scope": "site",
+      "match_strategy": "exact_plugin_file",
+      "confidence": 100,
+      "legacy_match": false,
+      "discovered_at": "2026-07-22T17:00:00Z"
+    },
+    {
+      "product_id": "knowledge-library",
+      "plugin_file": "sustainable-catalyst-library/sustainable-catalyst-library.php",
+      "plugin_name": "Sustainable Catalyst Knowledge Library",
+      "version": "4.0.2",
+      "version_raw": "4.0.2",
+      "version_state": "valid",
+      "text_domain": "sustainable-catalyst-library",
+      "active": true,
+      "activation_scope": "network",
+      "match_strategy": "plugin_slug",
+      "confidence": 95,
+      "legacy_match": false,
+      "discovered_at": "2026-07-22T17:00:00Z"
+    },
+    {
+      "product_id": "site-intelligence",
+      "plugin_file": "sustainable-catalyst-site-intelligence/sustainable-catalyst-site-intelligence.php",
+      "plugin_name": "Sustainable Catalyst Site Intelligence",
+      "version": "3.1.0-beta.1",
+      "version_raw": "v3.1.0-beta.1",
+      "version_state": "development",
+      "text_domain": "sustainable-catalyst-site-intelligence",
+      "active": true,
+      "activation_scope": "both",
+      "match_strategy": "plugin_slug",
+      "confidence": 95,
+      "legacy_match": false,
+      "discovered_at": "2026-07-22T17:00:00Z"
+    }
+  ],
+  "pending": [
+    {
+      "plugin_file": "sustainable-catalyst-product-support-feedback/sustainable-catalyst-product-support-feedback.php",
+      "name": "Sustainable Catalyst Product Support and Feedback Platform",
+      "version": "7.2.0",
+      "version_raw": "7.2.0",
+      "version_state": "valid",
+      "author": "Content Catalyst LLC",
+      "text_domain": "sustainable-catalyst-product-support-feedback",
+      "active": false,
+      "activation_scope": "inactive",
+      "suggested_product_id": "product-support-feedback",
+      "selected_plugin_file": "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
+      "review_state": "duplicate_match"
+    },
+    {
+      "plugin_file": "catalyst-experimental/catalyst-experimental.php",
+      "name": "Catalyst Experimental Module",
+      "version": "",
+      "version_raw": "release seven",
+      "version_state": "malformed",
+      "author": "Content Catalyst LLC",
+      "text_domain": "catalyst-experimental",
+      "active": false,
+      "activation_scope": "inactive",
+      "suggested_product_id": "",
+      "selected_plugin_file": "",
+      "review_state": "malformed_header"
+    }
+  ],
+  "diagnostics": [
+    {
+      "level": "warning",
+      "code": "duplicate_product_match",
+      "product_id": "product-support-feedback",
+      "plugin_file": "sustainable-catalyst-product-support-feedback/sustainable-catalyst-product-support-feedback.php",
+      "message": "Multiple plugins matched the same canonical product; the highest-confidence deterministic match was selected."
+    },
+    {
+      "level": "info",
+      "code": "development_version_detected",
+      "product_id": "site-intelligence",
+      "plugin_file": "sustainable-catalyst-site-intelligence/sustainable-catalyst-site-intelligence.php",
+      "message": "A development or prerelease plugin version was detected."
+    }
+  ]
+}

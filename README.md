@@ -1,10 +1,10 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v7.2.0 — Installed Plugin Discovery**
+## Current release: **v7.2.1 — Discovery and Compatibility Patch**
 
-v7.2.0 adds safe installed-plugin discovery for the canonical product registry. It reads WordPress plugin metadata, matches only approved Sustainable Catalyst products, updates installed versions without overriding locked records, and keeps unknown Catalyst-looking plugins in an administrator-only review queue.
+v7.2.1 hardens installed-plugin discovery with deterministic duplicate selection, legacy identifier matching, version normalization, malformed-header quarantine, multisite activation scope, and administrator diagnostics while preserving manual release overrides.
 
-See `docs/installed-plugin-discovery-v7.2.0.md` for the matching, caching, governance, and maintenance contract.
+See `docs/discovery-compatibility-v7.2.1.md` for the compatibility, diagnostics, version, duplicate-resolution, and multisite contract.
 
 ## Primary public shortcodes
 
