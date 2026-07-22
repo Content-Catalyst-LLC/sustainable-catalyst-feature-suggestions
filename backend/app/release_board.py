@@ -1,4 +1,4 @@
-"""Release board projection and validation for v7.3.3."""
+"""Release Console projection and registry-governed screen assignment for v7.4.0."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from typing import List, Literal
 
 from pydantic import BaseModel, Field
 
-VERSION = "7.3.3"
+VERSION = "7.4.0"
 SCHEMA = "scfs-release-board/1.2"
 
 Family = Literal[
@@ -27,8 +27,10 @@ class ReleaseBoardProduct(BaseModel):
     name: str = Field(min_length=2, max_length=200)
     short_name: str = Field(default="", max_length=120)
     family: Family
+    console_screen: Family | None = None
     version: str = Field(default="", max_length=80)
     status: str = Field(default="unverified", max_length=80)
+    lifecycle_state: str = Field(default="active", max_length=40)
     display_order: int = Field(default=999, ge=0, le=100000)
     public_visible: bool = True
     homepage_visible: bool = True
@@ -95,6 +97,8 @@ def release_board_capabilities() -> dict:
         "footer_links_only": True,
         "contexts": ["homepage", "directory", "generic"],
         "canonical_registry_source": True,
+        "console_screen_assignment_governed": True,
+        "retired_and_superseded_hidden_by_default": True,
         "installed_and_manual_versions_combined": True,
         "homepage_visibility_governed": True,
         "private_plugin_paths_exposed": False,
@@ -122,11 +126,12 @@ def project_release_board(payload: ReleaseBoardProjectionRequest) -> ReleaseBoar
             continue
         if payload.context == "homepage" and not product.homepage_visible:
             continue
-        if allowed_groups and product.family not in allowed_groups:
+        screen = product.console_screen or product.family
+        if allowed_groups and screen not in allowed_groups:
             continue
         if allowed_products and product.canonical_id not in allowed_products:
             continue
-        if payload.inactive == "hide" and product.status == "inactive":
+        if payload.inactive == "hide" and (product.status == "inactive" or product.lifecycle_state in {"retired", "superseded"}):
             continue
         filtered.append(product)
 
@@ -136,7 +141,7 @@ def project_release_board(payload: ReleaseBoardProjectionRequest) -> ReleaseBoar
 
     grouped: dict[str, list[ReleaseBoardProduct]] = defaultdict(list)
     for product in filtered:
-        grouped[product.family].append(product)
+        grouped[product.console_screen or product.family].append(product)
 
     groups = [
         ReleaseBoardGroup(

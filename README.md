@@ -1,14 +1,12 @@
-## Current release: v7.3.3 — Release Console Reliability and Presentation Repair
+## Current release: v7.4.0 — Product Registry Governance
 
-Use `[sc_release_board]` to render Release Telemetry from the governed canonical registry. The default terminal presentation complements Live Intelligence, shows plugin and manual version sources, keeps Knowledge Library visible, and displays Catalyst Analytics R as “Analytics R.”
+The canonical Product Registry is now the governed authority for public labels, internal identities, product families, Release Console screen placement, lifecycle state, version precedence, verification provenance, and supersession relationships. It includes additive schema migration, stale-record detection, integrity diagnostics, authenticated REST and WP-CLI administration, and FastAPI validation.
+
+`[sc_release_board]` remains fully compatible. Its default Release Console presentation uses governed screen assignments, keeps product names non-navigating, and hides retired or superseded records unless explicitly requested.
+
+See `docs/canonical-product-registry-v7.4.0.md` for the complete governance and migration contract.
 
 # Sustainable Catalyst Product Support and Feedback Platform
-
-## Current release: **v7.2.1 — Discovery and Compatibility Patch**
-
-v7.2.1 hardens installed-plugin discovery with deterministic duplicate selection, legacy identifier matching, version normalization, malformed-header quarantine, multisite activation scope, and administrator diagnostics while preserving manual release overrides.
-
-See `docs/discovery-compatibility-v7.2.1.md` for the compatibility, diagnostics, version, duplicate-resolution, and multisite contract.
 
 ## Primary public shortcodes
 

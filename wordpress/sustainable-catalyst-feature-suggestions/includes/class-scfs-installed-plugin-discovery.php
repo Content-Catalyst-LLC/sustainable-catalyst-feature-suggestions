@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Installed_Plugin_Discovery {
-    const VERSION = '7.3.3';
+    const VERSION = '7.4.0';
     const SCHEMA = 'scfs-installed-plugin-discovery/1.0';
     const DIAGNOSTICS_SCHEMA = 'scfs-plugin-discovery-diagnostics/1.0';
     const SCHEMA_OPTION = 'scfs_installed_plugin_discovery_schema';
@@ -632,10 +632,14 @@ final class SCFS_Installed_Plugin_Discovery {
             $record['discovered_text_domain'] = $found['text_domain'];
             $record['last_discovered_at'] = $scanned_at;
             $record['last_verified_at'] = $scanned_at;
+            $record['source_verified_at'] = $scanned_at;
+            $record['record_updated_at'] = $scanned_at;
+            $record['verification_source'] = 'wordpress_plugin';
             if (empty($record['discovery_locked'])) {
                 if (in_array($found['version_state'], array('valid', 'development'), true)) {
                     $record['installed_version'] = $found['version'];
-                    if (empty($record['public_version']) || $record['public_version'] === $previous_installed) {
+                    $precedence = sanitize_key($record['version_precedence'] ?? 'discovered');
+                    if ($precedence === 'discovered' || ($precedence !== 'manual' && (empty($record['public_version']) || $record['public_version'] === $previous_installed))) {
                         $record['public_version'] = $found['version'];
                     }
                 }

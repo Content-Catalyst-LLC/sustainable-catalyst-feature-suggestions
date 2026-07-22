@@ -4,7 +4,7 @@ from typing import Dict, List, Literal, Optional, Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-VERSION = "7.3.3"
+VERSION = "7.4.0"
 SCHEMA = "scfs-connected-help-desk-platform/1.0"
 
 

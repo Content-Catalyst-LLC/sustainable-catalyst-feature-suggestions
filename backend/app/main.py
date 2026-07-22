@@ -35,12 +35,12 @@ from .help_desk_email_channels import InboundEmailEvidence, InboundEmailAssessme
 from .help_desk_quality_analytics import OperationalMetricsEvidence, OperationalMetricsAssessment, CaseQualityEvidence, CaseQualityAssessment, TrendEvidence, TrendAssessment, SupportSignalEvidence, SupportSignalAssessment, PrivacyAggregateEvidence, PrivacyAggregateAssessment, QualityAnalyticsReportEvidence, QualityAnalyticsReportResult, evaluate_operational_metrics, evaluate_case_quality, evaluate_trend, evaluate_support_signal, evaluate_privacy_aggregate, verify_quality_analytics_report
 from .help_desk_institutional_workspaces import InstitutionalWorkspaceEvidence, InstitutionalWorkspaceAssessment, MemberAccessEvidence, MemberAccessAssessment, EntitlementEvidence, EntitlementAssessment, CaseVisibilityEvidence, CaseVisibilityAssessment, CollectionAccessEvidence, CollectionAccessAssessment, RetentionPolicyEvidence, RetentionPolicyAssessment, InstitutionalReportEvidence, InstitutionalReportAssessment, InstitutionalReportIntegrityEvidence, InstitutionalReportIntegrityResult, evaluate_workspace, evaluate_member_access, evaluate_entitlement, evaluate_case_visibility, evaluate_collection_access, evaluate_retention_policy, evaluate_institutional_report, verify_institutional_report
 from .help_desk_api_integrations import ApiScopeEvidence, ApiScopeAssessment, WebhookSubscriptionEvidence, WebhookSubscriptionAssessment, WebhookDeliveryEvidence, WebhookDeliverySignature, DeliveryRetryEvidence, DeliveryRetryAssessment, ExternalLinkEvidence, ExternalLinkAssessment, IntegrationPrivacyEvidence, IntegrationPrivacyAssessment, IntegrationReportEvidence, IntegrationReportResult, evaluate_api_scope, evaluate_webhook_subscription, sign_webhook_delivery, evaluate_delivery_retry, evaluate_external_link, evaluate_integration_privacy, verify_integration_report
-from .canonical_product_registry import ProductRegistryEvidence, ProductRegistryAssessment, DEFAULT_PRODUCT_IDS, registry_capabilities, validate_product_registry
+from .canonical_product_registry import ProductRegistryEvidence, ProductRegistryAssessment, ProductRegistryMigrationEvidence, ProductRegistryMigrationResult, DEFAULT_PRODUCT_IDS, registry_capabilities, validate_product_registry, migrate_product_registry
 from .installed_plugin_discovery import PluginDiscoveryAssessment, PluginDiscoveryEvidence, discovery_capabilities, validate_plugin_discovery
 from .release_board import ReleaseBoardProjectionRequest, ReleaseBoardProjection, release_board_capabilities, project_release_board
 from .help_desk_production_hardening import RateLimitEvidence, RateLimitAssessment, AbuseSignalEvidence, AbuseSignalAssessment, PrivacyOperationEvidence, PrivacyOperationAssessment, BackupSnapshotEvidence, BackupSnapshotAssessment, RecoveryDrillEvidence, RecoveryDrillAssessment, SecurityHeaderEvidence, SecurityHeaderAssessment, ProductionGateEvidence, ProductionGateAssessment, HardeningReportEvidence, HardeningReportResult, evaluate_rate_limit, evaluate_abuse_signal, evaluate_privacy_operation, evaluate_backup_snapshot, evaluate_recovery_drill, evaluate_security_headers, evaluate_production_gate, verify_hardening_report
 
-VERSION='7.3.3'
+VERSION='7.4.0'
 ANALYSIS_VERSION='5.1.0-1'
 from .connected_help_desk_platform import ModuleEvidence, PlatformEvidence, PlatformAssessment, JourneyEvidence, JourneyPlan, CommandEvidence, CommandPlan, DossierEvidence, DossierAssessment, ConnectedReportEvidence, ConnectedReportResult, evaluate_connected_help_desk, plan_support_journey, plan_connected_command, evaluate_case_dossier, verify_connected_report
 
@@ -1471,7 +1471,7 @@ def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key
 def help_desk_quality_analytics_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return {
-        'version':'7.3.3',
+        'version':'7.4.0',
         'schema':'scfs-help-desk-quality-analytics/1.0',
         'operational_metrics':True,
         'governed_case_quality_review':True,
@@ -1751,13 +1751,19 @@ def canonical_product_registry_capabilities(x_scfs_ai_key:Optional[str]=Header(d
 @app.get("/v1/product-registry/defaults")
 def canonical_product_registry_defaults(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
-    return {"version": VERSION, "schema": "scfs-canonical-product-registry/1.0", "product_ids": DEFAULT_PRODUCT_IDS, "human_review_required": True}
+    return {"version": VERSION, "schema": "scfs-canonical-product-registry/2.0", "product_ids": DEFAULT_PRODUCT_IDS, "human_review_required": True}
 
 
 @app.post("/v1/product-registry/validate", response_model=ProductRegistryAssessment)
 def canonical_product_registry_validate(payload: ProductRegistryEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return validate_product_registry(payload)
+
+
+@app.post("/v1/product-registry/migrate", response_model=ProductRegistryMigrationResult)
+def canonical_product_registry_migrate(payload: ProductRegistryMigrationEvidence, x_scfs_ai_key:Optional[str]=Header(default=None)):
+    auth(x_scfs_ai_key)
+    return migrate_product_registry(payload)
 
 
 @app.get("/v1/release-board/capabilities")
@@ -1786,7 +1792,7 @@ def product_registry_discovery_validate(payload: PluginDiscoveryEvidence, x_scfs
 @app.get("/v1/help-desk/connected-platform/capabilities")
 def connected_help_desk_capabilities():
     return {
-        "version": "7.3.3",
+        "version": "7.4.0",
         "schema": "scfs-connected-help-desk-platform/1.0",
         "layers": ["public_support", "customer_portal", "agent_operations", "knowledge_operations", "service_management", "product_intelligence", "institutional_integration"],
         "automatic_customer_communication": False,

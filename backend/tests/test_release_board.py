@@ -24,7 +24,7 @@ def product(product_id: str, family: str, order: int, *, version: str = "1.0.0",
 def catalog():
     return [
         product("sustainable-catalyst-core", "foundation", 10, version="3.0.0"),
-        product("product-support-feedback", "foundation", 20, version="7.3.3"),
+        product("product-support-feedback", "foundation", 20, version="7.4.0"),
         product("contact-engagement", "foundation", 30, version="2.0.0"),
         product("knowledge-library", "foundation", 40, version="4.0.2"),
         product("research-librarian", "research-intelligence", 110, version="7.0.1"),
@@ -77,7 +77,7 @@ def test_duplicate_canonical_ids_collapse_to_first_sorted_input_record():
     result = project_release_board(ReleaseBoardProjectionRequest(products=products))
     matches = [item for group in result.groups for item in group.products if item.canonical_id == "product-support-feedback"]
     assert len(matches) == 1
-    assert matches[0].version == "7.3.3"
+    assert matches[0].version == "7.4.0"
 
 
 def test_release_console_is_the_default_terminal_surface():

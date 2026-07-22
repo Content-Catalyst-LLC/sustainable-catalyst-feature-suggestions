@@ -20,7 +20,7 @@ def match(
     plugin_file: str = "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
     strategy: str = "exact_plugin_file",
     confidence: int = 100,
-    version: str = "7.3.3",
+    version: str = "7.4.0",
     version_raw: str | None = None,
     version_state: str = "valid",
     legacy_match: bool = False,
@@ -188,8 +188,8 @@ def test_activation_scope_consistency_is_enforced():
 
 
 def test_version_normalization_accepts_stable_and_development_versions():
-    assert normalize_plugin_version("v7.3.3") == ("7.3.3", "valid")
-    assert normalize_plugin_version(" 7.3.3-rc.1 ") == ("7.3.3-rc.1", "development")
+    assert normalize_plugin_version("v7.4.0") == ("7.4.0", "valid")
+    assert normalize_plugin_version(" 7.4.0-rc.1 ") == ("7.4.0-rc.1", "development")
     assert normalize_plugin_version("0.24.0-dev.2") == ("0.24.0-dev.2", "development")
 
 
@@ -218,8 +218,8 @@ def test_development_version_is_counted_without_becoming_invalid():
     result = validate_plugin_discovery(PluginDiscoveryEvidence(
         installed_plugin_count=1,
         matches=[match(
-            version="7.3.3-beta.1",
-            version_raw="v7.3.3-beta.1",
+            version="7.4.0-beta.1",
+            version_raw="v7.4.0-beta.1",
             version_state="development",
         )],
     ))

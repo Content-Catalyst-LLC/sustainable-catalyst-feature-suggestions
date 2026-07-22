@@ -9,7 +9,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-VERSION = "7.3.3"
+VERSION = "7.4.0"
 SCHEMA = "scfs-help-desk-service-levels/1.0"
 
 Priority = Literal["critical", "high", "normal", "low"]

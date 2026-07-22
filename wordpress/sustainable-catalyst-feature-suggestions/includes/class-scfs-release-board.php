@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Board {
-    const VERSION = '7.3.3';
+    const VERSION = '7.4.0';
     const SCHEMA = 'scfs-release-board/1.2';
     const SHORTCODE = 'sc_release_board';
     const STYLE_HANDLE = 'scfs-release-board';
@@ -46,7 +46,7 @@ final class SCFS_Release_Board {
     }
 
     public function register_assets() {
-        $relative = 'assets/release-board-v7.3.3.css';
+        $relative = 'assets/release-board-v7.4.0.css';
         $path = plugin_dir_path(dirname(__FILE__)) . $relative;
         $version = is_file($path) ? (string) filemtime($path) : self::VERSION;
         wp_register_style(
@@ -55,7 +55,7 @@ final class SCFS_Release_Board {
             array(),
             $version
         );
-        $script_relative = 'assets/release-console-v7.3.3.js';
+        $script_relative = 'assets/release-console-v7.4.0.js';
         $script_path = plugin_dir_path(dirname(__FILE__)) . $script_relative;
         $script_version = is_file($script_path) ? (string) filemtime($script_path) : self::VERSION;
         wp_register_script(
@@ -236,7 +236,7 @@ final class SCFS_Release_Board {
         $filtered = array();
         foreach ((array) $products as $product) {
             $id = sanitize_key($product['canonical_id'] ?? '');
-            $family = sanitize_key($product['family'] ?? '');
+            $family = sanitize_key($product['console_screen'] ?? ($product['family'] ?? ''));
             $status = sanitize_key($product['status'] ?? 'unverified');
             if ($id === '') {
                 continue;
@@ -247,7 +247,8 @@ final class SCFS_Release_Board {
             if ($wanted_groups && !isset($wanted_groups[$family])) {
                 continue;
             }
-            if ($atts['inactive'] === 'hide' && $status === 'inactive') {
+            $lifecycle = sanitize_key($product['lifecycle_state'] ?? 'active');
+            if ($atts['inactive'] === 'hide' && ($status === 'inactive' || in_array($lifecycle, array('retired', 'superseded'), true))) {
                 continue;
             }
             $filtered[] = $product;
@@ -268,7 +269,7 @@ final class SCFS_Release_Board {
     private function group_products($products) {
         $groups = array();
         foreach ((array) $products as $product) {
-            $family = sanitize_key($product['family'] ?? 'foundation');
+            $family = sanitize_key($product['console_screen'] ?? ($product['family'] ?? 'foundation'));
             if (!isset($groups[$family])) {
                 $groups[$family] = array();
             }

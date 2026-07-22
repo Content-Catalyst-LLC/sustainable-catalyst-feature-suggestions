@@ -1,3 +1,16 @@
+## 7.4.0 — Product Registry Governance
+
+- Upgraded the canonical Product Registry to additive schema 2.0 while preserving canonical IDs and the existing WordPress option key.
+- Separated public labels, internal product names, and private repository identity.
+- Added governed Release Console screen assignments independent of product families.
+- Added active, planned, maintenance, superseded, and retired lifecycle states.
+- Added explicit manual, discovered, and installed version precedence.
+- Added verification sources, verification timestamps, record-update timestamps, and migration history.
+- Added 90-day stale-record detection, duplicate and screen-order diagnostics, supersession validation, and SHA-256 registry fingerprints.
+- Added authenticated WordPress REST integrity and migration routes plus WP-CLI validate and migrate commands.
+- Added FastAPI registry validation, migration, integrity reporting, and governance tests.
+- Preserved `[sc_release_board]`, all legacy layouts, the Release Console reliability repairs, and private-field exclusion from public records.
+
 ## 7.3.3 — Release Console Reliability and Presentation Repair
 
 - Stabilized the rotating console height so the footer remains fixed while screens change.

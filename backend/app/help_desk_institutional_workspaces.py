@@ -1,4 +1,4 @@
-"""Institutional Workspaces and Access Governance v7.3.3.
+"""Institutional Workspaces and Access Governance v7.4.0.
 
 Deterministic contracts for workspace status, least-privilege membership,
 support entitlement, case visibility, private knowledge collections, retention,
@@ -13,7 +13,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-VERSION = "7.3.3"
+VERSION = "7.4.0"
 SCHEMA = "scfs-help-desk-institutional-workspaces/1.0"
 
 
