@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Connected_Help_Desk_Platform {
-    const VERSION = '7.0.0';
+    const VERSION = '7.0.1';
     const DB_VERSION = '4.0.0';
     const DB_OPTION = 'scfs_connected_help_desk_platform_db_version';
     const SETTINGS_OPTION = 'scfs_connected_help_desk_platform_settings';
@@ -214,8 +214,8 @@ final class SCFS_Connected_Help_Desk_Platform {
     }
 
     public function register_public_assets() {
-        wp_register_style('scfs-connected-help-desk-platform', plugin_dir_url(dirname(__FILE__)) . 'assets/connected-help-desk-platform-v7.0.0.css', array(), self::VERSION);
-        wp_register_script('scfs-connected-help-desk-platform', plugin_dir_url(dirname(__FILE__)) . 'assets/connected-help-desk-platform-v7.0.0.js', array(), self::VERSION, true);
+        wp_register_style('scfs-connected-help-desk-platform', plugin_dir_url(dirname(__FILE__)) . 'assets/connected-help-desk-platform-v7.0.1.css', array(), self::VERSION);
+        wp_register_script('scfs-connected-help-desk-platform', plugin_dir_url(dirname(__FILE__)) . 'assets/connected-help-desk-platform-v7.0.1.js', array(), self::VERSION, true);
     }
 
     public function enqueue_admin_assets($hook) {

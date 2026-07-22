@@ -1,12 +1,10 @@
 # Sustainable Catalyst Product Support and Feedback Platform
 
-## Current release: **v7.0.0 — Connected Help Desk and Support Operations Platform**
+## Current release: **v7.0.1 — Repository Identity Migration**
 
-**API, Webhooks, and External Integrations**
+v7.0.1 establishes `Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback` as the canonical repository and adds a migration-aware installer while preserving the existing WordPress plugin folder, text domain, REST namespace, shortcodes, data, and public routes.
 
-Version 6.12.0 adds rate limits, abuse review, privacy operations, backup and recovery evidence, security controls, and human-authorized production release gates.
-
-See `docs/help-desk-production-hardening-v6.12.0.md` for the security, privacy, backup, recovery, and release-gate contracts.
+See `docs/repository-identity-migration-v7.0.1.md` for the migration contract and safe rename sequence.
 
 ## Primary public shortcodes
 
@@ -21,7 +19,7 @@ See `docs/help-desk-production-hardening-v6.12.0.md` for the security, privacy, 
 
 ## Repository layout
 
-- `wordpress/` — WordPress plugin source
+- `wordpress/` — WordPress plugin source (legacy compatibility folder `sustainable-catalyst-feature-suggestions` preserved)
 - `backend/` — deterministic FastAPI support intelligence service
 - `schemas/` — versioned contracts
 - `examples/` — synthetic public examples
@@ -61,3 +59,10 @@ Adds rate limits, abuse review, private security evidence, privacy operations, a
 ## v6.11.0 — API, Webhooks, and External Integrations
 
 Adds least-privilege integration scopes, signed outbound events, retry and dead-letter review, external relationships, and append-only integration evidence.
+
+## Repository identity
+
+- Canonical repository: `Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback`
+- Legacy repository: `Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions`
+- Canonical local folder: `sustainable-catalyst-product-support-feedback`
+- WordPress plugin folder: `sustainable-catalyst-feature-suggestions`

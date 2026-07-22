@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.0.1 — Repository Identity Migration
+
+- Migrated the active repository identity to `Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback`.
+- Added safe detection and migration of the legacy local repository folder.
+- Preserved the WordPress plugin folder, text domain, data identifiers, routes, and public contracts.
+- Added canonical and legacy repository metadata, migration documentation, and release validation.
+
 ## 7.0.0 — Connected Help Desk and Support Operations Platform
 
 - Unified seven public and private support operating layers.

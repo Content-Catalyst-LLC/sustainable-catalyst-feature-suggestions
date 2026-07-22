@@ -3,8 +3,8 @@ $root = dirname(__DIR__);
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
 $release = json_decode(file_get_contents($root . '/release-manifest-v5.2.8.json'), true);
 $checks = array(
-    'feature manifest version' => ($manifest['version'] ?? '') === '7.0.0',
-    'feature manifest release name' => ($manifest['release_name'] ?? '') === 'Connected Help Desk and Support Operations Platform',
+    'feature manifest version' => ($manifest['version'] ?? '') === '7.0.1',
+    'feature manifest release name' => ($manifest['release_name'] ?? '') === 'Repository Identity Migration',
     'integrity capability declared' => in_array('support article content integrity validation', $manifest['capabilities'] ?? array(), true),
     'release manifest version' => ($release['version'] ?? '') === '5.2.8',
     'release manifest schema' => ($release['publication_integrity']['schema'] ?? '') === 'scfs-support-article-integrity/1.0',

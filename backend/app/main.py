@@ -37,7 +37,7 @@ from .help_desk_institutional_workspaces import InstitutionalWorkspaceEvidence, 
 from .help_desk_api_integrations import ApiScopeEvidence, ApiScopeAssessment, WebhookSubscriptionEvidence, WebhookSubscriptionAssessment, WebhookDeliveryEvidence, WebhookDeliverySignature, DeliveryRetryEvidence, DeliveryRetryAssessment, ExternalLinkEvidence, ExternalLinkAssessment, IntegrationPrivacyEvidence, IntegrationPrivacyAssessment, IntegrationReportEvidence, IntegrationReportResult, evaluate_api_scope, evaluate_webhook_subscription, sign_webhook_delivery, evaluate_delivery_retry, evaluate_external_link, evaluate_integration_privacy, verify_integration_report
 from .help_desk_production_hardening import RateLimitEvidence, RateLimitAssessment, AbuseSignalEvidence, AbuseSignalAssessment, PrivacyOperationEvidence, PrivacyOperationAssessment, BackupSnapshotEvidence, BackupSnapshotAssessment, RecoveryDrillEvidence, RecoveryDrillAssessment, SecurityHeaderEvidence, SecurityHeaderAssessment, ProductionGateEvidence, ProductionGateAssessment, HardeningReportEvidence, HardeningReportResult, evaluate_rate_limit, evaluate_abuse_signal, evaluate_privacy_operation, evaluate_backup_snapshot, evaluate_recovery_drill, evaluate_security_headers, evaluate_production_gate, verify_hardening_report
 
-VERSION='7.0.0'
+VERSION='7.0.1'
 ANALYSIS_VERSION='5.1.0-1'
 from .connected_help_desk_platform import ModuleEvidence, PlatformEvidence, PlatformAssessment, JourneyEvidence, JourneyPlan, CommandEvidence, CommandPlan, DossierEvidence, DossierAssessment, ConnectedReportEvidence, ConnectedReportResult, evaluate_connected_help_desk, plan_support_journey, plan_connected_command, evaluate_case_dossier, verify_connected_report
 
@@ -1468,7 +1468,7 @@ def help_desk_channels_report(payload: EmailChannelReportEvidence, x_scfs_ai_key
 def help_desk_quality_analytics_capabilities(x_scfs_ai_key:Optional[str]=Header(default=None)):
     auth(x_scfs_ai_key)
     return {
-        'version':'7.0.0',
+        'version':'7.0.1',
         'schema':'scfs-help-desk-quality-analytics/1.0',
         'operational_metrics':True,
         'governed_case_quality_review':True,
@@ -1742,7 +1742,7 @@ def help_desk_production_hardening_report(payload: HardeningReportEvidence, x_sc
 @app.get("/v1/help-desk/connected-platform/capabilities")
 def connected_help_desk_capabilities():
     return {
-        "version": "7.0.0",
+        "version": "7.0.1",
         "schema": "scfs-connected-help-desk-platform/1.0",
         "layers": ["public_support", "customer_portal", "agent_operations", "knowledge_operations", "service_management", "product_intelligence", "institutional_integration"],
         "automatic_customer_communication": False,

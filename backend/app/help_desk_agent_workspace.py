@@ -8,7 +8,7 @@ from typing import Dict, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-VERSION = "7.0.0"
+VERSION = "7.0.1"
 SCHEMA = "scfs-help-desk-agent-workspace/1.0"
 
 QueueState = Literal[
