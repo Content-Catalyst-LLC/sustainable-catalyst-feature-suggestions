@@ -1,11 +1,11 @@
 <?php
 /**
- * Public release blackboard shortcode.
+ * Public release telemetry shortcode.
  *
- * Projects the governed canonical product registry into a compact, accessible
- * public release surface without exposing private plugin paths or repository
- * metadata. Installed WordPress versions and manual product records are
- * rendered through the same canonical registry contract.
+ * Projects the governed canonical product registry into a sleek, accessible
+ * terminal-style release surface without exposing private plugin paths or
+ * repository metadata. Installed WordPress versions and manual product records
+ * are rendered through the same canonical registry contract.
  *
  * @package Sustainable_Catalyst_Feature_Suggestions
  */
@@ -15,8 +15,8 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Board {
-    const VERSION = '7.3.0';
-    const SCHEMA = 'scfs-release-board/1.0';
+    const VERSION = '7.3.1';
+    const SCHEMA = 'scfs-release-board/1.1';
     const SHORTCODE = 'sc_release_board';
     const STYLE_HANDLE = 'scfs-release-board';
     const CACHE_EPOCH_OPTION = 'scfs_release_board_cache_epoch';
@@ -45,7 +45,7 @@ final class SCFS_Release_Board {
     }
 
     public function register_assets() {
-        $relative = 'assets/release-board-v7.3.0.css';
+        $relative = 'assets/release-board-v7.3.1.css';
         $path = plugin_dir_path(dirname(__FILE__)) . $relative;
         $version = is_file($path) ? (string) filemtime($path) : self::VERSION;
         wp_register_style(
@@ -66,7 +66,9 @@ final class SCFS_Release_Board {
             'schema' => self::SCHEMA,
             'version' => self::VERSION,
             'shortcode' => self::SHORTCODE,
-            'layouts' => array('blackboard', 'compact', 'directory'),
+            'public_title' => 'Release Telemetry',
+            'layouts' => array('terminal', 'blackboard', 'compact', 'directory'),
+            'default_layout' => 'terminal',
             'contexts' => array('homepage', 'directory', 'generic'),
             'group_aliases' => array_keys($this->group_aliases()),
             'attributes' => array(
@@ -78,6 +80,10 @@ final class SCFS_Release_Board {
                 'show_status',
                 'show_updated',
                 'show_links',
+                'show_header',
+                'show_footer',
+                'show_source',
+                'dense',
                 'inactive',
                 'title',
                 'heading_level',
@@ -85,6 +91,10 @@ final class SCFS_Release_Board {
             'canonical_registry_source' => true,
             'installed_and_manual_versions_combined' => true,
             'homepage_visibility_governed' => true,
+            'knowledge_library_homepage_required' => true,
+            'analytics_r_public_label' => 'Analytics R',
+            'terminal_command_header' => true,
+            'registry_source_counts' => true,
             'private_plugin_paths_exposed' => false,
             'private_repository_metadata_exposed' => false,
             'semantic_list_output' => true,
@@ -97,7 +107,7 @@ final class SCFS_Release_Board {
 
     private function defaults() {
         return array(
-            'layout' => 'blackboard',
+            'layout' => 'terminal',
             'context' => 'homepage',
             'groups' => '',
             'products' => '',
@@ -105,8 +115,12 @@ final class SCFS_Release_Board {
             'show_status' => 'yes',
             'show_updated' => 'yes',
             'show_links' => 'yes',
+            'show_header' => 'yes',
+            'show_footer' => 'yes',
+            'show_source' => 'yes',
+            'dense' => 'yes',
             'inactive' => 'hide',
-            'title' => __('Catalyst Release Board', 'sustainable-catalyst-feature-suggestions'),
+            'title' => __('Release Telemetry', 'sustainable-catalyst-feature-suggestions'),
             'heading_level' => '2',
         );
     }
@@ -156,7 +170,8 @@ final class SCFS_Release_Board {
         $atts = apply_filters('scfs_release_board_shortcode_atts', $atts);
         $layout = sanitize_key($atts['layout']);
         $context = sanitize_key($atts['context']);
-        $atts['layout'] = in_array($layout, array('blackboard', 'compact', 'directory'), true) ? $layout : 'blackboard';
+        $layouts = array('terminal', 'blackboard', 'compact', 'directory');
+        $atts['layout'] = in_array($layout, $layouts, true) ? $layout : 'terminal';
         $atts['context'] = in_array($context, array('homepage', 'directory', 'generic'), true) ? $context : 'homepage';
         $atts['groups'] = $this->normalize_groups($atts['groups']);
         $atts['products'] = $this->csv_keys($atts['products']);
@@ -164,6 +179,10 @@ final class SCFS_Release_Board {
         $atts['show_status'] = $this->yes($atts['show_status']);
         $atts['show_updated'] = $this->yes($atts['show_updated']);
         $atts['show_links'] = $this->yes($atts['show_links']);
+        $atts['show_header'] = $this->yes($atts['show_header']);
+        $atts['show_footer'] = $this->yes($atts['show_footer']);
+        $atts['show_source'] = $this->yes($atts['show_source']);
+        $atts['dense'] = $this->yes($atts['dense']);
         $atts['inactive'] = sanitize_key($atts['inactive']) === 'show' ? 'show' : 'hide';
         $atts['title'] = sanitize_text_field($atts['title']);
         $atts['heading_level'] = min(6, max(2, absint($atts['heading_level'])));
@@ -251,12 +270,23 @@ final class SCFS_Release_Board {
     private function version_label($version) {
         $version = trim((string) $version);
         if ($version === '') {
-            return __('Version pending', 'sustainable-catalyst-feature-suggestions');
+            return __('pending', 'sustainable-catalyst-feature-suggestions');
         }
         return preg_match('/^v/i', $version) ? $version : 'v' . $version;
     }
 
-    private function last_updated($products) {
+    private function source_label($source) {
+        $source = sanitize_key($source);
+        if ($source === 'wordpress_plugin') {
+            return __('plugin', 'sustainable-catalyst-feature-suggestions');
+        }
+        if ($source === 'manual') {
+            return __('manual', 'sustainable-catalyst-feature-suggestions');
+        }
+        return str_replace('_', '-', $source ?: 'registry');
+    }
+
+    private function last_updated_timestamp($products) {
         $timestamps = array();
         foreach ((array) $products as $product) {
             $candidate = trim((string) ($product['last_verified_at'] ?? ''));
@@ -274,11 +304,64 @@ final class SCFS_Release_Board {
                 $timestamps[] = $time;
             }
         }
-        if (!$timestamps) {
+        return $timestamps ? max($timestamps) : 0;
+    }
+
+    private function last_updated($products) {
+        $latest = $this->last_updated_timestamp($products);
+        if (!$latest) {
             return '';
         }
-        $latest = max($timestamps);
-        return function_exists('wp_date') ? wp_date(get_option('date_format'), $latest) : date_i18n(get_option('date_format'), $latest);
+        return function_exists('wp_date') ? wp_date(get_option('date_format') . ' · ' . get_option('time_format'), $latest) : date_i18n(get_option('date_format') . ' · ' . get_option('time_format'), $latest);
+    }
+
+    private function telemetry_counts($products) {
+        $counts = array(
+            'total' => 0,
+            'plugin' => 0,
+            'manual' => 0,
+            'other' => 0,
+            'attention' => 0,
+        );
+        foreach ((array) $products as $product) {
+            $counts['total']++;
+            $source = sanitize_key($product['version_source'] ?? 'manual');
+            if ($source === 'wordpress_plugin') {
+                $counts['plugin']++;
+            } elseif ($source === 'manual') {
+                $counts['manual']++;
+            } else {
+                $counts['other']++;
+            }
+            $status = sanitize_key($product['status'] ?? 'unverified');
+            if (!in_array($status, array('current', 'stable'), true)) {
+                $counts['attention']++;
+            }
+        }
+        return $counts;
+    }
+
+    private function discovery_state() {
+        $state = array(
+            'label' => __('registry online', 'sustainable-catalyst-feature-suggestions'),
+            'status' => 'online',
+            'matched' => 0,
+            'pending' => 0,
+        );
+        if (!class_exists('SCFS_Installed_Plugin_Discovery')) {
+            return $state;
+        }
+        $summary = SCFS_Installed_Plugin_Discovery::instance()->summary_record();
+        $state['matched'] = absint($summary['matched_product_count'] ?? 0);
+        $state['pending'] = absint($summary['pending_candidate_count'] ?? 0);
+        if (!empty($summary['diagnostic_errors'])) {
+            $state['label'] = __('registry attention', 'sustainable-catalyst-feature-suggestions');
+            $state['status'] = 'attention';
+        } elseif (empty($summary['scanned_at'])) {
+            $state['label'] = __('registry ready', 'sustainable-catalyst-feature-suggestions');
+            $state['status'] = 'ready';
+        }
+        return $state;
     }
 
     private function render_product($product, $atts, $status_labels) {
@@ -286,13 +369,15 @@ final class SCFS_Release_Board {
         $name = (string) (($product['short_name'] ?? '') ?: ($product['name'] ?? $id));
         $status = sanitize_key($product['status'] ?? 'unverified');
         $status_text = isset($status_labels[$status]) ? $status_labels[$status] : ucwords(str_replace('_', ' ', $status));
+        $source = sanitize_key($product['version_source'] ?? 'manual');
         $product_url = $atts['show_links'] ? $this->public_url($product['product_url'] ?? '') : '';
         $release_url = $atts['show_links'] ? $this->public_url($product['release_notes_url'] ?? '') : '';
         $version = $this->version_label($product['version'] ?? '');
 
         ob_start();
         ?>
-        <li class="scfs-release-board__product scfs-release-board__product--<?php echo esc_attr($status); ?>" data-product="<?php echo esc_attr($id); ?>">
+        <li class="scfs-release-board__product scfs-release-board__product--<?php echo esc_attr($status); ?>" data-product="<?php echo esc_attr($id); ?>" data-source="<?php echo esc_attr($source); ?>">
+            <span class="scfs-release-board__prompt" aria-hidden="true">&gt;</span>
             <span class="scfs-release-board__name-wrap">
                 <?php if ($product_url !== '') : ?>
                     <a class="scfs-release-board__name" href="<?php echo esc_url($product_url); ?>"><?php echo esc_html($name); ?></a>
@@ -309,9 +394,77 @@ final class SCFS_Release_Board {
                 <span class="scfs-release-board__version"><span class="screen-reader-text"><?php esc_html_e('Version', 'sustainable-catalyst-feature-suggestions'); ?> </span><?php echo esc_html($version); ?></span>
             <?php endif; ?>
             <?php if ($atts['show_status']) : ?>
-                <span class="scfs-release-board__status" data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($status_text); ?></span>
+                <span class="scfs-release-board__status" data-status="<?php echo esc_attr($status); ?>"><span class="scfs-release-board__status-dot" aria-hidden="true"></span><?php echo esc_html($status_text); ?></span>
+            <?php endif; ?>
+            <?php if ($atts['show_source']) : ?>
+                <span class="scfs-release-board__source"><span class="screen-reader-text"><?php esc_html_e('Version source:', 'sustainable-catalyst-feature-suggestions'); ?> </span><?php echo esc_html($this->source_label($source)); ?></span>
             <?php endif; ?>
         </li>
+        <?php
+        return trim(ob_get_clean());
+    }
+
+    private function render_terminal_header($atts, $instance_id, $counts, $updated, $discovery) {
+        $heading_tag = 'h' . $atts['heading_level'];
+        ob_start();
+        ?>
+        <header class="scfs-release-board__header scfs-release-board__header--terminal">
+            <div class="scfs-release-board__command-line">
+                <span class="scfs-release-board__command-prompt" aria-hidden="true">$</span>
+                <span class="scfs-release-board__command">sc telemetry --scope=<?php echo esc_html($atts['context']); ?> --source=registry</span>
+                <span class="scfs-release-board__registry-state" data-state="<?php echo esc_attr($discovery['status']); ?>"><span aria-hidden="true"></span><?php echo esc_html($discovery['label']); ?></span>
+            </div>
+            <<?php echo tag_escape($heading_tag); ?> id="<?php echo esc_attr($instance_id); ?>" class="scfs-release-board__title"><?php echo esc_html($atts['title']); ?></<?php echo tag_escape($heading_tag); ?>>
+            <p class="scfs-release-board__intro"><?php esc_html_e('Current platform versions, release states, and registry sources.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+            <div class="scfs-release-board__meta" role="list" aria-label="<?php esc_attr_e('Release telemetry summary', 'sustainable-catalyst-feature-suggestions'); ?>">
+                <span role="listitem"><b><?php esc_html_e('systems', 'sustainable-catalyst-feature-suggestions'); ?></b><?php echo esc_html($counts['total']); ?></span>
+                <?php if ($atts['show_source']) : ?>
+                    <span role="listitem"><b><?php esc_html_e('plugin', 'sustainable-catalyst-feature-suggestions'); ?></b><?php echo esc_html($counts['plugin']); ?></span>
+                    <span role="listitem"><b><?php esc_html_e('manual', 'sustainable-catalyst-feature-suggestions'); ?></b><?php echo esc_html($counts['manual']); ?></span>
+                <?php endif; ?>
+                <?php if ($discovery['matched'] > 0) : ?><span role="listitem"><b><?php esc_html_e('matched', 'sustainable-catalyst-feature-suggestions'); ?></b><?php echo esc_html($discovery['matched']); ?></span><?php endif; ?>
+                <?php if ($updated !== '') : ?><span role="listitem"><b><?php esc_html_e('last sync', 'sustainable-catalyst-feature-suggestions'); ?></b><?php echo esc_html($updated); ?></span><?php endif; ?>
+            </div>
+        </header>
+        <?php
+        return trim(ob_get_clean());
+    }
+
+    private function render_standard_header($atts, $instance_id) {
+        $heading_tag = 'h' . $atts['heading_level'];
+        ob_start();
+        ?>
+        <header class="scfs-release-board__header">
+            <<?php echo tag_escape($heading_tag); ?> id="<?php echo esc_attr($instance_id); ?>" class="scfs-release-board__title"><?php echo esc_html($atts['title']); ?></<?php echo tag_escape($heading_tag); ?>>
+            <p class="scfs-release-board__intro"><?php esc_html_e('Current releases across the Sustainable Catalyst platform.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+        </header>
+        <?php
+        return trim(ob_get_clean());
+    }
+
+    private function render_footer($atts, $counts, $updated, $release_archive, $support_url) {
+        if (!$atts['show_footer']) {
+            return '';
+        }
+        ob_start();
+        ?>
+        <footer class="scfs-release-board__footer">
+            <p class="scfs-release-board__diagnostics">
+                <span><?php echo esc_html(sprintf(_n('%d system', '%d systems', $counts['total'], 'sustainable-catalyst-feature-suggestions'), $counts['total'])); ?></span>
+                <span><?php echo esc_html(sprintf(__('%d plugin-sourced', 'sustainable-catalyst-feature-suggestions'), $counts['plugin'])); ?></span>
+                <span><?php echo esc_html(sprintf(__('%d manually governed', 'sustainable-catalyst-feature-suggestions'), $counts['manual'])); ?></span>
+                <?php if ($counts['attention'] > 0) : ?><span><?php echo esc_html(sprintf(__('%d non-stable', 'sustainable-catalyst-feature-suggestions'), $counts['attention'])); ?></span><?php endif; ?>
+            </p>
+            <?php if ($atts['show_updated'] && $updated !== '') : ?>
+                <p class="scfs-release-board__updated"><?php echo esc_html(sprintf(__('Last verified: %s', 'sustainable-catalyst-feature-suggestions'), $updated)); ?></p>
+            <?php endif; ?>
+            <?php if ($release_archive !== '' || $support_url !== '') : ?>
+                <nav class="scfs-release-board__links" aria-label="<?php esc_attr_e('Release telemetry links', 'sustainable-catalyst-feature-suggestions'); ?>">
+                    <?php if ($release_archive !== '') : ?><a href="<?php echo esc_url($release_archive); ?>">./<?php esc_html_e('releases', 'sustainable-catalyst-feature-suggestions'); ?></a><?php endif; ?>
+                    <?php if ($support_url !== '') : ?><a href="<?php echo esc_url($support_url); ?>">./<?php esc_html_e('support', 'sustainable-catalyst-feature-suggestions'); ?></a><?php endif; ?>
+                </nav>
+            <?php endif; ?>
+        </footer>
         <?php
         return trim(ob_get_clean());
     }
@@ -320,25 +473,36 @@ final class SCFS_Release_Board {
         $groups = $this->group_products($products);
         $families = $this->family_labels();
         $status_labels = $this->status_labels();
-        $heading_tag = 'h' . $atts['heading_level'];
         $group_heading_tag = 'h' . min(6, $atts['heading_level'] + 1);
         $updated = $atts['show_updated'] ? $this->last_updated($products) : '';
+        $counts = $this->telemetry_counts($products);
+        $discovery = $this->discovery_state();
         $release_archive = $atts['show_links'] ? apply_filters('scfs_release_board_release_archive_url', home_url('/support/releases/')) : '';
         $support_url = $atts['show_links'] ? apply_filters('scfs_release_board_support_url', home_url('/support/')) : '';
+        $classes = array(
+            'scfs-release-board',
+            'scfs-release-board--' . $atts['layout'],
+            'scfs-release-board--' . $atts['context'],
+        );
+        if ($atts['dense']) {
+            $classes[] = 'scfs-release-board--dense';
+        }
 
         ob_start();
         ?>
-        <section class="scfs-release-board scfs-release-board--<?php echo esc_attr($atts['layout']); ?> scfs-release-board--<?php echo esc_attr($atts['context']); ?>" aria-labelledby="<?php echo esc_attr($instance_id); ?>" data-schema="<?php echo esc_attr(self::SCHEMA); ?>" data-version="<?php echo esc_attr(self::VERSION); ?>">
-            <header class="scfs-release-board__header">
-                <<?php echo tag_escape($heading_tag); ?> id="<?php echo esc_attr($instance_id); ?>" class="scfs-release-board__title"><?php echo esc_html($atts['title']); ?></<?php echo tag_escape($heading_tag); ?>>
-                <p class="scfs-release-board__intro"><?php esc_html_e('Current releases across the Sustainable Catalyst platform.', 'sustainable-catalyst-feature-suggestions'); ?></p>
-            </header>
+        <section class="<?php echo esc_attr(implode(' ', $classes)); ?>" aria-labelledby="<?php echo esc_attr($instance_id); ?>" data-schema="<?php echo esc_attr(self::SCHEMA); ?>" data-version="<?php echo esc_attr(self::VERSION); ?>">
+            <?php if ($atts['show_header']) : ?>
+                <?php echo $atts['layout'] === 'terminal' ? $this->render_terminal_header($atts, $instance_id, $counts, $updated, $discovery) : $this->render_standard_header($atts, $instance_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            <?php else : ?>
+                <span id="<?php echo esc_attr($instance_id); ?>" class="screen-reader-text"><?php echo esc_html($atts['title']); ?></span>
+            <?php endif; ?>
             <div class="scfs-release-board__groups">
                 <?php foreach ($families as $family => $label) : ?>
                     <?php if (empty($groups[$family])) { continue; } ?>
                     <?php $group_id = $instance_id . '-' . sanitize_key($family); ?>
                     <section class="scfs-release-board__group scfs-release-board__group--<?php echo esc_attr($family); ?>" aria-labelledby="<?php echo esc_attr($group_id); ?>">
-                        <<?php echo tag_escape($group_heading_tag); ?> id="<?php echo esc_attr($group_id); ?>" class="scfs-release-board__group-title"><?php echo esc_html($label); ?></<?php echo tag_escape($group_heading_tag); ?>>
+                        <<?php echo tag_escape($group_heading_tag); ?> id="<?php echo esc_attr($group_id); ?>" class="scfs-release-board__group-title"><span aria-hidden="true">#</span> <?php echo esc_html($label); ?></<?php echo tag_escape($group_heading_tag); ?>>
+                        <div class="scfs-release-board__column-labels" aria-hidden="true"><span>system</span><span>version</span><span>state</span><?php if ($atts['show_source']) : ?><span>source</span><?php endif; ?></div>
                         <ul class="scfs-release-board__products" role="list">
                             <?php foreach ($groups[$family] as $product) : ?>
                                 <?php echo $this->render_product($product, $atts, $status_labels); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -347,19 +511,7 @@ final class SCFS_Release_Board {
                     </section>
                 <?php endforeach; ?>
             </div>
-            <?php if ($updated !== '' || $release_archive !== '' || $support_url !== '') : ?>
-                <footer class="scfs-release-board__footer">
-                    <?php if ($updated !== '') : ?>
-                        <p class="scfs-release-board__updated"><?php echo esc_html(sprintf(__('Last verified: %s', 'sustainable-catalyst-feature-suggestions'), $updated)); ?></p>
-                    <?php endif; ?>
-                    <?php if ($release_archive !== '' || $support_url !== '') : ?>
-                        <nav class="scfs-release-board__links" aria-label="<?php esc_attr_e('Release board links', 'sustainable-catalyst-feature-suggestions'); ?>">
-                            <?php if ($release_archive !== '') : ?><a href="<?php echo esc_url($release_archive); ?>"><?php esc_html_e('View releases', 'sustainable-catalyst-feature-suggestions'); ?></a><?php endif; ?>
-                            <?php if ($support_url !== '') : ?><a href="<?php echo esc_url($support_url); ?>"><?php esc_html_e('Visit Support', 'sustainable-catalyst-feature-suggestions'); ?></a><?php endif; ?>
-                        </nav>
-                    <?php endif; ?>
-                </footer>
-            <?php endif; ?>
+            <?php echo $this->render_footer($atts, $counts, $updated, $release_archive, $support_url); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
         </section>
         <?php
         return trim(ob_get_clean());

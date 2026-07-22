@@ -15,8 +15,8 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.3.0';
-    const SCHEMA = 'scfs-canonical-product-registry/1.0';
+    const VERSION = '7.3.1';
+    const SCHEMA = 'scfs-canonical-product-registry/1.1';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
     const AUDIT_OPTION = 'scfs_canonical_product_registry_audit';
@@ -34,7 +34,7 @@ final class SCFS_Canonical_Product_Registry {
     }
 
     private function __construct() {
-        add_action('admin_init', array($this, 'maybe_upgrade'), 3);
+        add_action('init', array($this, 'maybe_upgrade'), 3);
         add_action('admin_menu', array($this, 'register_admin_page'), 21);
         add_action('admin_post_scfs_save_product_registry', array($this, 'save_registry_action'));
         add_action('admin_post_scfs_reset_product_registry', array($this, 'reset_registry_action'));
@@ -51,10 +51,17 @@ final class SCFS_Canonical_Product_Registry {
     public static function activate() {
         $instance = self::instance();
         $existing = get_option(self::OPTION_KEY, array());
+        $needs_upgrade = get_option(self::SCHEMA_OPTION) !== self::SCHEMA;
+        $registry = (!is_array($existing) || !$existing)
+            ? $instance->default_products()
+            : $instance->merge_defaults($existing);
+        if ($needs_upgrade) {
+            $registry = $instance->apply_v731_presentation_migrations($registry);
+        }
         if (!is_array($existing) || !$existing) {
-            add_option(self::OPTION_KEY, $instance->default_products(), '', false);
+            add_option(self::OPTION_KEY, $registry, '', false);
         } else {
-            update_option(self::OPTION_KEY, $instance->merge_defaults($existing), false);
+            update_option(self::OPTION_KEY, $registry, false);
         }
         update_option(self::SCHEMA_OPTION, self::SCHEMA, false);
         if (!get_option(self::AUDIT_OPTION)) {
@@ -67,9 +74,16 @@ final class SCFS_Canonical_Product_Registry {
             return;
         }
         $existing = get_option(self::OPTION_KEY, array());
-        update_option(self::OPTION_KEY, $this->merge_defaults(is_array($existing) ? $existing : array()), false);
+        $registry = $this->merge_defaults(is_array($existing) ? $existing : array());
+        $registry = $this->apply_v731_presentation_migrations($registry);
+        update_option(self::OPTION_KEY, $registry, false);
         update_option(self::SCHEMA_OPTION, self::SCHEMA, false);
-        $this->audit('registry_schema_upgraded', array('schema' => self::SCHEMA));
+        $this->audit('registry_schema_upgraded', array(
+            'schema' => self::SCHEMA,
+            'knowledge_library_homepage_visible' => true,
+            'analytics_r_public_label' => 'Analytics R',
+        ));
+        do_action('scfs_product_registry_updated', $registry);
     }
 
     public function capability() {
@@ -211,7 +225,7 @@ final class SCFS_Canonical_Product_Registry {
             'decision-studio' => $this->product('decision-studio', 'Sustainable Catalyst Decision Studio', 'Decision Studio', 'research-intelligence', 130, array('plugin_slug' => 'sustainable-catalyst-decision-studio')),
             'narrative-risk' => $this->product('narrative-risk', 'Catalyst Narrative Risk', 'Narrative Risk', 'research-intelligence', 140, array('plugin_slug' => 'catalyst-narrative-risk')),
             'catalyst-data' => $this->product('catalyst-data', 'Catalyst Data', 'Catalyst Data', 'data-analysis', 210, array('plugin_slug' => 'catalyst-data')),
-            'catalyst-analytics-r' => $this->product('catalyst-analytics-r', 'Catalyst AnalyticsR', 'Catalyst AnalyticsR', 'data-analysis', 220, array('product_type' => 'r_package', 'version_source' => 'manual', 'discovery_enabled' => '')),
+            'catalyst-analytics-r' => $this->product('catalyst-analytics-r', 'Catalyst Analytics R', 'Analytics R', 'data-analysis', 220, array('product_type' => 'r_package', 'version_source' => 'manual', 'discovery_enabled' => '')),
             'catalyst-finance' => $this->product('catalyst-finance', 'Catalyst Finance', 'Catalyst Finance', 'data-analysis', 230, array('plugin_slug' => 'catalyst-finance')),
             'global-impact-catalyst' => $this->product('global-impact-catalyst', 'Global Impact Catalyst', 'Global Impact Catalyst', 'data-analysis', 240, array('plugin_slug' => 'global-impact-catalyst')),
             'catalyst-canvas' => $this->product('catalyst-canvas', 'Catalyst Canvas', 'Catalyst Canvas', 'creation-systems', 310, array('plugin_slug' => 'catalyst-canvas')),
@@ -247,6 +261,25 @@ final class SCFS_Canonical_Product_Registry {
         $merged['product-support-feedback']['public_version'] = self::VERSION;
         $merged['product-support-feedback']['status'] = 'current';
         return $this->normalize_registry($merged);
+    }
+
+    private function apply_v731_presentation_migrations($records) {
+        $records = is_array($records) ? $records : array();
+        if (isset($records['knowledge-library']) && is_array($records['knowledge-library'])) {
+            $records['knowledge-library']['public_visible'] = '1';
+            $records['knowledge-library']['homepage_visible'] = '1';
+            $records['knowledge-library']['short_name'] = 'Knowledge Library';
+        }
+        if (isset($records['catalyst-analytics-r']) && is_array($records['catalyst-analytics-r'])) {
+            $legacy_names = isset($records['catalyst-analytics-r']['legacy_names'])
+                ? (array) $records['catalyst-analytics-r']['legacy_names']
+                : array();
+            $legacy_names[] = 'Catalyst AnalyticsR';
+            $records['catalyst-analytics-r']['legacy_names'] = array_values(array_unique($legacy_names));
+            $records['catalyst-analytics-r']['name'] = 'Catalyst Analytics R';
+            $records['catalyst-analytics-r']['short_name'] = 'Analytics R';
+        }
+        return $this->normalize_registry($records);
     }
 
     public function registry() {
@@ -478,7 +511,7 @@ final class SCFS_Canonical_Product_Registry {
         $registry = $this->registry();
         $summary = $this->summary_record();
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. Installed-plugin discovery is active in v7.3.0. Use the Plugin Discovery screen to rescan safely.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. Installed-plugin discovery is active in v7.3.1. Use the Plugin Discovery screen to rescan safely.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -530,7 +563,7 @@ final class SCFS_Canonical_Product_Registry {
         submit_button(__('Save Product Registry', 'sustainable-catalyst-feature-suggestions'));
         echo '</form>';
         echo '<hr><p><a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.3.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.3.1 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

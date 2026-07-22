@@ -10,4 +10,4 @@ foreach (array("'unknown_plugins_auto_registered' => false", "'unknown_plugins_p
 if (strpos($class, "version_source'] ?? '') !== 'wordpress_plugin'") === false || strpos($class, "discovery_locked") === false) {
     fwrite(STDERR, "FAIL registry-only or lock boundary\n"); exit(1);
 }
-echo "v7.3.0 plugin discovery governance contract passed.\n";
+echo "v7.3.1 plugin discovery governance contract passed.\n";

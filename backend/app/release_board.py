@@ -1,4 +1,4 @@
-"""Release board projection and validation for v7.3.0."""
+"""Release board projection and validation for v7.3.1."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ from typing import List, Literal
 
 from pydantic import BaseModel, Field
 
-VERSION = "7.3.0"
-SCHEMA = "scfs-release-board/1.0"
+VERSION = "7.3.1"
+SCHEMA = "scfs-release-board/1.1"
 
 Family = Literal[
     "foundation",
@@ -17,7 +17,7 @@ Family = Literal[
     "creation-systems",
     "commercial",
 ]
-Layout = Literal["blackboard", "compact", "directory"]
+Layout = Literal["terminal", "blackboard", "compact", "directory"]
 Context = Literal["homepage", "directory", "generic"]
 InactiveMode = Literal["hide", "show"]
 
@@ -39,7 +39,7 @@ class ReleaseBoardProduct(BaseModel):
 
 class ReleaseBoardProjectionRequest(BaseModel):
     products: List[ReleaseBoardProduct] = Field(default_factory=list, max_length=250)
-    layout: Layout = "blackboard"
+    layout: Layout = "terminal"
     context: Context = "homepage"
     groups: List[Family] = Field(default_factory=list, max_length=5)
     product_ids: List[str] = Field(default_factory=list, max_length=250)
@@ -64,6 +64,9 @@ class ReleaseBoardProjection(BaseModel):
     installed_and_manual_versions_combined: bool = True
     private_plugin_paths_exposed: bool = False
     private_repository_metadata_exposed: bool = False
+    wordpress_plugin_count: int = 0
+    manual_count: int = 0
+    other_source_count: int = 0
 
 
 FAMILY_ORDER: list[Family] = [
@@ -80,7 +83,9 @@ def release_board_capabilities() -> dict:
         "version": VERSION,
         "schema": SCHEMA,
         "shortcode": "sc_release_board",
-        "layouts": ["blackboard", "compact", "directory"],
+        "layouts": ["terminal", "blackboard", "compact", "directory"],
+        "default_layout": "terminal",
+        "public_title": "Release Telemetry",
         "contexts": ["homepage", "directory", "generic"],
         "canonical_registry_source": True,
         "installed_and_manual_versions_combined": True,
@@ -88,6 +93,10 @@ def release_board_capabilities() -> dict:
         "private_plugin_paths_exposed": False,
         "private_repository_metadata_exposed": False,
         "semantic_list_output": True,
+        "terminal_command_header": True,
+        "registry_source_counts": True,
+        "knowledge_library_homepage_required": True,
+        "analytics_r_public_label": "Analytics R",
         "human_review_required": True,
     }
 
@@ -132,10 +141,16 @@ def project_release_board(payload: ReleaseBoardProjectionRequest) -> ReleaseBoar
         if grouped.get(family)
     ]
 
+    wordpress_plugin_count = sum(1 for product in filtered if product.version_source == "wordpress_plugin")
+    manual_count = sum(1 for product in filtered if product.version_source == "manual")
+
     return ReleaseBoardProjection(
         layout=payload.layout,
         context=payload.context,
         total_products=len(filtered),
         group_count=len(groups),
         groups=groups,
+        wordpress_plugin_count=wordpress_plugin_count,
+        manual_count=manual_count,
+        other_source_count=len(filtered) - wordpress_plugin_count - manual_count,
     )

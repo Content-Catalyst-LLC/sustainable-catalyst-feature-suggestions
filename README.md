@@ -1,6 +1,6 @@
-## Current release: v7.3.0 — Release Blackboard Shortcode
+## Current release: v7.3.1 — Release Telemetry and Homepage Presentation
 
-Use `[sc_release_board]` to render the governed public product-version board from the canonical registry. Installed WordPress products update through plugin discovery; Catalyst Intelligence remains a manual commercial-product record.
+Use `[sc_release_board]` to render Release Telemetry from the governed canonical registry. The default terminal presentation complements Live Intelligence, shows plugin and manual version sources, keeps Knowledge Library visible, and displays Catalyst Analytics R as “Analytics R.”
 
 # Sustainable Catalyst Product Support and Feedback Platform
 

@@ -24,7 +24,7 @@ def product(product_id: str, family: str, order: int, *, version: str = "1.0.0",
 def catalog():
     return [
         product("sustainable-catalyst-core", "foundation", 10, version="3.0.0"),
-        product("product-support-feedback", "foundation", 20, version="7.3.0"),
+        product("product-support-feedback", "foundation", 20, version="7.3.1"),
         product("contact-engagement", "foundation", 30, version="2.0.0"),
         product("knowledge-library", "foundation", 40, version="4.0.2"),
         product("research-librarian", "research-intelligence", 110, version="7.0.1"),
@@ -77,4 +77,26 @@ def test_duplicate_canonical_ids_collapse_to_first_sorted_input_record():
     result = project_release_board(ReleaseBoardProjectionRequest(products=products))
     matches = [item for group in result.groups for item in group.products if item.canonical_id == "product-support-feedback"]
     assert len(matches) == 1
-    assert matches[0].version == "7.3.0"
+    assert matches[0].version == "7.3.1"
+
+
+def test_release_telemetry_is_the_default_terminal_surface():
+    capabilities = release_board_capabilities()
+    assert capabilities["public_title"] == "Release Telemetry"
+    assert capabilities["default_layout"] == "terminal"
+    assert capabilities["layouts"][0] == "terminal"
+    assert capabilities["terminal_command_header"] is True
+    assert capabilities["registry_source_counts"] is True
+
+
+def test_source_counts_distinguish_plugin_and_manual_records():
+    result = project_release_board(ReleaseBoardProjectionRequest(products=catalog()))
+    assert result.wordpress_plugin_count == 5
+    assert result.manual_count == 1
+    assert result.other_source_count == 0
+
+
+def test_required_public_labels_are_declared():
+    capabilities = release_board_capabilities()
+    assert capabilities["knowledge_library_homepage_required"] is True
+    assert capabilities["analytics_r_public_label"] == "Analytics R"

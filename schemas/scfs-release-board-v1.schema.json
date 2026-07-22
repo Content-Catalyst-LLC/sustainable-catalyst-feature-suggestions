@@ -1,15 +1,25 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sustainablecatalyst.com/schemas/scfs-release-board-v1.schema.json",
-  "title": "Sustainable Catalyst Release Board",
+  "title": "Sustainable Catalyst Release Telemetry",
   "type": "object",
   "required": ["schema", "version", "layout", "context", "groups"],
   "properties": {
-    "schema": {"const": "scfs-release-board/1.0"},
-    "version": {"const": "7.3.0"},
-    "layout": {"enum": ["blackboard", "compact", "directory"]},
+    "schema": {"const": "scfs-release-board/1.1"},
+    "version": {"const": "7.3.1"},
+    "layout": {"enum": ["terminal", "blackboard", "compact", "directory"]},
     "context": {"enum": ["homepage", "directory", "generic"]},
     "generated_at": {"type": "string"},
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_products": {"type": "integer", "minimum": 0},
+        "wordpress_plugin_count": {"type": "integer", "minimum": 0},
+        "manual_count": {"type": "integer", "minimum": 0},
+        "other_source_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
     "groups": {
       "type": "array",
       "items": {

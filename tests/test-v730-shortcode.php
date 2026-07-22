@@ -5,13 +5,17 @@ $checks = array(
     'shortcode registration' => strpos($board, "add_shortcode(self::SHORTCODE") !== false,
     'canonical registry source' => strpos($board, 'SCFS_Canonical_Product_Registry::instance()->public_products') !== false,
     'homepage context' => strpos($board, "'context' => 'homepage'") !== false,
-    'layouts' => strpos($board, "array('blackboard', 'compact', 'directory')") !== false,
+    'layouts' => strpos($board, "array('terminal', 'blackboard', 'compact', 'directory')") !== false,
     'group filter' => strpos($board, "'groups'") !== false,
     'product filter' => strpos($board, "'products'") !== false,
     'limit filter' => strpos($board, "'limit'") !== false,
     'status filter' => strpos($board, "'show_status'") !== false,
     'updated filter' => strpos($board, "'show_updated'") !== false,
     'links filter' => strpos($board, "'show_links'") !== false,
+    'header filter' => strpos($board, "'show_header'") !== false,
+    'footer filter' => strpos($board, "'show_footer'") !== false,
+    'source filter' => strpos($board, "'show_source'") !== false,
+    'dense filter' => strpos($board, "'dense'") !== false,
     'inactive policy' => strpos($board, "'inactive'") !== false,
     'attribute filter' => strpos($board, 'scfs_release_board_shortcode_atts') !== false,
     'products filter' => strpos($board, 'scfs_release_board_products') !== false,
@@ -29,4 +33,4 @@ $checks = array(
 foreach ($checks as $label => $ok) {
     if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo "v7.3.0 release board shortcode contract passed.\n";
+echo "v7.3.1 release board shortcode contract passed.\n";
