@@ -1,6 +1,6 @@
 <?php
 /**
- * Public release telemetry shortcode.
+ * Public release console shortcode.
  *
  * Projects the governed canonical product registry into a sleek, accessible
  * terminal-style release surface without exposing private plugin paths or
@@ -15,10 +15,11 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Board {
-    const VERSION = '7.3.1';
-    const SCHEMA = 'scfs-release-board/1.1';
+    const VERSION = '7.3.3';
+    const SCHEMA = 'scfs-release-board/1.2';
     const SHORTCODE = 'sc_release_board';
     const STYLE_HANDLE = 'scfs-release-board';
+    const SCRIPT_HANDLE = 'scfs-release-console';
     const CACHE_EPOCH_OPTION = 'scfs_release_board_cache_epoch';
     const DEFAULT_CACHE_TTL = 300;
 
@@ -45,7 +46,7 @@ final class SCFS_Release_Board {
     }
 
     public function register_assets() {
-        $relative = 'assets/release-board-v7.3.1.css';
+        $relative = 'assets/release-board-v7.3.3.css';
         $path = plugin_dir_path(dirname(__FILE__)) . $relative;
         $version = is_file($path) ? (string) filemtime($path) : self::VERSION;
         wp_register_style(
@@ -53,6 +54,16 @@ final class SCFS_Release_Board {
             plugins_url($relative, dirname(__FILE__)),
             array(),
             $version
+        );
+        $script_relative = 'assets/release-console-v7.3.3.js';
+        $script_path = plugin_dir_path(dirname(__FILE__)) . $script_relative;
+        $script_version = is_file($script_path) ? (string) filemtime($script_path) : self::VERSION;
+        wp_register_script(
+            self::SCRIPT_HANDLE,
+            plugins_url($script_relative, dirname(__FILE__)),
+            array(),
+            $script_version,
+            true
         );
     }
 
@@ -66,7 +77,7 @@ final class SCFS_Release_Board {
             'schema' => self::SCHEMA,
             'version' => self::VERSION,
             'shortcode' => self::SHORTCODE,
-            'public_title' => 'Release Telemetry',
+            'public_title' => 'Release Console',
             'layouts' => array('terminal', 'blackboard', 'compact', 'directory'),
             'default_layout' => 'terminal',
             'contexts' => array('homepage', 'directory', 'generic'),
@@ -87,6 +98,8 @@ final class SCFS_Release_Board {
                 'inactive',
                 'title',
                 'heading_level',
+                'interval',
+                'rotate',
             ),
             'canonical_registry_source' => true,
             'installed_and_manual_versions_combined' => true,
@@ -95,12 +108,29 @@ final class SCFS_Release_Board {
             'analytics_r_public_label' => 'Analytics R',
             'terminal_command_header' => true,
             'registry_source_counts' => true,
+            'rotating_screens' => array('foundation', 'research-intelligence', 'data-analysis', 'creation-systems', 'commercial'),
+            'default_interval_seconds' => 7,
+            'previous_pause_next_controls' => true,
+            'pause_on_hover_and_focus' => true,
+            'reduced_motion_respected' => true,
+            'product_labels_navigating' => false,
+            'footer_links_only' => true,
             'private_plugin_paths_exposed' => false,
             'private_repository_metadata_exposed' => false,
             'semantic_list_output' => true,
             'color_only_status' => false,
             'cache_safe_asset_versioning' => true,
             'cache_safe_markup_ids' => true,
+            'stable_screen_height' => true,
+            'controls_hidden_without_javascript' => true,
+            'all_screens_visible_without_javascript' => true,
+            'multiple_instances_supported' => true,
+            'duplicate_initialization_guard' => true,
+            'dynamic_dom_initialization' => true,
+            'keyboard_navigation' => array('ArrowLeft', 'ArrowRight', 'Home', 'End', 'Space'),
+            'screen_reader_announcements_manual_only' => true,
+            'astra_theme_scoped' => true,
+            'minification_safe' => true,
             'cache_ttl_seconds' => self::DEFAULT_CACHE_TTL,
         );
     }
@@ -120,8 +150,10 @@ final class SCFS_Release_Board {
             'show_source' => 'yes',
             'dense' => 'yes',
             'inactive' => 'hide',
-            'title' => __('Release Telemetry', 'sustainable-catalyst-feature-suggestions'),
+            'title' => __('Release Console', 'sustainable-catalyst-feature-suggestions'),
             'heading_level' => '2',
+            'interval' => '7',
+            'rotate' => 'yes',
         );
     }
 
@@ -186,6 +218,8 @@ final class SCFS_Release_Board {
         $atts['inactive'] = sanitize_key($atts['inactive']) === 'show' ? 'show' : 'hide';
         $atts['title'] = sanitize_text_field($atts['title']);
         $atts['heading_level'] = min(6, max(2, absint($atts['heading_level'])));
+        $atts['interval'] = min(60, max(3, absint($atts['interval'])));
+        $atts['rotate'] = $this->yes($atts['rotate']);
         return $atts;
     }
 
@@ -370,8 +404,6 @@ final class SCFS_Release_Board {
         $status = sanitize_key($product['status'] ?? 'unverified');
         $status_text = isset($status_labels[$status]) ? $status_labels[$status] : ucwords(str_replace('_', ' ', $status));
         $source = sanitize_key($product['version_source'] ?? 'manual');
-        $product_url = $atts['show_links'] ? $this->public_url($product['product_url'] ?? '') : '';
-        $release_url = $atts['show_links'] ? $this->public_url($product['release_notes_url'] ?? '') : '';
         $version = $this->version_label($product['version'] ?? '');
 
         ob_start();
@@ -379,20 +411,10 @@ final class SCFS_Release_Board {
         <li class="scfs-release-board__product scfs-release-board__product--<?php echo esc_attr($status); ?>" data-product="<?php echo esc_attr($id); ?>" data-source="<?php echo esc_attr($source); ?>">
             <span class="scfs-release-board__prompt" aria-hidden="true">&gt;</span>
             <span class="scfs-release-board__name-wrap">
-                <?php if ($product_url !== '') : ?>
-                    <a class="scfs-release-board__name" href="<?php echo esc_url($product_url); ?>"><?php echo esc_html($name); ?></a>
-                <?php else : ?>
-                    <span class="scfs-release-board__name"><?php echo esc_html($name); ?></span>
-                <?php endif; ?>
+                <span class="scfs-release-board__name" data-console-label="true"><?php echo esc_html($name); ?></span>
                 <span class="scfs-release-board__leader" aria-hidden="true"></span>
             </span>
-            <?php if ($release_url !== '') : ?>
-                <a class="scfs-release-board__version" href="<?php echo esc_url($release_url); ?>">
-                    <span class="screen-reader-text"><?php esc_html_e('Version', 'sustainable-catalyst-feature-suggestions'); ?> </span><?php echo esc_html($version); ?>
-                </a>
-            <?php else : ?>
-                <span class="scfs-release-board__version"><span class="screen-reader-text"><?php esc_html_e('Version', 'sustainable-catalyst-feature-suggestions'); ?> </span><?php echo esc_html($version); ?></span>
-            <?php endif; ?>
+            <span class="scfs-release-board__version"><span class="screen-reader-text"><?php esc_html_e('Version', 'sustainable-catalyst-feature-suggestions'); ?> </span><?php echo esc_html($version); ?></span>
             <?php if ($atts['show_status']) : ?>
                 <span class="scfs-release-board__status" data-status="<?php echo esc_attr($status); ?>"><span class="scfs-release-board__status-dot" aria-hidden="true"></span><?php echo esc_html($status_text); ?></span>
             <?php endif; ?>
@@ -411,12 +433,12 @@ final class SCFS_Release_Board {
         <header class="scfs-release-board__header scfs-release-board__header--terminal">
             <div class="scfs-release-board__command-line">
                 <span class="scfs-release-board__command-prompt" aria-hidden="true">$</span>
-                <span class="scfs-release-board__command">sc telemetry --scope=<?php echo esc_html($atts['context']); ?> --source=registry</span>
+                <span class="scfs-release-board__command">sc releases --scope=<?php echo esc_html($atts['context']); ?> --source=registry</span>
                 <span class="scfs-release-board__registry-state" data-state="<?php echo esc_attr($discovery['status']); ?>"><span aria-hidden="true"></span><?php echo esc_html($discovery['label']); ?></span>
             </div>
             <<?php echo tag_escape($heading_tag); ?> id="<?php echo esc_attr($instance_id); ?>" class="scfs-release-board__title"><?php echo esc_html($atts['title']); ?></<?php echo tag_escape($heading_tag); ?>>
-            <p class="scfs-release-board__intro"><?php esc_html_e('Current platform versions, release states, and registry sources.', 'sustainable-catalyst-feature-suggestions'); ?></p>
-            <div class="scfs-release-board__meta" role="list" aria-label="<?php esc_attr_e('Release telemetry summary', 'sustainable-catalyst-feature-suggestions'); ?>">
+            <p class="scfs-release-board__intro"><?php esc_html_e('Five governed release screens rotating across the Sustainable Catalyst platform.', 'sustainable-catalyst-feature-suggestions'); ?></p>
+            <div class="scfs-release-board__meta" role="list" aria-label="<?php esc_attr_e('Release console summary', 'sustainable-catalyst-feature-suggestions'); ?>">
                 <span role="listitem"><b><?php esc_html_e('systems', 'sustainable-catalyst-feature-suggestions'); ?></b><?php echo esc_html($counts['total']); ?></span>
                 <?php if ($atts['show_source']) : ?>
                     <span role="listitem"><b><?php esc_html_e('plugin', 'sustainable-catalyst-feature-suggestions'); ?></b><?php echo esc_html($counts['plugin']); ?></span>
@@ -459,7 +481,7 @@ final class SCFS_Release_Board {
                 <p class="scfs-release-board__updated"><?php echo esc_html(sprintf(__('Last verified: %s', 'sustainable-catalyst-feature-suggestions'), $updated)); ?></p>
             <?php endif; ?>
             <?php if ($release_archive !== '' || $support_url !== '') : ?>
-                <nav class="scfs-release-board__links" aria-label="<?php esc_attr_e('Release telemetry links', 'sustainable-catalyst-feature-suggestions'); ?>">
+                <nav class="scfs-release-board__links" aria-label="<?php esc_attr_e('Release Console links', 'sustainable-catalyst-feature-suggestions'); ?>">
                     <?php if ($release_archive !== '') : ?><a href="<?php echo esc_url($release_archive); ?>">./<?php esc_html_e('releases', 'sustainable-catalyst-feature-suggestions'); ?></a><?php endif; ?>
                     <?php if ($support_url !== '') : ?><a href="<?php echo esc_url($support_url); ?>">./<?php esc_html_e('support', 'sustainable-catalyst-feature-suggestions'); ?></a><?php endif; ?>
                 </nav>
@@ -479,6 +501,9 @@ final class SCFS_Release_Board {
         $discovery = $this->discovery_state();
         $release_archive = $atts['show_links'] ? apply_filters('scfs_release_board_release_archive_url', home_url('/support/releases/')) : '';
         $support_url = $atts['show_links'] ? apply_filters('scfs_release_board_support_url', home_url('/support/')) : '';
+        $rotating = $atts['layout'] === 'terminal' && $atts['rotate'];
+        $screens_id = $instance_id . '-screens';
+        $announcer_id = $instance_id . '-announcer';
         $classes = array(
             'scfs-release-board',
             'scfs-release-board--' . $atts['layout'],
@@ -487,20 +512,40 @@ final class SCFS_Release_Board {
         if ($atts['dense']) {
             $classes[] = 'scfs-release-board--dense';
         }
+        if ($rotating) {
+            $classes[] = 'scfs-release-board--rotating';
+        }
+        $screen_total = 0;
+        foreach ($families as $family => $label) {
+            if (!empty($groups[$family])) {
+                $screen_total++;
+            }
+        }
 
         ob_start();
         ?>
-        <section class="<?php echo esc_attr(implode(' ', $classes)); ?>" aria-labelledby="<?php echo esc_attr($instance_id); ?>" data-schema="<?php echo esc_attr(self::SCHEMA); ?>" data-version="<?php echo esc_attr(self::VERSION); ?>">
+        <section class="<?php echo esc_attr(implode(' ', $classes)); ?>" aria-labelledby="<?php echo esc_attr($instance_id); ?>" data-schema="<?php echo esc_attr(self::SCHEMA); ?>" data-version="<?php echo esc_attr(self::VERSION); ?>" data-release-console="<?php echo $rotating ? 'true' : 'false'; ?>" data-interval="<?php echo esc_attr($atts['interval'] * 1000); ?>">
             <?php if ($atts['show_header']) : ?>
                 <?php echo $atts['layout'] === 'terminal' ? $this->render_terminal_header($atts, $instance_id, $counts, $updated, $discovery) : $this->render_standard_header($atts, $instance_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             <?php else : ?>
                 <span id="<?php echo esc_attr($instance_id); ?>" class="screen-reader-text"><?php echo esc_html($atts['title']); ?></span>
             <?php endif; ?>
-            <div class="scfs-release-board__groups">
+            <?php if ($rotating) : ?>
+                <div class="scfs-release-board__console-controls" aria-label="<?php esc_attr_e('Release Console controls', 'sustainable-catalyst-feature-suggestions'); ?>">
+                    <button type="button" class="scfs-release-board__control" data-console-action="previous" aria-controls="<?php echo esc_attr($screens_id); ?>" aria-label="<?php esc_attr_e('Previous release screen', 'sustainable-catalyst-feature-suggestions'); ?>"><span data-console-icon aria-hidden="true">&#8592;</span><span><?php esc_html_e('Previous', 'sustainable-catalyst-feature-suggestions'); ?></span></button>
+                    <button type="button" class="scfs-release-board__control" data-console-action="toggle" aria-controls="<?php echo esc_attr($screens_id); ?>" aria-pressed="false" aria-label="<?php esc_attr_e('Pause release screens', 'sustainable-catalyst-feature-suggestions'); ?>"><span data-console-icon aria-hidden="true">&#10074;&#10074;</span><span data-console-label><?php esc_html_e('Pause', 'sustainable-catalyst-feature-suggestions'); ?></span></button>
+                    <span class="scfs-release-board__screen-status" aria-hidden="true"><span data-console-current>1</span>/<span><?php echo esc_html($screen_total); ?></span><span class="scfs-release-board__screen-status-label" data-console-current-label></span></span>
+                    <button type="button" class="scfs-release-board__control" data-console-action="next" aria-controls="<?php echo esc_attr($screens_id); ?>" aria-label="<?php esc_attr_e('Next release screen', 'sustainable-catalyst-feature-suggestions'); ?>"><span><?php esc_html_e('Next', 'sustainable-catalyst-feature-suggestions'); ?></span><span data-console-icon aria-hidden="true">&#8594;</span></button>
+                </div>
+                <span id="<?php echo esc_attr($announcer_id); ?>" class="screen-reader-text" data-console-announcer aria-live="polite" aria-atomic="true"></span>
+                <noscript><p class="scfs-release-board__noscript"><?php esc_html_e('Rotation controls require JavaScript. All release groups are shown.', 'sustainable-catalyst-feature-suggestions'); ?></p></noscript>
+            <?php endif; ?>
+            <div class="scfs-release-board__groups"<?php if ($rotating) : ?> id="<?php echo esc_attr($screens_id); ?>" data-console-screens role="region" aria-describedby="<?php echo esc_attr($announcer_id); ?>" aria-label="<?php esc_attr_e('Release Console screens. Use Left and Right Arrow keys to navigate, Home for the first screen, End for the last screen, and Space to pause or play.', 'sustainable-catalyst-feature-suggestions'); ?>"<?php endif; ?>>
+                <?php $screen_index = 0; ?>
                 <?php foreach ($families as $family => $label) : ?>
                     <?php if (empty($groups[$family])) { continue; } ?>
                     <?php $group_id = $instance_id . '-' . sanitize_key($family); ?>
-                    <section class="scfs-release-board__group scfs-release-board__group--<?php echo esc_attr($family); ?>" aria-labelledby="<?php echo esc_attr($group_id); ?>">
+                    <section class="scfs-release-board__group scfs-release-board__group--<?php echo esc_attr($family); ?>" aria-labelledby="<?php echo esc_attr($group_id); ?>"<?php if ($rotating) : ?> data-console-screen data-console-title="<?php echo esc_attr($label); ?>" data-screen-index="<?php echo esc_attr($screen_index); ?>" role="group" aria-roledescription="<?php esc_attr_e('release screen', 'sustainable-catalyst-feature-suggestions'); ?>" aria-label="<?php echo esc_attr(sprintf(__('%1$s, screen %2$d of %3$d', 'sustainable-catalyst-feature-suggestions'), $label, $screen_index + 1, $screen_total)); ?>"<?php endif; ?>>
                         <<?php echo tag_escape($group_heading_tag); ?> id="<?php echo esc_attr($group_id); ?>" class="scfs-release-board__group-title"><span aria-hidden="true">#</span> <?php echo esc_html($label); ?></<?php echo tag_escape($group_heading_tag); ?>>
                         <div class="scfs-release-board__column-labels" aria-hidden="true"><span>system</span><span>version</span><span>state</span><?php if ($atts['show_source']) : ?><span>source</span><?php endif; ?></div>
                         <ul class="scfs-release-board__products" role="list">
@@ -509,6 +554,7 @@ final class SCFS_Release_Board {
                             <?php endforeach; ?>
                         </ul>
                     </section>
+                    <?php $screen_index++; ?>
                 <?php endforeach; ?>
             </div>
             <?php echo $this->render_footer($atts, $counts, $updated, $release_archive, $support_url); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -526,6 +572,7 @@ final class SCFS_Release_Board {
         $cached = get_transient($cache_key);
         if (is_string($cached) && $cached !== '') {
             wp_enqueue_style(self::STYLE_HANDLE);
+            if ($atts['layout'] === 'terminal' && $atts['rotate']) { wp_enqueue_script(self::SCRIPT_HANDLE); }
             return str_replace('__SCFS_RELEASE_BOARD_INSTANCE__', wp_unique_id('scfs-release-board-'), $cached);
         }
         $homepage_only = $atts['context'] === 'homepage';
@@ -535,6 +582,7 @@ final class SCFS_Release_Board {
             return '';
         }
         wp_enqueue_style(self::STYLE_HANDLE);
+        if ($atts['layout'] === 'terminal' && $atts['rotate']) { wp_enqueue_script(self::SCRIPT_HANDLE); }
         $cacheable_output = $this->render_board($products, $atts, '__SCFS_RELEASE_BOARD_INSTANCE__');
         $cacheable_output = apply_filters('scfs_release_board_output', $cacheable_output, $products, $atts);
         $ttl = max(0, absint(apply_filters('scfs_release_board_cache_ttl', self::DEFAULT_CACHE_TTL, $atts)));

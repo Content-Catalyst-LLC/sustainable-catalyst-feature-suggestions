@@ -1,4 +1,4 @@
-"""Email and Channel Operations v7.3.1.
+"""Email and Channel Operations v7.3.3.
 
 Deterministic validation and planning contracts for authenticated inbound email,
 case-thread matching, outbound drafts, delivery events, channel authorization,
@@ -15,7 +15,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-VERSION = "7.3.1"
+VERSION = "7.3.3"
 SCHEMA = "scfs-help-desk-email-channels/1.0"
 CASE_NUMBER_RE = re.compile(r"\bSC-\d{4}-\d{6}\b", re.IGNORECASE)
 SHA256_RE = re.compile(r"^[a-f0-9]{64}$")

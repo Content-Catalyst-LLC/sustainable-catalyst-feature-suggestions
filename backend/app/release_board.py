@@ -1,4 +1,4 @@
-"""Release board projection and validation for v7.3.1."""
+"""Release board projection and validation for v7.3.3."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ from typing import List, Literal
 
 from pydantic import BaseModel, Field
 
-VERSION = "7.3.1"
-SCHEMA = "scfs-release-board/1.1"
+VERSION = "7.3.3"
+SCHEMA = "scfs-release-board/1.2"
 
 Family = Literal[
     "foundation",
@@ -85,7 +85,14 @@ def release_board_capabilities() -> dict:
         "shortcode": "sc_release_board",
         "layouts": ["terminal", "blackboard", "compact", "directory"],
         "default_layout": "terminal",
-        "public_title": "Release Telemetry",
+        "public_title": "Release Console",
+        "rotating_screens": FAMILY_ORDER,
+        "default_interval_seconds": 7,
+        "previous_pause_next_controls": True,
+        "pause_on_hover_and_focus": True,
+        "reduced_motion_respected": True,
+        "product_labels_navigating": False,
+        "footer_links_only": True,
         "contexts": ["homepage", "directory", "generic"],
         "canonical_registry_source": True,
         "installed_and_manual_versions_combined": True,

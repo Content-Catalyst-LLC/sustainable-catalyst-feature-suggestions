@@ -1,3 +1,19 @@
+## 7.3.3 — Release Console Reliability and Presentation Repair
+
+- Stabilized the rotating console height so the footer remains fixed while screens change.
+- Hid controls until JavaScript enhancement succeeds and retained all groups as the no-JavaScript fallback.
+- Added multiple-instance and duplicate-initialization safeguards, including dynamically inserted console markup.
+- Added Arrow Left, Arrow Right, Home, End, and Space keyboard operation.
+- Limited live-region announcements to manual actions to prevent automatic rotation from over-narrating.
+- Repaired compact mobile control alignment and strengthened scoped Astra button resets.
+- Preserved non-navigating product labels and fixed footer-only Release and Support links.
+
+## 7.3.2 — Compact Rotating Release Console
+
+- Renamed Release Telemetry to Release Console and added five-screen accessible rotation.
+- Product rows are label-only; footer retains the Release and Support links.
+- Preserved terminal, blackboard, compact, and directory shortcode compatibility.
+
 # Changelog
 
 ## 7.3.0 — Release Blackboard Shortcode

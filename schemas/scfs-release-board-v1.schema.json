@@ -1,22 +1,59 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sustainablecatalyst.com/schemas/scfs-release-board-v1.schema.json",
-  "title": "Sustainable Catalyst Release Telemetry",
+  "title": "Sustainable Catalyst Release Console",
   "type": "object",
-  "required": ["schema", "version", "layout", "context", "groups"],
+  "required": [
+    "schema",
+    "version",
+    "layout",
+    "context",
+    "groups"
+  ],
   "properties": {
-    "schema": {"const": "scfs-release-board/1.1"},
-    "version": {"const": "7.3.1"},
-    "layout": {"enum": ["terminal", "blackboard", "compact", "directory"]},
-    "context": {"enum": ["homepage", "directory", "generic"]},
-    "generated_at": {"type": "string"},
+    "schema": {
+      "const": "scfs-release-board/1.2"
+    },
+    "version": {
+      "const": "7.3.3"
+    },
+    "layout": {
+      "enum": [
+        "terminal",
+        "blackboard",
+        "compact",
+        "directory"
+      ]
+    },
+    "context": {
+      "enum": [
+        "homepage",
+        "directory",
+        "generic"
+      ]
+    },
+    "generated_at": {
+      "type": "string"
+    },
     "summary": {
       "type": "object",
       "properties": {
-        "total_products": {"type": "integer", "minimum": 0},
-        "wordpress_plugin_count": {"type": "integer", "minimum": 0},
-        "manual_count": {"type": "integer", "minimum": 0},
-        "other_source_count": {"type": "integer", "minimum": 0}
+        "total_products": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wordpress_plugin_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "manual_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "other_source_count": {
+          "type": "integer",
+          "minimum": 0
+        }
       },
       "additionalProperties": false
     },
@@ -24,23 +61,63 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["family", "label", "products"],
+        "required": [
+          "family",
+          "label",
+          "products"
+        ],
         "properties": {
-          "family": {"enum": ["foundation", "research-intelligence", "data-analysis", "creation-systems", "commercial"]},
-          "label": {"type": "string"},
+          "family": {
+            "enum": [
+              "foundation",
+              "research-intelligence",
+              "data-analysis",
+              "creation-systems",
+              "commercial"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
           "products": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["canonical_id", "name", "version", "status"],
+              "required": [
+                "canonical_id",
+                "name",
+                "version",
+                "status"
+              ],
               "properties": {
-                "canonical_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
-                "name": {"type": "string"},
-                "version": {"type": "string"},
-                "status": {"type": "string"},
-                "version_source": {"enum": ["wordpress_plugin", "manual", "remote_manifest", "service_endpoint", "package_manifest"]},
-                "product_url": {"type": "string"},
-                "release_notes_url": {"type": "string"}
+                "canonical_id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "version_source": {
+                  "enum": [
+                    "wordpress_plugin",
+                    "manual",
+                    "remote_manifest",
+                    "service_endpoint",
+                    "package_manifest"
+                  ]
+                },
+                "product_url": {
+                  "type": "string"
+                },
+                "release_notes_url": {
+                  "type": "string"
+                }
               },
               "additionalProperties": false
             }
