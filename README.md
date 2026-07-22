@@ -1,3 +1,7 @@
+## Current release: v7.3.0 — Release Blackboard Shortcode
+
+Use `[sc_release_board]` to render the governed public product-version board from the canonical registry. Installed WordPress products update through plugin discovery; Catalyst Intelligence remains a manual commercial-product record.
+
 # Sustainable Catalyst Product Support and Feedback Platform
 
 ## Current release: **v7.2.1 — Discovery and Compatibility Patch**

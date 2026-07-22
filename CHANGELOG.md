@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.3.0 — Release Blackboard Shortcode
+
+- Added the `[sc_release_board]` homepage release board.
+- Added blackboard, compact, and directory layouts.
+- Combined discovered WordPress versions with manual Catalyst Intelligence metadata.
+- Added semantic responsive styling, public-data boundaries, and cache invalidation.
+- Added FastAPI release-board projection validation.
+
 ## 7.2.1 — Discovery and Compatibility Patch
 
 - Added deterministic duplicate plugin selection.

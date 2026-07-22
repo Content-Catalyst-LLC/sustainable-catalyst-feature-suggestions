@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-release-board-v1.schema.json",
+  "title": "Sustainable Catalyst Release Board",
+  "type": "object",
+  "required": ["schema", "version", "layout", "context", "groups"],
+  "properties": {
+    "schema": {"const": "scfs-release-board/1.0"},
+    "version": {"const": "7.3.0"},
+    "layout": {"enum": ["blackboard", "compact", "directory"]},
+    "context": {"enum": ["homepage", "directory", "generic"]},
+    "generated_at": {"type": "string"},
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["family", "label", "products"],
+        "properties": {
+          "family": {"enum": ["foundation", "research-intelligence", "data-analysis", "creation-systems", "commercial"]},
+          "label": {"type": "string"},
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["canonical_id", "name", "version", "status"],
+              "properties": {
+                "canonical_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+                "name": {"type": "string"},
+                "version": {"type": "string"},
+                "status": {"type": "string"},
+                "version_source": {"enum": ["wordpress_plugin", "manual", "remote_manifest", "service_endpoint", "package_manifest"]},
+                "product_url": {"type": "string"},
+                "release_notes_url": {"type": "string"}
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

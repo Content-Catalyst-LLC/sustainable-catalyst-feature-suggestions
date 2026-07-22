@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.2.1';
+    const VERSION = '7.3.0';
     const SCHEMA = 'scfs-canonical-product-registry/1.0';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
@@ -478,7 +478,7 @@ final class SCFS_Canonical_Product_Registry {
         $registry = $this->registry();
         $summary = $this->summary_record();
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. Installed-plugin discovery is active in v7.2.1. Use the Plugin Discovery screen to rescan safely.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. Installed-plugin discovery is active in v7.3.0. Use the Plugin Discovery screen to rescan safely.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -530,7 +530,7 @@ final class SCFS_Canonical_Product_Registry {
         submit_button(__('Save Product Registry', 'sustainable-catalyst-feature-suggestions'));
         echo '</form>';
         echo '<hr><p><a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.2.1 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.3.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

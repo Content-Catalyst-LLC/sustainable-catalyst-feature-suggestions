@@ -1,0 +1,48 @@
+{
+  "schema": "scfs-release-board/1.0",
+  "version": "7.3.0",
+  "layout": "blackboard",
+  "context": "homepage",
+  "generated_at": "2026-07-22T00:00:00Z",
+  "groups": [
+    {
+      "family": "commercial",
+      "label": "Commercial Platform",
+      "products": [
+        {
+          "canonical_id": "catalyst-intelligence",
+          "name": "Catalyst Intelligence",
+          "version": "0.23.1",
+          "status": "development",
+          "version_source": "manual",
+          "product_url": "",
+          "release_notes_url": ""
+        }
+      ]
+    },
+    {
+      "family": "foundation",
+      "label": "Foundation",
+      "products": [
+        {
+          "canonical_id": "sustainable-catalyst-core",
+          "name": "Core",
+          "version": "3.0.0",
+          "status": "current",
+          "version_source": "wordpress_plugin",
+          "product_url": "",
+          "release_notes_url": ""
+        },
+        {
+          "canonical_id": "product-support-feedback",
+          "name": "Support and Feedback",
+          "version": "7.3.0",
+          "status": "current",
+          "version_source": "wordpress_plugin",
+          "product_url": "/support/",
+          "release_notes_url": "/support/releases/"
+        }
+      ]
+    }
+  ]
+}

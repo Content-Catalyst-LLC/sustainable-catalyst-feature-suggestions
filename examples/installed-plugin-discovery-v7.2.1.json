@@ -1,6 +1,6 @@
 {
   "schema": "scfs-installed-plugin-discovery/1.0",
-  "version": "7.2.1",
+  "version": "7.3.0",
   "scanned_at": "2026-07-22T17:00:00Z",
   "reason": "admin_rescan",
   "installed_plugin_count": 28,
@@ -9,8 +9,8 @@
       "product_id": "product-support-feedback",
       "plugin_file": "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
       "plugin_name": "Sustainable Catalyst Product Support and Feedback Platform",
-      "version": "7.2.1",
-      "version_raw": "v7.2.1",
+      "version": "7.3.0",
+      "version_raw": "v7.3.0",
       "version_state": "valid",
       "text_domain": "sustainable-catalyst-feature-suggestions",
       "active": true,

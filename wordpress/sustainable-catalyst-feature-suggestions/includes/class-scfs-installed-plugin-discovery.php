@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Installed_Plugin_Discovery {
-    const VERSION = '7.2.1';
+    const VERSION = '7.3.0';
     const SCHEMA = 'scfs-installed-plugin-discovery/1.0';
     const DIAGNOSTICS_SCHEMA = 'scfs-plugin-discovery-diagnostics/1.0';
     const SCHEMA_OPTION = 'scfs_installed_plugin_discovery_schema';

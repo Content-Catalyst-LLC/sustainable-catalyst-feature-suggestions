@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_Secure_Evidence {
-    const VERSION = '7.2.1';
+    const VERSION = '7.3.0';
     const SCHEMA = 'scfs-help-desk-secure-evidence/1.0';
     const DB_VERSION = '1.4.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_secure_evidence_db_version';

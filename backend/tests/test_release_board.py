@@ -1,0 +1,80 @@
+from app.release_board import (
+    ReleaseBoardProduct,
+    ReleaseBoardProjectionRequest,
+    project_release_board,
+    release_board_capabilities,
+)
+
+
+def product(product_id: str, family: str, order: int, *, version: str = "1.0.0", status: str = "current", homepage: bool = True, public: bool = True, source: str = "wordpress_plugin"):
+    return ReleaseBoardProduct(
+        canonical_id=product_id,
+        name=product_id.replace("-", " ").title(),
+        short_name=product_id,
+        family=family,
+        version=version,
+        status=status,
+        display_order=order,
+        homepage_visible=homepage,
+        public_visible=public,
+        version_source=source,
+    )
+
+
+def catalog():
+    return [
+        product("sustainable-catalyst-core", "foundation", 10, version="3.0.0"),
+        product("product-support-feedback", "foundation", 20, version="7.3.0"),
+        product("contact-engagement", "foundation", 30, version="2.0.0"),
+        product("knowledge-library", "foundation", 40, version="4.0.2"),
+        product("research-librarian", "research-intelligence", 110, version="7.0.1"),
+        product("catalyst-intelligence", "commercial", 410, version="0.23.1", status="development", source="manual"),
+    ]
+
+
+def test_capabilities_preserve_public_boundaries():
+    capabilities = release_board_capabilities()
+    assert capabilities["shortcode"] == "sc_release_board"
+    assert capabilities["canonical_registry_source"] is True
+    assert capabilities["installed_and_manual_versions_combined"] is True
+    assert capabilities["private_plugin_paths_exposed"] is False
+    assert capabilities["private_repository_metadata_exposed"] is False
+    assert capabilities["semantic_list_output"] is True
+
+
+def test_homepage_projection_groups_installed_and_manual_products():
+    result = project_release_board(ReleaseBoardProjectionRequest(products=catalog()))
+    assert result.total_products == 6
+    assert result.group_count == 3
+    assert [group.family for group in result.groups] == ["foundation", "research-intelligence", "commercial"]
+    commercial = result.groups[-1].products[0]
+    assert commercial.canonical_id == "catalyst-intelligence"
+    assert commercial.version_source == "manual"
+
+
+def test_hidden_and_inactive_products_are_filtered():
+    products = catalog()
+    products.append(product("hidden-product", "creation-systems", 500, public=False))
+    products.append(product("inactive-product", "creation-systems", 510, status="inactive"))
+    result = project_release_board(ReleaseBoardProjectionRequest(products=products))
+    assert {item.canonical_id for group in result.groups for item in group.products}.isdisjoint({"hidden-product", "inactive-product"})
+
+
+def test_group_product_and_limit_filters_are_deterministic():
+    result = project_release_board(ReleaseBoardProjectionRequest(
+        products=list(reversed(catalog())),
+        groups=["foundation"],
+        product_ids=["product-support-feedback", "knowledge-library"],
+        limit=1,
+    ))
+    assert result.total_products == 1
+    assert result.groups[0].products[0].canonical_id == "product-support-feedback"
+
+
+def test_duplicate_canonical_ids_collapse_to_first_sorted_input_record():
+    products = catalog()
+    products.append(product("product-support-feedback", "foundation", 999, version="999.0.0"))
+    result = project_release_board(ReleaseBoardProjectionRequest(products=products))
+    matches = [item for group in result.groups for item in group.products if item.canonical_id == "product-support-feedback"]
+    assert len(matches) == 1
+    assert matches[0].version == "7.3.0"
