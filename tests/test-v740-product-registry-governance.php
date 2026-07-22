@@ -6,7 +6,7 @@ $board = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-sugg
 $backend = file_get_contents($root . '/backend/app/canonical_product_registry.py');
 $main = file_get_contents($root . '/backend/app/main.py');
 $checks = array(
-    'registry version' => strpos($registry, "const VERSION = '7.4.0';") !== false,
+    'registry version' => strpos($registry, "const VERSION = '7.5.0';") !== false,
     'registry schema 2' => strpos($registry, "scfs-canonical-product-registry/2.0") !== false,
     'migration option' => strpos($registry, "MIGRATION_OPTION") !== false,
     'stale threshold' => strpos($registry, "STALE_AFTER_DAYS = 90") !== false,
@@ -19,7 +19,7 @@ $checks = array(
     'duplicate detection' => strpos($registry, 'duplicate_canonical_id') !== false && strpos($registry, 'duplicate_public_alias') !== false,
     'stale detection' => strpos($registry, 'verification_stale') !== false,
     'supersession validation' => strpos($registry, 'invalid_supersession_target') !== false,
-    'migration tooling' => strpos($registry, 'apply_v740_governance_migrations') !== false && strpos($registry, 'scfs products migrate') !== false,
+    'migration tooling' => strpos($registry, 'apply_v740_governance_migrations') !== false && strpos($registry, 'apply_v750_release_intelligence_migrations') !== false && strpos($registry, 'scfs products migrate') !== false,
     'validation tooling' => strpos($registry, 'scfs products validate') !== false && strpos($registry, '/product-registry/integrity') !== false,
     'private fields excluded publicly' => strpos($registry, "'private_repository_fields_publicly_exposed' => false") !== false,
     'discovery provenance' => strpos($discovery, "'verification_source' = 'wordpress_plugin'") === false && strpos($discovery, "verification_source'] = 'wordpress_plugin'") !== false,
@@ -34,4 +34,4 @@ foreach ($checks as $label => $passed) {
         exit(1);
     }
 }
-echo "v7.4.0 Product Registry Governance contract passed.\n";
+echo "v7.5.0 Release Intelligence and Console Copy Controls contract passed.\n";

@@ -1,4 +1,4 @@
-"""Release Console projection and registry-governed screen assignment for v7.4.0."""
+"""Release Console projection and registry-governed screen assignment for v7.5.0."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ from typing import List, Literal
 
 from pydantic import BaseModel, Field
 
-VERSION = "7.4.0"
-SCHEMA = "scfs-release-board/1.2"
+VERSION = "7.5.0"
+SCHEMA = "scfs-release-board/1.3"
 
 Family = Literal[
     "foundation",
@@ -37,6 +37,29 @@ class ReleaseBoardProduct(BaseModel):
     product_url: str = ""
     release_notes_url: str = ""
     version_source: str = Field(default="manual", max_length=80)
+    previous_version: str = Field(default="", max_length=80)
+    release_date: str = Field(default="", max_length=20)
+    change_summary: str = Field(default="", max_length=240)
+    validation_state: Literal["validated", "partial", "pending", "failed", "unavailable"] = "pending"
+    documentation_state: Literal["ready", "partial", "missing", "unavailable"] = "unavailable"
+    known_issue_count: int = Field(default=0, ge=0, le=9999)
+    recently_updated: bool = False
+
+
+class ReleaseConsoleCopy(BaseModel):
+    title: str = "Release Console"
+    intro: str = "Five governed release screens rotating across the Sustainable Catalyst platform."
+    screen_labels: dict[str, str] = Field(default_factory=lambda: {
+        "foundation": "Foundation",
+        "research-intelligence": "Research and Intelligence",
+        "data-analysis": "Data and Analysis",
+        "creation-systems": "Creation and Systems",
+        "commercial": "Commercial Release",
+    })
+    control_labels: dict[str, str] = Field(default_factory=lambda: {
+        "previous": "Previous", "pause": "Pause", "play": "Play", "next": "Next"
+    })
+    footer_labels: dict[str, str] = Field(default_factory=lambda: {"releases": "releases", "support": "support"})
 
 
 class ReleaseBoardProjectionRequest(BaseModel):
@@ -47,6 +70,7 @@ class ReleaseBoardProjectionRequest(BaseModel):
     product_ids: List[str] = Field(default_factory=list, max_length=250)
     limit: int = Field(default=0, ge=0, le=250)
     inactive: InactiveMode = "hide"
+    console_copy: ReleaseConsoleCopy = Field(default_factory=ReleaseConsoleCopy, alias="copy")
 
 
 class ReleaseBoardGroup(BaseModel):
@@ -69,6 +93,11 @@ class ReleaseBoardProjection(BaseModel):
     wordpress_plugin_count: int = 0
     manual_count: int = 0
     other_source_count: int = 0
+    products_with_release_dates: int = 0
+    validated_product_count: int = 0
+    documentation_ready_count: int = 0
+    known_issue_count: int = 0
+    console_copy: ReleaseConsoleCopy = Field(default_factory=ReleaseConsoleCopy, alias="copy")
 
 
 FAMILY_ORDER: list[Family] = [
@@ -108,6 +137,18 @@ def release_board_capabilities() -> dict:
         "registry_source_counts": True,
         "knowledge_library_homepage_required": True,
         "analytics_r_public_label": "Analytics R",
+        "release_intelligence": True,
+        "previous_version_comparison": True,
+        "release_date_display": True,
+        "change_summaries": True,
+        "validation_indicators": True,
+        "documentation_indicators": True,
+        "known_issue_counts": True,
+        "recently_updated_indicator": True,
+        "copy_controls": True,
+        "wordpress_settings": True,
+        "shortcode_copy_overrides": True,
+        "registry_facts_overridable_by_copy": False,
         "human_review_required": True,
     }
 
@@ -165,4 +206,9 @@ def project_release_board(payload: ReleaseBoardProjectionRequest) -> ReleaseBoar
         wordpress_plugin_count=wordpress_plugin_count,
         manual_count=manual_count,
         other_source_count=len(filtered) - wordpress_plugin_count - manual_count,
+        products_with_release_dates=sum(1 for product in filtered if product.release_date),
+        validated_product_count=sum(1 for product in filtered if product.validation_state == "validated"),
+        documentation_ready_count=sum(1 for product in filtered if product.documentation_state == "ready"),
+        known_issue_count=sum(product.known_issue_count for product in filtered),
+        copy=payload.console_copy,
     )

@@ -24,7 +24,7 @@ def product(product_id: str, family: str, order: int, *, version: str = "1.0.0",
 def catalog():
     return [
         product("sustainable-catalyst-core", "foundation", 10, version="3.0.0"),
-        product("product-support-feedback", "foundation", 20, version="7.4.0"),
+        product("product-support-feedback", "foundation", 20, version="7.5.0"),
         product("contact-engagement", "foundation", 30, version="2.0.0"),
         product("knowledge-library", "foundation", 40, version="4.0.2"),
         product("research-librarian", "research-intelligence", 110, version="7.0.1"),
@@ -77,7 +77,7 @@ def test_duplicate_canonical_ids_collapse_to_first_sorted_input_record():
     result = project_release_board(ReleaseBoardProjectionRequest(products=products))
     matches = [item for group in result.groups for item in group.products if item.canonical_id == "product-support-feedback"]
     assert len(matches) == 1
-    assert matches[0].version == "7.4.0"
+    assert matches[0].version == "7.5.0"
 
 
 def test_release_console_is_the_default_terminal_surface():
@@ -100,3 +100,37 @@ def test_required_public_labels_are_declared():
     capabilities = release_board_capabilities()
     assert capabilities["knowledge_library_homepage_required"] is True
     assert capabilities["analytics_r_public_label"] == "Analytics R"
+
+
+def test_release_intelligence_and_copy_are_projected_without_overriding_facts():
+    products = catalog()
+    products[1] = products[1].model_copy(update={
+        "previous_version": "7.4.0",
+        "release_date": "2026-07-22",
+        "change_summary": "Release intelligence and editable console presentation copy.",
+        "validation_state": "validated",
+        "documentation_state": "ready",
+        "known_issue_count": 2,
+        "recently_updated": True,
+    })
+    result = project_release_board(ReleaseBoardProjectionRequest(
+        products=products,
+        copy={"title": "Platform Releases", "control_labels": {"previous": "Back", "pause": "Hold", "play": "Resume", "next": "Forward"}},
+    ))
+    assert result.console_copy.title == "Platform Releases"
+    assert result.products_with_release_dates == 1
+    assert result.validated_product_count == 1
+    assert result.documentation_ready_count == 1
+    assert result.known_issue_count == 2
+    governed = next(item for group in result.groups for item in group.products if item.canonical_id == "product-support-feedback")
+    assert governed.version == "7.5.0"
+    assert governed.previous_version == "7.4.0"
+
+
+def test_copy_control_capabilities_preserve_registry_authority():
+    capabilities = release_board_capabilities()
+    assert capabilities["copy_controls"] is True
+    assert capabilities["wordpress_settings"] is True
+    assert capabilities["shortcode_copy_overrides"] is True
+    assert capabilities["registry_facts_overridable_by_copy"] is False
+    assert capabilities["release_intelligence"] is True

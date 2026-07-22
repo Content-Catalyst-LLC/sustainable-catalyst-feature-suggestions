@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sustainable Catalyst Product Support and Feedback Platform
  * Description: Product support, publication-grade documentation, known issues, release intelligence, feature feedback, product-signal intelligence, documentation-effectiveness analytics, cross-product support graphs, governed platform handoffs, controlled public support APIs, product embeds, institutional support integration, private help-desk case foundations, agent workspaces, team queues, assignment operations, secure customer portals, participant conversations, satisfaction feedback, service-level policies, support calendars, governed response clocks, escalation review, secure evidence intake, controlled attachment metadata, diagnostic bundles, retention and redaction governance, knowledge-assisted case resolution, agent-reviewed support recommendations, duplicate-case review, documentation promotion, governed workflow automation, operational rules, agent macros, approval queues, follow-up scheduling, email intake, case-thread matching, governed outbound email drafts, delivery and bounce tracking, Microsoft Teams handoffs, help-desk quality assurance, operational analytics, privacy-safe support intelligence, governed quality reviews, institutional workspaces, support entitlements, private knowledge collections, explicit case access, institutional reporting, scoped help-desk APIs, signed outbound webhooks, delivery retries, dead-letter review, external system links, integration audit evidence, rate limits, abuse controls, privacy operations, backup and recovery evidence, production release gates, security health monitoring, accessibility and performance hardening, connected help-desk orchestration, end-to-end support journeys, operating dossiers, cross-module command planning, platform health snapshots, connected platform governance, surveys, editorial governance, reliability analytics, and privacy-safe support handoffs for Sustainable Catalyst.
- * Version: 7.4.0
+ * Version: 7.5.0
  * Author: Content Catalyst LLC
  * License: GPL-2.0-or-later
  * Text Domain: sustainable-catalyst-feature-suggestions
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Sustainable_Catalyst_Feature_Suggestions {
-    const VERSION = '7.4.0';
+    const VERSION = '7.5.0';
     const POST_TYPE = 'sc_feature_suggest';
     const NONCE_ACTION = 'scfs_submit_suggestion';
     const NONCE_NAME = 'scfs_nonce';
@@ -77,6 +77,9 @@ final class Sustainable_Catalyst_Feature_Suggestions {
         }
         if (class_exists('SCFS_Installed_Plugin_Discovery')) {
             SCFS_Installed_Plugin_Discovery::activate();
+        }
+        if (class_exists('SCFS_Release_Console_Copy')) {
+            SCFS_Release_Console_Copy::activate();
         }
         if (class_exists('SCFS_Release_Board')) {
             SCFS_Release_Board::activate();
@@ -2300,6 +2303,7 @@ final class Sustainable_Catalyst_Feature_Suggestions {
 
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-canonical-product-registry.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-installed-plugin-discovery.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-release-console-copy.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-release-board.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-product-integration.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-knowledge-base.php';
@@ -2344,6 +2348,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-cross-product-orch
 require_once plugin_dir_path(__FILE__) . 'includes/class-scfs-connected-support-operations.php';
 SCFS_Canonical_Product_Registry::instance();
 SCFS_Installed_Plugin_Discovery::instance();
+SCFS_Release_Console_Copy::instance();
 SCFS_Release_Board::instance();
 SCFS_Product_Integration::instance();
 SCFS_Knowledge_Base_Foundation::instance();

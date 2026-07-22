@@ -1,10 +1,10 @@
-## Current release: v7.4.0 — Product Registry Governance
+## Current release: v7.5.0 — Release Intelligence and Console Copy Controls
 
-The canonical Product Registry is now the governed authority for public labels, internal identities, product families, Release Console screen placement, lifecycle state, version precedence, verification provenance, and supersession relationships. It includes additive schema migration, stale-record detection, integrity diagnostics, authenticated REST and WP-CLI administration, and FastAPI validation.
+The Release Console now pairs governed product-release intelligence with editable presentation copy. Administrators can change the public title, introductions, screen labels, controls, accessibility labels, footer labels, intelligence labels, and fallback messages without editing PHP. Product names, versions, release dates, change summaries, validation states, documentation states, issue counts, and lifecycle states remain governed by the canonical Product Registry.
 
-`[sc_release_board]` remains fully compatible. Its default Release Console presentation uses governed screen assignments, keeps product names non-navigating, and hides retired or superseded records unless explicitly requested.
+`[sc_release_board]` remains compatible with terminal, blackboard, compact, and directory layouts. The default seven-second rotating console, fixed footer links, non-navigating product labels, keyboard controls, reduced-motion behavior, and no-JavaScript fallback are preserved.
 
-See `docs/canonical-product-registry-v7.4.0.md` for the complete governance and migration contract.
+See `docs/release-intelligence-v7.5.0.md` and `docs/release-console-v7.5.0.md` for the complete contracts.
 
 # Sustainable Catalyst Product Support and Feedback Platform
 

@@ -1,3 +1,14 @@
+# Changelog
+
+## 7.5.0 — Release Intelligence and Console Copy Controls
+
+- Added governed previous-version, release-date, change-summary, validation, documentation, known-issue, and recently-updated release intelligence.
+- Added a WordPress Release Console Copy settings page with built-in defaults and safe reset.
+- Added shortcode overrides and the `scfs_release_console_copy` filter for presentation wording.
+- Kept product identities, versions, lifecycle states, and release facts under canonical Product Registry authority.
+- Added configurable control and accessibility labels while preserving keyboard, hover/focus pause, reduced-motion, multiple-instance, no-JavaScript, and footer-only navigation behavior.
+- Preserved `[sc_release_board]` and terminal, blackboard, compact, and directory compatibility.
+
 ## 7.4.0 — Product Registry Governance
 
 - Upgraded the canonical Product Registry to additive schema 2.0 while preserving canonical IDs and the existing WordPress option key.

@@ -1,10 +1,10 @@
 <?php
 $root = dirname(__DIR__);
 $board = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-release-board.php');
-$js = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/assets/release-console-v7.4.0.js');
+$js = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/assets/release-console-v7.5.0.js');
 $registry = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-canonical-product-registry.php');
 $checks = array(
-    'public title' => strpos($board, "'title' => __('Release Console'") !== false,
+    'public title' => strpos($board, "__('Release Console'") !== false,
     'shortcode preserved' => strpos($board, "const SHORTCODE = 'sc_release_board';") !== false,
     'interval default' => strpos($board, "'interval' => '7'") !== false,
     'rotate default' => strpos($board, "'rotate' => 'yes'") !== false,
@@ -19,4 +19,4 @@ $checks = array(
     'foundation first and loop' => strpos($js, 'show(0, false)') !== false && strpos($js, '% screens.length') !== false,
 );
 foreach ($checks as $label => $ok) { if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); } }
-echo "v7.4.0 Product Registry Governance contract passed.\n";
+echo "v7.5.0 Release Intelligence and Console Copy Controls contract passed.\n";

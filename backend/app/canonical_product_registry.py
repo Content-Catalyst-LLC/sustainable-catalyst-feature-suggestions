@@ -1,4 +1,4 @@
-"""Canonical Product Registry governance and validation for v7.4.0."""
+"""Canonical Product Registry governance and validation for v7.5.0."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from typing import Any, List, Literal
 
 from pydantic import BaseModel, Field
 
-VERSION = "7.4.0"
+VERSION = "7.5.0"
 SCHEMA = "scfs-canonical-product-registry/2.0"
 INTEGRITY_SCHEMA = "scfs-product-registry-integrity/1.0"
 STALE_AFTER_DAYS = 90
@@ -65,6 +65,9 @@ ReleaseChannel = Literal[
 ]
 
 
+ValidationState = Literal["validated", "partial", "pending", "failed", "unavailable"]
+DocumentationState = Literal["ready", "partial", "missing", "unavailable"]
+
 class ProductRegistryRecord(BaseModel):
     canonical_id: str = Field(min_length=2, max_length=100)
     name: str = Field(min_length=2, max_length=200)
@@ -91,6 +94,12 @@ class ProductRegistryRecord(BaseModel):
     documentation_url: str = ""
     support_url: str = ""
     release_notes_url: str = ""
+    previous_version: str = Field(default="", max_length=80)
+    release_date: str = Field(default="", max_length=20)
+    change_summary: str = Field(default="", max_length=240)
+    validation_state: ValidationState = "pending"
+    documentation_state: DocumentationState = "unavailable"
+    known_issue_count: int = Field(default=0, ge=0, le=9999)
     commercial: bool = False
     public_interest: bool = True
     verification_source: VerificationSource = "registry_seed"
@@ -204,6 +213,14 @@ def registry_capabilities() -> dict:
         "lifecycle_state_governed": True,
         "version_precedence_explicit": True,
         "verification_provenance_governed": True,
+        "release_intelligence_governed": True,
+        "previous_version_comparison": True,
+        "release_date_governed": True,
+        "change_summary_governed": True,
+        "validation_state_governed": True,
+        "documentation_state_governed": True,
+        "known_issue_count_governed": True,
+        "recent_release_days": 45,
         "stale_detection": True,
         "stale_after_days": STALE_AFTER_DAYS,
         "integrity_reporting": True,
@@ -247,6 +264,12 @@ def _fingerprint(products: List[ProductRegistryRecord]) -> str:
             "public_visible": product.public_visible,
             "homepage_visible": product.homepage_visible,
             "display_order": product.display_order,
+            "previous_version": product.previous_version,
+            "release_date": product.release_date,
+            "change_summary": product.change_summary,
+            "validation_state": product.validation_state,
+            "documentation_state": product.documentation_state,
+            "known_issue_count": product.known_issue_count,
         }
         for product in sorted(products, key=lambda item: item.canonical_id)
     ]
@@ -350,5 +373,11 @@ def migrate_product_registry(evidence: ProductRegistryMigrationEvidence) -> Prod
         record.setdefault("verification_source", "migration")
         record.setdefault("source_verified_at", record.get("last_verified_at", ""))
         record.setdefault("record_updated_at", migrated_at)
+        record.setdefault("previous_version", "")
+        record.setdefault("release_date", "")
+        record.setdefault("change_summary", "")
+        record.setdefault("validation_state", "pending")
+        record.setdefault("documentation_state", "ready" if record.get("documentation_url") else "unavailable")
+        record.setdefault("known_issue_count", 0)
         migrated.append(ProductRegistryRecord.model_validate(record))
     return ProductRegistryMigrationResult(from_schema=evidence.from_schema, product_count=len(migrated), products=migrated)

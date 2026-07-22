@@ -2,7 +2,7 @@
 $root = dirname(__DIR__);
 $board = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-release-board.php');
 $checks = array(
-    'release telemetry title' => strpos($board, "'title' => __('Release Console'") !== false,
+    'release telemetry title' => strpos($board, "__('Release Console'") !== false,
     'terminal default' => strpos($board, "'layout' => 'terminal'") !== false,
     'terminal layout registered' => strpos($board, "array('terminal', 'blackboard', 'compact', 'directory')") !== false,
     'command header' => strpos($board, 'sc releases --scope=') !== false,
@@ -22,4 +22,4 @@ $checks = array(
 foreach ($checks as $label => $ok) {
     if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo "v7.4.0 Release Console shortcode contract passed.\n";
+echo "v7.5.0 Release Console shortcode contract passed.\n";

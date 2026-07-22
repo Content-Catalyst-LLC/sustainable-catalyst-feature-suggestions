@@ -12,10 +12,10 @@
   ],
   "properties": {
     "schema": {
-      "const": "scfs-release-board/1.2"
+      "const": "scfs-release-board/1.3"
     },
     "version": {
-      "const": "7.4.0"
+      "const": "7.5.0"
     },
     "layout": {
       "enum": [
@@ -117,6 +117,55 @@
                 },
                 "release_notes_url": {
                   "type": "string"
+                },
+                "previous_version": {
+                  "type": "string"
+                },
+                "release_date": {
+                  "type": "string"
+                },
+                "change_summary": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "validation_state": {
+                  "enum": [
+                    "validated",
+                    "partial",
+                    "pending",
+                    "failed",
+                    "unavailable"
+                  ]
+                },
+                "documentation_state": {
+                  "enum": [
+                    "ready",
+                    "partial",
+                    "missing",
+                    "unavailable"
+                  ]
+                },
+                "known_issue_count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "recently_updated": {
+                  "type": "boolean"
+                },
+                "lifecycle_state": {
+                  "type": "string"
+                },
+                "console_screen": {
+                  "type": "string"
+                },
+                "version_precedence": {
+                  "type": "string"
+                },
+                "verification_source": {
+                  "type": "string"
+                },
+                "source_verified_at": {
+                  "type": "string"
                 }
               },
               "additionalProperties": false
@@ -125,6 +174,36 @@
         },
         "additionalProperties": false
       }
+    },
+    "copy": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "intro": {
+          "type": "string"
+        },
+        "screen_labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "control_labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "footer_labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false
