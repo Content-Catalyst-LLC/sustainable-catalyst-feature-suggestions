@@ -1,5 +1,16 @@
 # Changelog
 
+## 7.6.0 — Release Operations Administration and Sync Governance
+
+- Added a unified Release Operations screen spanning canonical product, active plugin, GitHub repository, governed release, and public console state.
+- Added current, aging, stale, never-synchronized, synchronization-error, update-available, and unconfigured health classifications.
+- Added per-product synchronization, selected-product bulk synchronization, and sync-all-connected operations.
+- Added controlled clearing of resolved GitHub synchronization errors.
+- Added integrity auditing for duplicate repositories, duplicate plugin mappings, missing repositories, stale synchronization, active-plugin gaps, and current GitHub errors.
+- Added non-secret JSON operational export and `wp scfs products operations-report`.
+- Added responsive administration presentation, accessible select-all behavior, and reduced-motion safeguards.
+- Preserved GitHub release/tag authority, webhook verification, polling fallback, footer controls, canonical aliases, legacy shortcodes, and the `sustainable-catalyst-feature-suggestions` WordPress folder.
+
 ## 7.5.5 — GitHub Tag Fallback and Unified Console Administration
 
 - Added published-release-first, semantic-Git-tag-second version authority for Canonical Product Registry synchronization.

@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-release-operations-v1.schema.json",
+  "title": "Sustainable Catalyst Release Operations Report",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "generated_at",
+    "summary",
+    "products"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-release-operations/1.0"
+    },
+    "version": {
+      "const": "7.6.0"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "products",
+        "active_plugins",
+        "repositories",
+        "current",
+        "updates",
+        "errors",
+        "stale",
+        "unconfigured"
+      ],
+      "properties": {
+        "products": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active_plugins": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "repositories": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "current": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "updates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unconfigured": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "canonical_id",
+          "name",
+          "plugin_active",
+          "repository_url",
+          "operational_state",
+          "freshness"
+        ],
+        "properties": {
+          "canonical_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lifecycle_state": {
+            "type": "string"
+          },
+          "public_visible": {
+            "type": "boolean"
+          },
+          "homepage_visible": {
+            "type": "boolean"
+          },
+          "plugin_name": {
+            "type": "string"
+          },
+          "plugin_active": {
+            "type": "boolean"
+          },
+          "activation_scope": {
+            "type": "string"
+          },
+          "installed_version": {
+            "type": "string"
+          },
+          "repository_url": {
+            "type": "string"
+          },
+          "github_sync_enabled": {
+            "type": "boolean"
+          },
+          "github_sync_state": {
+            "type": "string"
+          },
+          "github_sync_message": {
+            "type": "string"
+          },
+          "github_version": {
+            "type": "string"
+          },
+          "github_version_source": {
+            "type": "string"
+          },
+          "public_version": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "last_synced_at": {
+            "type": "string"
+          },
+          "freshness": {
+            "enum": [
+              "current",
+              "aging",
+              "stale",
+              "never",
+              "unknown",
+              "error"
+            ]
+          },
+          "operational_state": {
+            "enum": [
+              "current",
+              "update_available",
+              "error",
+              "stale",
+              "never",
+              "unknown",
+              "unconfigured"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

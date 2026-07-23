@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_GitHub_Connection_Settings {
-    const VERSION = '7.5.5';
+    const VERSION = '7.6.0';
     const SCHEMA = 'scfs-github-connection-settings/1.0';
     const OPTION_KEY = 'scfs_github_connection_settings';
     const ADMIN_SLUG = 'scfs-github-connection';
@@ -233,6 +233,9 @@ final class SCFS_GitHub_Connection_Settings {
         }
         echo '<div class="wrap scfs-github-connection"><h1>' . esc_html__('GitHub Connection', 'sustainable-catalyst-feature-suggestions') . '</h1>';
         echo '<p>' . esc_html__('Connect private GitHub repositories without editing wp-config.php. The token is encrypted before storage and is never displayed again.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        if (class_exists('SCFS_Release_Operations_Admin')) {
+            echo '<p><a class="button button-primary" href="' . esc_url(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . SCFS_Release_Operations_Admin::ADMIN_SLUG)) . '">' . esc_html__('Open Release Operations', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        }
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('GitHub connection settings saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }

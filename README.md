@@ -1,10 +1,10 @@
-## Current release: v7.5.5 — GitHub Tag Fallback and Unified Console Administration
+## Current release: v7.6.0 — Release Operations Administration and Sync Governance
 
-GitHub synchronization now uses a published GitHub Release first and the newest valid semantic Git tag second. This allows private repositories such as Contact and Engagement to update the Release Console even before a GitHub Release is published, while ordinary untagged pushes remain activity evidence rather than being presented as releases.
+The new **Release Operations** screen is the administrator control plane for each canonical product, its active WordPress implementation, its GitHub repository, and its public Release Console state. It adds synchronization freshness health, bulk synchronization, controlled error clearing, integrity auditing, and a non-secret operational export.
 
-The **GitHub Connection** screen now centralizes token status, automatic-sync health, per-repository tests and sync actions, and both Release Console footer destinations. Active WordPress plugin mapping, canonical aliases, legacy shortcodes, accessibility behavior, and the historical plugin folder remain preserved.
+GitHub Release-first authority, semantic-tag fallback, signed webhooks, hourly polling, editable footer destinations, canonical aliases, legacy shortcodes, accessibility behavior, and the historical WordPress plugin folder remain preserved.
 
-See `docs/github-sync-continuity-v7.5.5.md` and `docs/github-connection-v7.5.5.md`.
+See `docs/release-operations-v7.6.0.md`, `docs/github-sync-continuity-v7.6.0.md`, and `docs/github-connection-v7.6.0.md`.
 
 # Sustainable Catalyst Product Support and Feedback Platform
 

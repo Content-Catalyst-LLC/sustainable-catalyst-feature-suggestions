@@ -1,0 +1,3 @@
+Release v7.6.0: Release Operations Administration and Sync Governance
+
+Adds the Release Operations control plane, synchronization freshness governance, bulk operations, integrity auditing, and non-secret operational reporting while preserving legacy compatibility.

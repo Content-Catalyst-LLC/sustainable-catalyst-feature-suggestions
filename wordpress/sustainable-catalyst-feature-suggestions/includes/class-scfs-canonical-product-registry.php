@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.5.5';
+    const VERSION = '7.6.0';
     const SCHEMA = 'scfs-canonical-product-registry/2.0';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
@@ -98,7 +98,7 @@ final class SCFS_Canonical_Product_Registry {
         $this->audit('registry_release_intelligence_upgraded', array(
             'from_schema' => $from_schema,
             'schema' => self::SCHEMA,
-            'release_migration' => 'v7.5.5',
+            'release_migration' => 'v7.6.0',
             'knowledge_library_homepage_visible' => true,
             'analytics_r_public_label' => 'Analytics R',
         ));
@@ -997,7 +997,7 @@ final class SCFS_Canonical_Product_Registry {
         $summary = $this->summary_record();
         $integrity = $this->integrity_report($registry);
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.5.5 connects active plugins and GitHub repositories to canonical console products, prioritizes published releases, falls back to semantic version tags, repairs hourly polling, and centralizes console footer administration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.6.0 connects active plugins and GitHub repositories to canonical console products, prioritizes published releases, falls back to semantic version tags, repairs hourly polling, and centralizes console footer administration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -1081,7 +1081,7 @@ final class SCFS_Canonical_Product_Registry {
         echo '<hr><p><a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_validate_product_registry'), 'scfs_validate_product_registry')) . '">' . esc_html__('Validate integrity', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_migrate_product_registry'), 'scfs_migrate_product_registry')) . '">' . esc_html__('Run schema migration', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.5.5 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.6.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

@@ -1,4 +1,4 @@
-"""Canonical Product Registry governance and validation for v7.5.5."""
+"""Canonical Product Registry governance and validation for v7.6.0."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from typing import Any, List, Literal
 
 from pydantic import BaseModel, Field
 
-VERSION = "7.5.5"
+VERSION = "7.6.0"
 SCHEMA = "scfs-canonical-product-registry/2.0"
 INTEGRITY_SCHEMA = "scfs-product-registry-integrity/1.0"
 STALE_AFTER_DAYS = 90

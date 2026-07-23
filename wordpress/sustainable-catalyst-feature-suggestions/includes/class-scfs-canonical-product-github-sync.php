@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_GitHub_Sync {
-    const VERSION = '7.5.5';
+    const VERSION = '7.6.0';
     const SCHEMA = 'scfs-canonical-product-github-sync/1.0';
     const CRON_HOOK = 'scfs_canonical_product_github_sync';
     const AUDIT_OPTION = 'scfs_canonical_product_github_sync_audit';
