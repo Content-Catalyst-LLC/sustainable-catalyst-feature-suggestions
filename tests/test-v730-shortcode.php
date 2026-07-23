@@ -28,9 +28,9 @@ $checks = array(
     'visible version label' => strpos($board, "esc_html_e('Version'") !== false,
     'visible status text' => strpos($board, 'scfs-release-board__status') !== false,
     'private path absent' => strpos($board, 'plugin_file') === false,
-    'private repository fields absent' => strpos($board, "['repository']") === false && strpos($board, "['repository_url']") === false,
+    'private repository credentials absent' => strpos($board, 'SCFS_GITHUB_TOKEN') === false && strpos($board, 'token_encrypted') === false,
 );
 foreach ($checks as $label => $ok) {
     if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo "v7.5.3 release board shortcode contract passed.\n";
+echo "v7.5.4 release board shortcode contract passed.\n";

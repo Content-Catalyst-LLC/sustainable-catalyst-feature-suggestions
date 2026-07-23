@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Console_Copy {
-    const VERSION = '7.5.3';
+    const VERSION = '7.5.4';
     const SCHEMA = 'scfs-release-console-copy/1.0';
     const OPTION_KEY = 'scfs_release_console_copy';
     const ADMIN_SLUG = 'scfs-release-console-copy';
@@ -71,7 +71,10 @@ final class SCFS_Release_Console_Copy {
             'screens_aria' => __('Release Console screens. Use Left and Right Arrow keys to navigate, Home for the first screen, End for the last screen, and Space to pause or play.', 'sustainable-catalyst-feature-suggestions'),
             'noscript' => __('Rotation controls require JavaScript. All release groups are shown.', 'sustainable-catalyst-feature-suggestions'),
             'footer_releases' => __('repository', 'sustainable-catalyst-feature-suggestions'),
+            'footer_repository' => __('repository', 'sustainable-catalyst-feature-suggestions'),
+            'footer_repository_url' => '',
             'footer_support' => __('support', 'sustainable-catalyst-feature-suggestions'),
+            'footer_support_url' => '/support/',
             'empty_message' => __('No governed releases are available for this view.', 'sustainable-catalyst-feature-suggestions'),
             'unavailable_message' => __('Release intelligence is temporarily unavailable.', 'sustainable-catalyst-feature-suggestions'),
             'label_previous_version' => __('from', 'sustainable-catalyst-feature-suggestions'),
@@ -95,7 +98,14 @@ final class SCFS_Release_Console_Copy {
 
     public function copy() {
         $stored = get_option(self::OPTION_KEY, array());
-        $copy = array_merge($this->defaults(), is_array($stored) ? $stored : array());
+        $stored = is_array($stored) ? $stored : array();
+        $copy = array_merge($this->defaults(), $stored);
+        if (!array_key_exists('footer_repository', $stored) && !empty($stored['footer_releases'])) {
+            $legacy_label = sanitize_key($stored['footer_releases']);
+            $copy['footer_repository'] = in_array($legacy_label, array('release', 'releases'), true)
+                ? $this->defaults()['footer_repository']
+                : $stored['footer_releases'];
+        }
         return apply_filters('scfs_release_console_copy', $copy);
     }
 
@@ -114,13 +124,29 @@ final class SCFS_Release_Console_Copy {
         );
     }
 
+    private function sanitize_link_target($value, $fallback = '') {
+        $value = trim((string) wp_unslash($value));
+        if ($value === '') {
+            return $fallback;
+        }
+        if (strpos($value, '/') === 0) {
+            return '/' . ltrim($value, '/');
+        }
+        return esc_url_raw($value);
+    }
+
     private function sanitize($input) {
         $defaults = $this->defaults();
         $clean = array();
         foreach ($defaults as $key => $fallback) {
+            if (in_array($key, array('footer_repository_url', 'footer_support_url'), true)) {
+                $clean[$key] = $this->sanitize_link_target(isset($input[$key]) ? $input[$key] : '', $fallback);
+                continue;
+            }
             $value = isset($input[$key]) ? sanitize_text_field(wp_unslash($input[$key])) : $fallback;
             $clean[$key] = $value === '' ? $fallback : $value;
         }
+        $clean['footer_releases'] = $clean['footer_repository'];
         return $clean;
     }
 
@@ -143,7 +169,7 @@ final class SCFS_Release_Console_Copy {
         $sections = array(
             __('Header and screens', 'sustainable-catalyst-feature-suggestions') => array('title','terminal_intro','standard_intro','screen_foundation','screen_research_intelligence','screen_data_analysis','screen_creation_systems','screen_commercial'),
             __('Controls and navigation', 'sustainable-catalyst-feature-suggestions') => array('previous','pause','play','next','previous_aria','pause_aria','play_aria','next_aria','controls_aria','screens_aria','noscript'),
-            __('Columns, summary, and footer', 'sustainable-catalyst-feature-suggestions') => array('column_system','column_version','column_state','column_source','summary_systems','summary_plugin','summary_manual','summary_matched','summary_last_sync','footer_releases','footer_support'),
+            __('Columns and summary', 'sustainable-catalyst-feature-suggestions') => array('column_system','column_version','column_state','column_source','summary_systems','summary_plugin','summary_manual','summary_matched','summary_last_sync'),
             __('Release intelligence labels', 'sustainable-catalyst-feature-suggestions') => array('label_previous_version','label_released','label_validated','label_validation_partial','label_validation_pending','label_validation_failed','label_docs_ready','label_docs_partial','label_docs_missing','label_known_issue','label_known_issues','label_commit','label_repository_updated','label_recently_updated','label_maintenance','label_superseded'),
             __('Fallback messages', 'sustainable-catalyst-feature-suggestions') => array('empty_message','unavailable_message'),
         );
@@ -160,6 +186,14 @@ final class SCFS_Release_Console_Copy {
             }
             echo '</tbody></table>';
         }
+        echo '<h2>' . esc_html__('Footer links', 'sustainable-catalyst-feature-suggestions') . '</h2>';
+        echo '<p>' . esc_html__('Change both the visible terminal labels and their destinations. Leave the repository URL blank to use the GitHub repository mapped to Product Support and Feedback Platform.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<table class="form-table" role="presentation"><tbody>';
+        echo '<tr><th scope="row"><label for="scfs-copy-footer-repository">' . esc_html__('Repository label', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input class="regular-text" id="scfs-copy-footer-repository" name="copy[footer_repository]" value="' . esc_attr($copy['footer_repository']) . '"><p class="description">' . esc_html__('Displayed as ./repository when the label is repository.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+        echo '<tr><th scope="row"><label for="scfs-copy-footer-repository-url">' . esc_html__('Repository destination', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input class="large-text code" type="url" id="scfs-copy-footer-repository-url" name="copy[footer_repository_url]" value="' . esc_attr($copy['footer_repository_url']) . '" placeholder="Automatic from Canonical Product Registry"><p class="description">' . esc_html__('Use a complete GitHub URL, or leave blank for the mapped canonical repository.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+        echo '<tr><th scope="row"><label for="scfs-copy-footer-support">' . esc_html__('Support label', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input class="regular-text" id="scfs-copy-footer-support" name="copy[footer_support]" value="' . esc_attr($copy['footer_support']) . '"><p class="description">' . esc_html__('Displayed as ./support when the label is support.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+        echo '<tr><th scope="row"><label for="scfs-copy-footer-support-url">' . esc_html__('Support destination', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input class="large-text code" id="scfs-copy-footer-support-url" name="copy[footer_support_url]" value="' . esc_attr($copy['footer_support_url']) . '" placeholder="/support/"><p class="description">' . esc_html__('Use a site-relative path such as /support/ or a complete external URL.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+        echo '</tbody></table>';
         submit_button(__('Save Console Copy', 'sustainable-catalyst-feature-suggestions'));
         echo '</form><p><a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_release_console_copy'), 'scfs_reset_release_console_copy')) . '">' . esc_html__('Reset copy defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p></div>';
     }

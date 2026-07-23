@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Installed_Plugin_Discovery {
-    const VERSION = '7.5.3';
+    const VERSION = '7.5.4';
     const SCHEMA = 'scfs-installed-plugin-discovery/1.0';
     const DIAGNOSTICS_SCHEMA = 'scfs-plugin-discovery-diagnostics/1.0';
     const SCHEMA_OPTION = 'scfs_installed_plugin_discovery_schema';
@@ -1328,7 +1328,20 @@ final class SCFS_Installed_Plugin_Discovery {
                 echo '<a class="button" href="' . esc_url($sync_url) . '">' . esc_html__('Sync GitHub now', 'sustainable-catalyst-feature-suggestions') . '</a>';
                 echo '<a class="button-link" href="' . esc_url($record['github_repository_url']) . '" target="_blank" rel="noopener noreferrer">' . esc_html__('Open repository', 'sustainable-catalyst-feature-suggestions') . '</a>';
             }
-            echo '</span></div></form></td></tr>';
+            echo '</span></div>';
+            $sync_state = sanitize_key($record['github_sync_state'] ?? 'never');
+            $sync_message = sanitize_text_field($record['github_sync_message'] ?? '');
+            if ($sync_state === 'error' && $sync_message !== '') {
+                echo '<p class="scfs-product-connection-status scfs-product-connection-status--error" role="status"><strong>' . esc_html__('Sync error:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($sync_message) . '</p>';
+            } elseif ($sync_state === 'current') {
+                if ($sync_message === '') {
+                    $sync_message = !empty($record['github_latest_version'])
+                        ? sprintf(__('Synchronized with GitHub release %s.', 'sustainable-catalyst-feature-suggestions'), $record['github_latest_version'])
+                        : __('Repository connected. No GitHub Release is published yet.', 'sustainable-catalyst-feature-suggestions');
+                }
+                echo '<p class="scfs-product-connection-status scfs-product-connection-status--current" role="status">' . esc_html($sync_message) . '</p>';
+            }
+            echo '</form></td></tr>';
         }
         echo '</tbody></table></div></section>';
     }
@@ -1351,19 +1364,19 @@ final class SCFS_Installed_Plugin_Discovery {
         }
         $plugin_file = dirname(__DIR__) . '/sustainable-catalyst-feature-suggestions.php';
         wp_enqueue_style(
-            'scfs-plugin-discovery-v752',
-            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.5.3.css',
+            'scfs-plugin-discovery-v754',
+            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.5.4.css',
             array(),
             self::VERSION
         );
         wp_enqueue_script(
-            'scfs-plugin-discovery-v752',
-            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.5.3.js',
+            'scfs-plugin-discovery-v754',
+            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.5.4.js',
             array(),
             self::VERSION,
             true
         );
-        wp_localize_script('scfs-plugin-discovery-v752', 'SCFSPluginDiscovery', array(
+        wp_localize_script('scfs-plugin-discovery-v754', 'SCFSPluginDiscovery', array(
             'restUrl' => esc_url_raw(rest_url(Sustainable_Catalyst_Feature_Suggestions::REST_NAMESPACE . '/product-registry/discovery/decision')),
             'nonce' => wp_create_nonce('wp_rest'),
             'saving' => __('Saving decision…', 'sustainable-catalyst-feature-suggestions'),
@@ -1576,10 +1589,14 @@ final class SCFS_Installed_Plugin_Discovery {
         } elseif (isset($_GET['github_synced'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('GitHub release intelligence synchronized with the Release Console.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         } elseif (isset($_GET['github_sync_error'])) {
-            echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('GitHub synchronization failed. Review the repository URL, token access, and diagnostics.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
+            $error_key = 'scfs_github_sync_error_' . get_current_user_id();
+            $error_message = get_transient($error_key);
+            delete_transient($error_key);
+            echo '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__('GitHub synchronization failed.', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($error_message ?: __('Open GitHub Connection to test repository access.', 'sustainable-catalyst-feature-suggestions')) . '</p></div>';
         }
         $this->render_summary_panel();
         echo '<p class="scfs-discovery-actions"><a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_rescan_installed_plugins'), 'scfs_rescan_installed_plugins')) . '">' . esc_html__('Rescan installed plugins', 'sustainable-catalyst-feature-suggestions') . '</a> ';
+        echo '<a class="button" href="' . esc_url(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . SCFS_GitHub_Connection_Settings::ADMIN_SLUG)) . '">' . esc_html__('GitHub Connection', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_clear_plugin_discovery'), 'scfs_clear_plugin_discovery')) . '">' . esc_html__('Clear cached snapshot', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '<p><strong>' . esc_html__('Last scan:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($snapshot['scanned_at'] ?: __('Not yet scanned', 'sustainable-catalyst-feature-suggestions')) . '</p>';
         $this->render_connections_panel();

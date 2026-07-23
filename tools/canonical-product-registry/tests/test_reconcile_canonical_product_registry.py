@@ -37,7 +37,7 @@ class ReconcileTests(unittest.TestCase):
         self.assertIn("platform-core", output["sustainable-catalyst-core"]["legacy_names"])
         self.assertIn("product-support-feedback", output)
         self.assertNotIn("feature-suggestions", output)
-        self.assertEqual("7.5.3", output["product-support-feedback"]["public_version"])
+        self.assertEqual("7.5.4", output["product-support-feedback"]["public_version"])
         self.assertIn("Old Feedback Tool", output["product-support-feedback"]["legacy_names"])
         self.assertIn("contact-engagement", output)
         self.assertNotIn("contact-and-engagement", output)

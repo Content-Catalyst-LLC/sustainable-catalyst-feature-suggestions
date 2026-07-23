@@ -355,6 +355,9 @@ final class SCFS_Repository_Release_Synchronization {
     }
 
     private function github_token() {
+        if (class_exists('SCFS_GitHub_Connection_Settings')) {
+            return SCFS_GitHub_Connection_Settings::instance()->token();
+        }
         if (defined('SCFS_GITHUB_TOKEN') && SCFS_GITHUB_TOKEN) {
             return (string) SCFS_GITHUB_TOKEN;
         }

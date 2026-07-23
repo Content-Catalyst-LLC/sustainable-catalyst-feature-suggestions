@@ -3,7 +3,7 @@ $root = dirname(__DIR__);
 $module = file_get_contents($root . '/backend/app/release_board.py');
 $tests = file_get_contents($root . '/backend/tests/test_release_board.py');
 $checks = array(
-    'backend version' => strpos($module, 'VERSION = "7.5.3"') !== false,
+    'backend version' => strpos($module, 'VERSION = "7.5.4"') !== false,
     'backend schema' => strpos($module, 'SCHEMA = "scfs-release-board/1.3"') !== false,
     'terminal layout' => strpos($module, 'Literal["terminal", "blackboard", "compact", "directory"]') !== false,
     'terminal default' => strpos($module, 'layout: Layout = "terminal"') !== false,
@@ -18,4 +18,4 @@ $checks = array(
 foreach ($checks as $label => $ok) {
     if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo "v7.5.3 Release Console backend contract passed.\n";
+echo "v7.5.4 Release Console backend contract passed.\n";

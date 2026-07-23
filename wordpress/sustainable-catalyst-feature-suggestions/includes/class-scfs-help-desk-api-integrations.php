@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Help_Desk_API_Integrations {
-    const VERSION = '7.5.3';
+    const VERSION = '7.5.4';
     const DB_VERSION = '2.0.0';
     const DB_VERSION_OPTION = 'scfs_help_desk_api_integrations_db_version';
     const SETTINGS_OPTION = 'scfs_help_desk_api_integrations_settings';

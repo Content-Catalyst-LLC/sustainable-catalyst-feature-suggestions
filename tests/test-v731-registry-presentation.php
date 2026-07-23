@@ -2,7 +2,7 @@
 $root = dirname(__DIR__);
 $registry = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-canonical-product-registry.php');
 $checks = array(
-    'registry version' => strpos($registry, "const VERSION = '7.5.3';") !== false,
+    'registry version' => strpos($registry, "const VERSION = '7.5.4';") !== false,
     'registry schema' => strpos($registry, "scfs-canonical-product-registry/2.0") !== false,
     'frontend upgrade hook' => strpos($registry, "add_action('init', array(\$this, 'maybe_upgrade'), 3)") !== false,
     'presentation migration' => strpos($registry, 'apply_v731_presentation_migrations') !== false,
@@ -17,4 +17,4 @@ $checks = array(
 foreach ($checks as $label => $ok) {
     if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo "v7.5.3 registry presentation migration contract passed.\n";
+echo "v7.5.4 registry presentation migration contract passed.\n";

@@ -1,0 +1,14 @@
+{
+  "schema": "scfs-canonical-product-github-sync/1.0",
+  "version": "7.5.4",
+  "product_id": "product-support-feedback",
+  "repository_url": "https://github.com/Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback",
+  "default_branch": "main",
+  "latest_version": "7.5.4",
+  "latest_release_url": "https://github.com/Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback/releases/tag/v7.5.4",
+  "latest_commit_sha": "1234567890abcdef1234567890abcdef12345678",
+  "repository_updated_at": "2026-07-22T22:00:00Z",
+  "last_synced_at": "2026-07-22T22:05:00Z",
+  "sync_state": "current",
+  "sync_message": ""
+}

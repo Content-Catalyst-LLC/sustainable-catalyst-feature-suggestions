@@ -13,4 +13,4 @@ $checks = array(
 foreach ($checks as $label => $ok) {
     if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo "v7.5.3 registry storage and WordPress compatibility contract passed.\n";
+echo "v7.5.4 registry storage and WordPress compatibility contract passed.\n";

@@ -7,11 +7,11 @@ $github = file_get_contents($plugin . '/includes/class-scfs-canonical-product-gi
 $registry = file_get_contents($plugin . '/includes/class-scfs-canonical-product-registry.php');
 $board = file_get_contents($plugin . '/includes/class-scfs-release-board.php');
 $copy = file_get_contents($plugin . '/includes/class-scfs-release-console-copy.php');
-$css = file_get_contents($plugin . '/assets/plugin-discovery-v7.5.3.css');
+$css = file_get_contents($plugin . '/assets/plugin-discovery-v7.5.4.css');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
-$release = json_decode(file_get_contents($root . '/release-manifest-v7.5.3.json'), true);
+$release = json_decode(file_get_contents($root . '/release-manifest-v7.5.4.json'), true);
 $checks = array(
-    'runtime version' => strpos($main, 'Version: 7.5.3') !== false && strpos($main, "const VERSION = '7.5.3';") !== false,
+    'runtime version' => strpos($main, 'Version: 7.5.4') !== false && strpos($main, "const VERSION = '7.5.4';") !== false,
     'github class loaded' => strpos($main, 'class-scfs-canonical-product-github-sync.php') !== false,
     'github class initialized' => strpos($main, 'SCFS_Canonical_Product_GitHub_Sync::instance();') !== false,
     'github activation' => strpos($main, 'SCFS_Canonical_Product_GitHub_Sync::activate();') !== false,
@@ -45,4 +45,4 @@ foreach ($checks as $label => $passed) {
         exit(1);
     }
 }
-echo "v7.5.3 active plugin, GitHub, and Release Console connection contract passed (" . count($checks) . " checks).\n";
+echo "v7.5.4 active plugin, GitHub, and Release Console connection contract passed (" . count($checks) . " checks).\n";

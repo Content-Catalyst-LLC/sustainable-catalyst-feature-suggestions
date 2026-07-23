@@ -4,8 +4,8 @@
  *
  * Connects canonical console products to GitHub repositories and keeps public
  * release intelligence current through signed webhooks with hourly polling as
- * a fallback. Repository credentials and webhook secrets are never stored in
- * WordPress options.
+ * a fallback. Credentials may be supplied through wp-config.php, environment
+ * variables, or the encrypted administrator GitHub Connection screen.
  *
  * @package Sustainable_Catalyst_Feature_Suggestions
  */
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_GitHub_Sync {
-    const VERSION = '7.5.3';
+    const VERSION = '7.5.4';
     const SCHEMA = 'scfs-canonical-product-github-sync/1.0';
     const CRON_HOOK = 'scfs_canonical_product_github_sync';
     const AUDIT_OPTION = 'scfs_canonical_product_github_sync_audit';
@@ -74,9 +74,11 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             'hourly_polling_fallback' => true,
             'private_repository_token_constant' => 'SCFS_GITHUB_TOKEN',
             'webhook_secret_constant' => 'SCFS_GITHUB_WEBHOOK_SECRET',
+            'administrator_connection_screen' => 'scfs-github-connection',
+            'encrypted_wordpress_credentials_supported' => true,
             'automatic_console_refresh' => true,
             'automatic_publication' => false,
-            'repository_credentials_stored' => false,
+            'repository_credentials_stored' => 'encrypted_optional',
         );
     }
 
@@ -107,6 +109,9 @@ final class SCFS_Canonical_Product_GitHub_Sync {
     }
 
     private function github_token() {
+        if (class_exists('SCFS_GitHub_Connection_Settings')) {
+            return SCFS_GitHub_Connection_Settings::instance()->token();
+        }
         if (defined('SCFS_GITHUB_TOKEN') && SCFS_GITHUB_TOKEN) {
             return trim((string) SCFS_GITHUB_TOKEN);
         }
@@ -115,6 +120,9 @@ final class SCFS_Canonical_Product_GitHub_Sync {
     }
 
     private function webhook_secret() {
+        if (class_exists('SCFS_GitHub_Connection_Settings')) {
+            return SCFS_GitHub_Connection_Settings::instance()->webhook_secret();
+        }
         if (defined('SCFS_GITHUB_WEBHOOK_SECRET') && SCFS_GITHUB_WEBHOOK_SECRET) {
             return (string) SCFS_GITHUB_WEBHOOK_SECRET;
         }
@@ -149,10 +157,40 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         if ($code < 200 || $code >= 300) {
             $decoded = json_decode($body, true);
             $message = is_array($decoded) && !empty($decoded['message']) ? sanitize_text_field($decoded['message']) : __('GitHub request failed.', 'sustainable-catalyst-feature-suggestions');
+            $message = sprintf(__('GitHub returned HTTP %1$d: %2$s', 'sustainable-catalyst-feature-suggestions'), $code, $message);
             return new WP_Error('scfs_canonical_github_request_failed', $message, array('status' => $code));
         }
         $decoded = json_decode($body, true);
         return is_array($decoded) ? $decoded : new WP_Error('scfs_canonical_github_invalid_json', __('GitHub returned invalid JSON.', 'sustainable-catalyst-feature-suggestions'));
+    }
+
+
+    public function diagnose_repository($url) {
+        $repository = $this->parse_repository_url($url);
+        if (!$repository) {
+            return new WP_Error('scfs_canonical_github_repository_invalid', __('Use a valid GitHub repository URL.', 'sustainable-catalyst-feature-suggestions'));
+        }
+        $metadata = $this->request($repository['api_base']);
+        if (is_wp_error($metadata)) {
+            return $metadata;
+        }
+        $branch = sanitize_text_field($metadata['default_branch'] ?? 'main');
+        $releases = $this->request($repository['api_base'] . '/releases?per_page=1');
+        if (is_wp_error($releases)) {
+            return $releases;
+        }
+        $has_release = isset($releases[0]) && is_array($releases[0]) && empty($releases[0]['draft']);
+        return array(
+            'ok' => true,
+            'repository' => $repository['canonical_url'],
+            'private' => !empty($metadata['private']),
+            'default_branch' => $branch,
+            'has_release' => $has_release,
+            'latest_version' => $has_release ? $this->normalize_version($releases[0]['tag_name'] ?? '') : '',
+            'message' => $has_release
+                ? sprintf(__('Accessible; latest release %s.', 'sustainable-catalyst-feature-suggestions'), $this->normalize_version($releases[0]['tag_name'] ?? ''))
+                : __('Accessible; no GitHub Release is published yet.', 'sustainable-catalyst-feature-suggestions'),
+        );
     }
 
     private function normalize_version($tag) {
@@ -224,7 +262,9 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         $record['repository_slug'] = sanitize_key($repository['repository']);
         $record['github_default_branch'] = $branch ?: 'main';
         $record['github_sync_state'] = 'current';
-        $record['github_sync_message'] = '';
+        $record['github_sync_message'] = $latest_version === ''
+            ? __('Repository connected. No GitHub Release is published yet; repository and commit evidence were synchronized.', 'sustainable-catalyst-feature-suggestions')
+            : '';
         $record['github_latest_version'] = $latest_version;
         $record['github_latest_release_name'] = sanitize_text_field($release['name'] ?? '');
         $record['github_latest_release_url'] = esc_url_raw($release['html_url'] ?? '');
@@ -363,7 +403,12 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         check_admin_referer('scfs_sync_canonical_github');
         $product_id = sanitize_key(wp_unslash($_GET['product_id'] ?? ''));
         $result = $product_id !== '' ? $this->sync_product($product_id, 'admin_manual') : $this->sync_all('admin_manual');
-        $status = is_wp_error($result) ? 'github_sync_error=1' : 'github_synced=1';
+        if (is_wp_error($result)) {
+            set_transient('scfs_github_sync_error_' . get_current_user_id(), $result->get_error_message(), 5 * MINUTE_IN_SECONDS);
+            $status = 'github_sync_error=1';
+        } else {
+            $status = 'github_synced=1';
+        }
         wp_safe_redirect(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . SCFS_Installed_Plugin_Discovery::ADMIN_SLUG . '&' . $status));
         exit;
     }

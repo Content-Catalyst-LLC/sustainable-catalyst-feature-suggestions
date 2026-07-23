@@ -9,5 +9,5 @@ if (strpos($class, 'return current_user_can($this->capability());') === false) {
     fwrite(STDERR, "FAIL authenticated discovery boundary
 "); exit(1);
 }
-echo "v7.5.3 plugin discovery admin, API, and CLI contract passed.
+echo "v7.5.4 plugin discovery admin, API, and CLI contract passed.
 ";

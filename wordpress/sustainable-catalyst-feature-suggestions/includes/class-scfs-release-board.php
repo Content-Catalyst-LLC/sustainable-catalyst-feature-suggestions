@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Board {
-    const VERSION = '7.5.3';
+    const VERSION = '7.5.4';
     const SCHEMA = 'scfs-release-board/1.3';
     const SHORTCODE = 'sc_release_board';
     const STYLE_HANDLE = 'scfs-release-board';
@@ -47,7 +47,7 @@ final class SCFS_Release_Board {
     }
 
     public function register_assets() {
-        $relative = 'assets/release-board-v7.5.3.css';
+        $relative = 'assets/release-board-v7.5.4.css';
         $path = plugin_dir_path(dirname(__FILE__)) . $relative;
         $version = is_file($path) ? (string) filemtime($path) : self::VERSION;
         wp_register_style(
@@ -56,7 +56,7 @@ final class SCFS_Release_Board {
             array(),
             $version
         );
-        $script_relative = 'assets/release-console-v7.5.3.js';
+        $script_relative = 'assets/release-console-v7.5.4.js';
         $script_path = plugin_dir_path(dirname(__FILE__)) . $script_relative;
         $script_version = is_file($script_path) ? (string) filemtime($script_path) : self::VERSION;
         wp_register_script(
@@ -205,7 +205,9 @@ final class SCFS_Release_Board {
             'play_label' => $copy['play'] ?? __('Play', 'sustainable-catalyst-feature-suggestions'),
             'next_label' => $copy['next'] ?? __('Next', 'sustainable-catalyst-feature-suggestions'),
             'release_label' => $copy['footer_repository'] ?? ($copy['footer_releases'] ?? __('repository', 'sustainable-catalyst-feature-suggestions')),
+            'repository_url' => $copy['footer_repository_url'] ?? '',
             'support_label' => $copy['footer_support'] ?? __('support', 'sustainable-catalyst-feature-suggestions'),
+            'support_url' => $copy['footer_support_url'] ?? '/support/',
             'empty_message' => $copy['empty_message'] ?? __('No governed releases are available for this view.', 'sustainable-catalyst-feature-suggestions'),
             'unavailable_message' => $copy['unavailable_message'] ?? __('Release intelligence is temporarily unavailable.', 'sustainable-catalyst-feature-suggestions'),
             'heading_level' => '2',
@@ -277,6 +279,8 @@ final class SCFS_Release_Board {
         foreach (array('title','intro','standard_intro','foundation_label','research_intelligence_label','data_analysis_label','creation_systems_label','commercial_label','previous_label','pause_label','play_label','next_label','release_label','support_label','empty_message','unavailable_message') as $copy_key) {
             $atts[$copy_key] = sanitize_text_field($atts[$copy_key]);
         }
+        $atts['repository_url'] = $this->public_url($atts['repository_url']);
+        $atts['support_url'] = $this->public_url($atts['support_url']);
         $atts['heading_level'] = min(6, max(2, absint($atts['heading_level'])));
         $atts['interval'] = min(60, max(3, absint($atts['interval'])));
         $atts['rotate'] = $this->yes($atts['rotate']);
@@ -621,7 +625,7 @@ final class SCFS_Release_Board {
             }
         }
         $url = $preferred !== '' ? $preferred : $fallback;
-        return apply_filters('scfs_release_board_repository_url', $url, $products);
+        return $url;
     }
 
     private function render_footer($atts, $counts, $updated, $repository_url, $support_url) {
@@ -659,8 +663,13 @@ final class SCFS_Release_Board {
         $updated = $atts['show_updated'] ? $this->last_updated($products) : '';
         $counts = $this->telemetry_counts($products);
         $discovery = $this->discovery_state();
-        $repository_url = $atts['show_links'] ? $this->repository_url($products) : '';
-        $support_url = $atts['show_links'] ? apply_filters('scfs_release_board_support_url', home_url('/support/')) : '';
+        $repository_url = '';
+        $support_url = '';
+        if ($atts['show_links']) {
+            $repository_url = $atts['repository_url'] !== '' ? $atts['repository_url'] : $this->repository_url($products);
+            $repository_url = apply_filters('scfs_release_board_repository_url', $repository_url, $products);
+            $support_url = apply_filters('scfs_release_board_support_url', $atts['support_url'] !== '' ? $atts['support_url'] : home_url('/support/'));
+        }
         $rotating = $atts['layout'] === 'terminal' && $atts['rotate'];
         $screens_id = $instance_id . '-screens';
         $announcer_id = $instance_id . '-announcer';

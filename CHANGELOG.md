@@ -1,5 +1,23 @@
 # Changelog
 
+## 7.5.4 — Administrator GitHub Connection and Console Link Controls
+
+- Added a dedicated WordPress GitHub Connection screen with encrypted, non-autoloaded token storage.
+- Preserved `SCFS_GITHUB_TOKEN` and server environment overrides while removing the requirement to edit `wp-config.php` for ordinary setup.
+- Added repository-specific credential testing and one-click synchronization for all mapped canonical products.
+- Exposed exact GitHub HTTP and repository errors beneath affected product connections.
+- Treats an accessible repository with no published GitHub Release as a successful connection state.
+- Added editable Release Console repository and support labels and destinations.
+- Migrates the legacy `./releases` label to `./repository` while preserving intentional custom labels.
+- Preserved every active site/network plugin in the mapping dropdown, canonical aliases, legacy shortcodes, accessibility behavior, and the historical WordPress plugin folder.
+
+## 7.5.3 — Active Plugin and GitHub Console Connections
+
+- Connected each canonical console product to any active site or network WordPress plugin and one GitHub repository.
+- Added signed webhook synchronization and hourly polling fallback.
+- Added GitHub release, branch, commit, repository-update, and update-available evidence.
+- Replaced the public Release Console releases destination with the mapped canonical repository.
+
 ## 7.5.2 — Canonical Plugin Mapping and Review Workflow
 
 - Added a governed canonical-product dropdown to actionable Plugin Discovery rows.
