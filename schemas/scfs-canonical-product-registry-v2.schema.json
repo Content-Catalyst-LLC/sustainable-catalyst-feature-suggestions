@@ -13,7 +13,7 @@
       "const": "scfs-canonical-product-registry/2.1"
     },
     "version": {
-      "const": "7.7.1"
+      "const": "7.8.0"
     },
     "products": {
       "type": "array",
@@ -87,6 +87,8 @@
             "enum": [
               "wordpress_plugin",
               "github_release",
+              "github_prerelease",
+              "github_tag",
               "manual",
               "remote_manifest",
               "service_endpoint",

@@ -1,12 +1,12 @@
-## Current release: v7.7.1 — Plugin Discovery Intelligence
+## Current release: v7.8.0 — GitHub Release Intelligence
 
-**Plugin Discovery Intelligence** now inventories standard, site-active, network-active, inactive, must-use, and drop-in WordPress implementations; ranks canonical-product suggestions by evidence; supports governed bulk mapping and ignore decisions; compares installed versions with GitHub; and flags duplicate, header, and repository inconsistencies.
+**GitHub Release Intelligence** adds governed release and prerelease authority, semantic-tag fallback, repository and release asset evidence, rate-limit and token-scope diagnostics, synchronization history, configurable polling, and webhook replay protection.
 
-See `docs/plugin-discovery-intelligence-v7.7.1.md`.
+See `docs/github-release-intelligence-v7.8.0.md`.
 
 # Sustainable Catalyst Product Support and Feedback Platform
 
-**Current release: v7.7.1 — Plugin Discovery Intelligence**
+**Current release: v7.8.0 — GitHub Release Intelligence**
 
 ## Primary public shortcodes
 

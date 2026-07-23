@@ -15,7 +15,7 @@
       "const": "scfs-release-board/1.3"
     },
     "version": {
-      "const": "7.7.1"
+      "const": "7.8.0"
     },
     "layout": {
       "enum": [
@@ -107,6 +107,8 @@
                   "enum": [
                     "wordpress_plugin",
                     "github_release",
+                    "github_prerelease",
+                    "github_tag",
                     "manual",
                     "remote_manifest",
                     "service_endpoint",

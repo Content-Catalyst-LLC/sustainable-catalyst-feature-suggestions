@@ -42,7 +42,7 @@ $registry['contact-engagement'] = $product;
 update_option(SCFS_Canonical_Product_Registry::OPTION_KEY, $service->normalize_registry($registry), false);
 $base = 'https://api.github.com/repos/Content-Catalyst-LLC/sustainable-catalyst-engagement-intake';
 $GLOBALS['scfs_http'][$base] = array('response' => array('code' => 200), 'body' => json_encode(array('default_branch' => 'main', 'private' => true, 'pushed_at' => '2026-07-23T05:00:00Z')));
-$GLOBALS['scfs_http'][$base . '/releases?per_page=1'] = array('response' => array('code' => 200), 'body' => '[]');
+$GLOBALS['scfs_http'][$base . '/releases?per_page=20'] = array('response' => array('code' => 200), 'body' => '[]');
 $GLOBALS['scfs_http'][$base . '/tags?per_page=100'] = array('response' => array('code' => 200), 'body' => json_encode(array(
     array('name' => 'build-2026-07-23', 'commit' => array('sha' => 'not-semver')),
     array('name' => 'v2.0.9', 'commit' => array('sha' => '2092092092092092092092092092092092092092')),
@@ -67,4 +67,4 @@ $checks = array(
 foreach ($checks as $label => $passed) {
     if (!$passed) { fwrite(STDERR, "FAIL {$label}\n"); exit(1); }
 }
-echo 'v7.7.1 GitHub semantic-tag fallback runtime contract passed (' . count($checks) . " checks).\n";
+echo 'v7.8.0 GitHub semantic-tag fallback runtime contract passed (' . count($checks) . " checks).\n";

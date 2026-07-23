@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_GitHub_Sync {
-    const VERSION = '7.7.1';
+    const VERSION = '7.8.0';
     const SCHEMA = 'scfs-canonical-product-github-sync/1.0';
     const CRON_HOOK = 'scfs_canonical_product_github_sync';
     const AUDIT_OPTION = 'scfs_canonical_product_github_sync_audit';
@@ -23,6 +23,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
     const MAX_AUDIT_ENTRIES = 250;
 
     private static $instance = null;
+    private $response_meta = array();
 
     public static function instance() {
         if (self::$instance === null) {
@@ -49,15 +50,45 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         if (!get_option(self::LAST_RUN_OPTION)) {
             add_option(self::LAST_RUN_OPTION, array(), '', false);
         }
-        if (function_exists('wp_next_scheduled') && function_exists('wp_schedule_event') && !wp_next_scheduled(self::CRON_HOOK)) {
-            wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', self::CRON_HOOK);
+        $schedule = class_exists('SCFS_GitHub_Release_Intelligence')
+            ? SCFS_GitHub_Release_Intelligence::instance()->schedule_recurrence()
+            : 'hourly';
+        if ($schedule !== 'disabled' && function_exists('wp_next_scheduled') && function_exists('wp_schedule_event') && !wp_next_scheduled(self::CRON_HOOK)) {
+            wp_schedule_event(time() + HOUR_IN_SECONDS, $schedule, self::CRON_HOOK);
         }
     }
 
     public function ensure_schedule() {
-        if (function_exists('wp_next_scheduled') && function_exists('wp_schedule_event') && !wp_next_scheduled(self::CRON_HOOK)) {
-            wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', self::CRON_HOOK);
+        $schedule = class_exists('SCFS_GitHub_Release_Intelligence')
+            ? SCFS_GitHub_Release_Intelligence::instance()->schedule_recurrence()
+            : 'hourly';
+        if ($schedule === 'disabled') {
+            return;
         }
+        if (function_exists('wp_next_scheduled') && function_exists('wp_schedule_event') && !wp_next_scheduled(self::CRON_HOOK)) {
+            wp_schedule_event(time() + HOUR_IN_SECONDS, $schedule, self::CRON_HOOK);
+        }
+    }
+
+    public function reschedule($recurrence = null) {
+        $recurrence = $recurrence === null && class_exists('SCFS_GitHub_Release_Intelligence')
+            ? SCFS_GitHub_Release_Intelligence::instance()->schedule_recurrence()
+            : sanitize_key((string) $recurrence);
+        if (!in_array($recurrence, array('hourly', 'twicedaily', 'daily', 'disabled'), true)) {
+            $recurrence = 'hourly';
+        }
+        if (function_exists('wp_clear_scheduled_hook')) {
+            wp_clear_scheduled_hook(self::CRON_HOOK);
+        } elseif (function_exists('wp_next_scheduled') && function_exists('wp_unschedule_event')) {
+            $timestamp = wp_next_scheduled(self::CRON_HOOK);
+            if ($timestamp) {
+                wp_unschedule_event($timestamp, self::CRON_HOOK);
+            }
+        }
+        if ($recurrence !== 'disabled' && function_exists('wp_schedule_event')) {
+            wp_schedule_event(time() + HOUR_IN_SECONDS, $recurrence, self::CRON_HOOK);
+        }
+        return $recurrence;
     }
 
     public function next_scheduled_sync() {
@@ -84,6 +115,14 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             'signed_webhook_supported' => true,
             'hourly_polling_fallback' => true,
             'hourly_schedule_self_repair' => true,
+            'configurable_polling_schedule' => true,
+            'prerelease_governance' => true,
+            'release_asset_inventory' => true,
+            'repository_rename_transfer_detection' => true,
+            'repository_archived_detection' => true,
+            'rate_limit_and_token_diagnostics' => true,
+            'webhook_delivery_history' => true,
+            'duplicate_webhook_protection' => true,
             'semantic_version_tag_fallback' => true,
             'version_authority_order' => array('github_release', 'github_tag', 'existing_registry_version'),
             'private_repository_token_constant' => 'SCFS_GITHUB_TOKEN',
@@ -177,6 +216,14 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         return $normalized;
     }
 
+    public function response_meta($endpoint = '') {
+        $endpoint = sanitize_key($endpoint);
+        if ($endpoint === '') {
+            return $this->response_meta;
+        }
+        return is_array($this->response_meta[$endpoint] ?? null) ? $this->response_meta[$endpoint] : array();
+    }
+
     private function request($url, $endpoint = 'github') {
         $endpoint = sanitize_key($endpoint);
         $response = wp_remote_get($url, array(
@@ -205,6 +252,17 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         $headers = $this->response_header_map($response);
         $remaining = sanitize_text_field($headers['x-ratelimit-remaining'] ?? '');
         $reset = sanitize_text_field($headers['x-ratelimit-reset'] ?? '');
+        $this->response_meta[$endpoint] = array(
+            'status' => $code,
+            'endpoint_url' => esc_url_raw($url),
+            'rate_limit_remaining' => $remaining,
+            'rate_limit_limit' => sanitize_text_field($headers['x-ratelimit-limit'] ?? ''),
+            'rate_limit_reset' => $reset,
+            'rate_limit_resource' => sanitize_text_field($headers['x-ratelimit-resource'] ?? ''),
+            'oauth_scopes' => sanitize_text_field($headers['x-oauth-scopes'] ?? ''),
+            'accepted_oauth_scopes' => sanitize_text_field($headers['x-accepted-oauth-scopes'] ?? ''),
+            'github_sso' => sanitize_text_field($headers['x-github-sso'] ?? ''),
+        );
         if ($code < 200 || $code >= 300) {
             $decoded = json_decode($body, true);
             $github_message = is_array($decoded) && !empty($decoded['message'])
@@ -268,20 +326,21 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             return $metadata;
         }
         $branch = sanitize_text_field($metadata['default_branch'] ?? 'main');
-        $releases = $this->request($repository['api_base'] . '/releases?per_page=1', 'published_releases');
+        $releases = $this->request($repository['api_base'] . '/releases?per_page=20', 'published_releases');
         if (is_wp_error($releases)) {
             return $releases;
         }
-        $has_release = isset($releases[0]) && is_array($releases[0]) && empty($releases[0]['draft']);
+        $release = $this->select_release($releases, false);
+        $has_release = !empty($release);
         $tag = array();
         if (!$has_release) {
-            $tag = $this->latest_semantic_tag($repository);
+            $tag = $this->latest_semantic_tag($repository, false);
             if (is_wp_error($tag)) {
                 return $tag;
             }
         }
         $has_tag = !empty($tag['version']);
-        $latest_version = $has_release ? $this->normalize_version($releases[0]['tag_name'] ?? '') : ($tag['version'] ?? '');
+        $latest_version = $has_release ? $this->normalize_version($release['tag_name'] ?? '') : ($tag['version'] ?? '');
         $source = $has_release ? 'github_release' : ($has_tag ? 'github_tag' : 'none');
         return array(
             'ok' => true,
@@ -309,7 +368,24 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         return $normalized;
     }
 
-    private function latest_semantic_tag($repository) {
+    private function is_prerelease_version($version) {
+        return (bool) preg_match('/(?:^|[-.])(alpha|beta|rc|preview|pre)(?:[.-]|$)/i', (string) $version);
+    }
+
+    private function select_release($releases, $allow_prerelease = false) {
+        foreach ((array) $releases as $release) {
+            if (!is_array($release) || !empty($release['draft'])) {
+                continue;
+            }
+            if (!empty($release['prerelease']) && !$allow_prerelease) {
+                continue;
+            }
+            return $release;
+        }
+        return array();
+    }
+
+    private function latest_semantic_tag($repository, $allow_prerelease = false) {
         $tags = $this->request($repository['api_base'] . '/tags?per_page=100', 'semantic_tags');
         if (is_wp_error($tags)) {
             return $tags;
@@ -321,7 +397,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             }
             $name = sanitize_text_field($tag['name'] ?? '');
             $version = $this->semantic_version($name);
-            if ($version === '') {
+            if ($version === '' || (!$allow_prerelease && $this->is_prerelease_version($version))) {
                 continue;
             }
             if (!$best || version_compare($version, $best['version'], '>')) {
@@ -413,6 +489,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
     }
 
     public function sync_product($product_id, $reason = 'manual') {
+        $this->response_meta = array();
         $product_id = sanitize_key($product_id);
         $service = SCFS_Canonical_Product_Registry::instance();
         $registry = $service->registry();
@@ -433,16 +510,28 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             $this->save_error($product_id, $metadata);
             return $metadata;
         }
+        $configured_repository = $repository;
+        $configured_repository['configured_url'] = $repository['canonical_url'];
+        $actual_repository = $this->parse_repository_url($metadata['html_url'] ?? '');
+        if ($actual_repository) {
+            $actual_repository['configured_url'] = $configured_repository['canonical_url'];
+            $repository = $actual_repository;
+        } else {
+            $repository = $configured_repository;
+        }
         $branch = sanitize_text_field($metadata['default_branch'] ?? ($record['github_default_branch'] ?? 'main'));
-        $releases = $this->request($repository['api_base'] . '/releases?per_page=1', 'published_releases');
+        $releases = $this->request($repository['api_base'] . '/releases?per_page=20', 'published_releases');
         if (is_wp_error($releases)) {
             $this->save_error($product_id, $releases);
             return $releases;
         }
-        $release = isset($releases[0]) && is_array($releases[0]) && empty($releases[0]['draft']) ? $releases[0] : array();
+        $allow_prerelease = class_exists('SCFS_GitHub_Release_Intelligence')
+            ? SCFS_GitHub_Release_Intelligence::instance()->allow_prerelease($product_id)
+            : false;
+        $release = $this->select_release($releases, $allow_prerelease);
         $tag = array();
         if (!$release) {
-            $tag = $this->latest_semantic_tag($repository);
+            $tag = $this->latest_semantic_tag($repository, $allow_prerelease);
             if (is_wp_error($tag)) {
                 $this->save_error($product_id, $tag);
                 return $tag;
@@ -452,7 +541,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         $commit_sha = is_wp_error($commit) ? sanitize_text_field($tag['commit_sha'] ?? '') : sanitize_text_field($commit['sha'] ?? '');
         $now = gmdate('c');
         $latest_version = $release ? $this->normalize_version($release['tag_name'] ?? '') : sanitize_text_field($tag['version'] ?? '');
-        $version_source = $release ? 'github_release' : ($latest_version !== '' ? 'github_tag' : 'none');
+        $version_source = $release ? (!empty($release['prerelease']) ? 'github_prerelease' : 'github_release') : ($latest_version !== '' ? 'github_tag' : 'none');
         $published_at = sanitize_text_field($release['published_at'] ?? '');
         $release_date = preg_match('/^\d{4}-\d{2}-\d{2}/', $published_at, $match) ? $match[0] : '';
         $previous = trim((string) ($record['github_latest_version'] ?? ''));
@@ -461,7 +550,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         $record['repository_slug'] = sanitize_key($repository['repository']);
         $record['github_default_branch'] = $branch ?: 'main';
         $record['github_sync_state'] = 'current';
-        $record['github_connection_state'] = $version_source === 'github_release'
+        $record['github_connection_state'] = in_array($version_source, array('github_release', 'github_prerelease'), true)
             ? 'connected'
             : ($version_source === 'github_tag' ? 'semantic_tag' : 'connected_no_release');
         $this->clear_error_fields($record);
@@ -477,6 +566,8 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         }
         if ($version_source === 'github_release') {
             $record['github_sync_message'] = '';
+        } elseif ($version_source === 'github_prerelease') {
+            $record['github_sync_message'] = sprintf(__('Repository connected. Preview release %s is enabled for this product.', 'sustainable-catalyst-feature-suggestions'), $release['tag_name'] ?? '');
         } elseif ($version_source === 'github_tag') {
             $record['github_sync_message'] = sprintf(__('Repository connected. No GitHub Release is published; console version synchronized from tag %s.', 'sustainable-catalyst-feature-suggestions'), $tag['name']);
         } else {
@@ -491,6 +582,10 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         $record['github_latest_tag_url'] = esc_url_raw($tag['url'] ?? '');
         $record['github_latest_commit_sha'] = $commit_sha;
         $record['github_repository_updated_at'] = sanitize_text_field($metadata['pushed_at'] ?? ($metadata['updated_at'] ?? ''));
+        $response_meta = $this->response_meta();
+        $repository_meta = $this->response_meta('repository_metadata');
+        $record['github_rate_limit_remaining'] = sanitize_text_field($repository_meta['rate_limit_remaining'] ?? '');
+        $record['github_rate_limit_reset'] = sanitize_text_field($repository_meta['rate_limit_reset'] ?? '');
         $record['github_last_synced_at'] = $now;
         $record['verification_source'] = 'github';
         $record['source_verified_at'] = $now;
@@ -507,7 +602,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             $record['public_version'] = $latest_version;
             $record['version_source'] = $version_source;
             $record['version_precedence'] = 'github';
-            if ($version_source === 'github_release') {
+            if (in_array($version_source, array('github_release', 'github_prerelease'), true)) {
                 $record['release_date'] = $release_date;
                 $record['change_summary'] = $this->release_summary($release);
                 $record['release_notes_url'] = esc_url_raw($release['html_url'] ?? $repository['canonical_url']);
@@ -525,6 +620,19 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             } else {
                 $record['status'] = $record['release_channel'] === 'preview' ? 'preview' : 'stable';
             }
+        }
+
+        if (class_exists('SCFS_GitHub_Release_Intelligence')) {
+            SCFS_GitHub_Release_Intelligence::instance()->capture_sync(
+                $product_id,
+                $repository,
+                $metadata,
+                $release,
+                $tag,
+                is_wp_error($commit) ? array() : $commit,
+                $reason,
+                $response_meta
+            );
         }
 
         $registry[$product_id] = $record;
@@ -589,8 +697,17 @@ final class SCFS_Canonical_Product_GitHub_Sync {
     public function rest_webhook($request) {
         $body = (string) $request->get_body();
         $signature = (string) $request->get_header('x-hub-signature-256');
+        $delivery_id = sanitize_text_field((string) $request->get_header('x-github-delivery'));
+        $event = sanitize_key((string) $request->get_header('x-github-event'));
         if (!$this->verify_webhook_signature($body, $signature)) {
+            if (class_exists('SCFS_GitHub_Release_Intelligence')) {
+                SCFS_GitHub_Release_Intelligence::instance()->record_webhook_delivery($delivery_id, $event, '', '', 'rejected', __('Invalid GitHub webhook signature.', 'sustainable-catalyst-feature-suggestions'), false, false);
+            }
             return new WP_Error('scfs_canonical_github_signature_invalid', __('Invalid GitHub webhook signature.', 'sustainable-catalyst-feature-suggestions'), array('status' => 401));
+        }
+        if ($delivery_id !== '' && class_exists('SCFS_GitHub_Release_Intelligence') && SCFS_GitHub_Release_Intelligence::instance()->webhook_delivery_seen($delivery_id)) {
+            SCFS_GitHub_Release_Intelligence::instance()->record_webhook_delivery($delivery_id, $event, '', '', 'duplicate_ignored', __('Duplicate webhook delivery ignored.', 'sustainable-catalyst-feature-suggestions'));
+            return rest_ensure_response(array('ok' => true, 'duplicate' => true, 'delivery_id' => $delivery_id));
         }
         $payload = json_decode($body, true);
         $repository_url = esc_url_raw($payload['repository']['html_url'] ?? '');
@@ -607,15 +724,23 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             }
         }
         if ($product_id === '') {
+            if (class_exists('SCFS_GitHub_Release_Intelligence')) {
+                SCFS_GitHub_Release_Intelligence::instance()->record_webhook_delivery($delivery_id, $event, $repository_url, '', 'unmapped', __('Webhook repository is not connected to a canonical product.', 'sustainable-catalyst-feature-suggestions'));
+            }
             return new WP_Error('scfs_canonical_github_webhook_unmapped', __('Webhook repository is not connected to a canonical product.', 'sustainable-catalyst-feature-suggestions'), array('status' => 404));
         }
-        $event = sanitize_key((string) $request->get_header('x-github-event'));
         $result = $this->sync_product($product_id, 'webhook_' . ($event ?: 'unknown'));
         if (is_wp_error($result)) {
+            if (class_exists('SCFS_GitHub_Release_Intelligence')) {
+                SCFS_GitHub_Release_Intelligence::instance()->record_webhook_delivery($delivery_id, $event, $repository_url, $product_id, 'failed', $result->get_error_message());
+            }
             $result->add_data(array('status' => 502));
             return $result;
         }
-        return rest_ensure_response(array('ok' => true, 'product_id' => $product_id, 'event' => $event, 'version' => $result['github_latest_version'] ?? ''));
+        if (class_exists('SCFS_GitHub_Release_Intelligence')) {
+            SCFS_GitHub_Release_Intelligence::instance()->record_webhook_delivery($delivery_id, $event, $repository_url, $product_id, 'accepted', __('Webhook synchronized the canonical product.', 'sustainable-catalyst-feature-suggestions'));
+        }
+        return rest_ensure_response(array('ok' => true, 'product_id' => $product_id, 'event' => $event, 'delivery_id' => $delivery_id, 'version' => $result['github_latest_version'] ?? ''));
     }
 
     public function rest_sync($request) {
@@ -636,6 +761,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             SCFS_Installed_Plugin_Discovery::ADMIN_SLUG,
             class_exists('SCFS_GitHub_Connection_Settings') ? SCFS_GitHub_Connection_Settings::ADMIN_SLUG : '',
             class_exists('SCFS_Release_Operations_Admin') ? SCFS_Release_Operations_Admin::ADMIN_SLUG : '',
+            class_exists('SCFS_GitHub_Release_Intelligence') ? SCFS_GitHub_Release_Intelligence::ADMIN_SLUG : '',
         );
         if (!in_array($return_page, $allowed_pages, true)) {
             $return_page = SCFS_Installed_Plugin_Discovery::ADMIN_SLUG;

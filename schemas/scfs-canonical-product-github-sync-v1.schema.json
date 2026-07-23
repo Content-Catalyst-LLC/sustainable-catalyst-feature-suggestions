@@ -16,7 +16,7 @@
       "const": "scfs-canonical-product-github-sync/1.0"
     },
     "version": {
-      "const": "7.7.1"
+      "const": "7.8.0"
     },
     "product_id": {
       "type": "string",
@@ -65,6 +65,7 @@
       "enum": [
         "none",
         "github_release",
+        "github_prerelease",
         "github_tag"
       ]
     },

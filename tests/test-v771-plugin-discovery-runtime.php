@@ -1,6 +1,6 @@
 <?php
 $root = dirname(__DIR__);
-$tmp = sys_get_temp_dir() . '/scfs-v771-runtime-' . getmypid();
+$tmp = sys_get_temp_dir() . '/scfs-v780-runtime-' . getmypid();
 @mkdir($tmp . '/plugins/support', 0777, true);
 @mkdir($tmp . '/mu-plugins', 0777, true);
 @mkdir($tmp . '/wp-content', 0777, true);
@@ -53,7 +53,7 @@ $registry['product-support-feedback']['github_latest_version'] = '7.8.0';
 update_option(SCFS_Canonical_Product_Registry::OPTION_KEY, SCFS_Canonical_Product_Registry::instance()->normalize_registry($registry));
 SCFS_Installed_Plugin_Discovery::activate();
 $discovery = SCFS_Installed_Plugin_Discovery::instance();
-$snapshot = $discovery->refresh(true, 'v771_runtime');
+$snapshot = $discovery->refresh(true, 'v780_runtime');
 $inventory = array_column($snapshot['inventory'], null, 'plugin_file');
 $checks = array(
     'complete inventory' => $snapshot['installed_plugin_count'] === 3 && count($inventory) === 3,
@@ -70,5 +70,5 @@ $checks['ahead comparison'] = $reflection->invoke($discovery, '8.0.0', '7.8.0') 
 $checks['current comparison'] = $reflection->invoke($discovery, '7.8.0', '7.8.0') === 'current';
 foreach ($checks as $label => $passed) { if (!$passed) { fwrite(STDERR, "FAIL - {$label}
 "); exit(1); } }
-echo "v7.7.1 Plugin Discovery Intelligence runtime contract passed (" . count($checks) . " checks).
+echo "v7.8.0 GitHub Release Intelligence runtime contract passed (" . count($checks) . " checks).
 ";

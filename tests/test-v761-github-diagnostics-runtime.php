@@ -65,7 +65,7 @@ $failure_checks = array(
 );
 foreach ($failure_checks as $label => $passed) { if (!$passed) { fwrite(STDERR, "FAIL {$label}\n"); exit(1); } }
 $GLOBALS['scfs_http'][$base] = array('response' => array('code' => 200), 'body' => json_encode(array('default_branch' => 'main', 'private' => true)));
-$GLOBALS['scfs_http'][$base . '/releases?per_page=1'] = array('response' => array('code' => 200), 'body' => '[]');
+$GLOBALS['scfs_http'][$base . '/releases?per_page=20'] = array('response' => array('code' => 200), 'body' => '[]');
 $GLOBALS['scfs_http'][$base . '/tags?per_page=100'] = array('response' => array('code' => 200), 'body' => '[]');
 $GLOBALS['scfs_http'][$base . '/commits/main'] = array('response' => array('code' => 200), 'body' => json_encode(array('sha' => '7617617617617617617617617617617617617617')));
 $recovered = $sync->sync_product('contact-engagement', 'diagnostic_recovery');
@@ -80,4 +80,4 @@ $recovery_checks = array(
     'clear success message' => strpos((string) ($recovered['github_sync_message'] ?? ''), 'No GitHub Release or semantic version tag') !== false,
 );
 foreach ($recovery_checks as $label => $passed) { if (!$passed) { fwrite(STDERR, "FAIL {$label}\n"); exit(1); } }
-echo 'v7.7.1 GitHub diagnostics and stale-error recovery runtime passed (' . (count($failure_checks) + count($recovery_checks)) . " checks).\n";
+echo 'v7.8.0 GitHub diagnostics and stale-error recovery runtime passed (' . (count($failure_checks) + count($recovery_checks)) . " checks).\n";

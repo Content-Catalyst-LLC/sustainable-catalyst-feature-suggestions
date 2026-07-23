@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-github-release-intelligence-v1.schema.json",
+  "title": "Sustainable Catalyst GitHub Release Intelligence",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "product_id",
+    "repository_url",
+    "repository_visibility",
+    "release_state",
+    "sync_state"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema": {
+      "const": "scfs-github-release-intelligence/1.0"
+    },
+    "version": {
+      "const": "7.8.0"
+    },
+    "product_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "repository_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "configured_repository_url": {
+      "type": "string"
+    },
+    "previous_repository_url": {
+      "type": "string"
+    },
+    "repository_identity_changed": {
+      "type": "boolean"
+    },
+    "repository_full_name": {
+      "type": "string"
+    },
+    "repository_visibility": {
+      "enum": ["public", "private", "internal", "unknown"]
+    },
+    "repository_private": {
+      "type": "boolean"
+    },
+    "repository_archived": {
+      "type": "boolean"
+    },
+    "repository_disabled": {
+      "type": "boolean"
+    },
+    "default_branch": {
+      "type": "string"
+    },
+    "release_state": {
+      "enum": ["stable_release", "prerelease", "semantic_tag", "no_release"]
+    },
+    "release_name": {
+      "type": "string"
+    },
+    "release_tag": {
+      "type": "string"
+    },
+    "release_url": {
+      "type": "string"
+    },
+    "release_author": {
+      "type": "string"
+    },
+    "release_published_at": {
+      "type": "string"
+    },
+    "release_prerelease": {
+      "type": "boolean"
+    },
+    "release_draft": {
+      "type": "boolean"
+    },
+    "release_asset_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "release_assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "size", "download_count", "download_url"],
+        "properties": {
+          "name": {"type": "string"},
+          "label": {"type": "string"},
+          "content_type": {"type": "string"},
+          "size": {"type": "integer", "minimum": 0},
+          "download_count": {"type": "integer", "minimum": 0},
+          "updated_at": {"type": "string"},
+          "download_url": {"type": "string"}
+        }
+      }
+    },
+    "semantic_tag_name": {
+      "type": "string"
+    },
+    "semantic_tag_version": {
+      "type": "string"
+    },
+    "commit_sha": {
+      "type": "string"
+    },
+    "commit_author": {
+      "type": "string"
+    },
+    "commit_date": {
+      "type": "string"
+    },
+    "commit_message": {
+      "type": "string"
+    },
+    "rate_limit_remaining": {
+      "type": ["string", "integer"]
+    },
+    "rate_limit_limit": {
+      "type": ["string", "integer"]
+    },
+    "rate_limit_reset": {
+      "type": ["string", "integer"]
+    },
+    "oauth_scopes": {
+      "type": "string"
+    },
+    "accepted_oauth_scopes": {
+      "type": "string"
+    },
+    "organization_approval_hint": {
+      "type": "string"
+    },
+    "sync_state": {
+      "enum": ["current", "error", "unconfigured"]
+    },
+    "sync_reason": {
+      "type": "string"
+    },
+    "last_synced_at": {
+      "type": "string"
+    }
+  }
+}

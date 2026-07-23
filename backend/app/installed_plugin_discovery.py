@@ -1,4 +1,4 @@
-"""Installed WordPress plugin discovery validation for v7.7.1."""
+"""Installed WordPress plugin discovery validation for v7.8.0."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import List, Literal, Sequence
 
 from pydantic import BaseModel, Field, model_validator
 
-VERSION = "7.7.1"
+VERSION = "7.8.0"
 SCHEMA = "scfs-installed-plugin-discovery/1.0"
 DIAGNOSTICS_SCHEMA = "scfs-plugin-discovery-diagnostics/1.0"
 

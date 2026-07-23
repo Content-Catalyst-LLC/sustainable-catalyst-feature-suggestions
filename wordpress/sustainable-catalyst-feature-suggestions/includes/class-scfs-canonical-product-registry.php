@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.7.1';
+    const VERSION = '7.8.0';
     const SCHEMA = 'scfs-canonical-product-registry/2.1';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
@@ -127,6 +127,7 @@ final class SCFS_Canonical_Product_Registry {
         return array(
             'wordpress_plugin' => __('Installed WordPress plugin', 'sustainable-catalyst-feature-suggestions'),
             'github_release' => __('GitHub release', 'sustainable-catalyst-feature-suggestions'),
+            'github_prerelease' => __('GitHub prerelease', 'sustainable-catalyst-feature-suggestions'),
             'github_tag' => __('GitHub version tag', 'sustainable-catalyst-feature-suggestions'),
             'manual' => __('Manual entry', 'sustainable-catalyst-feature-suggestions'),
             'remote_manifest' => __('Remote manifest (reserved)', 'sustainable-catalyst-feature-suggestions'),
@@ -929,7 +930,7 @@ final class SCFS_Canonical_Product_Registry {
             'families' => array_keys($this->families()),
             'console_screens' => array_keys($this->families()),
             'version_sources' => array_keys($this->version_sources()),
-            'active_version_sources' => array('wordpress_plugin', 'github_release', 'github_tag', 'manual'),
+            'active_version_sources' => array('wordpress_plugin', 'github_release', 'github_prerelease', 'github_tag', 'manual'),
             'reserved_version_sources' => array('remote_manifest', 'service_endpoint', 'package_manifest'),
             'statuses' => array_keys($this->statuses()),
             'release_channels' => array_keys($this->channels()),
@@ -1052,7 +1053,7 @@ final class SCFS_Canonical_Product_Registry {
         $summary = $this->summary_record();
         $integrity = $this->integrity_report($registry);
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.7.1 adds governed catalog administration with search, lifecycle controls, drag-and-drop console ordering, duplicate merges, alias collision review, archive and restore, dry-run import, automatic backups, and administrator-attributed history.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.8.0 adds governed catalog administration with search, lifecycle controls, drag-and-drop console ordering, duplicate merges, alias collision review, archive and restore, dry-run import, automatic backups, and administrator-attributed history.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -1136,7 +1137,7 @@ final class SCFS_Canonical_Product_Registry {
         echo '<hr><p><a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_validate_product_registry'), 'scfs_validate_product_registry')) . '">' . esc_html__('Validate integrity', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_migrate_product_registry'), 'scfs_migrate_product_registry')) . '">' . esc_html__('Run schema migration', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.7.1 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.8.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

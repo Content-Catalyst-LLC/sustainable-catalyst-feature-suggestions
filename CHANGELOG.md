@@ -1,6 +1,12 @@
-## 7.7.1 — Plugin Discovery Intelligence
+## 7.8.0 — GitHub Release Intelligence
 
-- Added complete plugin inventory classification, ranked canonical suggestions, bulk review, duplicate mapping diagnostics, version comparison, and header/repository consistency checks.
+- Added stable-release-first and explicitly governed prerelease authority while excluding drafts.
+- Added semantic-tag fallback and separate commit activity evidence.
+- Added repository visibility, archive, rename/transfer, release author, publication, and asset evidence.
+- Added rate-limit, OAuth scope, and organization/SSO approval diagnostics.
+- Added per-product synchronization history, retry-failed-only controls, and configurable polling.
+- Added webhook delivery history, replay protection, duplicate handling, and manual webhook testing.
+- Preserved Plugin Discovery Intelligence, Product Connections, Release Operations, legacy shortcodes, accessibility behavior, and the historical WordPress plugin folder.
 
 ## v7.7.0 — Canonical Product Registry Administration
 
