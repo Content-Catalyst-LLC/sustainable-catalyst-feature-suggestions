@@ -42,22 +42,22 @@ $registry['product-support-feedback'] = $product;
 update_option(SCFS_Canonical_Product_Registry::OPTION_KEY, $service->normalize_registry($registry), false);
 $base = 'https://api.github.com/repos/Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback';
 $GLOBALS['scfs_http'][$base] = array('response' => array('code' => 200), 'body' => json_encode(array('default_branch' => 'main', 'pushed_at' => '2026-07-22T22:00:00Z')));
-$GLOBALS['scfs_http'][$base . '/releases?per_page=1'] = array('response' => array('code' => 200), 'body' => json_encode(array(array('tag_name' => 'v7.5.4', 'name' => 'Administrator GitHub Connection and Console Link Controls', 'html_url' => 'https://github.com/Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback/releases/tag/v7.5.4', 'published_at' => '2026-07-22T22:05:00Z', 'draft' => false, 'prerelease' => false))));
+$GLOBALS['scfs_http'][$base . '/releases?per_page=1'] = array('response' => array('code' => 200), 'body' => json_encode(array(array('tag_name' => 'v7.5.5', 'name' => 'GitHub Tag Fallback and Unified Console Administration', 'html_url' => 'https://github.com/Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback/releases/tag/v7.5.5', 'published_at' => '2026-07-22T22:05:00Z', 'draft' => false, 'prerelease' => false))));
 $GLOBALS['scfs_http'][$base . '/commits/main'] = array('response' => array('code' => 200), 'body' => json_encode(array('sha' => '1234567890abcdef1234567890abcdef12345678')));
 $result = SCFS_Canonical_Product_GitHub_Sync::instance()->sync_product('product-support-feedback', 'runtime_test');
 if (is_wp_error($result)) { fwrite(STDERR, 'FAIL sync: ' . $result->get_error_message() . "\n"); exit(1); }
 $checks = array(
-    'public version' => ($result['public_version'] ?? '') === '7.5.4',
+    'public version' => ($result['public_version'] ?? '') === '7.5.5',
     'github version source' => ($result['version_source'] ?? '') === 'github_release',
     'github precedence' => ($result['version_precedence'] ?? '') === 'github',
     'update available' => ($result['status'] ?? '') === 'update_available',
-    'release URL' => ($result['github_latest_release_url'] ?? '') === 'https://github.com/Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback/releases/tag/v7.5.4',
+    'release URL' => ($result['github_latest_release_url'] ?? '') === 'https://github.com/Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback/releases/tag/v7.5.5',
     'commit SHA' => ($result['github_latest_commit_sha'] ?? '') === '1234567890abcdef1234567890abcdef12345678',
     'repository updated' => ($result['github_repository_updated_at'] ?? '') === '2026-07-22T22:00:00Z',
     'sync current' => ($result['github_sync_state'] ?? '') === 'current',
-    'release label' => ($result['change_summary'] ?? '') === 'Administrator GitHub Connection and Console Link Controls',
+    'release label' => ($result['change_summary'] ?? '') === 'GitHub Tag Fallback and Unified Console Administration',
 );
 foreach ($checks as $label => $passed) {
     if (!$passed) { fwrite(STDERR, "FAIL {$label}\n"); exit(1); }
 }
-echo "v7.5.4 GitHub-to-console runtime synchronization passed (" . count($checks) . " checks).\n";
+echo "v7.5.5 GitHub-to-console runtime synchronization passed (" . count($checks) . " checks).\n";

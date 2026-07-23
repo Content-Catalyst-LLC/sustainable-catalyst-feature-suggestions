@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_GitHub_Connection_Settings {
-    const VERSION = '7.5.4';
+    const VERSION = '7.5.5';
     const SCHEMA = 'scfs-github-connection-settings/1.0';
     const OPTION_KEY = 'scfs_github_connection_settings';
     const ADMIN_SLUG = 'scfs-github-connection';
@@ -55,6 +55,9 @@ final class SCFS_GitHub_Connection_Settings {
             'autoload' => false,
             'administrator_test_supported' => true,
             'mapped_repository_diagnostics' => true,
+            'console_footer_controls' => true,
+            'automatic_sync_health_visible' => true,
+            'public_repository_testing_without_token' => true,
         );
     }
 
@@ -222,6 +225,8 @@ final class SCFS_GitHub_Connection_Settings {
         }
         $token_source = $this->token_source();
         $webhook_source = $this->webhook_secret_source();
+        $footer = class_exists('SCFS_Release_Console_Copy') ? SCFS_Release_Console_Copy::instance()->footer_settings() : array();
+        $next_sync = class_exists('SCFS_Canonical_Product_GitHub_Sync') ? SCFS_Canonical_Product_GitHub_Sync::instance()->next_scheduled_sync() : false;
         $test_result = get_transient($this->test_transient_key());
         if ($test_result !== false) {
             delete_transient($this->test_transient_key());
@@ -255,6 +260,11 @@ final class SCFS_GitHub_Connection_Settings {
         if ($token_source === 'wp_config' || $token_source === 'environment') {
             echo '<p class="description">' . esc_html__('The external token takes priority. Remove it from the server before a WordPress-stored token can be used.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         }
+        echo '</td></tr><tr><th scope="row">' . esc_html__('Automatic synchronization', 'sustainable-catalyst-feature-suggestions') . '</th><td><strong>' . esc_html($next_sync ? __('Scheduled hourly', 'sustainable-catalyst-feature-suggestions') : __('Schedule will be repaired automatically', 'sustainable-catalyst-feature-suggestions')) . '</strong>';
+        if ($next_sync) {
+            $next_label = function_exists('wp_date') ? wp_date(get_option('date_format') . ' ' . get_option('time_format'), $next_sync) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $next_sync);
+            echo '<p class="description">' . esc_html(sprintf(__('Next scheduled check: %s', 'sustainable-catalyst-feature-suggestions'), $next_label)) . '</p>';
+        }
         echo '</td></tr></tbody></table>';
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '"><input type="hidden" name="action" value="scfs_save_github_connection">';
         wp_nonce_field(self::NONCE_ACTION, 'scfs_github_connection_nonce');
@@ -262,7 +272,15 @@ final class SCFS_GitHub_Connection_Settings {
         echo '<tr><th scope="row"><label for="scfs-github-token">' . esc_html__('GitHub token', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input id="scfs-github-token" class="regular-text code" type="password" name="github_token" value="" autocomplete="new-password" placeholder="github_pat_…"><p class="description">' . esc_html__('Paste a fine-grained token with read access to the Content-Catalyst-LLC repositories. Leave blank to keep the current stored token.', 'sustainable-catalyst-feature-suggestions') . '</p><label><input type="checkbox" name="remove_github_token" value="1"> ' . esc_html__('Remove the WordPress-stored token', 'sustainable-catalyst-feature-suggestions') . '</label></td></tr>';
         echo '<tr><th scope="row"><label for="scfs-github-webhook-secret">' . esc_html__('Webhook secret', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input id="scfs-github-webhook-secret" class="regular-text code" type="password" name="webhook_secret" value="" autocomplete="new-password"><p class="description">' . esc_html__('Optional. Use the same secret in GitHub webhooks for immediate updates. Hourly synchronization works without it.', 'sustainable-catalyst-feature-suggestions') . ' ' . esc_html(sprintf(__('Current status: %s.', 'sustainable-catalyst-feature-suggestions'), $this->source_label($webhook_source))) . '</p><label><input type="checkbox" name="remove_webhook_secret" value="1"> ' . esc_html__('Remove the WordPress-stored webhook secret', 'sustainable-catalyst-feature-suggestions') . '</label></td></tr>';
         echo '</tbody></table>';
-        submit_button(__('Save GitHub Connection', 'sustainable-catalyst-feature-suggestions'));
+        echo '<h2>' . esc_html__('Release Console footer links', 'sustainable-catalyst-feature-suggestions') . '</h2>';
+        echo '<p>' . esc_html__('Edit the two terminal footer links here. These are the same settings used by Release Console Copy.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<table class="form-table" role="presentation"><tbody>';
+        echo '<tr><th scope="row"><label for="scfs-github-footer-repository">' . esc_html__('Repository label', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input class="regular-text" id="scfs-github-footer-repository" name="console_footer[footer_repository]" value="' . esc_attr($footer['footer_repository'] ?? 'repository') . '"><p class="description">' . esc_html__('Displayed with the terminal prefix, for example ./repository.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+        echo '<tr><th scope="row"><label for="scfs-github-footer-repository-url">' . esc_html__('Repository destination', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input class="large-text code" id="scfs-github-footer-repository-url" name="console_footer[footer_repository_url]" value="' . esc_attr($footer['footer_repository_url'] ?? '') . '" placeholder="Automatic from the mapped canonical repository"><p class="description">' . esc_html__('Leave blank to use the Product Support and Feedback GitHub repository automatically.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+        echo '<tr><th scope="row"><label for="scfs-github-footer-support">' . esc_html__('Support label', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input class="regular-text" id="scfs-github-footer-support" name="console_footer[footer_support]" value="' . esc_attr($footer['footer_support'] ?? 'support') . '"></td></tr>';
+        echo '<tr><th scope="row"><label for="scfs-github-footer-support-url">' . esc_html__('Support destination', 'sustainable-catalyst-feature-suggestions') . '</label></th><td><input class="large-text code" id="scfs-github-footer-support-url" name="console_footer[footer_support_url]" value="' . esc_attr($footer['footer_support_url'] ?? '/support/') . '" placeholder="/support/"><p class="description">' . esc_html__('Use a site-relative path or a complete URL.', 'sustainable-catalyst-feature-suggestions') . '</p></td></tr>';
+        echo '</tbody></table>';
+        submit_button(__('Save GitHub Connection and Console Links', 'sustainable-catalyst-feature-suggestions'));
         echo '</form>';
 
         $repositories = $this->mapped_repositories();
@@ -280,11 +298,11 @@ final class SCFS_GitHub_Connection_Settings {
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_sync_all_canonical_github'), 'scfs_sync_all_canonical_github')) . '">' . esc_html__('Sync all repositories now', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . SCFS_Installed_Plugin_Discovery::ADMIN_SLUG)) . '">' . esc_html__('Open product connections', 'sustainable-catalyst-feature-suggestions') . '</a></form>';
 
-        echo '<h2>' . esc_html__('Mapped repositories', 'sustainable-catalyst-feature-suggestions') . '</h2><table class="widefat striped"><thead><tr><th>' . esc_html__('Product', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Repository', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Sync status', 'sustainable-catalyst-feature-suggestions') . '</th></tr></thead><tbody>';
+        echo '<h2>' . esc_html__('Mapped repositories', 'sustainable-catalyst-feature-suggestions') . '</h2><table class="widefat striped"><thead><tr><th>' . esc_html__('Product', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Repository', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Sync status', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Action', 'sustainable-catalyst-feature-suggestions') . '</th></tr></thead><tbody>';
         if (!$repositories) {
-            echo '<tr><td colspan="3">' . esc_html__('No GitHub repositories are mapped yet.', 'sustainable-catalyst-feature-suggestions') . '</td></tr>';
+            echo '<tr><td colspan="4">' . esc_html__('No GitHub repositories are mapped yet.', 'sustainable-catalyst-feature-suggestions') . '</td></tr>';
         }
-        foreach ($repositories as $repository) {
+        foreach ($repositories as $product_id => $repository) {
             $message = $repository['message'];
             if ($message === '' && $repository['state'] === 'current' && $repository['latest_version'] === '') {
                 $message = __('Repository connected. No GitHub Release is published yet.', 'sustainable-catalyst-feature-suggestions');
@@ -297,7 +315,8 @@ final class SCFS_GitHub_Connection_Settings {
             if ($repository['last_synced_at'] !== '') {
                 echo '<br><small>' . esc_html(sprintf(__('Last attempt: %s', 'sustainable-catalyst-feature-suggestions'), $repository['last_synced_at'])) . '</small>';
             }
-            echo '</td></tr>';
+            $sync_url = wp_nonce_url(admin_url('admin-post.php?action=scfs_sync_canonical_github&product_id=' . rawurlencode($product_id)), 'scfs_sync_canonical_github');
+            echo '</td><td><a class="button button-small" href="' . esc_url($sync_url) . '">' . esc_html__('Sync now', 'sustainable-catalyst-feature-suggestions') . '</a></td></tr>';
         }
         echo '</tbody></table></div>';
     }
@@ -341,6 +360,9 @@ final class SCFS_GitHub_Connection_Settings {
             $settings['webhook_secret_updated_at'] = gmdate('c');
         }
         update_option(self::OPTION_KEY, $settings, false);
+        if (class_exists('SCFS_Release_Console_Copy') && isset($_POST['console_footer']) && is_array($_POST['console_footer'])) {
+            SCFS_Release_Console_Copy::instance()->update_footer_settings($_POST['console_footer']);
+        }
         wp_safe_redirect(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . self::ADMIN_SLUG . '&updated=1'));
         exit;
     }
@@ -359,14 +381,13 @@ final class SCFS_GitHub_Connection_Settings {
         }
         $results = array();
         $all_ok = true;
-        if ($this->token() === '') {
-            $all_ok = false;
-            $message = __('No GitHub token is available to WordPress. Public repositories may still work, but private repositories will fail.', 'sustainable-catalyst-feature-suggestions');
-        } elseif (!$repositories) {
+        if (!$repositories) {
             $all_ok = false;
             $message = __('No mapped repositories are available to test.', 'sustainable-catalyst-feature-suggestions');
         } else {
-            $message = __('Every mapped repository was checked with the same credential used by WordPress synchronization.', 'sustainable-catalyst-feature-suggestions');
+            $message = $this->token() === ''
+                ? __('Repositories were checked without a token. Public repositories can pass; private repositories require a token.', 'sustainable-catalyst-feature-suggestions')
+                : __('Every mapped repository was checked with the same credential used by WordPress synchronization.', 'sustainable-catalyst-feature-suggestions');
             foreach ($repositories as $repository) {
                 $diagnostic = SCFS_Canonical_Product_GitHub_Sync::instance()->diagnose_repository($repository['url']);
                 if (is_wp_error($diagnostic)) {

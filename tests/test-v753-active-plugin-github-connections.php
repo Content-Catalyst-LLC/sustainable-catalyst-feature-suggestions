@@ -7,11 +7,11 @@ $github = file_get_contents($plugin . '/includes/class-scfs-canonical-product-gi
 $registry = file_get_contents($plugin . '/includes/class-scfs-canonical-product-registry.php');
 $board = file_get_contents($plugin . '/includes/class-scfs-release-board.php');
 $copy = file_get_contents($plugin . '/includes/class-scfs-release-console-copy.php');
-$css = file_get_contents($plugin . '/assets/plugin-discovery-v7.5.4.css');
+$css = file_get_contents($plugin . '/assets/plugin-discovery-v7.5.5.css');
 $manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest.json'), true);
-$release = json_decode(file_get_contents($root . '/release-manifest-v7.5.4.json'), true);
+$release = json_decode(file_get_contents($root . '/release-manifest-v7.5.5.json'), true);
 $checks = array(
-    'runtime version' => strpos($main, 'Version: 7.5.4') !== false && strpos($main, "const VERSION = '7.5.4';") !== false,
+    'runtime version' => strpos($main, 'Version: 7.5.5') !== false && strpos($main, "const VERSION = '7.5.5';") !== false,
     'github class loaded' => strpos($main, 'class-scfs-canonical-product-github-sync.php') !== false,
     'github class initialized' => strpos($main, 'SCFS_Canonical_Product_GitHub_Sync::instance();') !== false,
     'github activation' => strpos($main, 'SCFS_Canonical_Product_GitHub_Sync::activate();') !== false,
@@ -23,11 +23,11 @@ $checks = array(
     'active plugin enforcement' => strpos($discovery, 'Select a currently active site or network plugin.') !== false,
     'connection audit' => strpos($discovery, 'canonical_product_connection_saved') !== false,
     'github repository field' => strpos($registry, "'github_repository_url'") !== false && strpos($discovery, 'github_repository_url') !== false,
-    'github release source' => strpos($registry, "'github_release'") !== false && strpos($registry, "'github' =>") !== false,
+    'github release and tag sources' => strpos($registry, "'github_release'") !== false && strpos($registry, "'github_tag'") !== false,
     'signed webhook' => strpos($github, '/product-registry/github/webhook') !== false && strpos($github, 'hash_hmac') !== false && strpos($github, 'hash_equals') !== false,
     'hourly polling' => strpos($github, "const CRON_HOOK = 'scfs_canonical_product_github_sync';") !== false && strpos($github, "wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly'") !== false,
     'private repo token' => strpos($github, 'SCFS_GITHUB_TOKEN') !== false && strpos($github, 'repository_credentials_stored') !== false,
-    'release drives console' => strpos($github, "\$record['version_source'] = 'github_release';") !== false && strpos($github, "\$record['public_version'] = \$latest_version;") !== false,
+    'release or tag drives console' => strpos($github, "\$record['version_source'] = \$version_source;") !== false && strpos($github, "\$record['public_version'] = \$latest_version;") !== false,
     'installed versus github status' => strpos($github, "version_compare(\$installed, \$latest_version, '<')") !== false && strpos($github, "\$record['status'] = 'update_available';") !== false,
     'repository footer resolver' => strpos($board, 'scfs_release_board_repository_url') !== false && strpos($board, "home_url('/support/releases/')") === false,
     'repository footer target' => strpos($board, 'target="_blank" rel="noopener noreferrer"') !== false,
@@ -45,4 +45,4 @@ foreach ($checks as $label => $passed) {
         exit(1);
     }
 }
-echo "v7.5.4 active plugin, GitHub, and Release Console connection contract passed (" . count($checks) . " checks).\n";
+echo "v7.5.5 active plugin, GitHub, and Release Console connection contract passed (" . count($checks) . " checks).\n";

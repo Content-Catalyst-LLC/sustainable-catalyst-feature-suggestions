@@ -1,7 +1,7 @@
 {
   "schema": "scfs-canonical-product-catalog/1.0",
   "registry_schema": "scfs-canonical-product-registry/2.0",
-  "generated_for": "Sustainable Catalyst Product Support and Feedback Platform v7.5.4",
+  "generated_for": "Sustainable Catalyst Product Support and Feedback Platform v7.5.5",
   "defaults": {
     "owner": "Content Catalyst LLC",
     "support_url": "/support/",

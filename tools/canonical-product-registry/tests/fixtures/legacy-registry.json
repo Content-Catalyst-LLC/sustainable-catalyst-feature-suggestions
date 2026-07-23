@@ -13,8 +13,8 @@
     "name": "Sustainable Catalyst Product Support and Feedback Platform",
     "plugin_file": "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
     "plugin_slug": "sustainable-catalyst-feature-suggestions",
-    "installed_version": "7.5.4",
-    "public_version": "7.5.4",
+    "installed_version": "7.5.5",
+    "public_version": "7.5.5",
     "status": "current",
     "validation_state": "validated",
     "documentation_state": "ready"

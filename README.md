@@ -1,10 +1,10 @@
-## Current release: v7.5.2 — Canonical Plugin Mapping and Review Workflow
+## Current release: v7.5.5 — GitHub Tag Fallback and Unified Console Administration
 
-Plugin Discovery now provides a governed **Map to canonical product** dropdown for installed plugins that cannot be resolved automatically. Administrator mappings persist approved identifiers, reject collisions, support duplicate reassignment, and can be removed safely. Candidates can also be marked as unrelated and restored later.
+GitHub synchronization now uses a published GitHub Release first and the newest valid semantic Git tag second. This allows private repositories such as Contact and Engagement to update the Release Console even before a GitHub Release is published, while ordinary untagged pushes remain activity evidence rather than being presented as releases.
 
-Authenticated REST fragments update counts, matched products, review rows, ignored plugins, and the **No plugins awaiting review** state immediately. Non-JavaScript forms, legacy shortcodes, the historical plugin folder, and accessibility behavior remain intact.
+The **GitHub Connection** screen now centralizes token status, automatic-sync health, per-repository tests and sync actions, and both Release Console footer destinations. Active WordPress plugin mapping, canonical aliases, legacy shortcodes, accessibility behavior, and the historical plugin folder remain preserved.
 
-See `docs/canonical-plugin-mapping-v7.5.2.md` and `docs/plugin-discovery-status-repair-v7.5.2.md`.
+See `docs/github-sync-continuity-v7.5.5.md` and `docs/github-connection-v7.5.5.md`.
 
 # Sustainable Catalyst Product Support and Feedback Platform
 

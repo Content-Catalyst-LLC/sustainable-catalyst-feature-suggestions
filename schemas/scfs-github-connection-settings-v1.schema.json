@@ -16,16 +16,26 @@
       "const": "scfs-github-connection-settings/1.0"
     },
     "version": {
-      "const": "7.5.4"
+      "const": "7.5.5"
     },
     "token_source": {
-      "enum": ["none", "wp_config", "environment", "wordpress"]
+      "enum": [
+        "none",
+        "wp_config",
+        "environment",
+        "wordpress"
+      ]
     },
     "token_configured": {
       "type": "boolean"
     },
     "webhook_secret_source": {
-      "enum": ["none", "wp_config", "environment", "wordpress"]
+      "enum": [
+        "none",
+        "wp_config",
+        "environment",
+        "wordpress"
+      ]
     },
     "webhook_secret_configured": {
       "type": "boolean"

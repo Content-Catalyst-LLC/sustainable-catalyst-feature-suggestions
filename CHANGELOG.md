@@ -1,5 +1,15 @@
 # Changelog
 
+## 7.5.5 — GitHub Tag Fallback and Unified Console Administration
+
+- Added published-release-first, semantic-Git-tag-second version authority for Canonical Product Registry synchronization.
+- Allows repositories with no GitHub Release to update the Release Console from their newest valid semantic version tag.
+- Keeps untagged pushes as commit and repository activity evidence without falsely promoting them to product releases.
+- Added automatic repair and visible health for the hourly GitHub synchronization schedule.
+- Consolidated repository tests, per-product synchronization, token status, and Release Console footer destinations on the GitHub Connection screen.
+- Allows public repository access tests without requiring a token while preserving private-repository credential support.
+- Preserved active plugin mapping, canonical aliases, legacy shortcodes, accessibility behavior, and the `sustainable-catalyst-feature-suggestions` WordPress folder.
+
 ## 7.5.4 — Administrator GitHub Connection and Console Link Controls
 
 - Added a dedicated WordPress GitHub Connection screen with encrypted, non-autoloaded token storage.

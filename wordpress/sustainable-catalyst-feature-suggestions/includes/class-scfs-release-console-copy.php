@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Console_Copy {
-    const VERSION = '7.5.4';
+    const VERSION = '7.5.5';
     const SCHEMA = 'scfs-release-console-copy/1.0';
     const OPTION_KEY = 'scfs_release_console_copy';
     const ADMIN_SLUG = 'scfs-release-console-copy';
@@ -148,6 +148,33 @@ final class SCFS_Release_Console_Copy {
         }
         $clean['footer_releases'] = $clean['footer_repository'];
         return $clean;
+    }
+
+    public function footer_settings() {
+        $copy = $this->copy();
+        return array(
+            'footer_repository' => $copy['footer_repository'],
+            'footer_repository_url' => $copy['footer_repository_url'],
+            'footer_support' => $copy['footer_support'],
+            'footer_support_url' => $copy['footer_support_url'],
+        );
+    }
+
+    public function update_footer_settings($input) {
+        $stored = get_option(self::OPTION_KEY, array());
+        $stored = is_array($stored) ? $stored : array();
+        $defaults = $this->defaults();
+        $footer = is_array($input) ? $input : array();
+        $repository_label = sanitize_text_field(wp_unslash($footer['footer_repository'] ?? $defaults['footer_repository']));
+        $support_label = sanitize_text_field(wp_unslash($footer['footer_support'] ?? $defaults['footer_support']));
+        $stored['footer_repository'] = $repository_label !== '' ? $repository_label : $defaults['footer_repository'];
+        $stored['footer_releases'] = $stored['footer_repository'];
+        $stored['footer_repository_url'] = $this->sanitize_link_target($footer['footer_repository_url'] ?? '', '');
+        $stored['footer_support'] = $support_label !== '' ? $support_label : $defaults['footer_support'];
+        $stored['footer_support_url'] = $this->sanitize_link_target($footer['footer_support_url'] ?? '', $defaults['footer_support_url']);
+        update_option(self::OPTION_KEY, array_merge($defaults, $stored), false);
+        do_action('scfs_release_console_copy_updated', array_merge($defaults, $stored));
+        return $this->footer_settings();
     }
 
     public function register_admin_page() {

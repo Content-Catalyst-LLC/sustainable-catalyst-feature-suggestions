@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.5.4';
+    const VERSION = '7.5.5';
     const SCHEMA = 'scfs-canonical-product-registry/2.0';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
@@ -98,7 +98,7 @@ final class SCFS_Canonical_Product_Registry {
         $this->audit('registry_release_intelligence_upgraded', array(
             'from_schema' => $from_schema,
             'schema' => self::SCHEMA,
-            'release_migration' => 'v7.5.4',
+            'release_migration' => 'v7.5.5',
             'knowledge_library_homepage_visible' => true,
             'analytics_r_public_label' => 'Analytics R',
         ));
@@ -127,6 +127,7 @@ final class SCFS_Canonical_Product_Registry {
         return array(
             'wordpress_plugin' => __('Installed WordPress plugin', 'sustainable-catalyst-feature-suggestions'),
             'github_release' => __('GitHub release', 'sustainable-catalyst-feature-suggestions'),
+            'github_tag' => __('GitHub version tag', 'sustainable-catalyst-feature-suggestions'),
             'manual' => __('Manual entry', 'sustainable-catalyst-feature-suggestions'),
             'remote_manifest' => __('Remote manifest (reserved)', 'sustainable-catalyst-feature-suggestions'),
             'service_endpoint' => __('Service endpoint (reserved)', 'sustainable-catalyst-feature-suggestions'),
@@ -240,6 +241,9 @@ final class SCFS_Canonical_Product_Registry {
             'github_latest_release_name' => '',
             'github_latest_release_url' => '',
             'github_latest_release_at' => '',
+            'github_latest_tag_name' => '',
+            'github_latest_tag_url' => '',
+            'github_version_source' => '',
             'github_latest_commit_sha' => '',
             'github_repository_updated_at' => '',
             'github_last_synced_at' => '',
@@ -362,9 +366,9 @@ final class SCFS_Canonical_Product_Registry {
         $merged['product-support-feedback']['installed_version'] = self::VERSION;
         $merged['product-support-feedback']['public_version'] = self::VERSION;
         $merged['product-support-feedback']['status'] = 'current';
-        $merged['product-support-feedback']['previous_version'] = '7.5.2';
-        $merged['product-support-feedback']['release_date'] = '2026-07-22';
-        $merged['product-support-feedback']['change_summary'] = 'Active plugin connections, GitHub release synchronization, and repository-linked Release Console evidence.';
+        $merged['product-support-feedback']['previous_version'] = '7.5.4';
+        $merged['product-support-feedback']['release_date'] = '2026-07-23';
+        $merged['product-support-feedback']['change_summary'] = 'GitHub release-first synchronization, semantic tag fallback, unified console link administration, and automatic sync health repair.';
         $merged['product-support-feedback']['validation_state'] = 'validated';
         $merged['product-support-feedback']['documentation_state'] = 'ready';
         return $this->normalize_registry($merged);
@@ -559,6 +563,9 @@ final class SCFS_Canonical_Product_Registry {
             'github_latest_release_name' => sanitize_text_field(isset($record['github_latest_release_name']) ? $record['github_latest_release_name'] : ''),
             'github_latest_release_url' => esc_url_raw(isset($record['github_latest_release_url']) ? $record['github_latest_release_url'] : ''),
             'github_latest_release_at' => sanitize_text_field(isset($record['github_latest_release_at']) ? $record['github_latest_release_at'] : ''),
+            'github_latest_tag_name' => sanitize_text_field(isset($record['github_latest_tag_name']) ? $record['github_latest_tag_name'] : ''),
+            'github_latest_tag_url' => esc_url_raw(isset($record['github_latest_tag_url']) ? $record['github_latest_tag_url'] : ''),
+            'github_version_source' => sanitize_key(isset($record['github_version_source']) ? $record['github_version_source'] : ''),
             'github_latest_commit_sha' => sanitize_text_field(isset($record['github_latest_commit_sha']) ? $record['github_latest_commit_sha'] : ''),
             'github_repository_updated_at' => sanitize_text_field(isset($record['github_repository_updated_at']) ? $record['github_repository_updated_at'] : ''),
             'github_last_synced_at' => sanitize_text_field(isset($record['github_last_synced_at']) ? $record['github_last_synced_at'] : ''),
@@ -846,6 +853,9 @@ final class SCFS_Canonical_Product_Registry {
             'release_notes_url' => $record['release_notes_url'],
             'github_repository_url' => $record['github_repository_url'],
             'github_latest_release_url' => $record['github_latest_release_url'],
+            'github_latest_tag_name' => $record['github_latest_tag_name'],
+            'github_latest_tag_url' => $record['github_latest_tag_url'],
+            'github_version_source' => $record['github_version_source'],
             'github_latest_commit_sha' => $record['github_latest_commit_sha'],
             'github_repository_updated_at' => $record['github_repository_updated_at'],
             'github_sync_state' => $record['github_sync_state'],
@@ -875,7 +885,7 @@ final class SCFS_Canonical_Product_Registry {
             'families' => array_keys($this->families()),
             'console_screens' => array_keys($this->families()),
             'version_sources' => array_keys($this->version_sources()),
-            'active_version_sources' => array('wordpress_plugin', 'github_release', 'manual'),
+            'active_version_sources' => array('wordpress_plugin', 'github_release', 'github_tag', 'manual'),
             'reserved_version_sources' => array('remote_manifest', 'service_endpoint', 'package_manifest'),
             'statuses' => array_keys($this->statuses()),
             'release_channels' => array_keys($this->channels()),
@@ -888,6 +898,7 @@ final class SCFS_Canonical_Product_Registry {
             'private_repository_identity_governed' => true,
             'github_repository_connection_governed' => true,
             'github_release_sync_supported' => true,
+            'github_semantic_tag_fallback_supported' => true,
             'github_webhook_and_polling_supported' => true,
             'console_screen_assignment_governed' => true,
             'lifecycle_state_governed' => true,
@@ -986,7 +997,7 @@ final class SCFS_Canonical_Product_Registry {
         $summary = $this->summary_record();
         $integrity = $this->integrity_report($registry);
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.5.4 connects every governed console product to any currently active WordPress plugin and a GitHub repository, with signed webhooks, hourly polling, repository-linked console output, and installed-versus-release status intelligence.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.5.5 connects active plugins and GitHub repositories to canonical console products, prioritizes published releases, falls back to semantic version tags, repairs hourly polling, and centralizes console footer administration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -1070,7 +1081,7 @@ final class SCFS_Canonical_Product_Registry {
         echo '<hr><p><a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_validate_product_registry'), 'scfs_validate_product_registry')) . '">' . esc_html__('Validate integrity', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_migrate_product_registry'), 'scfs_migrate_product_registry')) . '">' . esc_html__('Run schema migration', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.5.4 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.5.5 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

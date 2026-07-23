@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_GitHub_Sync {
-    const VERSION = '7.5.4';
+    const VERSION = '7.5.5';
     const SCHEMA = 'scfs-canonical-product-github-sync/1.0';
     const CRON_HOOK = 'scfs_canonical_product_github_sync';
     const AUDIT_OPTION = 'scfs_canonical_product_github_sync_audit';
@@ -36,6 +36,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         add_action('rest_api_init', array($this, 'register_rest_routes'));
         add_action('scfs_canonical_product_connection_saved', array($this, 'connection_saved'), 10, 1);
         add_action('admin_post_scfs_sync_canonical_github', array($this, 'admin_sync_action'));
+        add_action('admin_init', array($this, 'ensure_schedule'));
         if (defined('WP_CLI') && WP_CLI && class_exists('WP_CLI')) {
             WP_CLI::add_command('scfs products github-sync', array($this, 'cli_sync'));
         }
@@ -51,6 +52,16 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         if (function_exists('wp_next_scheduled') && function_exists('wp_schedule_event') && !wp_next_scheduled(self::CRON_HOOK)) {
             wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', self::CRON_HOOK);
         }
+    }
+
+    public function ensure_schedule() {
+        if (function_exists('wp_next_scheduled') && function_exists('wp_schedule_event') && !wp_next_scheduled(self::CRON_HOOK)) {
+            wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', self::CRON_HOOK);
+        }
+    }
+
+    public function next_scheduled_sync() {
+        return function_exists('wp_next_scheduled') ? wp_next_scheduled(self::CRON_HOOK) : false;
     }
 
     public static function deactivate() {
@@ -72,6 +83,9 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             'repository_provider' => 'github',
             'signed_webhook_supported' => true,
             'hourly_polling_fallback' => true,
+            'hourly_schedule_self_repair' => true,
+            'semantic_version_tag_fallback' => true,
+            'version_authority_order' => array('github_release', 'github_tag', 'existing_registry_version'),
             'private_repository_token_constant' => 'SCFS_GITHUB_TOKEN',
             'webhook_secret_constant' => 'SCFS_GITHUB_WEBHOOK_SECRET',
             'administrator_connection_screen' => 'scfs-github-connection',
@@ -180,17 +194,66 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             return $releases;
         }
         $has_release = isset($releases[0]) && is_array($releases[0]) && empty($releases[0]['draft']);
+        $tag = array();
+        if (!$has_release) {
+            $tag = $this->latest_semantic_tag($repository);
+            if (is_wp_error($tag)) {
+                return $tag;
+            }
+        }
+        $has_tag = !empty($tag['version']);
+        $latest_version = $has_release ? $this->normalize_version($releases[0]['tag_name'] ?? '') : ($tag['version'] ?? '');
+        $source = $has_release ? 'github_release' : ($has_tag ? 'github_tag' : 'none');
         return array(
             'ok' => true,
             'repository' => $repository['canonical_url'],
             'private' => !empty($metadata['private']),
             'default_branch' => $branch,
             'has_release' => $has_release,
-            'latest_version' => $has_release ? $this->normalize_version($releases[0]['tag_name'] ?? '') : '',
+            'has_semantic_tag' => $has_tag,
+            'version_source' => $source,
+            'latest_version' => $latest_version,
             'message' => $has_release
-                ? sprintf(__('Accessible; latest release %s.', 'sustainable-catalyst-feature-suggestions'), $this->normalize_version($releases[0]['tag_name'] ?? ''))
-                : __('Accessible; no GitHub Release is published yet.', 'sustainable-catalyst-feature-suggestions'),
+                ? sprintf(__('Accessible; latest published release %s.', 'sustainable-catalyst-feature-suggestions'), $latest_version)
+                : ($has_tag
+                    ? sprintf(__('Accessible; no GitHub Release is published. Console version can use tag %s.', 'sustainable-catalyst-feature-suggestions'), $tag['name'])
+                    : __('Accessible; no GitHub Release or semantic version tag is published yet.', 'sustainable-catalyst-feature-suggestions')),
         );
+    }
+
+    private function semantic_version($tag) {
+        $normalized = $this->normalize_version($tag);
+        if (!preg_match('/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/', $normalized)) {
+            return '';
+        }
+        return $normalized;
+    }
+
+    private function latest_semantic_tag($repository) {
+        $tags = $this->request($repository['api_base'] . '/tags?per_page=100');
+        if (is_wp_error($tags)) {
+            return $tags;
+        }
+        $best = array();
+        foreach ((array) $tags as $tag) {
+            if (!is_array($tag)) {
+                continue;
+            }
+            $name = sanitize_text_field($tag['name'] ?? '');
+            $version = $this->semantic_version($name);
+            if ($version === '') {
+                continue;
+            }
+            if (!$best || version_compare($version, $best['version'], '>')) {
+                $best = array(
+                    'name' => $name,
+                    'version' => $version,
+                    'url' => $repository['canonical_url'] . '/tree/' . rawurlencode($name),
+                    'commit_sha' => sanitize_text_field($tag['commit']['sha'] ?? ''),
+                );
+            }
+        }
+        return $best;
     }
 
     private function normalize_version($tag) {
@@ -250,10 +313,19 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             return $releases;
         }
         $release = isset($releases[0]) && is_array($releases[0]) && empty($releases[0]['draft']) ? $releases[0] : array();
+        $tag = array();
+        if (!$release) {
+            $tag = $this->latest_semantic_tag($repository);
+            if (is_wp_error($tag)) {
+                $this->save_error($product_id, $tag->get_error_message());
+                return $tag;
+            }
+        }
         $commit = $this->request($repository['api_base'] . '/commits/' . rawurlencode($branch));
-        $commit_sha = is_wp_error($commit) ? '' : sanitize_text_field($commit['sha'] ?? '');
+        $commit_sha = is_wp_error($commit) ? sanitize_text_field($tag['commit_sha'] ?? '') : sanitize_text_field($commit['sha'] ?? '');
         $now = gmdate('c');
-        $latest_version = $this->normalize_version($release['tag_name'] ?? '');
+        $latest_version = $release ? $this->normalize_version($release['tag_name'] ?? '') : sanitize_text_field($tag['version'] ?? '');
+        $version_source = $release ? 'github_release' : ($latest_version !== '' ? 'github_tag' : 'none');
         $published_at = sanitize_text_field($release['published_at'] ?? '');
         $release_date = preg_match('/^\d{4}-\d{2}-\d{2}/', $published_at, $match) ? $match[0] : '';
         $previous = trim((string) ($record['github_latest_version'] ?? ''));
@@ -262,13 +334,20 @@ final class SCFS_Canonical_Product_GitHub_Sync {
         $record['repository_slug'] = sanitize_key($repository['repository']);
         $record['github_default_branch'] = $branch ?: 'main';
         $record['github_sync_state'] = 'current';
-        $record['github_sync_message'] = $latest_version === ''
-            ? __('Repository connected. No GitHub Release is published yet; repository and commit evidence were synchronized.', 'sustainable-catalyst-feature-suggestions')
-            : '';
+        if ($version_source === 'github_release') {
+            $record['github_sync_message'] = '';
+        } elseif ($version_source === 'github_tag') {
+            $record['github_sync_message'] = sprintf(__('Repository connected. No GitHub Release is published; console version synchronized from tag %s.', 'sustainable-catalyst-feature-suggestions'), $tag['name']);
+        } else {
+            $record['github_sync_message'] = __('Repository connected. No GitHub Release or semantic version tag is published; repository and commit evidence were synchronized.', 'sustainable-catalyst-feature-suggestions');
+        }
         $record['github_latest_version'] = $latest_version;
+        $record['github_version_source'] = $version_source;
         $record['github_latest_release_name'] = sanitize_text_field($release['name'] ?? '');
         $record['github_latest_release_url'] = esc_url_raw($release['html_url'] ?? '');
         $record['github_latest_release_at'] = $published_at;
+        $record['github_latest_tag_name'] = sanitize_text_field($tag['name'] ?? '');
+        $record['github_latest_tag_url'] = esc_url_raw($tag['url'] ?? '');
         $record['github_latest_commit_sha'] = $commit_sha;
         $record['github_repository_updated_at'] = sanitize_text_field($metadata['pushed_at'] ?? ($metadata['updated_at'] ?? ''));
         $record['github_last_synced_at'] = $now;
@@ -285,18 +364,25 @@ final class SCFS_Canonical_Product_GitHub_Sync {
                 $record['previous_version'] = $installed;
             }
             $record['public_version'] = $latest_version;
-            $record['version_source'] = 'github_release';
+            $record['version_source'] = $version_source;
             $record['version_precedence'] = 'github';
-            $record['release_date'] = $release_date;
-            $record['change_summary'] = $this->release_summary($release);
-            $record['release_notes_url'] = esc_url_raw($release['html_url'] ?? $repository['canonical_url']);
-            $record['release_channel'] = !empty($release['prerelease']) ? 'preview' : 'stable';
+            if ($version_source === 'github_release') {
+                $record['release_date'] = $release_date;
+                $record['change_summary'] = $this->release_summary($release);
+                $record['release_notes_url'] = esc_url_raw($release['html_url'] ?? $repository['canonical_url']);
+                $record['release_channel'] = !empty($release['prerelease']) ? 'preview' : 'stable';
+            } else {
+                $record['release_date'] = '';
+                $record['change_summary'] = sprintf(__('Version tag %s synchronized from GitHub; no published GitHub Release is available.', 'sustainable-catalyst-feature-suggestions'), $tag['name']);
+                $record['release_notes_url'] = esc_url_raw($tag['url'] ?? $repository['canonical_url']);
+                $record['release_channel'] = preg_match('/(?:alpha|beta|rc|preview)/i', (string) ($tag['name'] ?? '')) ? 'preview' : 'stable';
+            }
             if ($installed !== '' && version_compare($installed, $latest_version, '<')) {
                 $record['status'] = 'update_available';
             } elseif (!empty($record['discovered_active'])) {
                 $record['status'] = 'current';
             } else {
-                $record['status'] = !empty($release['prerelease']) ? 'preview' : 'stable';
+                $record['status'] = $record['release_channel'] === 'preview' ? 'preview' : 'stable';
             }
         }
 
@@ -307,6 +393,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
             'product_id' => $product_id,
             'repository_url' => $repository['canonical_url'],
             'version' => $latest_version,
+            'version_source' => $version_source,
             'reason' => sanitize_key($reason),
         ));
         do_action('scfs_product_registry_updated', $normalized);
@@ -321,7 +408,7 @@ final class SCFS_Canonical_Product_GitHub_Sync {
                 continue;
             }
             $result = $this->sync_product($product_id, $reason);
-            $results[$product_id] = is_wp_error($result) ? array('ok' => false, 'message' => $result->get_error_message()) : array('ok' => true, 'version' => $result['github_latest_version'] ?? '');
+            $results[$product_id] = is_wp_error($result) ? array('ok' => false, 'message' => $result->get_error_message()) : array('ok' => true, 'version' => $result['github_latest_version'] ?? '', 'source' => $result['github_version_source'] ?? '');
         }
         update_option(self::LAST_RUN_OPTION, array('ran_at' => gmdate('c'), 'reason' => sanitize_key($reason), 'results' => $results), false);
         return $results;
