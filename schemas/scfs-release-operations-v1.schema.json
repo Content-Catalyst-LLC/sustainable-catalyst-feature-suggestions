@@ -15,7 +15,7 @@
       "const": "scfs-release-operations/1.0"
     },
     "version": {
-      "const": "7.6.0"
+      "const": "7.6.1"
     },
     "generated_at": {
       "type": "string"
@@ -30,7 +30,9 @@
         "updates",
         "errors",
         "stale",
-        "unconfigured"
+        "unconfigured",
+        "semantic_tags",
+        "no_releases"
       ],
       "properties": {
         "products": {
@@ -62,6 +64,14 @@
           "minimum": 0
         },
         "unconfigured": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "semantic_tags": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "no_releases": {
           "type": "integer",
           "minimum": 0
         }
@@ -148,13 +158,43 @@
           "operational_state": {
             "enum": [
               "current",
+              "semantic_tag",
+              "connected_no_release",
               "update_available",
               "error",
+              "authentication_required",
+              "repository_unavailable",
+              "rate_limited",
+              "network_error",
               "stale",
               "never",
               "unknown",
               "unconfigured"
             ]
+          },
+          "plugin_file": {
+            "type": "string"
+          },
+          "github_connection_state": {
+            "type": "string"
+          },
+          "github_sync_error_code": {
+            "type": "string"
+          },
+          "github_sync_http_status": {
+            "type": "string"
+          },
+          "github_sync_endpoint": {
+            "type": "string"
+          },
+          "github_sync_endpoint_url": {
+            "type": "string"
+          },
+          "github_sync_failed_at": {
+            "type": "string"
+          },
+          "github_commit_sync_warning": {
+            "type": "string"
           }
         },
         "additionalProperties": false

@@ -1,8 +1,8 @@
-# Product Support and Feedback Platform v7.6.0
+# Product Support and Feedback Platform v7.6.1
 
-## Release Operations Administration and Sync Governance
+## Release Operations Stabilization
 
-Version 7.6.0 advances the Canonical Product Registry from connection setup into day-to-day release administration. Administrators now have one operational screen showing how every non-retired canonical product connects to its active WordPress implementation, mapped GitHub repository, governed release version, and public Release Console state.
+Version 7.6.1 advances the Canonical Product Registry from connection setup into day-to-day release administration. Administrators now have one operational screen showing how every non-retired canonical product connects to its active WordPress implementation, mapped GitHub repository, governed release version, and public Release Console state.
 
 ### Release Operations
 

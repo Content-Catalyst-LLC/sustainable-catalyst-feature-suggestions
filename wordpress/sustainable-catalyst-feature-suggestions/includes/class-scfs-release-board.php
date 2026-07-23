@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Board {
-    const VERSION = '7.6.0';
+    const VERSION = '7.6.1';
     const SCHEMA = 'scfs-release-board/1.3';
     const SHORTCODE = 'sc_release_board';
     const STYLE_HANDLE = 'scfs-release-board';
@@ -47,7 +47,7 @@ final class SCFS_Release_Board {
     }
 
     public function register_assets() {
-        $relative = 'assets/release-board-v7.6.0.css';
+        $relative = 'assets/release-board-v7.6.1.css';
         $path = plugin_dir_path(dirname(__FILE__)) . $relative;
         $version = is_file($path) ? (string) filemtime($path) : self::VERSION;
         wp_register_style(
@@ -56,7 +56,7 @@ final class SCFS_Release_Board {
             array(),
             $version
         );
-        $script_relative = 'assets/release-console-v7.6.0.js';
+        $script_relative = 'assets/release-console-v7.6.1.js';
         $script_path = plugin_dir_path(dirname(__FILE__)) . $script_relative;
         $script_version = is_file($script_path) ? (string) filemtime($script_path) : self::VERSION;
         wp_register_script(
@@ -71,6 +71,11 @@ final class SCFS_Release_Board {
     public function invalidate_cache() {
         $epoch = absint(get_option(self::CACHE_EPOCH_OPTION, 1));
         update_option(self::CACHE_EPOCH_OPTION, (string) ($epoch + 1), false);
+        do_action('scfs_release_board_cache_invalidated', $epoch + 1);
+    }
+
+    public function cache_epoch() {
+        return absint(get_option(self::CACHE_EPOCH_OPTION, 1));
     }
 
     public function schema_record() {
@@ -165,6 +170,8 @@ final class SCFS_Release_Board {
             'shortcode_copy_overrides' => true,
             'registry_facts_overridable_by_copy' => false,
             'cache_ttl_seconds' => self::DEFAULT_CACHE_TTL,
+            'cache_epoch_observable' => true,
+            'registry_plugin_github_footer_changes_invalidate_cache' => true,
         );
     }
 

@@ -1,4 +1,4 @@
-# GitHub synchronization continuity v7.6.0
+# GitHub synchronization continuity v7.6.1
 
 Open **Support & Feedback → GitHub Connection** to manage the credential, test repository access, synchronize individual repositories, synchronize all repositories, and edit the two Release Console footer links.
 

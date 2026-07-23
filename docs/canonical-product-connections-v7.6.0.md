@@ -1,4 +1,4 @@
-# Canonical Product Connections — v7.6.0
+# Canonical Product Connections — v7.6.1
 
 Each connection has one canonical identity and two evidence sources:
 

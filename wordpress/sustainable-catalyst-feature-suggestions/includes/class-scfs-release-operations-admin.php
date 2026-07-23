@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Operations_Admin {
-    const VERSION = '7.6.0';
+    const VERSION = '7.6.1';
     const SCHEMA = 'scfs-release-operations/1.0';
     const ADMIN_SLUG = 'scfs-release-operations';
     const AUDIT_OPTION = 'scfs_release_operations_audit';
@@ -38,6 +38,7 @@ final class SCFS_Release_Operations_Admin {
         add_action('admin_post_scfs_release_operations_bulk', array($this, 'bulk_action'));
         add_action('admin_post_scfs_release_operations_audit', array($this, 'audit_action'));
         add_action('admin_post_scfs_release_operations_export', array($this, 'export_action'));
+        add_action('admin_post_scfs_release_operations_stabilize', array($this, 'stabilize_action'));
         if (defined('WP_CLI') && WP_CLI && class_exists('WP_CLI')) {
             WP_CLI::add_command('scfs products operations-report', array($this, 'cli_report'));
         }
@@ -66,6 +67,12 @@ final class SCFS_Release_Operations_Admin {
             'wp_cli_report' => true,
             'credentials_excluded' => true,
             'legacy_shortcodes_preserved' => true,
+            'exact_endpoint_diagnostics' => true,
+            'stale_status_clearing' => true,
+            'plugin_mapping_integrity' => true,
+            'footer_link_verification' => true,
+            'cache_invalidation_verification' => true,
+            'one_click_stabilization' => true,
         );
     }
 
@@ -84,8 +91,8 @@ final class SCFS_Release_Operations_Admin {
         if (strpos((string) $hook_suffix, self::ADMIN_SLUG) === false) {
             return;
         }
-        $css = 'assets/release-operations-v7.6.0.css';
-        $js = 'assets/release-operations-v7.6.0.js';
+        $css = 'assets/release-operations-v7.6.1.css';
+        $js = 'assets/release-operations-v7.6.1.js';
         $css_path = plugin_dir_path(dirname(__FILE__)) . $css;
         $js_path = plugin_dir_path(dirname(__FILE__)) . $js;
         wp_enqueue_style(
@@ -135,8 +142,11 @@ final class SCFS_Release_Operations_Admin {
     }
 
     private function product_operational_state($record) {
+        $connection_state = sanitize_key($record['github_connection_state'] ?? '');
         if (($record['github_sync_state'] ?? '') === 'error') {
-            return 'error';
+            return in_array($connection_state, array('authentication_required', 'repository_unavailable', 'rate_limited', 'network_error'), true)
+                ? $connection_state
+                : 'error';
         }
         if (($record['status'] ?? '') === 'update_available') {
             return 'update_available';
@@ -147,6 +157,12 @@ final class SCFS_Release_Operations_Admin {
         $freshness = $this->freshness_state($record['github_last_synced_at'] ?? '', $record['github_sync_state'] ?? '');
         if (in_array($freshness, array('stale', 'never', 'unknown'), true)) {
             return $freshness;
+        }
+        if ($connection_state === 'semantic_tag') {
+            return 'semantic_tag';
+        }
+        if ($connection_state === 'connected_no_release') {
+            return 'connected_no_release';
         }
         return 'current';
     }
@@ -161,6 +177,12 @@ final class SCFS_Release_Operations_Admin {
             'error' => __('Synchronization error', 'sustainable-catalyst-feature-suggestions'),
             'update_available' => __('Update available', 'sustainable-catalyst-feature-suggestions'),
             'unconfigured' => __('Repository not connected', 'sustainable-catalyst-feature-suggestions'),
+            'semantic_tag' => __('Connected · semantic tag', 'sustainable-catalyst-feature-suggestions'),
+            'connected_no_release' => __('Connected · no release', 'sustainable-catalyst-feature-suggestions'),
+            'authentication_required' => __('Authentication required', 'sustainable-catalyst-feature-suggestions'),
+            'repository_unavailable' => __('Repository unavailable', 'sustainable-catalyst-feature-suggestions'),
+            'rate_limited' => __('GitHub rate limited', 'sustainable-catalyst-feature-suggestions'),
+            'network_error' => __('Network error', 'sustainable-catalyst-feature-suggestions'),
         );
         return $labels[$state] ?? ucfirst(str_replace('_', ' ', $state));
     }
@@ -174,6 +196,7 @@ final class SCFS_Release_Operations_Admin {
             'public_visible' => !empty($record['public_visible']),
             'homepage_visible' => !empty($record['homepage_visible']),
             'plugin_name' => sanitize_text_field($record['discovered_plugin_name'] ?? ''),
+            'plugin_file' => sanitize_text_field($record['plugin_file'] ?? ''),
             'plugin_active' => !empty($record['discovered_active']),
             'activation_scope' => sanitize_key($record['discovered_activation_scope'] ?? 'inactive'),
             'installed_version' => sanitize_text_field($record['installed_version'] ?? ''),
@@ -181,6 +204,13 @@ final class SCFS_Release_Operations_Admin {
             'github_sync_enabled' => !empty($record['github_sync_enabled']),
             'github_sync_state' => sanitize_key($record['github_sync_state'] ?? 'unconfigured'),
             'github_sync_message' => sanitize_text_field($record['github_sync_message'] ?? ''),
+            'github_connection_state' => sanitize_key($record['github_connection_state'] ?? ''),
+            'github_sync_error_code' => sanitize_key($record['github_sync_error_code'] ?? ''),
+            'github_sync_http_status' => sanitize_text_field($record['github_sync_http_status'] ?? ''),
+            'github_sync_endpoint' => sanitize_key($record['github_sync_endpoint'] ?? ''),
+            'github_sync_endpoint_url' => esc_url_raw($record['github_sync_endpoint_url'] ?? ''),
+            'github_sync_failed_at' => sanitize_text_field($record['github_sync_failed_at'] ?? ''),
+            'github_commit_sync_warning' => sanitize_text_field($record['github_commit_sync_warning'] ?? ''),
             'github_version' => sanitize_text_field($record['github_latest_version'] ?? ''),
             'github_version_source' => sanitize_key($record['github_version_source'] ?? ''),
             'public_version' => sanitize_text_field($record['public_version'] ?? ''),
@@ -203,6 +233,8 @@ final class SCFS_Release_Operations_Admin {
             'errors' => 0,
             'stale' => 0,
             'unconfigured' => 0,
+            'semantic_tags' => 0,
+            'no_releases' => 0,
         );
         foreach ($registry as $product_id => $record) {
             if (!is_array($record) || ($record['lifecycle_state'] ?? '') === 'retired') {
@@ -223,8 +255,14 @@ final class SCFS_Release_Operations_Admin {
             if ($row['operational_state'] === 'update_available') {
                 $summary['updates']++;
             }
-            if ($row['operational_state'] === 'error') {
+            if (in_array($row['operational_state'], array('error', 'authentication_required', 'repository_unavailable', 'rate_limited', 'network_error'), true)) {
                 $summary['errors']++;
+            }
+            if ($row['operational_state'] === 'semantic_tag') {
+                $summary['semantic_tags']++;
+            }
+            if ($row['operational_state'] === 'connected_no_release') {
+                $summary['no_releases']++;
             }
             if (in_array($row['operational_state'], array('stale', 'never', 'unknown'), true)) {
                 $summary['stale']++;
@@ -239,6 +277,47 @@ final class SCFS_Release_Operations_Admin {
             'generated_at' => gmdate('c'),
             'summary' => $summary,
             'products' => $products,
+        );
+    }
+
+    private function valid_link_target($value, $allow_blank = false) {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return $allow_blank;
+        }
+        if (strpos($value, '/') === 0) {
+            return true;
+        }
+        $parts = function_exists('wp_parse_url') ? wp_parse_url($value) : parse_url($value);
+        return is_array($parts) && in_array(strtolower($parts['scheme'] ?? ''), array('http', 'https'), true) && !empty($parts['host']);
+    }
+
+    public function footer_health($registry = null) {
+        $registry = is_array($registry) ? $registry : $this->registry();
+        $settings = class_exists('SCFS_Release_Console_Copy')
+            ? SCFS_Release_Console_Copy::instance()->footer_settings()
+            : array(
+                'footer_repository' => 'repository',
+                'footer_repository_url' => '',
+                'footer_support' => 'support',
+                'footer_support_url' => '/support/',
+            );
+        $fallback = '';
+        if (!empty($registry['product-support-feedback']['github_repository_url'])) {
+            $fallback = esc_url_raw($registry['product-support-feedback']['github_repository_url']);
+        }
+        $configured_repository = trim((string) ($settings['footer_repository_url'] ?? ''));
+        $resolved_repository = $configured_repository !== '' ? $configured_repository : $fallback;
+        $support = trim((string) ($settings['footer_support_url'] ?? ''));
+        return array(
+            'repository_label' => sanitize_text_field($settings['footer_repository'] ?? 'repository'),
+            'repository_configured' => $configured_repository,
+            'repository_resolved' => esc_url_raw($resolved_repository),
+            'repository_valid' => $this->valid_link_target($resolved_repository, false),
+            'repository_uses_canonical_fallback' => $configured_repository === '' && $fallback !== '',
+            'support_label' => sanitize_text_field($settings['footer_support'] ?? 'support'),
+            'support_resolved' => $support,
+            'support_valid' => $this->valid_link_target($support, false),
         );
     }
 
@@ -282,6 +361,44 @@ final class SCFS_Release_Operations_Admin {
                 }
             }
         }
+        if (class_exists('SCFS_Installed_Plugin_Discovery')) {
+            $active_plugins = SCFS_Installed_Plugin_Discovery::instance()->active_plugins_for_mapping();
+            foreach ($registry as $product_id => $record) {
+                if (!is_array($record) || ($record['lifecycle_state'] ?? '') === 'retired') {
+                    continue;
+                }
+                $plugin_file = trim((string) ($record['plugin_file'] ?? ''));
+                if (!empty($record['discovered_active']) && ($plugin_file === '' || !isset($active_plugins[$plugin_file]))) {
+                    $findings[] = array(
+                        'severity' => 'error',
+                        'product_id' => $product_id,
+                        'message' => __('The registry says the plugin is active, but it is not in WordPress’s current active-plugin list. Rescan installed plugins.', 'sustainable-catalyst-feature-suggestions'),
+                    );
+                } elseif ($plugin_file !== '' && isset($active_plugins[$plugin_file]) && empty($record['discovered_active'])) {
+                    $findings[] = array(
+                        'severity' => 'warning',
+                        'product_id' => $product_id,
+                        'message' => __('The mapped plugin is active in WordPress, but the registry snapshot is stale. Rescan installed plugins.', 'sustainable-catalyst-feature-suggestions'),
+                    );
+                }
+            }
+        }
+        $footer = $this->footer_health($registry);
+        if (!$footer['repository_valid']) {
+            $findings[] = array(
+                'severity' => 'error',
+                'product_id' => 'release-console-footer',
+                'message' => __('The Release Console repository link has no valid configured destination or canonical fallback.', 'sustainable-catalyst-feature-suggestions'),
+            );
+        }
+        if (!$footer['support_valid']) {
+            $findings[] = array(
+                'severity' => 'error',
+                'product_id' => 'release-console-footer',
+                'message' => __('The Release Console Support link is missing or invalid.', 'sustainable-catalyst-feature-suggestions'),
+            );
+        }
+
         $audit = array(
             'schema' => self::SCHEMA,
             'version' => self::VERSION,
@@ -339,7 +456,9 @@ final class SCFS_Release_Operations_Admin {
                 $result = SCFS_Canonical_Product_GitHub_Sync::instance()->sync_product($product_id, 'release_operations_bulk');
                 is_wp_error($result) ? $failed++ : $ok++;
             }
-            $this->set_notice($failed ? 'warning' : 'success', sprintf(__('Synchronized %1$d product(s); %2$d failed.', 'sustainable-catalyst-feature-suggestions'), $ok, $failed));
+            $this->invalidate_operational_caches('bulk_sync');
+            $this->audit_registry();
+            $this->set_notice($failed ? 'warning' : 'success', sprintf(__('Synchronized %1$d product(s); %2$d failed. Successful retries cleared stale error diagnostics.', 'sustainable-catalyst-feature-suggestions'), $ok, $failed));
         } elseif ($operation === 'clear_errors') {
             $cleared = 0;
             foreach ($product_ids as $product_id) {
@@ -356,11 +475,53 @@ final class SCFS_Release_Operations_Admin {
                 update_option(SCFS_Canonical_Product_Registry::OPTION_KEY, $service->normalize_registry($registry), false);
                 do_action('scfs_product_registry_updated', $registry);
             }
-            $this->set_notice('success', sprintf(__('Cleared %d synchronization error(s).', 'sustainable-catalyst-feature-suggestions'), $cleared));
+            $this->invalidate_operational_caches('clear_errors');
+            $this->set_notice('success', sprintf(__('Cleared %d synchronization error(s). Re-sync those products to restore a verified state.', 'sustainable-catalyst-feature-suggestions'), $cleared));
         } else {
             $this->set_notice('warning', __('Choose a valid release operation.', 'sustainable-catalyst-feature-suggestions'));
         }
         wp_safe_redirect($this->redirect_url());
+        exit;
+    }
+
+    public function invalidate_operational_caches($reason = 'release_operations') {
+        if (class_exists('SCFS_Installed_Plugin_Discovery')) {
+            SCFS_Installed_Plugin_Discovery::instance()->invalidate_cache($reason);
+        }
+        if (class_exists('SCFS_Release_Board')) {
+            SCFS_Release_Board::instance()->invalidate_cache();
+        }
+        do_action('scfs_release_operations_cache_invalidated', sanitize_key($reason));
+    }
+
+    public function stabilize_action() {
+        if (!current_user_can('manage_options')) {
+            wp_die('Forbidden');
+        }
+        check_admin_referer(self::NONCE_ACTION);
+        $plugin_scan = false;
+        if (class_exists('SCFS_Installed_Plugin_Discovery')) {
+            $plugin_scan = SCFS_Installed_Plugin_Discovery::instance()->refresh(true, 'release_operations_stabilize');
+        }
+        if (class_exists('SCFS_Canonical_Product_GitHub_Sync')) {
+            SCFS_Canonical_Product_GitHub_Sync::instance()->ensure_schedule();
+            $sync_results = SCFS_Canonical_Product_GitHub_Sync::instance()->sync_all('release_operations_stabilize');
+        } else {
+            $sync_results = array();
+        }
+        $this->invalidate_operational_caches('stabilize');
+        $audit = $this->audit_registry();
+        $failed = count(array_filter($sync_results, function ($result) {
+            return empty($result['ok']);
+        }));
+        $message = sprintf(
+            __('Stabilization completed: plugin discovery refreshed, %1$d repositories checked, %2$d failed, and the integrity audit found %3$d item(s).', 'sustainable-catalyst-feature-suggestions'),
+            count($sync_results),
+            $failed,
+            (int) $audit['finding_count']
+        );
+        $this->set_notice($failed || $audit['finding_count'] ? 'warning' : 'success', $message);
+        wp_safe_redirect($this->redirect_url(array('show_audit' => 1)));
         exit;
     }
 
@@ -409,6 +570,9 @@ final class SCFS_Release_Operations_Admin {
             if ($filter === 'stale') {
                 return in_array($row['operational_state'], array('stale', 'never', 'unknown'), true);
             }
+            if ($filter === 'error') {
+                return in_array($row['operational_state'], array('error', 'authentication_required', 'repository_unavailable', 'rate_limited', 'network_error'), true);
+            }
             return $row['operational_state'] === $filter;
         }));
     }
@@ -444,6 +608,8 @@ final class SCFS_Release_Operations_Admin {
             'error' => __('Errors', 'sustainable-catalyst-feature-suggestions'),
             'stale' => __('Stale', 'sustainable-catalyst-feature-suggestions'),
             'unconfigured' => __('Unconfigured', 'sustainable-catalyst-feature-suggestions'),
+            'semantic_tag' => __('Semantic tags', 'sustainable-catalyst-feature-suggestions'),
+            'connected_no_release' => __('No releases', 'sustainable-catalyst-feature-suggestions'),
         );
         echo '<div class="wrap scfs-release-operations">';
         echo '<h1>' . esc_html__('Release Operations', 'sustainable-catalyst-feature-suggestions') . '</h1>';
@@ -451,6 +617,10 @@ final class SCFS_Release_Operations_Admin {
         $this->render_notice();
 
         echo '<div class="scfs-release-operations__links">';
+        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" class="scfs-release-operations__stabilize"><input type="hidden" name="action" value="scfs_release_operations_stabilize">';
+        wp_nonce_field(self::NONCE_ACTION);
+        submit_button(__('Stabilize release operations', 'sustainable-catalyst-feature-suggestions'), 'primary', 'submit', false);
+        echo '</form>';
         echo '<a class="button" href="' . esc_url(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . SCFS_Installed_Plugin_Discovery::ADMIN_SLUG)) . '">' . esc_html__('Plugin connections', 'sustainable-catalyst-feature-suggestions') . '</a>';
         echo '<a class="button" href="' . esc_url(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . SCFS_GitHub_Connection_Settings::ADMIN_SLUG)) . '">' . esc_html__('GitHub connection', 'sustainable-catalyst-feature-suggestions') . '</a>';
         echo '<a class="button" href="' . esc_url(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . SCFS_Canonical_Product_Registry::ADMIN_SLUG)) . '">' . esc_html__('Product Registry', 'sustainable-catalyst-feature-suggestions') . '</a>';
@@ -465,6 +635,8 @@ final class SCFS_Release_Operations_Admin {
             'updates' => __('Updates', 'sustainable-catalyst-feature-suggestions'),
             'errors' => __('Errors', 'sustainable-catalyst-feature-suggestions'),
             'stale' => __('Stale', 'sustainable-catalyst-feature-suggestions'),
+            'semantic_tags' => __('Semantic tags', 'sustainable-catalyst-feature-suggestions'),
+            'no_releases' => __('No releases', 'sustainable-catalyst-feature-suggestions'),
         ) as $key => $label) {
             echo '<div class="scfs-release-operations__metric" role="listitem"><strong>' . esc_html((string) $report['summary'][$key]) . '</strong><span>' . esc_html($label) . '</span></div>';
         }
@@ -518,6 +690,7 @@ final class SCFS_Release_Operations_Admin {
                     array(
                         'action' => 'scfs_sync_canonical_github',
                         'product_id' => $row['canonical_id'],
+                        'return_page' => self::ADMIN_SLUG,
                     ),
                     admin_url('admin-post.php')
                 ),
@@ -530,12 +703,32 @@ final class SCFS_Release_Operations_Admin {
             echo '<td data-label="' . esc_attr__('Installed', 'sustainable-catalyst-feature-suggestions') . '"><code>' . esc_html($row['installed_version'] ?: '—') . '</code></td>';
             echo '<td data-label="' . esc_attr__('GitHub repository', 'sustainable-catalyst-feature-suggestions') . '">' . ($row['repository_url'] !== '' ? '<a href="' . esc_url($row['repository_url']) . '" target="_blank" rel="noopener noreferrer">' . esc_html($repository_label) . '</a>' : '<span class="scfs-release-operations__muted">' . esc_html($repository_label) . '</span>') . '</td>';
             echo '<td data-label="' . esc_attr__('Release', 'sustainable-catalyst-feature-suggestions') . '"><code>' . esc_html($row['github_version'] ?: $row['public_version'] ?: '—') . '</code><small>' . esc_html($row['github_version_source'] ? str_replace('_', ' ', $row['github_version_source']) : '') . '</small></td>';
-            echo '<td data-label="' . esc_attr__('Console state', 'sustainable-catalyst-feature-suggestions') . '"><span class="scfs-release-operations__state scfs-release-operations__state--' . esc_attr($state) . '">' . esc_html($this->state_label($state)) . '</span>' . ($row['github_sync_message'] ? '<small>' . esc_html($row['github_sync_message']) . '</small>' : '') . '</td>';
+            $diagnostic = '';
+            if ($row['github_sync_http_status'] !== '' || $row['github_sync_endpoint'] !== '') {
+                $diagnostic = '<small class="scfs-release-operations__diagnostic"><code>'
+                    . esc_html(trim(($row['github_sync_http_status'] !== '' ? 'HTTP ' . $row['github_sync_http_status'] : '') . ' ' . str_replace('_', ' ', $row['github_sync_endpoint'])))
+                    . '</code>';
+                if ($row['github_sync_endpoint_url'] !== '') {
+                    $diagnostic .= '<br><code>' . esc_html($row['github_sync_endpoint_url']) . '</code>';
+                }
+                $diagnostic .= '</small>';
+            }
+            if ($row['github_commit_sync_warning'] !== '') {
+                $diagnostic .= '<small class="scfs-release-operations__warning">' . esc_html($row['github_commit_sync_warning']) . '</small>';
+            }
+            echo '<td data-label="' . esc_attr__('Console state', 'sustainable-catalyst-feature-suggestions') . '"><span class="scfs-release-operations__state scfs-release-operations__state--' . esc_attr($state) . '">' . esc_html($this->state_label($state)) . '</span>' . ($row['github_sync_message'] ? '<small>' . esc_html($row['github_sync_message']) . '</small>' : '') . $diagnostic . '</td>';
             echo '<td data-label="' . esc_attr__('Last sync', 'sustainable-catalyst-feature-suggestions') . '">' . esc_html($this->render_time($row['last_synced_at'])) . '</td>';
             echo '<td data-label="' . esc_attr__('Actions', 'sustainable-catalyst-feature-suggestions') . '"><a class="button button-small" href="' . esc_url($sync_url) . '">' . esc_html__('Sync now', 'sustainable-catalyst-feature-suggestions') . '</a></td>';
             echo '</tr>';
         }
         echo '</tbody></table></div></form>';
+
+        $footer = $this->footer_health();
+        echo '<section class="scfs-release-operations__footer-health" aria-labelledby="scfs-release-operations-footer-title">';
+        echo '<h2 id="scfs-release-operations-footer-title">' . esc_html__('Release Console footer verification', 'sustainable-catalyst-feature-suggestions') . '</h2>';
+        echo '<dl><div><dt>./' . esc_html($footer['repository_label']) . '</dt><dd>' . ($footer['repository_valid'] ? '<code>' . esc_html($footer['repository_resolved']) . '</code>' : '<strong>' . esc_html__('Invalid or missing destination', 'sustainable-catalyst-feature-suggestions') . '</strong>') . ($footer['repository_uses_canonical_fallback'] ? '<small>' . esc_html__('Using canonical repository fallback', 'sustainable-catalyst-feature-suggestions') . '</small>' : '') . '</dd></div>';
+        echo '<div><dt>./' . esc_html($footer['support_label']) . '</dt><dd>' . ($footer['support_valid'] ? '<code>' . esc_html($footer['support_resolved']) . '</code>' : '<strong>' . esc_html__('Invalid or missing destination', 'sustainable-catalyst-feature-suggestions') . '</strong>') . '</dd></div></dl>';
+        echo '</section>';
 
         echo '<div class="scfs-release-operations__secondary-actions">';
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '"><input type="hidden" name="action" value="scfs_release_operations_audit">';

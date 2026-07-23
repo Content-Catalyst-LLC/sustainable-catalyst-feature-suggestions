@@ -1,6 +1,6 @@
 {
   "schema": "scfs-release-board/1.2",
-  "version": "7.6.0",
+  "version": "7.6.1",
   "layout": "terminal",
   "context": "homepage",
   "generated_at": "2026-07-22T00:00:00Z",
@@ -32,7 +32,7 @@
         {
           "canonical_id": "product-support-feedback",
           "name": "Support and Feedback",
-          "version": "7.6.0",
+          "version": "7.6.1",
           "status": "current",
           "version_source": "wordpress_plugin",
           "product_url": "/support/",

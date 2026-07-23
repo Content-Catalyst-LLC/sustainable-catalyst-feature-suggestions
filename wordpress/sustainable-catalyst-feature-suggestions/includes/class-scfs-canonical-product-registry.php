@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.6.0';
+    const VERSION = '7.6.1';
     const SCHEMA = 'scfs-canonical-product-registry/2.0';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
@@ -98,7 +98,7 @@ final class SCFS_Canonical_Product_Registry {
         $this->audit('registry_release_intelligence_upgraded', array(
             'from_schema' => $from_schema,
             'schema' => self::SCHEMA,
-            'release_migration' => 'v7.6.0',
+            'release_migration' => 'v7.6.1',
             'knowledge_library_homepage_visible' => true,
             'analytics_r_public_label' => 'Analytics R',
         ));
@@ -248,6 +248,17 @@ final class SCFS_Canonical_Product_Registry {
             'github_repository_updated_at' => '',
             'github_last_synced_at' => '',
             'github_sync_message' => '',
+            'github_connection_state' => 'unconfigured',
+            'github_sync_error_code' => '',
+            'github_sync_http_status' => '',
+            'github_sync_endpoint' => '',
+            'github_sync_endpoint_url' => '',
+            'github_sync_failed_at' => '',
+            'github_rate_limit_remaining' => '',
+            'github_rate_limit_reset' => '',
+            'github_commit_sync_warning' => '',
+            'github_commit_sync_http_status' => '',
+            'github_commit_sync_endpoint' => '',
             'legacy_names' => array(),
             'family' => $family,
             'console_screen' => $family,
@@ -570,6 +581,17 @@ final class SCFS_Canonical_Product_Registry {
             'github_repository_updated_at' => sanitize_text_field(isset($record['github_repository_updated_at']) ? $record['github_repository_updated_at'] : ''),
             'github_last_synced_at' => sanitize_text_field(isset($record['github_last_synced_at']) ? $record['github_last_synced_at'] : ''),
             'github_sync_message' => sanitize_text_field(isset($record['github_sync_message']) ? $record['github_sync_message'] : ''),
+            'github_connection_state' => sanitize_key(isset($record['github_connection_state']) ? $record['github_connection_state'] : 'unconfigured'),
+            'github_sync_error_code' => sanitize_key(isset($record['github_sync_error_code']) ? $record['github_sync_error_code'] : ''),
+            'github_sync_http_status' => sanitize_text_field(isset($record['github_sync_http_status']) ? $record['github_sync_http_status'] : ''),
+            'github_sync_endpoint' => sanitize_key(isset($record['github_sync_endpoint']) ? $record['github_sync_endpoint'] : ''),
+            'github_sync_endpoint_url' => esc_url_raw(isset($record['github_sync_endpoint_url']) ? $record['github_sync_endpoint_url'] : ''),
+            'github_sync_failed_at' => sanitize_text_field(isset($record['github_sync_failed_at']) ? $record['github_sync_failed_at'] : ''),
+            'github_rate_limit_remaining' => sanitize_text_field(isset($record['github_rate_limit_remaining']) ? $record['github_rate_limit_remaining'] : ''),
+            'github_rate_limit_reset' => sanitize_text_field(isset($record['github_rate_limit_reset']) ? $record['github_rate_limit_reset'] : ''),
+            'github_commit_sync_warning' => sanitize_text_field(isset($record['github_commit_sync_warning']) ? $record['github_commit_sync_warning'] : ''),
+            'github_commit_sync_http_status' => sanitize_text_field(isset($record['github_commit_sync_http_status']) ? $record['github_commit_sync_http_status'] : ''),
+            'github_commit_sync_endpoint' => sanitize_key(isset($record['github_commit_sync_endpoint']) ? $record['github_commit_sync_endpoint'] : ''),
             'legacy_names' => $legacy,
             'family' => in_array($family, $families, true) ? $family : 'foundation',
             'console_screen' => in_array(sanitize_key(isset($record['console_screen']) ? $record['console_screen'] : $family), $families, true) ? sanitize_key(isset($record['console_screen']) ? $record['console_screen'] : $family) : (in_array($family, $families, true) ? $family : 'foundation'),
@@ -997,7 +1019,7 @@ final class SCFS_Canonical_Product_Registry {
         $summary = $this->summary_record();
         $integrity = $this->integrity_report($registry);
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.6.0 connects active plugins and GitHub repositories to canonical console products, prioritizes published releases, falls back to semantic version tags, repairs hourly polling, and centralizes console footer administration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.6.1 connects active plugins and GitHub repositories to canonical console products, prioritizes published releases, falls back to semantic version tags, repairs hourly polling, and centralizes console footer administration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -1081,7 +1103,7 @@ final class SCFS_Canonical_Product_Registry {
         echo '<hr><p><a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_validate_product_registry'), 'scfs_validate_product_registry')) . '">' . esc_html__('Validate integrity', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_migrate_product_registry'), 'scfs_migrate_product_registry')) . '">' . esc_html__('Run schema migration', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.6.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.6.1 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

@@ -1,4 +1,4 @@
-# Release Console alignment contract — v7.6.0
+# Release Console alignment contract — v7.6.1
 
 The terminal Release Console uses `--scfs-release-console-columns` as the single responsive column definition for both `.scfs-release-board__column-labels` and `.scfs-release-board__product-line`.
 

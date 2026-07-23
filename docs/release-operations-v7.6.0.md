@@ -1,4 +1,4 @@
-# Release Operations v7.6.0
+# Release Operations v7.6.1
 
 Release Operations is the administrator control plane for the Canonical Product Registry, active WordPress plugin mappings, GitHub release intelligence, and the public Release Console.
 

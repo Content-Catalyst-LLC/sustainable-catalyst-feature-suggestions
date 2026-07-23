@@ -1,4 +1,4 @@
-# GitHub Connection v7.6.0
+# GitHub Connection v7.6.1
 
 Open **Support & Feedback → GitHub Connection**.
 

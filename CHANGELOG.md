@@ -1,15 +1,16 @@
 # Changelog
 
-## 7.6.0 — Release Operations Administration and Sync Governance
+## 7.6.1 — Release Operations Stabilization
 
-- Added a unified Release Operations screen spanning canonical product, active plugin, GitHub repository, governed release, and public console state.
-- Added current, aging, stale, never-synchronized, synchronization-error, update-available, and unconfigured health classifications.
-- Added per-product synchronization, selected-product bulk synchronization, and sync-all-connected operations.
-- Added controlled clearing of resolved GitHub synchronization errors.
-- Added integrity auditing for duplicate repositories, duplicate plugin mappings, missing repositories, stale synchronization, active-plugin gaps, and current GitHub errors.
-- Added non-secret JSON operational export and `wp scfs products operations-report`.
-- Added responsive administration presentation, accessible select-all behavior, and reduced-motion safeguards.
-- Preserved GitHub release/tag authority, webhook verification, polling fallback, footer controls, canonical aliases, legacy shortcodes, and the `sustainable-catalyst-feature-suggestions` WordPress folder.
+- Added exact GitHub endpoint, API URL, HTTP status, error code, connection classification, and failure-time diagnostics.
+- Added authentication-required, repository-unavailable, rate-limited, network-error, semantic-tag, and connected-without-release operational states.
+- Clears stale GitHub error evidence immediately after a successful retry.
+- Keeps default-branch commit failures nonblocking when release or semantic-tag evidence is valid.
+- Added live active-plugin mapping checks against WordPress’s current site and network active lists.
+- Added Release Console repository and Support destination verification.
+- Added explicit Release Console cache-epoch invalidation for product, plugin, GitHub, footer, bulk, and stabilization changes.
+- Added one-click stabilization that rescans plugins, repairs scheduling, synchronizes repositories, clears recovered errors, invalidates caches, and runs the integrity audit.
+- Preserved canonical IDs, aliases, legacy shortcodes, accessibility behavior, and the `sustainable-catalyst-feature-suggestions` WordPress folder.
 
 ## 7.5.5 — GitHub Tag Fallback and Unified Console Administration
 

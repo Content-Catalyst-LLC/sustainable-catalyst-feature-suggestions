@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-VERSION="7.6.0"
-INSTALLER_REVISION="V7_6_0_RELEASE_OPERATIONS_ADMINISTRATION"
-RELEASE_TITLE="Release Operations Administration and Sync Governance"
+VERSION="7.6.1"
+INSTALLER_REVISION="V7_6_1_RELEASE_OPERATIONS_ADMINISTRATION"
+RELEASE_TITLE="Release Operations Stabilization"
 REMOTE="git@github.com:Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback.git"
 DOWNLOADS="${HOME}/Downloads"
 CANONICAL_REPO_DIR="$DOWNLOADS/sustainable-catalyst-product-support-feedback"
@@ -10,10 +10,10 @@ LEGACY_REPO_DIR="$DOWNLOADS/sustainable-catalyst-feature-suggestions"
 REPO_DIR="$CANONICAL_REPO_DIR"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TAG="v${VERSION}"
-VALIDATOR_SCRIPT="validate_v7_6_0.sh"
-REPO_ARCHIVE="sustainable-catalyst-product-support-feedback-v7.6.0-repository.zip"
-BUNDLE_ARCHIVE="sustainable-catalyst-product-support-feedback-platform-v7.6.0-release-bundle.zip"
-SUMS_ARCHIVE="sustainable-catalyst-product-support-feedback-v7.6.0-artifacts.sha256"
+VALIDATOR_SCRIPT="validate_v7_6_1.sh"
+REPO_ARCHIVE="sustainable-catalyst-product-support-feedback-v7.6.1-repository.zip"
+BUNDLE_ARCHIVE="sustainable-catalyst-product-support-feedback-platform-v7.6.1-release-bundle.zip"
+SUMS_ARCHIVE="sustainable-catalyst-product-support-feedback-v7.6.1-artifacts.sha256"
 PLUGIN_SLUG="sustainable-catalyst-feature-suggestions"
 fail(){ printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 select_python(){
@@ -95,7 +95,7 @@ ARCHIVE=""
 for candidate in "$SCRIPT_DIR/$BUNDLE_ARCHIVE" "$DOWNLOADS/$BUNDLE_ARCHIVE" "$SCRIPT_DIR/$REPO_ARCHIVE" "$DOWNLOADS/$REPO_ARCHIVE"; do
   if [ -f "$candidate" ]; then ARCHIVE="$candidate"; break; fi
 done
-[ -n "$ARCHIVE" ] || fail "Place the v7.6.0 repository ZIP or release bundle beside this installer or in ~/Downloads."
+[ -n "$ARCHIVE" ] || fail "Place the v7.6.1 repository ZIP or release bundle beside this installer or in ~/Downloads."
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/scpsf-v760.XXXXXX")"
 trap 'rm -rf "$TMP"' EXIT
 printf '==> Product Support and Feedback Platform v%s installer\n' "$VERSION"
@@ -122,17 +122,17 @@ REPO_ZIP="$(find "$TMP/archive" -type f -name "$REPO_ARCHIVE" -print -quit || tr
 if [ -n "$REPO_ZIP" ]; then
   mkdir -p "$TMP/repository"
   unzip -q "$REPO_ZIP" -d "$TMP/repository"
-  SOURCE="$(find "$TMP/repository" -maxdepth 2 -type d -name 'sustainable-catalyst-product-support-feedback-v7.6.0-repository' -print -quit)"
+  SOURCE="$(find "$TMP/repository" -maxdepth 2 -type d -name 'sustainable-catalyst-product-support-feedback-v7.6.1-repository' -print -quit)"
 else
-  SOURCE="$(find "$TMP/archive" -maxdepth 2 -type d -name 'sustainable-catalyst-product-support-feedback-v7.6.0-repository' -print -quit)"
+  SOURCE="$(find "$TMP/archive" -maxdepth 2 -type d -name 'sustainable-catalyst-product-support-feedback-v7.6.1-repository' -print -quit)"
 fi
-[ -n "${SOURCE:-}" ] || fail "Could not locate the v7.6.0 repository source."
+[ -n "${SOURCE:-}" ] || fail "Could not locate the v7.6.1 repository source."
 [ -f "$SOURCE/$VALIDATOR_SCRIPT" ] || fail "Missing $VALIDATOR_SCRIPT."
 [ -f "$SOURCE/backend/requirements-validation.txt" ] || fail "Missing validation dependencies."
 [ -f "$SOURCE/wordpress/$PLUGIN_SLUG/$PLUGIN_SLUG.php" ] || fail "WordPress compatibility plugin folder is missing."
 [ ! -d "$SOURCE/wordpress/sustainable-catalyst-product-support-feedback" ] || fail "The WordPress plugin folder was incorrectly renamed."
-grep -Fq 'VERSION="7.6.0"' "$SOURCE/$VALIDATOR_SCRIPT" || fail "Wrong validator version."
-grep -Fq 'Version: 7.6.0' "$SOURCE/wordpress/$PLUGIN_SLUG/$PLUGIN_SLUG.php" || fail "Wrong plugin version."
+grep -Fq 'VERSION="7.6.1"' "$SOURCE/$VALIDATOR_SCRIPT" || fail "Wrong validator version."
+grep -Fq 'Version: 7.6.1' "$SOURCE/wordpress/$PLUGIN_SLUG/$PLUGIN_SLUG.php" || fail "Wrong plugin version."
 grep -Fq 'Content-Catalyst-LLC/sustainable-catalyst-product-support-feedback' "$SOURCE/feature_suggestions_manifest.json" || fail "Canonical repository metadata is missing."
 grep -Fq '"release_board"' "$SOURCE/feature_suggestions_manifest.json" || fail "Release board metadata is missing."
 grep -Fq '"public_title": "Release Console"' "$SOURCE/feature_suggestions_manifest.json" || fail "Release Console metadata is missing."
@@ -146,9 +146,9 @@ grep -Fq "'interval' => '7'" "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs
 grep -Fq 'data-console-action="toggle"' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-release-board.php" || fail "Release Console controls are missing."
 grep -Fq '<noscript>' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-release-board.php" || fail "Release Console no-JavaScript fallback is missing."
 grep -Fq 'data-console-announcer' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-release-board.php" || fail "Release Console announcer is missing."
-grep -Fq 'MutationObserver' "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-console-v7.6.0.js" || fail "Dynamic Release Console initialization is missing."
-grep -Fq '[data-console-active="true"]' "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-board-v7.6.0.css" || fail "Stable Release Console screen layout is missing."
-grep -Fq -- '--scfs-release-console-columns:' "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-board-v7.6.0.css" || fail "Shared responsive Release Console grid is missing."
+grep -Fq 'MutationObserver' "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-console-v7.6.1.js" || fail "Dynamic Release Console initialization is missing."
+grep -Fq '[data-console-active="true"]' "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-board-v7.6.1.css" || fail "Stable Release Console screen layout is missing."
+grep -Fq -- '--scfs-release-console-columns:' "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-board-v7.6.1.css" || fail "Shared responsive Release Console grid is missing."
 grep -Fq 'scfs-release-board__product-identity' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-release-board.php" || fail "Release intelligence is not anchored beneath product names."
 grep -Fq 'No plugins awaiting review' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-installed-plugin-discovery.php" || fail "Plugin Discovery zero state is missing."
 grep -Fq 'if ($unmatched)' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-installed-plugin-discovery.php" || fail "Plugin Discovery pending heading is not candidate-driven."
@@ -160,8 +160,8 @@ grep -Fq 'scfs_mapping_alias_collision' "$SOURCE/wordpress/$PLUGIN_SLUG/includes
 grep -Fq 'Restore to review' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-installed-plugin-discovery.php" || fail "Ignored plugin restore is missing."
 grep -Fq 'Remove manual mapping' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-installed-plugin-discovery.php" || fail "Manual mapping removal is missing."
 grep -Fq '/product-registry/discovery/decision' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-installed-plugin-discovery.php" || fail "Mapping REST endpoint is missing."
-[ -f "$SOURCE/wordpress/$PLUGIN_SLUG/assets/plugin-discovery-v7.6.0.js" ] || fail "Plugin Discovery mapping JavaScript is missing."
-[ -f "$SOURCE/wordpress/$PLUGIN_SLUG/assets/plugin-discovery-v7.6.0.css" ] || fail "Plugin Discovery mapping stylesheet is missing."
+[ -f "$SOURCE/wordpress/$PLUGIN_SLUG/assets/plugin-discovery-v7.6.1.js" ] || fail "Plugin Discovery mapping JavaScript is missing."
+[ -f "$SOURCE/wordpress/$PLUGIN_SLUG/assets/plugin-discovery-v7.6.1.css" ] || fail "Plugin Discovery mapping stylesheet is missing."
 grep -Fq 'Duplicate mapping review' "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-installed-plugin-discovery.php" || fail "Duplicate Plugin Discovery review is not separated."
 grep -Fq "\$record['discovered_plugin_version'] = '';" "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-installed-plugin-discovery.php" || fail "Stale Plugin Discovery status clearing is missing."
 grep -Fq "'Analytics R'" "$SOURCE/wordpress/$PLUGIN_SLUG/includes/class-scfs-canonical-product-registry.php" || fail "Analytics R public label is missing."
@@ -208,8 +208,8 @@ grep -Fq "const ADMIN_SLUG = 'scfs-release-operations';" "$RELEASE_OPERATIONS_CL
 grep -Fq 'function freshness_state' "$RELEASE_OPERATIONS_CLASS" || fail "Release Operations freshness governance is missing."
 grep -Fq 'function audit_registry' "$RELEASE_OPERATIONS_CLASS" || fail "Release Operations integrity auditing is missing."
 grep -Fq 'scfs products operations-report' "$RELEASE_OPERATIONS_CLASS" || fail "Release Operations WP-CLI report is missing."
-[ -f "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-operations-v7.6.0.js" ] || fail "Release Operations JavaScript is missing."
-[ -f "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-operations-v7.6.0.css" ] || fail "Release Operations stylesheet is missing."
+[ -f "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-operations-v7.6.1.js" ] || fail "Release Operations JavaScript is missing."
+[ -f "$SOURCE/wordpress/$PLUGIN_SLUG/assets/release-operations-v7.6.1.css" ] || fail "Release Operations stylesheet is missing."
 [ -f "$SOURCE/schemas/scfs-release-operations-v1.schema.json" ] || fail "Release Operations schema is missing."
 grep -Fq '"all_products_operational_table": true' "$SOURCE/feature_suggestions_manifest.json" || fail "Release Operations metadata is missing."
 grep -Fq '"all_active_plugins_selectable": true' "$SOURCE/feature_suggestions_manifest.json" || fail "Active-plugin connection metadata is missing."
@@ -218,7 +218,7 @@ grep -Fq '"repository_footer_link": true' "$SOURCE/feature_suggestions_manifest.
 if grep -Eq '(^|[[:space:]])(mapfile|readarray)([[:space:]]|$)' "$SOURCE/$VALIDATOR_SCRIPT"; then fail "Validator requires Bash 4."; fi
 bash -n "$SOURCE/$VALIDATOR_SCRIPT" || fail "Invalid validator shell syntax."
 if [ "${SCPSF_PREFLIGHT_ONLY:-0}" = "1" ]; then
-  printf 'PREFLIGHT PASSED: selected the v7.6.0 Release Operations Administration and Sync Governance package and preserved the WordPress plugin identity.\n'
+  printf 'PREFLIGHT PASSED: selected the v7.6.1 Release Operations Stabilization package and preserved the WordPress plugin identity.\n'
   exit 0
 fi
 printf '==> Verifying canonical GitHub repository access\n'
@@ -260,7 +260,7 @@ git -C "$REPO_DIR" fetch origin main --tags
 git -C "$REPO_DIR" reset --hard
 git -C "$REPO_DIR" clean -fd
 git -C "$REPO_DIR" checkout -B main origin/main
-printf '==> Installing v7.6.0 source with checksum verification\n'
+printf '==> Installing v7.6.1 source with checksum verification\n'
 rsync -a --checksum --delete --exclude '.git/' --exclude '.venv/' --exclude 'venv/' "$SOURCE/" "$REPO_DIR/"
 printf '==> Verifying post-sync source parity\n'
 verify_tree_parity "$SOURCE" "$REPO_DIR"
@@ -269,9 +269,9 @@ PYTHON_BIN="$VENV_PY" bash "./$VALIDATOR_SCRIPT"
 git diff --check
 git add -A
 if git diff --cached --quiet; then
-  printf 'No source changes to commit. Current main may already contain v7.6.0.\n'
+  printf 'No source changes to commit. Current main may already contain v7.6.1.\n'
 else
-  git commit -m "Product Support and Feedback Platform v7.6.0 — $RELEASE_TITLE"
+  git commit -m "Product Support and Feedback Platform v7.6.1 — $RELEASE_TITLE"
 fi
 printf '==> Refreshing origin/main before push\n'
 git fetch origin main
@@ -292,6 +292,6 @@ if ! git push origin HEAD:main; then
 fi
 printf '==> Pushing tag %s\n' "$TAG"
 push_release_tag
-printf '\nSUCCESS: v7.6.0 validated, installed, committed, tagged, and pushed.\n'
+printf '\nSUCCESS: v7.6.1 validated, installed, committed, tagged, and pushed.\n'
 printf 'Local repository: %s\n' "$REPO_DIR"
 printf 'WordPress plugin folder preserved: %s\n' "$PLUGIN_SLUG"

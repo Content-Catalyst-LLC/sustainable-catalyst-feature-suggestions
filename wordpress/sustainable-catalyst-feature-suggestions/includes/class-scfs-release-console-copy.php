@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Console_Copy {
-    const VERSION = '7.6.0';
+    const VERSION = '7.6.1';
     const SCHEMA = 'scfs-release-console-copy/1.0';
     const OPTION_KEY = 'scfs_release_console_copy';
     const ADMIN_SLUG = 'scfs-release-console-copy';
@@ -121,6 +121,8 @@ final class SCFS_Release_Console_Copy {
             'product_facts_editable_here' => false,
             'registry_authority_preserved' => true,
             'fields' => array_keys($this->defaults()),
+            'footer_destination_validation' => true,
+            'cache_invalidation_action' => 'scfs_release_console_copy_updated',
         );
     }
 

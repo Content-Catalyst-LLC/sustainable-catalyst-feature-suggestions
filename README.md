@@ -1,10 +1,10 @@
-## Current release: v7.6.0 — Release Operations Administration and Sync Governance
+## Current release: v7.6.1 — Release Operations Stabilization
 
-The new **Release Operations** screen is the administrator control plane for each canonical product, its active WordPress implementation, its GitHub repository, and its public Release Console state. It adds synchronization freshness health, bulk synchronization, controlled error clearing, integrity auditing, and a non-secret operational export.
+The **Release Operations** screen now supports a one-click stabilization pass across active WordPress plugin discovery, GitHub synchronization, stale-error reconciliation, Release Console cache invalidation, footer verification, and integrity auditing.
 
-GitHub Release-first authority, semantic-tag fallback, signed webhooks, hourly polling, editable footer destinations, canonical aliases, legacy shortcodes, accessibility behavior, and the historical WordPress plugin folder remain preserved.
+Repository failures retain the exact GitHub endpoint and HTTP status. Successful retries immediately clear old error evidence. Active-plugin mappings are compared with WordPress’s live active site and network plugin lists, while canonical IDs, aliases, legacy shortcodes, accessibility behavior, and the historical WordPress plugin folder remain preserved.
 
-See `docs/release-operations-v7.6.0.md`, `docs/github-sync-continuity-v7.6.0.md`, and `docs/github-connection-v7.6.0.md`.
+See `docs/release-operations-v7.6.1.md`, `docs/github-sync-continuity-v7.6.1.md`, and `docs/canonical-product-connections-v7.6.1.md`.
 
 # Sustainable Catalyst Product Support and Feedback Platform
 

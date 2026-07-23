@@ -16,7 +16,7 @@
       "const": "scfs-canonical-product-github-sync/1.0"
     },
     "version": {
-      "const": "7.6.0"
+      "const": "7.6.1"
     },
     "product_id": {
       "type": "string",
@@ -67,6 +67,32 @@
         "github_release",
         "github_tag"
       ]
+    },
+    "connection_state": {
+      "enum": [
+        "connected",
+        "semantic_tag",
+        "connected_no_release",
+        "authentication_required",
+        "repository_unavailable",
+        "rate_limited",
+        "network_error",
+        "request_error",
+        "invalid_response"
+      ]
+    },
+    "error_code": {
+      "type": "string"
+    },
+    "http_status": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "endpoint": {
+      "type": "string"
+    },
+    "endpoint_url": {
+      "type": "string"
     }
   }
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-VERSION="7.6.0"
+VERSION="7.6.1"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN="$ROOT/wordpress/sustainable-catalyst-feature-suggestions"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
@@ -96,14 +96,14 @@ PY
 [ "$css_count" = "56" ] || fail "Expected 56 CSS layers, got $css_count."
 printf 'PASS - %d balanced CSS layers\n' "$css_count"
 
-printf '==> v7.6.0 release metadata, Release Operations, GitHub settings, and footer contracts\n'
+printf '==> v7.6.1 release metadata, Release Operations, GitHub settings, and footer contracts\n'
 "$PYTHON_BIN" - "$ROOT" <<'PY'
 from pathlib import Path
 import json,sys
-r=Path(sys.argv[1]); version='7.6.0'; name='Release Operations Administration and Sync Governance'
+r=Path(sys.argv[1]); version='7.6.1'; name='Release Operations Stabilization'
 current=json.loads((r/'feature_suggestions_manifest.json').read_text())
-versioned=json.loads((r/'feature_suggestions_manifest-v7.6.0.json').read_text())
-release=json.loads((r/'release-manifest-v7.6.0.json').read_text())
+versioned=json.loads((r/'feature_suggestions_manifest-v7.6.1.json').read_text())
+release=json.loads((r/'release-manifest-v7.6.1.json').read_text())
 github_schema=json.loads((r/'schemas/scfs-canonical-product-github-sync-v1.schema.json').read_text())
 assert current == versioned
 assert current['version'] == release['version'] == version
@@ -135,14 +135,14 @@ print('PASS - release identity, active-plugin mapping, GitHub synchronization, R
 PY
 
 printf '==> GitHub connection, active-plugin, and Release Console source contracts\n'
-php "$ROOT/tests/test-v753-active-plugin-github-connections.php" >/dev/null || fail "v7.6.0 active-plugin source contract failed."
-php "$ROOT/tests/test-v753-github-sync-runtime.php" >/dev/null || fail "v7.6.0 GitHub synchronization runtime contract failed."
-php "$ROOT/tests/test-v754-github-settings-and-footer.php" >/dev/null || fail "v7.6.0 settings and footer contract failed."
-php "$ROOT/tests/test-v754-credential-runtime.php" >/dev/null || fail "v7.6.0 encrypted credential runtime contract failed."
-php "$ROOT/tests/test-v755-github-tag-fallback-runtime.php" >/dev/null || fail "v7.6.0 semantic Git tag fallback runtime contract failed."
-php "$ROOT/tests/test-v755-unified-github-console.php" >/dev/null || fail "v7.6.0 unified GitHub Console contract failed."
-php "$ROOT/tests/test-v760-release-operations-admin.php" >/dev/null || fail "v7.6.0 Release Operations administration contract failed."
-php "$ROOT/tests/test-v760-release-operations-runtime.php" >/dev/null || fail "v7.6.0 Release Operations runtime contract failed."
+php "$ROOT/tests/test-v753-active-plugin-github-connections.php" >/dev/null || fail "v7.6.1 active-plugin source contract failed."
+php "$ROOT/tests/test-v753-github-sync-runtime.php" >/dev/null || fail "v7.6.1 GitHub synchronization runtime contract failed."
+php "$ROOT/tests/test-v754-github-settings-and-footer.php" >/dev/null || fail "v7.6.1 settings and footer contract failed."
+php "$ROOT/tests/test-v754-credential-runtime.php" >/dev/null || fail "v7.6.1 encrypted credential runtime contract failed."
+php "$ROOT/tests/test-v755-github-tag-fallback-runtime.php" >/dev/null || fail "v7.6.1 semantic Git tag fallback runtime contract failed."
+php "$ROOT/tests/test-v755-unified-github-console.php" >/dev/null || fail "v7.6.1 unified GitHub Console contract failed."
+php "$ROOT/tests/test-v760-release-operations-admin.php" >/dev/null || fail "v7.6.1 Release Operations administration contract failed."
+php "$ROOT/tests/test-v760-release-operations-runtime.php" >/dev/null || fail "v7.6.1 Release Operations runtime contract failed."
 printf 'PASS - active plugins, encrypted GitHub connection, semantic-tag fallback, schedule repair, console updates, unified footer controls, and Release Operations\n'
 
 printf '==> Backend test suite\n'
@@ -153,8 +153,8 @@ backend_passed="$(printf '%s\n' "$backend_output" | sed -nE 's/^([0-9]+) passed.
 printf 'PASS - 318 backend tests\n'
 
 printf '==> Bash compatibility\n'
-if grep -Eq '(^|[[:space:]])(mapfile|readarray)([[:space:]]|$)' "$ROOT/validate_v7_6_0.sh"; then fail "Validator requires Bash 4."; fi
-bash -n "$ROOT/validate_v7_6_0.sh" || fail "Validator shell syntax failed."
+if grep -Eq '(^|[[:space:]])(mapfile|readarray)([[:space:]]|$)' "$ROOT/validate_v7_6_1.sh"; then fail "Validator requires Bash 4."; fi
+bash -n "$ROOT/validate_v7_6_1.sh" || fail "Validator shell syntax failed."
 printf 'PASS - Bash 3.2-compatible validator\n'
 
 printf 'VALIDATION PASSED: Product Support and Feedback Platform v%s\n' "$VERSION"

@@ -710,7 +710,7 @@
   }
 }
 
-/* v7.6.0 — Release Console alignment and Plugin Discovery status repair */
+/* v7.6.1 — Release Console alignment and Plugin Discovery status repair */
 .scfs-release-board {
   --scfs-release-console-columns: 0.4rem minmax(0, 1fr) minmax(5.4rem, 7rem);
   --scfs-release-console-column-gap: 0.7rem;
