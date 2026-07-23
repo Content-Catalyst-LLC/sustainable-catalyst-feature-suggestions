@@ -1,0 +1,319 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-canonical-product-registry-v2.1.schema.json",
+  "title": "Sustainable Catalyst Canonical Product Registry Governance and Administration",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "products"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-canonical-product-registry/2.1"
+    },
+    "version": {
+      "const": "7.7.0"
+    },
+    "products": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 250,
+      "items": {
+        "type": "object",
+        "required": [
+          "canonical_id",
+          "name",
+          "family",
+          "console_screen",
+          "product_type",
+          "version_source",
+          "version_precedence",
+          "release_channel",
+          "status",
+          "lifecycle_state",
+          "public_visible",
+          "homepage_visible",
+          "display_order",
+          "verification_source"
+        ],
+        "properties": {
+          "canonical_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2
+          },
+          "short_name": {
+            "type": "string"
+          },
+          "internal_name": {
+            "type": "string"
+          },
+          "repository_slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]*$"
+          },
+          "legacy_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "family": {
+            "enum": [
+              "foundation",
+              "research-intelligence",
+              "data-analysis",
+              "creation-systems",
+              "commercial"
+            ]
+          },
+          "console_screen": {
+            "enum": [
+              "foundation",
+              "research-intelligence",
+              "data-analysis",
+              "creation-systems",
+              "commercial"
+            ]
+          },
+          "product_type": {
+            "type": "string"
+          },
+          "version_source": {
+            "enum": [
+              "wordpress_plugin",
+              "github_release",
+              "manual",
+              "remote_manifest",
+              "service_endpoint",
+              "package_manifest"
+            ]
+          },
+          "version_precedence": {
+            "enum": [
+              "manual",
+              "github",
+              "discovered",
+              "installed"
+            ]
+          },
+          "plugin_file": {
+            "type": "string"
+          },
+          "plugin_slug": {
+            "type": "string"
+          },
+          "installed_version": {
+            "type": "string"
+          },
+          "public_version": {
+            "type": "string"
+          },
+          "discovered_plugin_version": {
+            "type": "string"
+          },
+          "release_channel": {
+            "enum": [
+              "stable",
+              "development",
+              "preview",
+              "private_beta",
+              "release_candidate",
+              "maintenance"
+            ]
+          },
+          "status": {
+            "enum": [
+              "current",
+              "stable",
+              "development",
+              "preview",
+              "private_beta",
+              "release_candidate",
+              "maintenance",
+              "update_available",
+              "inactive",
+              "deprecated",
+              "unavailable",
+              "unverified"
+            ]
+          },
+          "lifecycle_state": {
+            "enum": [
+              "planned",
+              "experimental",
+              "active",
+              "maintenance",
+              "deprecated",
+              "superseded",
+              "retired"
+            ]
+          },
+          "superseded_by": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]*$"
+          },
+          "public_visible": {
+            "type": "boolean"
+          },
+          "homepage_visible": {
+            "type": "boolean"
+          },
+          "display_order": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "product_url": {
+            "type": "string"
+          },
+          "documentation_url": {
+            "type": "string"
+          },
+          "support_url": {
+            "type": "string"
+          },
+          "release_notes_url": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "commercial": {
+            "type": "boolean"
+          },
+          "public_interest": {
+            "type": "boolean"
+          },
+          "manual_notes": {
+            "type": "string"
+          },
+          "verification_source": {
+            "enum": [
+              "registry_seed",
+              "github",
+              "administrator",
+              "wordpress_plugin",
+              "release_manifest",
+              "service_endpoint",
+              "package_manifest",
+              "migration"
+            ]
+          },
+          "source_verified_at": {
+            "type": "string"
+          },
+          "record_updated_at": {
+            "type": "string"
+          },
+          "last_verified_at": {
+            "type": "string"
+          },
+          "previous_version": {
+            "type": "string"
+          },
+          "release_date": {
+            "type": "string",
+            "pattern": "^(?:\\d{4}-\\d{2}-\\d{2})?$"
+          },
+          "change_summary": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "validation_state": {
+            "enum": [
+              "validated",
+              "partial",
+              "pending",
+              "failed",
+              "unavailable"
+            ]
+          },
+          "documentation_state": {
+            "enum": [
+              "ready",
+              "partial",
+              "missing",
+              "unavailable"
+            ]
+          },
+          "known_issue_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "github_repository_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "github_default_branch": {
+            "type": "string"
+          },
+          "github_sync_enabled": {
+            "type": [
+              "boolean",
+              "string"
+            ]
+          },
+          "github_sync_locked": {
+            "type": [
+              "boolean",
+              "string"
+            ]
+          },
+          "github_sync_state": {
+            "enum": [
+              "unconfigured",
+              "pending",
+              "current",
+              "error"
+            ]
+          },
+          "github_latest_version": {
+            "type": "string"
+          },
+          "github_latest_release_name": {
+            "type": "string"
+          },
+          "github_latest_release_url": {
+            "type": "string"
+          },
+          "github_latest_release_at": {
+            "type": "string"
+          },
+          "github_latest_commit_sha": {
+            "type": "string"
+          },
+          "github_repository_updated_at": {
+            "type": "string"
+          },
+          "github_last_synced_at": {
+            "type": "string"
+          },
+          "github_sync_message": {
+            "type": "string"
+          },
+          "product_description": {
+            "type": "string"
+          },
+          "archived": {
+            "type": [
+              "boolean",
+              "string"
+            ]
+          },
+          "archived_at": {
+            "type": "string"
+          },
+          "archived_by": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

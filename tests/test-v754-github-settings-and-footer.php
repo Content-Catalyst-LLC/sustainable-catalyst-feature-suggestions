@@ -7,11 +7,11 @@ $sync = file_get_contents($plugin . '/includes/class-scfs-canonical-product-gith
 $discovery = file_get_contents($plugin . '/includes/class-scfs-installed-plugin-discovery.php');
 $copy = file_get_contents($plugin . '/includes/class-scfs-release-console-copy.php');
 $board = file_get_contents($plugin . '/includes/class-scfs-release-board.php');
-$manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest-v7.6.2.json'), true);
-$release = json_decode(file_get_contents($root . '/release-manifest-v7.6.2.json'), true);
+$manifest = json_decode(file_get_contents($root . '/feature_suggestions_manifest-v7.7.0.json'), true);
+$release = json_decode(file_get_contents($root . '/release-manifest-v7.7.0.json'), true);
 
 $checks = array(
-    'runtime identity' => strpos($main, 'Version: 7.6.2') !== false && strpos($main, "const VERSION = '7.6.2';") !== false,
+    'runtime identity' => strpos($main, 'Version: 7.7.0') !== false && strpos($main, "const VERSION = '7.7.0';") !== false,
     'settings loaded' => strpos($main, 'class-scfs-github-connection-settings.php') !== false && strpos($main, 'SCFS_GitHub_Connection_Settings::instance();') !== false,
     'settings activation' => strpos($main, 'SCFS_GitHub_Connection_Settings::activate();') !== false,
     'settings schema' => strpos($settings, "const SCHEMA = 'scfs-github-connection-settings/1.0';") !== false,
@@ -33,7 +33,7 @@ $checks = array(
     'board configured destinations' => strpos($board, "'repository_url' => \$copy['footer_repository_url']") !== false && strpos($board, "'support_url' => \$copy['footer_support_url']") !== false,
     'board automatic repository fallback' => strpos($board, "\$atts['repository_url'] !== '' ? \$atts['repository_url'] : \$this->repository_url(\$products)") !== false,
     'legacy shortcode preserved' => strpos($main, "const SHORTCODE = 'sustainable_catalyst_feature_suggestions';") !== false && strpos($board, "const SHORTCODE = 'sc_release_board';") !== false,
-    'manifest identity' => ($manifest['version'] ?? '') === '7.6.2' && ($release['version'] ?? '') === '7.6.2',
+    'manifest identity' => ($manifest['version'] ?? '') === '7.7.0' && ($release['version'] ?? '') === '7.7.0',
     'manifest settings contract' => !empty($manifest['github_connection_settings']['encrypted_wordpress_token']) && !empty($manifest['release_console_copy']['editable_repository_destination']) && !empty($manifest['release_console_copy']['editable_support_destination']),
 );
 foreach ($checks as $label => $ok) {
@@ -42,4 +42,4 @@ foreach ($checks as $label => $ok) {
         exit(1);
     }
 }
-echo 'v7.6.2 GitHub settings and footer controls contract passed (' . count($checks) . " checks).\n";
+echo 'v7.7.0 GitHub settings and footer controls contract passed (' . count($checks) . " checks).\n";

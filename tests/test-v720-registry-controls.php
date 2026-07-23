@@ -10,5 +10,5 @@ if (strpos($class, "'version_source' => 'manual', 'discovery_enabled' => ''") ==
     fwrite(STDERR, "FAIL manual-product discovery exclusion
 "); exit(1);
 }
-echo "v7.6.2 canonical registry discovery controls contract passed.
+echo "v7.7.0 canonical registry discovery controls contract passed.
 ";

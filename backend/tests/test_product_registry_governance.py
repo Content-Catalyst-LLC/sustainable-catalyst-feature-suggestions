@@ -44,8 +44,8 @@ def foundation():
 
 def test_governance_capabilities_are_explicit_and_private():
     capabilities = registry_capabilities()
-    assert capabilities["schema"] == "scfs-canonical-product-registry/2.0"
-    assert capabilities["lifecycle_states"] == ["active", "planned", "maintenance", "superseded", "retired"]
+    assert capabilities["schema"] == "scfs-canonical-product-registry/2.1"
+    assert capabilities["lifecycle_states"] == ["planned", "experimental", "active", "maintenance", "deprecated", "superseded", "retired"]
     assert capabilities["version_precedence"] == ["manual", "discovered", "installed"]
     assert capabilities["integrity_reporting"] is True
     assert capabilities["schema_migration_supported"] is True
@@ -100,7 +100,7 @@ def test_legacy_registry_migration_adds_governance_fields():
     ]
     result = migrate_product_registry(ProductRegistryMigrationEvidence(from_schema="scfs-canonical-product-registry/1.1", products=raw))
     migrated = result.products[0]
-    assert result.to_schema == "scfs-canonical-product-registry/2.0"
+    assert result.to_schema == "scfs-canonical-product-registry/2.1"
     assert migrated.console_screen == "creation-systems"
     assert migrated.lifecycle_state == "maintenance"
     assert migrated.version_precedence == "manual"
@@ -126,7 +126,7 @@ def test_release_intelligence_fields_survive_registry_migration():
         "documentation_state": "ready",
         "known_issue_count": 1,
     }]
-    result = migrate_product_registry(ProductRegistryMigrationEvidence(from_schema="scfs-canonical-product-registry/2.0", products=raw))
+    result = migrate_product_registry(ProductRegistryMigrationEvidence(from_schema="scfs-canonical-product-registry/2.1", products=raw))
     migrated = result.products[0]
     assert migrated.previous_version == "1.9.0"
     assert migrated.release_date == "2026-07-22"

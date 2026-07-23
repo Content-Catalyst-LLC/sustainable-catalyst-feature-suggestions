@@ -2,11 +2,11 @@
 $root = dirname(__DIR__);
 $plugin = $root . '/wordpress/sustainable-catalyst-feature-suggestions';
 $board = file_get_contents($plugin . '/includes/class-scfs-release-board.php');
-$css = file_get_contents($plugin . '/assets/release-board-v7.6.2.css');
-$js = file_get_contents($plugin . '/assets/release-console-v7.6.2.js');
+$css = file_get_contents($plugin . '/assets/release-board-v7.7.0.css');
+$js = file_get_contents($plugin . '/assets/release-console-v7.7.0.js');
 $checks = array(
-    'runtime version' => strpos($board, "const VERSION = '7.6.2';") !== false,
-    'v733 assets' => strpos($board, 'release-board-v7.6.2.css') !== false && strpos($board, 'release-console-v7.6.2.js') !== false,
+    'runtime version' => strpos($board, "const VERSION = '7.7.0';") !== false,
+    'v733 assets' => strpos($board, 'release-board-v7.7.0.css') !== false && strpos($board, 'release-console-v7.7.0.js') !== false,
     'controls hidden before enhancement' => strpos($css, ".scfs-release-board__console-controls {\n") !== false && strpos($css, 'display: none;') !== false && strpos($css, '.scfs-release-board--enhanced .scfs-release-board__console-controls') !== false,
     'stable grid height' => strpos($css, 'grid-column: 1;') !== false && strpos($css, 'grid-row: 1;') !== false && strpos($css, '[data-console-active="true"]') !== false,
     'no hidden attribute toggling' => strpos($js, '.hidden =') === false && strpos($js, "setAttribute('data-console-active'") !== false,
@@ -27,4 +27,4 @@ $checks = array(
 foreach ($checks as $label => $ok) {
     if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo "v7.6.2 Release Console reliability and presentation contract passed.\n";
+echo "v7.7.0 Release Console reliability and presentation contract passed.\n";

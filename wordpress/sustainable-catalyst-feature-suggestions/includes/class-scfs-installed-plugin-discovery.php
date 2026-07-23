@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Installed_Plugin_Discovery {
-    const VERSION = '7.6.2';
+    const VERSION = '7.7.0';
     const SCHEMA = 'scfs-installed-plugin-discovery/1.0';
     const DIAGNOSTICS_SCHEMA = 'scfs-plugin-discovery-diagnostics/1.0';
     const SCHEMA_OPTION = 'scfs_installed_plugin_discovery_schema';
@@ -1368,13 +1368,13 @@ final class SCFS_Installed_Plugin_Discovery {
         $plugin_file = dirname(__DIR__) . '/sustainable-catalyst-feature-suggestions.php';
         wp_enqueue_style(
             'scfs-plugin-discovery-v754',
-            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.6.2.css',
+            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.7.0.css',
             array(),
             self::VERSION
         );
         wp_enqueue_script(
             'scfs-plugin-discovery-v754',
-            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.6.2.js',
+            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.7.0.js',
             array(),
             self::VERSION,
             true

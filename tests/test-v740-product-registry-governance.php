@@ -6,8 +6,8 @@ $board = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-sugg
 $backend = file_get_contents($root . '/backend/app/canonical_product_registry.py');
 $main = file_get_contents($root . '/backend/app/main.py');
 $checks = array(
-    'registry version' => strpos($registry, "const VERSION = '7.6.2';") !== false,
-    'registry schema 2' => strpos($registry, "scfs-canonical-product-registry/2.0") !== false,
+    'registry version' => strpos($registry, "const VERSION = '7.7.0';") !== false,
+    'registry schema 2' => strpos($registry, "scfs-canonical-product-registry/2.1") !== false,
     'migration option' => strpos($registry, "MIGRATION_OPTION") !== false,
     'stale threshold' => strpos($registry, "STALE_AFTER_DAYS = 90") !== false,
     'lifecycle states' => strpos($registry, 'function lifecycle_states') !== false && strpos($registry, "'superseded'") !== false && strpos($registry, "'retired'") !== false,
@@ -25,7 +25,7 @@ $checks = array(
     'discovery provenance' => strpos($discovery, "'verification_source' = 'wordpress_plugin'") === false && strpos($discovery, "verification_source'] = 'wordpress_plugin'") !== false,
     'console uses governed screen' => strpos($board, "product['console_screen']") !== false,
     'console hides retired products' => strpos($board, "array('retired', 'superseded')") !== false,
-    'backend schema' => strpos($backend, 'SCHEMA = "scfs-canonical-product-registry/2.0"') !== false,
+    'backend schema' => strpos($backend, 'SCHEMA = "scfs-canonical-product-registry/2.1"') !== false,
     'backend migration endpoint' => strpos($main, '/v1/product-registry/migrate') !== false,
 );
 foreach ($checks as $label => $passed) {
@@ -34,4 +34,4 @@ foreach ($checks as $label => $passed) {
         exit(1);
     }
 }
-echo "v7.6.2 Product Connection Editor contract passed.\n";
+echo "v7.7.0 Product Connection Editor contract passed.\n";

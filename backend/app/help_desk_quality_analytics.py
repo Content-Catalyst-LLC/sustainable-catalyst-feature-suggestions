@@ -1,4 +1,4 @@
-"""Help Desk Quality Assurance, Analytics, and Support Intelligence v7.6.2.
+"""Help Desk Quality Assurance, Analytics, and Support Intelligence v7.7.0.
 
 Deterministic contracts for privacy-safe operational metrics, governed case
 quality review, trend analysis, support-pressure signals, cohort suppression,
@@ -13,7 +13,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-VERSION = "7.6.2"
+VERSION = "7.7.0"
 SCHEMA = "scfs-help-desk-quality-analytics/1.0"
 
 

@@ -1,4 +1,4 @@
-"""Canonical Product Registry governance and validation for v7.6.2."""
+"""Canonical Product Registry governance and validation for v7.7.0."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from typing import Any, List, Literal
 
 from pydantic import BaseModel, Field
 
-VERSION = "7.6.2"
-SCHEMA = "scfs-canonical-product-registry/2.0"
+VERSION = "7.7.0"
+SCHEMA = "scfs-canonical-product-registry/2.1"
 INTEGRITY_SCHEMA = "scfs-product-registry-integrity/1.0"
 STALE_AFTER_DAYS = 90
 
@@ -31,7 +31,7 @@ VersionSource = Literal[
     "package_manifest",
 ]
 VersionPrecedence = Literal["manual", "discovered", "installed"]
-LifecycleState = Literal["active", "planned", "maintenance", "superseded", "retired"]
+LifecycleState = Literal["planned", "experimental", "active", "maintenance", "deprecated", "superseded", "retired"]
 VerificationSource = Literal[
     "registry_seed",
     "administrator",
@@ -106,6 +106,9 @@ class ProductRegistryRecord(BaseModel):
     source_verified_at: str = ""
     record_updated_at: str = ""
     last_verified_at: str = ""
+    archived: bool = False
+    archived_at: str = ""
+    archived_by: str = ""
 
     def resolved_screen(self) -> ProductFamily:
         return self.console_screen or self.family
@@ -202,7 +205,7 @@ def registry_capabilities() -> dict:
             "creation-systems",
             "commercial",
         ],
-        "lifecycle_states": ["active", "planned", "maintenance", "superseded", "retired"],
+        "lifecycle_states": ["planned", "experimental", "active", "maintenance", "deprecated", "superseded", "retired"],
         "version_precedence": ["manual", "discovered", "installed"],
         "active_version_sources": ["wordpress_plugin", "manual"],
         "reserved_version_sources": ["remote_manifest", "service_endpoint", "package_manifest"],
@@ -230,6 +233,12 @@ def registry_capabilities() -> dict:
         "private_repository_fields_publicly_exposed": False,
         "automatic_publication": False,
         "human_review_required": True,
+        "canonical_registry_administration": True,
+        "searchable_registry": True,
+        "drag_drop_console_ordering": True,
+        "dry_run_import": True,
+        "automatic_backups": True,
+        "archive_restore": True,
     }
 
 
@@ -260,6 +269,7 @@ def _fingerprint(products: List[ProductRegistryRecord]) -> str:
             "release_channel": product.release_channel,
             "status": product.status,
             "lifecycle_state": product.lifecycle_state,
+            "archived": product.archived,
             "superseded_by": product.superseded_by,
             "public_visible": product.public_visible,
             "homepage_visible": product.homepage_visible,
@@ -340,8 +350,8 @@ def validate_product_registry(evidence: ProductRegistryEvidence) -> ProductRegis
     return ProductRegistryAssessment(
         valid=levels["error"] == 0,
         product_count=len(evidence.products),
-        public_product_count=sum(1 for product in evidence.products if product.public_visible),
-        homepage_product_count=sum(1 for product in evidence.products if product.homepage_visible),
+        public_product_count=sum(1 for product in evidence.products if product.public_visible and not product.archived),
+        homepage_product_count=sum(1 for product in evidence.products if product.homepage_visible and not product.archived),
         manual_product_count=sum(1 for product in evidence.products if product.version_source == "manual"),
         stale_product_count=stale_count,
         missing_version_count=missing_version_count,

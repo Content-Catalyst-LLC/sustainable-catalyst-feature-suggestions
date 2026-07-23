@@ -1,14 +1,12 @@
-## Current release: v7.6.1 — Release Operations Stabilization
+## Current release: v7.7.0 — Canonical Product Registry Administration
 
-The **Release Operations** screen now supports a one-click stabilization pass across active WordPress plugin discovery, GitHub synchronization, stale-error reconciliation, Release Console cache invalidation, footer verification, and integrity auditing.
+The **Product Registry** screen is now the governed catalog for Sustainable Catalyst product identity. It adds search, family and lifecycle filters, accessible Release Console ordering, product creation, duplicate merges, alias collision review, archive and restore, dry-run import, automatic backups, rollback, and administrator-attributed history.
 
-Repository failures retain the exact GitHub endpoint and HTTP status. Successful retries immediately clear old error evidence. Active-plugin mappings are compared with WordPress’s live active site and network plugin lists, while canonical IDs, aliases, legacy shortcodes, accessibility behavior, and the historical WordPress plugin folder remain preserved.
-
-See `docs/release-operations-v7.6.1.md`, `docs/github-sync-continuity-v7.6.1.md`, and `docs/canonical-product-connections-v7.6.1.md`.
+See `docs/canonical-product-registry-administration-v7.7.0.md`.
 
 # Sustainable Catalyst Product Support and Feedback Platform
 
-**Current release: v7.6.2 — Product Connection Editor**
+**Current release: v7.7.0 — Canonical Product Registry Administration**
 
 ## Primary public shortcodes
 

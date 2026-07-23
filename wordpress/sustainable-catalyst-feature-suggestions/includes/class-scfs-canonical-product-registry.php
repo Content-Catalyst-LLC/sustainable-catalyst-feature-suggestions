@@ -15,8 +15,8 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.6.2';
-    const SCHEMA = 'scfs-canonical-product-registry/2.0';
+    const VERSION = '7.7.0';
+    const SCHEMA = 'scfs-canonical-product-registry/2.1';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
     const AUDIT_OPTION = 'scfs_canonical_product_registry_audit';
@@ -176,9 +176,11 @@ final class SCFS_Canonical_Product_Registry {
 
     public function lifecycle_states() {
         return array(
-            'active' => __('Active', 'sustainable-catalyst-feature-suggestions'),
             'planned' => __('Planned', 'sustainable-catalyst-feature-suggestions'),
+            'experimental' => __('Experimental', 'sustainable-catalyst-feature-suggestions'),
+            'active' => __('Active', 'sustainable-catalyst-feature-suggestions'),
             'maintenance' => __('Maintenance', 'sustainable-catalyst-feature-suggestions'),
+            'deprecated' => __('Deprecated', 'sustainable-catalyst-feature-suggestions'),
             'superseded' => __('Superseded', 'sustainable-catalyst-feature-suggestions'),
             'retired' => __('Retired', 'sustainable-catalyst-feature-suggestions'),
         );
@@ -312,7 +314,17 @@ final class SCFS_Canonical_Product_Registry {
             'source_verified_at' => '',
             'record_updated_at' => '',
             'last_verified_at' => '',
+            'archived' => '',
+            'archived_at' => '',
+            'archived_by' => '',
         ), $overrides);
+    }
+
+    public function new_product_record($id, $name, $short_name, $family, $order, $overrides = array()) {
+        $id = sanitize_key($id);
+        $families = array_keys($this->families());
+        $family = in_array(sanitize_key($family), $families, true) ? sanitize_key($family) : 'foundation';
+        return $this->normalize_record($id, $this->product($id, sanitize_text_field($name), sanitize_text_field($short_name), $family, absint($order), $overrides));
     }
 
     public function default_products() {
@@ -566,6 +578,7 @@ final class SCFS_Canonical_Product_Registry {
             'name' => sanitize_text_field(isset($record['name']) ? $record['name'] : $id),
             'short_name' => sanitize_text_field(isset($record['short_name']) ? $record['short_name'] : ''),
             'internal_name' => sanitize_text_field(isset($record['internal_name']) ? $record['internal_name'] : (isset($record['name']) ? $record['name'] : $id)),
+            'product_description' => sanitize_textarea_field(isset($record['product_description']) ? $record['product_description'] : ''),
             'repository_slug' => sanitize_key(isset($record['repository_slug']) ? $record['repository_slug'] : ''),
             'github_repository_url' => esc_url_raw(isset($record['github_repository_url']) ? $record['github_repository_url'] : ''),
             'github_default_branch' => sanitize_text_field(isset($record['github_default_branch']) && $record['github_default_branch'] !== '' ? $record['github_default_branch'] : 'main'),
@@ -646,6 +659,9 @@ final class SCFS_Canonical_Product_Registry {
             'source_verified_at' => sanitize_text_field(isset($record['source_verified_at']) ? $record['source_verified_at'] : ''),
             'record_updated_at' => sanitize_text_field(isset($record['record_updated_at']) ? $record['record_updated_at'] : ''),
             'last_verified_at' => sanitize_text_field(isset($record['last_verified_at']) ? $record['last_verified_at'] : ''),
+            'archived' => !empty($record['archived']) ? '1' : '',
+            'archived_at' => sanitize_text_field(isset($record['archived_at']) ? $record['archived_at'] : ''),
+            'archived_by' => sanitize_text_field(isset($record['archived_by']) ? $record['archived_by'] : ''),
         );
     }
 
@@ -717,6 +733,7 @@ final class SCFS_Canonical_Product_Registry {
                 'release_channel' => $record['release_channel'],
                 'status' => $record['status'],
                 'lifecycle_state' => $record['lifecycle_state'],
+                'archived' => $record['archived'],
                 'superseded_by' => $record['superseded_by'],
                 'public_visible' => $record['public_visible'],
                 'homepage_visible' => $record['homepage_visible'],
@@ -848,7 +865,7 @@ final class SCFS_Canonical_Product_Registry {
     public function public_products($homepage_only = false) {
         $records = array();
         foreach ($this->registry() as $record) {
-            if (empty($record['public_visible']) || ($homepage_only && empty($record['homepage_visible']))) {
+            if (!empty($record['archived']) || empty($record['public_visible']) || ($homepage_only && empty($record['homepage_visible']))) {
                 continue;
             }
             $records[] = $this->public_record($record);
@@ -931,6 +948,11 @@ final class SCFS_Canonical_Product_Registry {
             'console_badges_governed' => true,
             'product_description_governed' => true,
             'single_product_connection_editor' => true,
+            'canonical_registry_administration' => true,
+            'registry_search_and_filters' => true,
+            'registry_drag_drop_ordering' => true,
+            'registry_dry_run_import' => true,
+            'registry_backup_restore' => true,
             'lifecycle_state_governed' => true,
             'version_precedence_explicit' => true,
             'verification_provenance_governed' => true,
@@ -1001,13 +1023,16 @@ final class SCFS_Canonical_Product_Registry {
     }
 
     public function register_admin_page() {
+        $callback = class_exists('SCFS_Canonical_Product_Registry_Admin')
+            ? array(SCFS_Canonical_Product_Registry_Admin::instance(), 'render_admin_page')
+            : array($this, 'render_admin_page');
         add_submenu_page(
             'edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE,
-            __('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions'),
+            __('Canonical Product Registry Administration', 'sustainable-catalyst-feature-suggestions'),
             __('Product Registry', 'sustainable-catalyst-feature-suggestions'),
             $this->capability(),
             self::ADMIN_SLUG,
-            array($this, 'render_admin_page')
+            $callback
         );
     }
 
@@ -1027,7 +1052,7 @@ final class SCFS_Canonical_Product_Registry {
         $summary = $this->summary_record();
         $integrity = $this->integrity_report($registry);
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.6.2 adds a single governed Product Connection Editor while preserving active plugin and GitHub repository connections to canonical console products, prioritizes published releases, falls back to semantic version tags, repairs hourly polling, and centralizes console footer administration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.7.0 adds governed catalog administration with search, lifecycle controls, drag-and-drop console ordering, duplicate merges, alias collision review, archive and restore, dry-run import, automatic backups, and administrator-attributed history.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }
@@ -1111,7 +1136,7 @@ final class SCFS_Canonical_Product_Registry {
         echo '<hr><p><a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_validate_product_registry'), 'scfs_validate_product_registry')) . '">' . esc_html__('Validate integrity', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_migrate_product_registry'), 'scfs_migrate_product_registry')) . '">' . esc_html__('Run schema migration', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_export_product_registry'), 'scfs_export_product_registry')) . '">' . esc_html__('Export registry JSON', 'sustainable-catalyst-feature-suggestions') . '</a> ';
-        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.6.1 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
+        echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_reset_product_registry'), 'scfs_reset_product_registry')) . '" onclick="return confirm(\'' . esc_js(__('Reset the product registry to the v7.7.0 defaults?', 'sustainable-catalyst-feature-suggestions')) . '\')">' . esc_html__('Reset defaults', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '</div>';
     }
 

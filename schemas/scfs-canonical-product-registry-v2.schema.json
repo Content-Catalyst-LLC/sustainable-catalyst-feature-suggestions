@@ -10,10 +10,10 @@
   ],
   "properties": {
     "schema": {
-      "const": "scfs-canonical-product-registry/2.0"
+      "const": "scfs-canonical-product-registry/2.1"
     },
     "version": {
-      "const": "7.6.2"
+      "const": "7.7.0"
     },
     "products": {
       "type": "array",
@@ -144,9 +144,11 @@
           },
           "lifecycle_state": {
             "enum": [
-              "active",
               "planned",
+              "experimental",
+              "active",
               "maintenance",
+              "deprecated",
               "superseded",
               "retired"
             ]
@@ -291,6 +293,21 @@
             "type": "string"
           },
           "github_sync_message": {
+            "type": "string"
+          },
+          "product_description": {
+            "type": "string"
+          },
+          "archived": {
+            "type": [
+              "boolean",
+              "string"
+            ]
+          },
+          "archived_at": {
+            "type": "string"
+          },
+          "archived_by": {
             "type": "string"
           }
         },

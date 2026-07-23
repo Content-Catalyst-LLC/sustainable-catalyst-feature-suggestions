@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-canonical-product-registry-admin-v1.schema.json",
+  "title": "Sustainable Catalyst Canonical Product Registry Administration",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "features"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-canonical-product-registry-admin/1.0"
+    },
+    "version": {
+      "const": "7.7.0"
+    },
+    "features": {
+      "type": "object",
+      "required": [
+        "searchable_registry",
+        "drag_drop_console_ordering",
+        "dry_run_import",
+        "automatic_backups"
+      ],
+      "properties": {
+        "searchable_registry": {
+          "const": true
+        },
+        "family_and_lifecycle_filters": {
+          "const": true
+        },
+        "drag_drop_console_ordering": {
+          "const": true
+        },
+        "create_product": {
+          "const": true
+        },
+        "merge_duplicates": {
+          "const": true
+        },
+        "alias_collision_review": {
+          "const": true
+        },
+        "archive_restore": {
+          "const": true
+        },
+        "administrator_history": {
+          "const": true
+        },
+        "governed_export": {
+          "const": true
+        },
+        "dry_run_import": {
+          "const": true
+        },
+        "automatic_backups": {
+          "const": true
+        },
+        "backup_restore": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

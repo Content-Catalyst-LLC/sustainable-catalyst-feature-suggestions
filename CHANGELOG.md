@@ -1,3 +1,12 @@
+## v7.7.0 — Canonical Product Registry Administration
+
+- Added searchable and filterable canonical product catalog administration.
+- Added five-family drag-and-drop and keyboard-accessible Release Console ordering.
+- Added Experimental and Deprecated lifecycle states while preserving Superseded compatibility.
+- Added governed product creation, duplicate merging, alias collision review, archive, and restoration.
+- Added required dry-run import, governed export, automatic backups, rollback, and administrator-attributed history.
+- Preserved canonical IDs, plugin and GitHub mappings, legacy shortcodes, accessibility behavior, and the historical WordPress plugin folder.
+
 # Changelog
 
 ## 7.6.2 — Product Connection Editor
