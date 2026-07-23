@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Canonical_Product_Registry {
-    const VERSION = '7.6.1';
+    const VERSION = '7.6.2';
     const SCHEMA = 'scfs-canonical-product-registry/2.0';
     const OPTION_KEY = 'scfs_canonical_product_registry';
     const SCHEMA_OPTION = 'scfs_canonical_product_registry_schema';
@@ -231,6 +231,7 @@ final class SCFS_Canonical_Product_Registry {
             'name' => $name,
             'short_name' => $short_name,
             'internal_name' => $name,
+            'product_description' => '',
             'repository_slug' => '',
             'github_repository_url' => '',
             'github_default_branch' => 'main',
@@ -262,6 +263,7 @@ final class SCFS_Canonical_Product_Registry {
             'legacy_names' => array(),
             'family' => $family,
             'console_screen' => $family,
+            'console_badges' => array(),
             'product_type' => 'wordpress_plugin',
             'version_source' => 'wordpress_plugin',
             'version_precedence' => 'discovered',
@@ -379,7 +381,7 @@ final class SCFS_Canonical_Product_Registry {
         $merged['product-support-feedback']['status'] = 'current';
         $merged['product-support-feedback']['previous_version'] = '7.5.4';
         $merged['product-support-feedback']['release_date'] = '2026-07-23';
-        $merged['product-support-feedback']['change_summary'] = 'GitHub release-first synchronization, semantic tag fallback, unified console link administration, and automatic sync health repair.';
+        $merged['product-support-feedback']['change_summary'] = 'Single-record Product Connection Editor for canonical identity, active plugin, GitHub, console presentation, routes, aliases, validation, and history.';
         $merged['product-support-feedback']['validation_state'] = 'validated';
         $merged['product-support-feedback']['documentation_state'] = 'ready';
         return $this->normalize_registry($merged);
@@ -595,6 +597,7 @@ final class SCFS_Canonical_Product_Registry {
             'legacy_names' => $legacy,
             'family' => in_array($family, $families, true) ? $family : 'foundation',
             'console_screen' => in_array(sanitize_key(isset($record['console_screen']) ? $record['console_screen'] : $family), $families, true) ? sanitize_key(isset($record['console_screen']) ? $record['console_screen'] : $family) : (in_array($family, $families, true) ? $family : 'foundation'),
+            'console_badges' => array_values(array_unique(array_filter(array_map('sanitize_text_field', (array) (isset($record['console_badges']) ? $record['console_badges'] : array()))))),
             'product_type' => in_array($type, $types, true) ? $type : 'platform_module',
             'version_source' => in_array($source, $sources, true) ? $source : 'manual',
             'version_precedence' => in_array($version_precedence, $precedence_options, true) ? $version_precedence : (($source === 'manual') ? 'manual' : 'discovered'),
@@ -858,8 +861,10 @@ final class SCFS_Canonical_Product_Registry {
             'canonical_id' => $record['canonical_id'],
             'name' => $record['name'],
             'short_name' => $record['short_name'],
+            'product_description' => $record['product_description'],
             'family' => $record['family'],
             'console_screen' => $record['console_screen'],
+            'console_badges' => $record['console_badges'],
             'product_type' => $record['product_type'],
             'version_source' => $record['version_source'],
             'version_precedence' => $record['version_precedence'],
@@ -923,6 +928,9 @@ final class SCFS_Canonical_Product_Registry {
             'github_semantic_tag_fallback_supported' => true,
             'github_webhook_and_polling_supported' => true,
             'console_screen_assignment_governed' => true,
+            'console_badges_governed' => true,
+            'product_description_governed' => true,
+            'single_product_connection_editor' => true,
             'lifecycle_state_governed' => true,
             'version_precedence_explicit' => true,
             'verification_provenance_governed' => true,
@@ -1019,7 +1027,7 @@ final class SCFS_Canonical_Product_Registry {
         $summary = $this->summary_record();
         $integrity = $this->integrity_report($registry);
         echo '<div class="wrap"><h1>' . esc_html__('Canonical Product Registry', 'sustainable-catalyst-feature-suggestions') . '</h1>';
-        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.6.1 connects active plugins and GitHub repositories to canonical console products, prioritizes published releases, falls back to semantic version tags, repairs hourly polling, and centralizes console footer administration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
+        echo '<p>' . esc_html__('This registry is the governed source of product identity for release boards, support documentation, release records, and future product discovery. v7.6.2 adds a single governed Product Connection Editor while preserving active plugin and GitHub repository connections to canonical console products, prioritizes published releases, falls back to semantic version tags, repairs hourly polling, and centralizes console footer administration.', 'sustainable-catalyst-feature-suggestions') . '</p>';
         if (isset($_GET['updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Product registry saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         }

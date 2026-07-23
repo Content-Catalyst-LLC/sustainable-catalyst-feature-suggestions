@@ -100,7 +100,7 @@ printf '==> v7.6.1 release metadata, Release Operations, GitHub settings, and fo
 "$PYTHON_BIN" - "$ROOT" <<'PY'
 from pathlib import Path
 import json,sys
-r=Path(sys.argv[1]); version='7.6.1'; name='Release Operations Stabilization'
+r=Path(sys.argv[1]); version='7.6.1'; name='Product Connection Editor'
 current=json.loads((r/'feature_suggestions_manifest.json').read_text())
 versioned=json.loads((r/'feature_suggestions_manifest-v7.6.1.json').read_text())
 release=json.loads((r/'release-manifest-v7.6.1.json').read_text())

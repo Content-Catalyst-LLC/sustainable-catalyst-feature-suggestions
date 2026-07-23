@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-product-connection-editor-v1.schema.json",
+  "title": "Sustainable Catalyst Product Connection Editor Record",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "canonical_id",
+    "identity",
+    "wordpress",
+    "github",
+    "console",
+    "routes",
+    "aliases",
+    "validation"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-product-connection-editor/1.0"
+    },
+    "version": {
+      "const": "7.6.2"
+    },
+    "canonical_id": {
+      "type": "string"
+    },
+    "identity": {
+      "type": "object"
+    },
+    "wordpress": {
+      "type": "object"
+    },
+    "github": {
+      "type": "object"
+    },
+    "console": {
+      "type": "object"
+    },
+    "routes": {
+      "type": "object"
+    },
+    "aliases": {
+      "type": "object"
+    },
+    "validation": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

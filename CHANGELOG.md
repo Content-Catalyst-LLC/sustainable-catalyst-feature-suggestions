@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.6.2 — Product Connection Editor
+
+- Added a dedicated one-product connection editor.
+- Added all-active-plugin mapping, GitHub controls, console placement and badge controls, public route controls, aliases, validation, reset, and history.
+- Added direct Edit connection actions from Release Operations.
+- Preserved canonical IDs, legacy shortcodes, accessibility behavior, and the historical WordPress plugin folder.
+
 ## 7.6.1 — Release Operations Stabilization
 
 - Added exact GitHub endpoint, API URL, HTTP status, error code, connection classification, and failure-time diagnostics.

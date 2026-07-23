@@ -1,0 +1,18 @@
+{
+  "schema": "scfs-github-connection-settings/1.0",
+  "version": "7.6.2",
+  "credential_source": "encrypted_wordpress_option",
+  "token_rendered": false,
+  "mapped_repository_test": true,
+  "footer_links": {
+    "repository": {
+      "label": "repository",
+      "destination": "automatic:product-support-feedback.github_repository_url"
+    },
+    "support": {
+      "label": "support",
+      "destination": "/support/"
+    }
+  },
+  "mapped_repository_count": 17
+}

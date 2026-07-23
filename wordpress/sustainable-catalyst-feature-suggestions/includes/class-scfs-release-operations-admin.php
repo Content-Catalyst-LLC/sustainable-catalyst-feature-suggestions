@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Operations_Admin {
-    const VERSION = '7.6.1';
+    const VERSION = '7.6.2';
     const SCHEMA = 'scfs-release-operations/1.0';
     const ADMIN_SLUG = 'scfs-release-operations';
     const AUDIT_OPTION = 'scfs_release_operations_audit';
@@ -91,8 +91,8 @@ final class SCFS_Release_Operations_Admin {
         if (strpos((string) $hook_suffix, self::ADMIN_SLUG) === false) {
             return;
         }
-        $css = 'assets/release-operations-v7.6.1.css';
-        $js = 'assets/release-operations-v7.6.1.js';
+        $css = 'assets/release-operations-v7.6.2.css';
+        $js = 'assets/release-operations-v7.6.2.js';
         $css_path = plugin_dir_path(dirname(__FILE__)) . $css;
         $js_path = plugin_dir_path(dirname(__FILE__)) . $js;
         wp_enqueue_style(
@@ -718,7 +718,9 @@ final class SCFS_Release_Operations_Admin {
             }
             echo '<td data-label="' . esc_attr__('Console state', 'sustainable-catalyst-feature-suggestions') . '"><span class="scfs-release-operations__state scfs-release-operations__state--' . esc_attr($state) . '">' . esc_html($this->state_label($state)) . '</span>' . ($row['github_sync_message'] ? '<small>' . esc_html($row['github_sync_message']) . '</small>' : '') . $diagnostic . '</td>';
             echo '<td data-label="' . esc_attr__('Last sync', 'sustainable-catalyst-feature-suggestions') . '">' . esc_html($this->render_time($row['last_synced_at'])) . '</td>';
-            echo '<td data-label="' . esc_attr__('Actions', 'sustainable-catalyst-feature-suggestions') . '"><a class="button button-small" href="' . esc_url($sync_url) . '">' . esc_html__('Sync now', 'sustainable-catalyst-feature-suggestions') . '</a></td>';
+
+            $editor_url = add_query_arg(array('post_type' => Sustainable_Catalyst_Feature_Suggestions::POST_TYPE, 'page' => SCFS_Product_Connection_Editor::ADMIN_SLUG, 'product_id' => $row['canonical_id']), admin_url('edit.php'));
+            echo '<td data-label="' . esc_attr__('Actions', 'sustainable-catalyst-feature-suggestions') . '"><a class="button button-small" href="' . esc_url($editor_url) . '">' . esc_html__('Edit connection', 'sustainable-catalyst-feature-suggestions') . '</a> <a class="button button-small" href="' . esc_url($sync_url) . '">' . esc_html__('Sync now', 'sustainable-catalyst-feature-suggestions') . '</a></td>';
             echo '</tr>';
         }
         echo '</tbody></table></div></form>';

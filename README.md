@@ -8,6 +8,8 @@ See `docs/release-operations-v7.6.1.md`, `docs/github-sync-continuity-v7.6.1.md`
 
 # Sustainable Catalyst Product Support and Feedback Platform
 
+**Current release: v7.6.2 — Product Connection Editor**
+
 ## Primary public shortcodes
 
 - `[scfs_product_support_center]`
@@ -68,3 +70,8 @@ Adds least-privilege integration scopes, signed outbound events, retry and dead-
 - Legacy repository: `Content-Catalyst-LLC/sustainable-catalyst-feature-suggestions`
 - Canonical local folder: `sustainable-catalyst-product-support-feedback`
 - WordPress plugin folder: `sustainable-catalyst-feature-suggestions`
+
+
+## v7.6.2 — Product Connection Editor
+
+Use **Support & Feedback → Product Connections** to manage one canonical product, active WordPress plugin, GitHub repository, Release Console presentation, public routes, aliases, validation, and connection history from one governed screen.

@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Board {
-    const VERSION = '7.6.1';
+    const VERSION = '7.6.2';
     const SCHEMA = 'scfs-release-board/1.3';
     const SHORTCODE = 'sc_release_board';
     const STYLE_HANDLE = 'scfs-release-board';
@@ -47,7 +47,7 @@ final class SCFS_Release_Board {
     }
 
     public function register_assets() {
-        $relative = 'assets/release-board-v7.6.1.css';
+        $relative = 'assets/release-board-v7.6.2.css';
         $path = plugin_dir_path(dirname(__FILE__)) . $relative;
         $version = is_file($path) ? (string) filemtime($path) : self::VERSION;
         wp_register_style(
@@ -56,7 +56,7 @@ final class SCFS_Release_Board {
             array(),
             $version
         );
-        $script_relative = 'assets/release-console-v7.6.1.js';
+        $script_relative = 'assets/release-console-v7.6.2.js';
         $script_path = plugin_dir_path(dirname(__FILE__)) . $script_relative;
         $script_version = is_file($script_path) ? (string) filemtime($script_path) : self::VERSION;
         wp_register_script(
@@ -525,6 +525,7 @@ final class SCFS_Release_Board {
         $recently_updated = !empty($product['recently_updated']);
         $github_commit = substr(sanitize_text_field($product['github_latest_commit_sha'] ?? ''), 0, 7);
         $github_updated = $this->release_date_label($product['github_repository_updated_at'] ?? ($product['github_last_synced_at'] ?? ''));
+        $custom_badges = array_values(array_filter(array_map('sanitize_text_field', (array) ($product['console_badges'] ?? array()))));
         $copy = $this->console_copy();
         $intelligence = apply_filters('scfs_release_console_product_intelligence', array(
             'previous_version' => $previous_version,
@@ -537,6 +538,7 @@ final class SCFS_Release_Board {
             'github_commit' => $github_commit,
             'github_updated' => $github_updated,
             'lifecycle_state' => $lifecycle,
+            'custom_badges' => $custom_badges,
         ), $product, $atts);
 
         ob_start();
@@ -551,6 +553,7 @@ final class SCFS_Release_Board {
                     </span>
                     <?php if ($atts['show_intelligence']) : ?>
                         <div class="scfs-release-board__intelligence" aria-label="<?php esc_attr_e('Release intelligence', 'sustainable-catalyst-feature-suggestions'); ?>">
+                            <?php foreach ((array) ($intelligence['custom_badges'] ?? array()) as $custom_badge) : ?><span class="scfs-release-board__intel scfs-release-board__intel--custom"><?php echo esc_html($custom_badge); ?></span><?php endforeach; ?>
                             <?php if (!empty($intelligence['previous_version']) && $intelligence['previous_version'] !== $version) : ?><span class="scfs-release-board__intel scfs-release-board__intel--previous"><?php echo esc_html(($copy['label_previous_version'] ?? __('from', 'sustainable-catalyst-feature-suggestions')) . ' ' . $intelligence['previous_version']); ?></span><?php endif; ?>
                             <?php if (!empty($intelligence['release_date'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--date"><?php echo esc_html(($copy['label_released'] ?? __('released', 'sustainable-catalyst-feature-suggestions')) . ' ' . $intelligence['release_date']); ?></span><?php endif; ?>
                             <?php $validation_label = $this->intelligence_label('validation', $intelligence['validation_state'] ?? '', $copy); ?>
