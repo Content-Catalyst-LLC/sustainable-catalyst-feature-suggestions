@@ -6,7 +6,7 @@ $board = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-sugg
 $backend = file_get_contents($root . '/backend/app/canonical_product_registry.py');
 $main = file_get_contents($root . '/backend/app/main.py');
 $checks = array(
-    'registry version' => strpos($registry, "const VERSION = '7.5.0';") !== false,
+    'registry version' => strpos($registry, "const VERSION = '7.5.3';") !== false,
     'registry schema 2' => strpos($registry, "scfs-canonical-product-registry/2.0") !== false,
     'migration option' => strpos($registry, "MIGRATION_OPTION") !== false,
     'stale threshold' => strpos($registry, "STALE_AFTER_DAYS = 90") !== false,
@@ -34,4 +34,4 @@ foreach ($checks as $label => $passed) {
         exit(1);
     }
 }
-echo "v7.5.0 Release Intelligence and Console Copy Controls contract passed.\n";
+echo "v7.5.3 Active Plugin and GitHub Console Connections contract passed.\n";

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-canonical-product-github-sync-v1.schema.json",
+  "title": "Sustainable Catalyst Canonical Product GitHub Synchronization",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "product_id",
+    "repository_url",
+    "sync_state"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "scfs-canonical-product-github-sync/1.0"
+    },
+    "version": {
+      "const": "7.5.3"
+    },
+    "product_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "repository_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "default_branch": {
+      "type": "string"
+    },
+    "latest_version": {
+      "type": "string"
+    },
+    "latest_release_url": {
+      "type": "string"
+    },
+    "latest_commit_sha": {
+      "type": "string"
+    },
+    "repository_updated_at": {
+      "type": "string"
+    },
+    "last_synced_at": {
+      "type": "string"
+    },
+    "sync_state": {
+      "enum": [
+        "unconfigured",
+        "pending",
+        "current",
+        "error"
+      ]
+    },
+    "sync_message": {
+      "type": "string"
+    }
+  }
+}

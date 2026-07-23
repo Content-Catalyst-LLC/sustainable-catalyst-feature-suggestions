@@ -15,7 +15,7 @@
       "const": "scfs-release-board/1.3"
     },
     "version": {
-      "const": "7.5.0"
+      "const": "7.5.3"
     },
     "layout": {
       "enum": [
@@ -106,6 +106,7 @@
                 "version_source": {
                   "enum": [
                     "wordpress_plugin",
+                    "github_release",
                     "manual",
                     "remote_manifest",
                     "service_endpoint",
@@ -165,6 +166,18 @@
                   "type": "string"
                 },
                 "source_verified_at": {
+                  "type": "string"
+                },
+                "github_repository_url": {
+                  "type": "string"
+                },
+                "github_latest_release_url": {
+                  "type": "string"
+                },
+                "github_latest_commit_sha": {
+                  "type": "string"
+                },
+                "github_repository_updated_at": {
                   "type": "string"
                 }
               },

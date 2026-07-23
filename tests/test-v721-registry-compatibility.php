@@ -8,7 +8,7 @@ if (strpos($class, '$id = $record_id !== \'\' ? $record_id : $key_id;') === fals
     fwrite(STDERR, "FAIL canonical_id deduplication authority\n"); exit(1);
 }
 $discovery = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-suggestions/includes/class-scfs-installed-plugin-discovery.php');
-foreach (array("array('', 'unverified', 'current', 'inactive')", "in_array(\$found['version_state'], array('valid', 'development'), true)") as $needle) {
+foreach (array("array('', 'unverified', 'current', 'inactive', 'update_available')", "in_array(\$found['version_state'], array('valid', 'development'), true)") as $needle) {
     if (strpos($discovery, $needle) === false) { fwrite(STDERR, "FAIL override preservation: {$needle}\n"); exit(1); }
 }
-echo "v7.5.0 registry and override compatibility contract passed.\n";
+echo "v7.5.3 registry and override compatibility contract passed.\n";

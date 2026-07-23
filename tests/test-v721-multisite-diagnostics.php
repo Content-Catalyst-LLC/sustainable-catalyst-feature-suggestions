@@ -4,7 +4,7 @@ $class = file_get_contents($root . '/wordpress/sustainable-catalyst-feature-sugg
 foreach (array('active_plugin_scopes','active_sitewide_plugins','activation_scope','network_active_match_count','DIAGNOSTICS_OPTION','diagnostics_record','discovery-diagnostics','/product-registry/discovery/diagnostics') as $needle) {
     if (strpos($class, $needle) === false) { fwrite(STDERR, "FAIL multisite/diagnostics: {$needle}\n"); exit(1); }
 }
-if (substr_count($class, "'permission_callback' => array(\$this, 'rest_permission')") !== 3) {
+if (substr_count($class, "'permission_callback' => array(\$this, 'rest_permission')") !== 4) {
     fwrite(STDERR, "FAIL REST permission callback count\n"); exit(1);
 }
-echo "v7.5.0 multisite and diagnostics contract passed.\n";
+echo "v7.5.3 multisite and diagnostics contract passed.\n";

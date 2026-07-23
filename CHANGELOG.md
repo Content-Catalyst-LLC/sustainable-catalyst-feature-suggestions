@@ -1,5 +1,15 @@
 # Changelog
 
+## 7.5.2 — Canonical Plugin Mapping and Review Workflow
+
+- Added a governed canonical-product dropdown to actionable Plugin Discovery rows.
+- Added administrator mapping precedence and canonical file, slug, text-domain, and name identifier persistence.
+- Added alias-collision refusal and deterministic duplicate-plugin reassignment.
+- Added reversible **Not a Sustainable Catalyst product**, ignored-plugin restoration, and manual-mapping removal controls.
+- Added audit metadata and identifier rollback snapshots for administrator decisions.
+- Added authenticated REST fragment refresh while preserving nonce-protected non-JavaScript forms.
+- Recalculates the queue immediately and displays **No plugins awaiting review** when the actionable count reaches zero.
+- Preserved all legacy shortcodes, the historical WordPress plugin folder, and accessibility behavior.
 ## 7.5.0 — Release Intelligence and Console Copy Controls
 
 - Added governed previous-version, release-date, change-summary, validation, documentation, known-issue, and recently-updated release intelligence.

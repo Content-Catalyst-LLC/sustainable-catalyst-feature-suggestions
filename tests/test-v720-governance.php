@@ -7,7 +7,7 @@ foreach (array('approved_registry_only','unknown_plugins_auto_registered','unkno
 foreach (array("'unknown_plugins_auto_registered' => false", "'unknown_plugins_publicly_exposed' => false", "'automatic_publication' => false", "'manual_overrides_preserved' => true", "'product_lock_supported' => true") as $needle) {
     if (strpos($class, $needle) === false) { fwrite(STDERR, "FAIL governance value: {$needle}\n"); exit(1); }
 }
-if (strpos($class, "version_source'] ?? '') !== 'wordpress_plugin'") === false || strpos($class, "discovery_locked") === false) {
-    fwrite(STDERR, "FAIL registry-only or lock boundary\n"); exit(1);
+if (strpos($class, "discovery_enabled") === false || strpos($class, "discovery_locked") === false || strpos($class, "active_plugins_for_mapping") === false) {
+    fwrite(STDERR, "FAIL registry-only, active-plugin, or lock boundary\n"); exit(1);
 }
-echo "v7.5.0 plugin discovery governance contract passed.\n";
+echo "v7.5.3 plugin discovery governance contract passed.\n";

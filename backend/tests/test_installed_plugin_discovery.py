@@ -4,6 +4,7 @@ from app.installed_plugin_discovery import (
     PluginDiscoveryCandidate,
     PluginDiscoveryDiagnostic,
     PluginDiscoveryEvidence,
+    PluginDiscoveryManualMapping,
     PluginDiscoveryMatch,
     discovery_capabilities,
     normalize_plugin_version,
@@ -20,7 +21,7 @@ def match(
     plugin_file: str = "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
     strategy: str = "exact_plugin_file",
     confidence: int = 100,
-    version: str = "7.5.0",
+    version: str = "7.5.3",
     version_raw: str | None = None,
     version_state: str = "valid",
     legacy_match: bool = False,
@@ -58,6 +59,11 @@ def test_capabilities_preserve_governance_boundaries():
     assert capabilities["malformed_headers_quarantined"] is True
     assert capabilities["multisite_activation_scope"] is True
     assert capabilities["human_review_required"] is True
+    assert capabilities["canonical_product_dropdown_mapping"] is True
+    assert capabilities["administrator_mapping_audit"] is True
+    assert capabilities["ignored_plugin_restore"] is True
+    assert capabilities["ajax_progressive_enhancement"] is True
+    assert capabilities["alias_collision_protection"] is True
 
 
 def test_valid_snapshot_counts_active_pending_and_diagnostics():
@@ -188,8 +194,8 @@ def test_activation_scope_consistency_is_enforced():
 
 
 def test_version_normalization_accepts_stable_and_development_versions():
-    assert normalize_plugin_version("v7.5.0") == ("7.5.0", "valid")
-    assert normalize_plugin_version(" 7.5.0-rc.1 ") == ("7.5.0-rc.1", "development")
+    assert normalize_plugin_version("v7.5.3") == ("7.5.3", "valid")
+    assert normalize_plugin_version(" 7.5.3-rc.1 ") == ("7.5.3-rc.1", "development")
     assert normalize_plugin_version("0.24.0-dev.2") == ("0.24.0-dev.2", "development")
 
 
@@ -218,8 +224,8 @@ def test_development_version_is_counted_without_becoming_invalid():
     result = validate_plugin_discovery(PluginDiscoveryEvidence(
         installed_plugin_count=1,
         matches=[match(
-            version="7.5.0-beta.1",
-            version_raw="v7.5.0-beta.1",
+            version="7.5.3-beta.1",
+            version_raw="v7.5.3-beta.1",
             version_state="development",
         )],
     ))
@@ -247,3 +253,36 @@ def test_duplicate_candidate_requires_selected_plugin_file():
             name="Duplicate Support",
             review_state="duplicate_match",
         )
+
+
+def test_administrator_mapping_is_a_first_class_match_strategy():
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=1,
+        matches=[match(strategy="administrator_mapping", confidence=100)],
+    ))
+    assert result.valid is True
+    assert result.strategies == {"administrator_mapping": 1}
+
+
+def test_ignored_candidates_and_manual_mappings_are_counted():
+    ignored = PluginDiscoveryCandidate(
+        plugin_file="unrelated-private/unrelated-private.php",
+        name="Unrelated Private Plugin",
+        ignored_at="2026-07-22T22:00:00Z",
+        ignored_by="administrator",
+    )
+    mapping = PluginDiscoveryManualMapping(
+        plugin_file="catalyst-canvas/catalyst-canvas.php",
+        product_id="catalyst-canvas",
+        mapped_at="2026-07-22T22:00:00Z",
+        mapped_by="administrator",
+    )
+    result = validate_plugin_discovery(PluginDiscoveryEvidence(
+        installed_plugin_count=2,
+        matches=[match()],
+        ignored=[ignored],
+        manual_mappings=[mapping],
+    ))
+    assert result.valid is True
+    assert result.ignored_candidate_count == 1
+    assert result.manual_mapping_count == 1

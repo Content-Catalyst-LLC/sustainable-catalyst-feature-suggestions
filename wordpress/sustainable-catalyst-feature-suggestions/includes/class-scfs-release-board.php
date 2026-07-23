@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Board {
-    const VERSION = '7.5.0';
+    const VERSION = '7.5.3';
     const SCHEMA = 'scfs-release-board/1.3';
     const SHORTCODE = 'sc_release_board';
     const STYLE_HANDLE = 'scfs-release-board';
@@ -47,7 +47,7 @@ final class SCFS_Release_Board {
     }
 
     public function register_assets() {
-        $relative = 'assets/release-board-v7.5.0.css';
+        $relative = 'assets/release-board-v7.5.3.css';
         $path = plugin_dir_path(dirname(__FILE__)) . $relative;
         $version = is_file($path) ? (string) filemtime($path) : self::VERSION;
         wp_register_style(
@@ -56,7 +56,7 @@ final class SCFS_Release_Board {
             array(),
             $version
         );
-        $script_relative = 'assets/release-console-v7.5.0.js';
+        $script_relative = 'assets/release-console-v7.5.3.js';
         $script_path = plugin_dir_path(dirname(__FILE__)) . $script_relative;
         $script_version = is_file($script_path) ? (string) filemtime($script_path) : self::VERSION;
         wp_register_script(
@@ -132,6 +132,8 @@ final class SCFS_Release_Board {
             'reduced_motion_respected' => true,
             'product_labels_navigating' => false,
             'footer_links_only' => true,
+            'release_footer_replaced_by_repository' => true,
+            'repository_link_resolves_from_canonical_product' => true,
             'private_plugin_paths_exposed' => false,
             'private_repository_metadata_exposed' => false,
             'semantic_list_output' => true,
@@ -202,7 +204,7 @@ final class SCFS_Release_Board {
             'pause_label' => $copy['pause'] ?? __('Pause', 'sustainable-catalyst-feature-suggestions'),
             'play_label' => $copy['play'] ?? __('Play', 'sustainable-catalyst-feature-suggestions'),
             'next_label' => $copy['next'] ?? __('Next', 'sustainable-catalyst-feature-suggestions'),
-            'release_label' => $copy['footer_releases'] ?? __('releases', 'sustainable-catalyst-feature-suggestions'),
+            'release_label' => $copy['footer_repository'] ?? ($copy['footer_releases'] ?? __('repository', 'sustainable-catalyst-feature-suggestions')),
             'support_label' => $copy['footer_support'] ?? __('support', 'sustainable-catalyst-feature-suggestions'),
             'empty_message' => $copy['empty_message'] ?? __('No governed releases are available for this view.', 'sustainable-catalyst-feature-suggestions'),
             'unavailable_message' => $copy['unavailable_message'] ?? __('Release intelligence is temporarily unavailable.', 'sustainable-catalyst-feature-suggestions'),
@@ -377,6 +379,9 @@ final class SCFS_Release_Board {
         if ($source === 'wordpress_plugin') {
             return __('plugin', 'sustainable-catalyst-feature-suggestions');
         }
+        if ($source === 'github_release') {
+            return __('github', 'sustainable-catalyst-feature-suggestions');
+        }
         if ($source === 'manual') {
             return __('manual', 'sustainable-catalyst-feature-suggestions');
         }
@@ -504,6 +509,8 @@ final class SCFS_Release_Board {
         $documentation_state = sanitize_key($product['documentation_state'] ?? 'unavailable');
         $known_issue_count = absint($product['known_issue_count'] ?? 0);
         $recently_updated = !empty($product['recently_updated']);
+        $github_commit = substr(sanitize_text_field($product['github_latest_commit_sha'] ?? ''), 0, 7);
+        $github_updated = $this->release_date_label($product['github_repository_updated_at'] ?? ($product['github_last_synced_at'] ?? ''));
         $copy = $this->console_copy();
         $intelligence = apply_filters('scfs_release_console_product_intelligence', array(
             'previous_version' => $previous_version,
@@ -513,6 +520,8 @@ final class SCFS_Release_Board {
             'documentation_state' => $documentation_state,
             'known_issue_count' => $known_issue_count,
             'recently_updated' => $recently_updated,
+            'github_commit' => $github_commit,
+            'github_updated' => $github_updated,
             'lifecycle_state' => $lifecycle,
         ), $product, $atts);
 
@@ -521,10 +530,29 @@ final class SCFS_Release_Board {
         <li class="scfs-release-board__product scfs-release-board__product--<?php echo esc_attr($status); ?>" data-product="<?php echo esc_attr($id); ?>" data-source="<?php echo esc_attr($source); ?>">
             <div class="scfs-release-board__product-line">
                 <span class="scfs-release-board__prompt" aria-hidden="true">&gt;</span>
-                <span class="scfs-release-board__name-wrap">
-                    <span class="scfs-release-board__name" data-console-label="true"><?php echo esc_html($name); ?></span>
-                    <span class="scfs-release-board__leader" aria-hidden="true"></span>
-                </span>
+                <div class="scfs-release-board__product-identity">
+                    <span class="scfs-release-board__name-wrap">
+                        <span class="scfs-release-board__name" data-console-label="true"><?php echo esc_html($name); ?></span>
+                        <span class="scfs-release-board__leader" aria-hidden="true"></span>
+                    </span>
+                    <?php if ($atts['show_intelligence']) : ?>
+                        <div class="scfs-release-board__intelligence" aria-label="<?php esc_attr_e('Release intelligence', 'sustainable-catalyst-feature-suggestions'); ?>">
+                            <?php if (!empty($intelligence['previous_version']) && $intelligence['previous_version'] !== $version) : ?><span class="scfs-release-board__intel scfs-release-board__intel--previous"><?php echo esc_html(($copy['label_previous_version'] ?? __('from', 'sustainable-catalyst-feature-suggestions')) . ' ' . $intelligence['previous_version']); ?></span><?php endif; ?>
+                            <?php if (!empty($intelligence['release_date'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--date"><?php echo esc_html(($copy['label_released'] ?? __('released', 'sustainable-catalyst-feature-suggestions')) . ' ' . $intelligence['release_date']); ?></span><?php endif; ?>
+                            <?php $validation_label = $this->intelligence_label('validation', $intelligence['validation_state'] ?? '', $copy); ?>
+                            <?php if ($validation_label !== '') : ?><span class="scfs-release-board__intel scfs-release-board__intel--validation" data-intelligence-state="<?php echo esc_attr($intelligence['validation_state']); ?>"><?php echo esc_html($validation_label); ?></span><?php endif; ?>
+                            <?php $documentation_label = $this->intelligence_label('documentation', $intelligence['documentation_state'] ?? '', $copy); ?>
+                            <?php if ($documentation_label !== '') : ?><span class="scfs-release-board__intel scfs-release-board__intel--documentation" data-intelligence-state="<?php echo esc_attr($intelligence['documentation_state']); ?>"><?php echo esc_html($documentation_label); ?></span><?php endif; ?>
+                            <?php if (!empty($intelligence['known_issue_count'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--issues"><?php echo esc_html(sprintf(_n('%1$d %2$s', '%1$d %3$s', absint($intelligence['known_issue_count']), 'sustainable-catalyst-feature-suggestions'), absint($intelligence['known_issue_count']), $copy['label_known_issue'] ?? __('known issue', 'sustainable-catalyst-feature-suggestions'), $copy['label_known_issues'] ?? __('known issues', 'sustainable-catalyst-feature-suggestions'))); ?></span><?php endif; ?>
+                            <?php if (!empty($intelligence['github_commit'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--commit"><?php echo esc_html(($copy['label_commit'] ?? __('commit', 'sustainable-catalyst-feature-suggestions')) . ' ' . $intelligence['github_commit']); ?></span><?php endif; ?>
+                            <?php if (!empty($intelligence['github_updated'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--repository"><?php echo esc_html(($copy['label_repository_updated'] ?? __('repository updated', 'sustainable-catalyst-feature-suggestions')) . ' ' . $intelligence['github_updated']); ?></span><?php endif; ?>
+                            <?php if (!empty($intelligence['recently_updated'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--recent"><?php echo esc_html($copy['label_recently_updated'] ?? __('recently updated', 'sustainable-catalyst-feature-suggestions')); ?></span><?php endif; ?>
+                            <?php if (($intelligence['lifecycle_state'] ?? '') === 'maintenance') : ?><span class="scfs-release-board__intel scfs-release-board__intel--lifecycle"><?php echo esc_html($copy['label_maintenance'] ?? __('maintenance', 'sustainable-catalyst-feature-suggestions')); ?></span><?php endif; ?>
+                            <?php if (($intelligence['lifecycle_state'] ?? '') === 'superseded') : ?><span class="scfs-release-board__intel scfs-release-board__intel--lifecycle"><?php echo esc_html($copy['label_superseded'] ?? __('superseded', 'sustainable-catalyst-feature-suggestions')); ?></span><?php endif; ?>
+                            <?php if (!empty($intelligence['change_summary'])) : ?><span class="scfs-release-board__change-summary"><?php echo esc_html($intelligence['change_summary']); ?></span><?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
                 <span class="scfs-release-board__version"><span class="screen-reader-text"><?php esc_html_e('Version', 'sustainable-catalyst-feature-suggestions'); ?> </span><?php echo esc_html($version); ?></span>
                 <?php if ($atts['show_status']) : ?>
                     <span class="scfs-release-board__status" data-status="<?php echo esc_attr($status); ?>"><span class="scfs-release-board__status-dot" aria-hidden="true"></span><?php echo esc_html($status_text); ?></span>
@@ -533,21 +561,6 @@ final class SCFS_Release_Board {
                     <span class="scfs-release-board__source"><span class="screen-reader-text"><?php esc_html_e('Version source:', 'sustainable-catalyst-feature-suggestions'); ?> </span><?php echo esc_html($this->source_label($source)); ?></span>
                 <?php endif; ?>
             </div>
-            <?php if ($atts['show_intelligence']) : ?>
-                <div class="scfs-release-board__intelligence" aria-label="<?php esc_attr_e('Release intelligence', 'sustainable-catalyst-feature-suggestions'); ?>">
-                    <?php if (!empty($intelligence['previous_version']) && $intelligence['previous_version'] !== $version) : ?><span class="scfs-release-board__intel scfs-release-board__intel--previous"><?php echo esc_html(($copy['label_previous_version'] ?? __('from', 'sustainable-catalyst-feature-suggestions')) . ' ' . $intelligence['previous_version']); ?></span><?php endif; ?>
-                    <?php if (!empty($intelligence['release_date'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--date"><?php echo esc_html(($copy['label_released'] ?? __('released', 'sustainable-catalyst-feature-suggestions')) . ' ' . $intelligence['release_date']); ?></span><?php endif; ?>
-                    <?php $validation_label = $this->intelligence_label('validation', $intelligence['validation_state'] ?? '', $copy); ?>
-                    <?php if ($validation_label !== '') : ?><span class="scfs-release-board__intel scfs-release-board__intel--validation" data-intelligence-state="<?php echo esc_attr($intelligence['validation_state']); ?>"><?php echo esc_html($validation_label); ?></span><?php endif; ?>
-                    <?php $documentation_label = $this->intelligence_label('documentation', $intelligence['documentation_state'] ?? '', $copy); ?>
-                    <?php if ($documentation_label !== '') : ?><span class="scfs-release-board__intel scfs-release-board__intel--documentation" data-intelligence-state="<?php echo esc_attr($intelligence['documentation_state']); ?>"><?php echo esc_html($documentation_label); ?></span><?php endif; ?>
-                    <?php if (!empty($intelligence['known_issue_count'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--issues"><?php echo esc_html(sprintf(_n('%1$d %2$s', '%1$d %3$s', absint($intelligence['known_issue_count']), 'sustainable-catalyst-feature-suggestions'), absint($intelligence['known_issue_count']), $copy['label_known_issue'] ?? __('known issue', 'sustainable-catalyst-feature-suggestions'), $copy['label_known_issues'] ?? __('known issues', 'sustainable-catalyst-feature-suggestions'))); ?></span><?php endif; ?>
-                    <?php if (!empty($intelligence['recently_updated'])) : ?><span class="scfs-release-board__intel scfs-release-board__intel--recent"><?php echo esc_html($copy['label_recently_updated'] ?? __('recently updated', 'sustainable-catalyst-feature-suggestions')); ?></span><?php endif; ?>
-                    <?php if (($intelligence['lifecycle_state'] ?? '') === 'maintenance') : ?><span class="scfs-release-board__intel scfs-release-board__intel--lifecycle"><?php echo esc_html($copy['label_maintenance'] ?? __('maintenance', 'sustainable-catalyst-feature-suggestions')); ?></span><?php endif; ?>
-                    <?php if (($intelligence['lifecycle_state'] ?? '') === 'superseded') : ?><span class="scfs-release-board__intel scfs-release-board__intel--lifecycle"><?php echo esc_html($copy['label_superseded'] ?? __('superseded', 'sustainable-catalyst-feature-suggestions')); ?></span><?php endif; ?>
-                    <?php if (!empty($intelligence['change_summary'])) : ?><span class="scfs-release-board__change-summary"><?php echo esc_html($intelligence['change_summary']); ?></span><?php endif; ?>
-                </div>
-            <?php endif; ?>
         </li>
         <?php
         return trim(ob_get_clean());
@@ -591,7 +604,27 @@ final class SCFS_Release_Board {
         return trim(ob_get_clean());
     }
 
-    private function render_footer($atts, $counts, $updated, $release_archive, $support_url) {
+    private function repository_url($products) {
+        $preferred = '';
+        $fallback = '';
+        foreach ((array) $products as $product) {
+            $url = $this->public_url($product['github_repository_url'] ?? '');
+            if ($url === '') {
+                continue;
+            }
+            if (($product['canonical_id'] ?? '') === 'product-support-feedback') {
+                $preferred = $url;
+                break;
+            }
+            if ($fallback === '') {
+                $fallback = $url;
+            }
+        }
+        $url = $preferred !== '' ? $preferred : $fallback;
+        return apply_filters('scfs_release_board_repository_url', $url, $products);
+    }
+
+    private function render_footer($atts, $counts, $updated, $repository_url, $support_url) {
         if (!$atts['show_footer']) {
             return '';
         }
@@ -607,9 +640,9 @@ final class SCFS_Release_Board {
             <?php if ($atts['show_updated'] && $updated !== '') : ?>
                 <p class="scfs-release-board__updated"><?php echo esc_html(sprintf(__('Last verified: %s', 'sustainable-catalyst-feature-suggestions'), $updated)); ?></p>
             <?php endif; ?>
-            <?php if ($release_archive !== '' || $support_url !== '') : ?>
+            <?php if ($repository_url !== '' || $support_url !== '') : ?>
                 <nav class="scfs-release-board__links" aria-label="<?php esc_attr_e('Release Console links', 'sustainable-catalyst-feature-suggestions'); ?>">
-                    <?php if ($release_archive !== '') : ?><a href="<?php echo esc_url($release_archive); ?>">./<?php echo esc_html($atts['release_label']); ?></a><?php endif; ?>
+                    <?php if ($repository_url !== '') : ?><a href="<?php echo esc_url($repository_url); ?>" target="_blank" rel="noopener noreferrer">./<?php echo esc_html($atts['release_label']); ?></a><?php endif; ?>
                     <?php if ($support_url !== '') : ?><a href="<?php echo esc_url($support_url); ?>">./<?php echo esc_html($atts['support_label']); ?></a><?php endif; ?>
                 </nav>
             <?php endif; ?>
@@ -626,7 +659,7 @@ final class SCFS_Release_Board {
         $updated = $atts['show_updated'] ? $this->last_updated($products) : '';
         $counts = $this->telemetry_counts($products);
         $discovery = $this->discovery_state();
-        $release_archive = $atts['show_links'] ? apply_filters('scfs_release_board_release_archive_url', home_url('/support/releases/')) : '';
+        $repository_url = $atts['show_links'] ? $this->repository_url($products) : '';
         $support_url = $atts['show_links'] ? apply_filters('scfs_release_board_support_url', home_url('/support/')) : '';
         $rotating = $atts['layout'] === 'terminal' && $atts['rotate'];
         $screens_id = $instance_id . '-screens';
@@ -642,6 +675,8 @@ final class SCFS_Release_Board {
         if ($rotating) {
             $classes[] = 'scfs-release-board--rotating';
         }
+        $classes[] = $atts['show_status'] ? 'scfs-release-board--has-status' : 'scfs-release-board--without-status';
+        $classes[] = $atts['show_source'] ? 'scfs-release-board--has-source' : 'scfs-release-board--without-source';
         $screen_total = 0;
         foreach ($families as $family => $label) {
             if (!empty($groups[$family])) {
@@ -674,7 +709,7 @@ final class SCFS_Release_Board {
                     <?php $group_id = $instance_id . '-' . sanitize_key($family); ?>
                     <section class="scfs-release-board__group scfs-release-board__group--<?php echo esc_attr($family); ?>" aria-labelledby="<?php echo esc_attr($group_id); ?>"<?php if ($rotating) : ?> data-console-screen data-console-title="<?php echo esc_attr($label); ?>" data-screen-index="<?php echo esc_attr($screen_index); ?>" role="group" aria-roledescription="<?php esc_attr_e('release screen', 'sustainable-catalyst-feature-suggestions'); ?>" aria-label="<?php echo esc_attr(sprintf(__('%1$s, screen %2$d of %3$d', 'sustainable-catalyst-feature-suggestions'), $label, $screen_index + 1, $screen_total)); ?>"<?php endif; ?>>
                         <<?php echo tag_escape($group_heading_tag); ?> id="<?php echo esc_attr($group_id); ?>" class="scfs-release-board__group-title"><span aria-hidden="true">#</span> <?php echo esc_html($label); ?></<?php echo tag_escape($group_heading_tag); ?>>
-                        <div class="scfs-release-board__column-labels" aria-hidden="true"><span><?php echo esc_html($this->console_copy()['column_system'] ?? 'system'); ?></span><span><?php echo esc_html($this->console_copy()['column_version'] ?? 'version'); ?></span><span><?php echo esc_html($this->console_copy()['column_state'] ?? 'state'); ?></span><?php if ($atts['show_source']) : ?><span><?php echo esc_html($this->console_copy()['column_source'] ?? 'source'); ?></span><?php endif; ?></div>
+                        <div class="scfs-release-board__column-labels" aria-hidden="true"><span class="scfs-release-board__column-prompt"></span><span class="scfs-release-board__column-system"><?php echo esc_html($this->console_copy()['column_system'] ?? 'system'); ?></span><span class="scfs-release-board__column-version"><?php echo esc_html($this->console_copy()['column_version'] ?? 'version'); ?></span><?php if ($atts['show_status']) : ?><span class="scfs-release-board__column-state"><?php echo esc_html($this->console_copy()['column_state'] ?? 'state'); ?></span><?php endif; ?><?php if ($atts['show_source']) : ?><span class="scfs-release-board__column-source"><?php echo esc_html($this->console_copy()['column_source'] ?? 'source'); ?></span><?php endif; ?></div>
                         <ul class="scfs-release-board__products" role="list">
                             <?php foreach ($groups[$family] as $product) : ?>
                                 <?php echo $this->render_product($product, $atts, $status_labels); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -684,7 +719,7 @@ final class SCFS_Release_Board {
                     <?php $screen_index++; ?>
                 <?php endforeach; ?>
             </div>
-            <?php echo $this->render_footer($atts, $counts, $updated, $release_archive, $support_url); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            <?php echo $this->render_footer($atts, $counts, $updated, $repository_url, $support_url); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
         </section>
         <?php
         return trim(ob_get_clean());

@@ -1,0 +1,11 @@
+{
+  "schema": "scfs-installed-plugin-discovery/1.0",
+  "version": "7.5.1",
+  "pending_candidate_count": 0,
+  "unmatched_candidate_count": 0,
+  "duplicate_candidate_count": 0,
+  "status_message": "No plugins awaiting review",
+  "pending_heading_visible": false,
+  "actionable_candidate_rows": true,
+  "stale_status_reconciled": true
+}

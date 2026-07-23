@@ -1,0 +1,33 @@
+Canonical Product Registry Automation Validation
+Generated: 2026-07-22
+
+Standalone utility
+PASS - Python syntax compilation
+PASS - governed catalog JSON syntax
+PASS - macOS Bash syntax
+PASS - dry-run does not modify live data
+PASS - unknown records preserved by default
+PASS - explicit --drop-unknown behavior
+PASS - repository/package version discovery
+PASS - alias collision stop condition
+PASS - backup and rollback paths implemented for WordPress apply mode
+
+Migration tests
+PASS - 4/4 unittest cases
+PASS - platform-core -> sustainable-catalyst-core
+PASS - feature-suggestions -> product-support-feedback
+PASS - contact-and-engagement -> contact-engagement
+PASS - catalyst-narrative-risk -> narrative-risk
+PASS - research-lab -> sustainable-catalyst-lab
+PASS - versions, administrator notes, and unknown private records preserved
+PASS - missing approved products seeded from the governed 17-product catalog
+
+Inherited Product Support and Feedback Platform v7.5.3 validation
+PASS - 269 PHP contract files
+PASS - 49 plugin PHP files
+PASS - 34 JavaScript files
+PASS - 196 JSON files
+PASS - 76 Python files
+PASS - 45 CSS layers
+PASS - 316 backend tests
+PASS - legacy plugin slug, shortcodes, accessibility, Release Console, and Plugin Discovery contracts

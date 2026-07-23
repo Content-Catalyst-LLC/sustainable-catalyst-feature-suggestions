@@ -17,7 +17,7 @@
       "const": "scfs-installed-plugin-discovery/1.0"
     },
     "version": {
-      "const": "7.3.0"
+      "const": "7.5.3"
     },
     "scanned_at": {
       "type": "string"
@@ -48,6 +48,20 @@
       "maxItems": 250,
       "items": {
         "$ref": "#/$defs/diagnostic"
+      }
+    },
+    "ignored": {
+      "type": "array",
+      "maxItems": 250,
+      "items": {
+        "$ref": "#/$defs/candidate"
+      }
+    },
+    "manual_mappings": {
+      "type": "array",
+      "maxItems": 250,
+      "items": {
+        "$ref": "#/$defs/manual_mapping"
       }
     }
   },
@@ -92,6 +106,7 @@
         },
         "match_strategy": {
           "enum": [
+            "administrator_mapping",
             "exact_plugin_file",
             "legacy_plugin_file",
             "sc_product_id_header",
@@ -197,6 +212,24 @@
         },
         "selected_plugin_file": {
           "type": "string"
+        },
+        "directory_slug": {
+          "type": "string"
+        },
+        "sc_product_id": {
+          "type": "string"
+        },
+        "sc_product": {
+          "type": "string"
+        },
+        "sc_public_release": {
+          "type": "string"
+        },
+        "ignored_at": {
+          "type": "string"
+        },
+        "ignored_by": {
+          "type": "string"
         }
       }
     },
@@ -229,6 +262,48 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "manual_mapping": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "plugin_file",
+        "product_id",
+        "mapped_at",
+        "mapped_by"
+      ],
+      "properties": {
+        "plugin_file": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "mapped_at": {
+          "type": "string"
+        },
+        "mapped_by": {
+          "type": "string"
+        },
+        "plugin_name": {
+          "type": "string"
+        },
+        "plugin_slug": {
+          "type": "string"
+        },
+        "text_domain": {
+          "type": "string"
+        },
+        "target_before": {
+          "type": "object"
+        },
+        "source_product_id": {
+          "type": "string"
+        },
+        "source_before": {
+          "type": "object"
         }
       }
     }

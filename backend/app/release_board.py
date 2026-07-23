@@ -1,4 +1,4 @@
-"""Release Console projection and registry-governed screen assignment for v7.5.0."""
+"""Release Console projection and registry-governed screen assignment for v7.5.3."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from typing import List, Literal
 
 from pydantic import BaseModel, Field
 
-VERSION = "7.5.0"
+VERSION = "7.5.3"
 SCHEMA = "scfs-release-board/1.3"
 
 Family = Literal[

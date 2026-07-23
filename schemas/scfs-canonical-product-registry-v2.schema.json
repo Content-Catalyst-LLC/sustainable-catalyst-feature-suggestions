@@ -13,7 +13,7 @@
       "const": "scfs-canonical-product-registry/2.0"
     },
     "version": {
-      "const": "7.5.0"
+      "const": "7.5.3"
     },
     "products": {
       "type": "array",
@@ -86,6 +86,7 @@
           "version_source": {
             "enum": [
               "wordpress_plugin",
+              "github_release",
               "manual",
               "remote_manifest",
               "service_endpoint",
@@ -95,6 +96,7 @@
           "version_precedence": {
             "enum": [
               "manual",
+              "github",
               "discovered",
               "installed"
             ]
@@ -190,6 +192,7 @@
           "verification_source": {
             "enum": [
               "registry_seed",
+              "github",
               "administrator",
               "wordpress_plugin",
               "release_manifest",
@@ -238,6 +241,57 @@
           "known_issue_count": {
             "type": "integer",
             "minimum": 0
+          },
+          "github_repository_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "github_default_branch": {
+            "type": "string"
+          },
+          "github_sync_enabled": {
+            "type": [
+              "boolean",
+              "string"
+            ]
+          },
+          "github_sync_locked": {
+            "type": [
+              "boolean",
+              "string"
+            ]
+          },
+          "github_sync_state": {
+            "enum": [
+              "unconfigured",
+              "pending",
+              "current",
+              "error"
+            ]
+          },
+          "github_latest_version": {
+            "type": "string"
+          },
+          "github_latest_release_name": {
+            "type": "string"
+          },
+          "github_latest_release_url": {
+            "type": "string"
+          },
+          "github_latest_release_at": {
+            "type": "string"
+          },
+          "github_latest_commit_sha": {
+            "type": "string"
+          },
+          "github_repository_updated_at": {
+            "type": "string"
+          },
+          "github_last_synced_at": {
+            "type": "string"
+          },
+          "github_sync_message": {
+            "type": "string"
           }
         },
         "additionalProperties": true

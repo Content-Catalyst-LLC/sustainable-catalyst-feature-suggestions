@@ -1,0 +1,52 @@
+{
+  "platform-core": {
+    "canonical_id": "platform-core",
+    "name": "Sustainable Catalyst Platform Core",
+    "plugin_slug": "sustainable-catalyst-platform-core",
+    "installed_version": "2.0.0",
+    "public_version": "2.0.0",
+    "status": "current",
+    "manual_notes": "Keep this administrator note."
+  },
+  "product-support-feedback": {
+    "canonical_id": "product-support-feedback",
+    "name": "Sustainable Catalyst Product Support and Feedback Platform",
+    "plugin_file": "sustainable-catalyst-feature-suggestions/sustainable-catalyst-feature-suggestions.php",
+    "plugin_slug": "sustainable-catalyst-feature-suggestions",
+    "installed_version": "7.5.3",
+    "public_version": "7.5.3",
+    "status": "current",
+    "validation_state": "validated",
+    "documentation_state": "ready"
+  },
+  "feature-suggestions": {
+    "canonical_id": "feature-suggestions",
+    "name": "Feature Suggestions",
+    "plugin_slug": "sustainable-catalyst-feature-suggestions",
+    "installed_version": "7.4.0",
+    "legacy_names": ["Old Feedback Tool"]
+  },
+  "contact-and-engagement": {
+    "canonical_id": "contact-and-engagement",
+    "name": "Contact and Engagement Platform",
+    "plugin_slug": "sustainable-catalyst-contact-and-engagement",
+    "installed_version": "2.0.0"
+  },
+  "research-lab": {
+    "canonical_id": "research-lab",
+    "name": "Sustainable Catalyst Research Lab",
+    "plugin_slug": "sustainable-catalyst-lab",
+    "installed_version": "0.38.0"
+  },
+  "catalyst-narrative-risk": {
+    "canonical_id": "catalyst-narrative-risk",
+    "name": "Catalyst Narrative Risk",
+    "plugin_slug": "catalyst-narrative-risk",
+    "installed_version": "2.0.0"
+  },
+  "custom-private-tool": {
+    "canonical_id": "custom-private-tool",
+    "name": "Custom Private Tool",
+    "public_visible": ""
+  }
+}

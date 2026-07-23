@@ -1,4 +1,4 @@
-"""Installed WordPress plugin discovery validation for v7.5.0."""
+"""Installed WordPress plugin discovery validation for v7.5.3."""
 
 from __future__ import annotations
 
@@ -8,11 +8,12 @@ from typing import List, Literal, Sequence
 
 from pydantic import BaseModel, Field, model_validator
 
-VERSION = "7.5.0"
+VERSION = "7.5.3"
 SCHEMA = "scfs-installed-plugin-discovery/1.0"
 DIAGNOSTICS_SCHEMA = "scfs-plugin-discovery-diagnostics/1.0"
 
 MatchStrategy = Literal[
+    "administrator_mapping",
     "exact_plugin_file",
     "legacy_plugin_file",
     "sc_product_id_header",
@@ -30,6 +31,7 @@ DiagnosticLevel = Literal["error", "warning", "info"]
 _VERSION_PATTERN = re.compile(r"^\d+(?:\.\d+){0,3}(?:[-+][0-9A-Za-z.-]+)?$")
 _DEVELOPMENT_PATTERN = re.compile(r"(?:^|[-.])(dev|alpha|beta|rc|preview)(?:[.-]|$)", re.I)
 _STRATEGY_CONFIDENCE = {
+    "administrator_mapping": 100,
     "exact_plugin_file": 100,
     "legacy_plugin_file": 99,
     "sc_product_id_header": 98,
@@ -84,6 +86,7 @@ class PluginDiscoveryMatch(BaseModel):
 class PluginDiscoveryCandidate(BaseModel):
     plugin_file: str = Field(min_length=3, max_length=240)
     name: str = Field(min_length=1, max_length=200)
+    directory_slug: str = Field(default="", max_length=120)
     version: str = Field(default="", max_length=80)
     version_raw: str = Field(default="", max_length=120)
     version_state: VersionState = "valid"
@@ -93,6 +96,11 @@ class PluginDiscoveryCandidate(BaseModel):
     activation_scope: ActivationScope = "inactive"
     suggested_product_id: str = Field(default="", max_length=100)
     selected_plugin_file: str = Field(default="", max_length=240)
+    sc_product_id: str = Field(default="", max_length=100)
+    sc_product: str = Field(default="", max_length=200)
+    sc_public_release: str = Field(default="", max_length=120)
+    ignored_at: str = ""
+    ignored_by: str = Field(default="", max_length=120)
     review_state: ReviewState = "pending"
 
     @model_validator(mode="after")
@@ -104,6 +112,16 @@ class PluginDiscoveryCandidate(BaseModel):
         if self.review_state == "duplicate_match" and not self.selected_plugin_file:
             raise ValueError("duplicate candidates must identify the selected plugin file")
         return self
+
+
+class PluginDiscoveryManualMapping(BaseModel):
+    plugin_file: str = Field(min_length=3, max_length=240)
+    product_id: str = Field(min_length=2, max_length=100)
+    mapped_at: str = ""
+    mapped_by: str = Field(default="", max_length=120)
+    plugin_name: str = Field(default="", max_length=200)
+    plugin_slug: str = Field(default="", max_length=120)
+    text_domain: str = Field(default="", max_length=120)
 
 
 class PluginDiscoveryDiagnostic(BaseModel):
@@ -118,6 +136,8 @@ class PluginDiscoveryEvidence(BaseModel):
     installed_plugin_count: int = Field(ge=0, le=10000)
     matches: List[PluginDiscoveryMatch] = Field(default_factory=list, max_length=250)
     pending: List[PluginDiscoveryCandidate] = Field(default_factory=list, max_length=250)
+    ignored: List[PluginDiscoveryCandidate] = Field(default_factory=list, max_length=250)
+    manual_mappings: List[PluginDiscoveryManualMapping] = Field(default_factory=list, max_length=250)
     diagnostics: List[PluginDiscoveryDiagnostic] = Field(default_factory=list, max_length=250)
 
 
@@ -136,6 +156,8 @@ class PluginDiscoveryAssessment(BaseModel):
     installed_plugin_count: int
     matched_product_count: int
     pending_candidate_count: int
+    ignored_candidate_count: int
+    manual_mapping_count: int
     active_match_count: int
     inactive_match_count: int
     network_active_match_count: int
@@ -168,6 +190,11 @@ def discovery_capabilities() -> dict:
         "malformed_headers_quarantined": True,
         "multisite_activation_scope": True,
         "human_review_required": True,
+        "canonical_product_dropdown_mapping": True,
+        "administrator_mapping_audit": True,
+        "ignored_plugin_restore": True,
+        "ajax_progressive_enhancement": True,
+        "alias_collision_protection": True,
     }
 
 
@@ -256,7 +283,7 @@ def validate_plugin_discovery(evidence: PluginDiscoveryEvidence) -> PluginDiscov
                 product_id=match.product_id,
                 message="Legacy identifier strategies must be marked as legacy matches.",
             ))
-    if evidence.installed_plugin_count < len(evidence.matches) + len(evidence.pending):
+    if evidence.installed_plugin_count < len(evidence.matches) + len(evidence.pending) + len(evidence.ignored):
         issues.append(PluginDiscoveryIssue(
             level="error",
             code="plugin_count_inconsistent",
@@ -268,6 +295,8 @@ def validate_plugin_discovery(evidence: PluginDiscoveryEvidence) -> PluginDiscov
         installed_plugin_count=evidence.installed_plugin_count,
         matched_product_count=len(evidence.matches),
         pending_candidate_count=len(evidence.pending),
+        ignored_candidate_count=len(evidence.ignored),
+        manual_mapping_count=len(evidence.manual_mappings),
         active_match_count=sum(1 for match in evidence.matches if match.active),
         inactive_match_count=sum(1 for match in evidence.matches if not match.active),
         network_active_match_count=sum(1 for match in evidence.matches if match.activation_scope in {"network", "both"}),

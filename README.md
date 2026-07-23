@@ -1,10 +1,10 @@
-## Current release: v7.5.0 — Release Intelligence and Console Copy Controls
+## Current release: v7.5.2 — Canonical Plugin Mapping and Review Workflow
 
-The Release Console now pairs governed product-release intelligence with editable presentation copy. Administrators can change the public title, introductions, screen labels, controls, accessibility labels, footer labels, intelligence labels, and fallback messages without editing PHP. Product names, versions, release dates, change summaries, validation states, documentation states, issue counts, and lifecycle states remain governed by the canonical Product Registry.
+Plugin Discovery now provides a governed **Map to canonical product** dropdown for installed plugins that cannot be resolved automatically. Administrator mappings persist approved identifiers, reject collisions, support duplicate reassignment, and can be removed safely. Candidates can also be marked as unrelated and restored later.
 
-`[sc_release_board]` remains compatible with terminal, blackboard, compact, and directory layouts. The default seven-second rotating console, fixed footer links, non-navigating product labels, keyboard controls, reduced-motion behavior, and no-JavaScript fallback are preserved.
+Authenticated REST fragments update counts, matched products, review rows, ignored plugins, and the **No plugins awaiting review** state immediately. Non-JavaScript forms, legacy shortcodes, the historical plugin folder, and accessibility behavior remain intact.
 
-See `docs/release-intelligence-v7.5.0.md` and `docs/release-console-v7.5.0.md` for the complete contracts.
+See `docs/canonical-plugin-mapping-v7.5.2.md` and `docs/plugin-discovery-status-repair-v7.5.2.md`.
 
 # Sustainable Catalyst Product Support and Feedback Platform
 

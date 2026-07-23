@@ -2,11 +2,11 @@
 $root = dirname(__DIR__);
 $plugin = $root . '/wordpress/sustainable-catalyst-feature-suggestions';
 $board = file_get_contents($plugin . '/includes/class-scfs-release-board.php');
-$css = file_get_contents($plugin . '/assets/release-board-v7.5.0.css');
-$js = file_get_contents($plugin . '/assets/release-console-v7.5.0.js');
+$css = file_get_contents($plugin . '/assets/release-board-v7.5.3.css');
+$js = file_get_contents($plugin . '/assets/release-console-v7.5.3.js');
 $checks = array(
-    'runtime version' => strpos($board, "const VERSION = '7.5.0';") !== false,
-    'v733 assets' => strpos($board, 'release-board-v7.5.0.css') !== false && strpos($board, 'release-console-v7.5.0.js') !== false,
+    'runtime version' => strpos($board, "const VERSION = '7.5.3';") !== false,
+    'v733 assets' => strpos($board, 'release-board-v7.5.3.css') !== false && strpos($board, 'release-console-v7.5.3.js') !== false,
     'controls hidden before enhancement' => strpos($css, ".scfs-release-board__console-controls {\n") !== false && strpos($css, 'display: none;') !== false && strpos($css, '.scfs-release-board--enhanced .scfs-release-board__console-controls') !== false,
     'stable grid height' => strpos($css, 'grid-column: 1;') !== false && strpos($css, 'grid-row: 1;') !== false && strpos($css, '[data-console-active="true"]') !== false,
     'no hidden attribute toggling' => strpos($js, '.hidden =') === false && strpos($js, "setAttribute('data-console-active'") !== false,
@@ -22,9 +22,9 @@ $checks = array(
     'astra button reset' => strpos($css, 'box-shadow: none;') !== false && strpos($css, 'text-shadow: none;') !== false && strpos($css, 'transform: none;') !== false,
     'mobile controls' => strpos($css, '@media (max-width: 430px)') !== false && strpos($css, '@container (max-width: 580px)') !== false,
     'knowledge library label only' => strpos($board, '<a class="scfs-release-board__name"') === false && strpos($board, '<a class="scfs-release-board__version"') === false,
-    'footer links retained' => strpos($board, 'scfs-release-board__links') !== false && strpos($board, "home_url('/support/releases/')") !== false && strpos($board, "home_url('/support/')") !== false,
+    'footer links retained' => strpos($board, 'scfs-release-board__links') !== false && strpos($board, 'scfs_release_board_repository_url') !== false && strpos($board, "home_url('/support/releases/')") === false && strpos($board, "home_url('/support/')") !== false,
 );
 foreach ($checks as $label => $ok) {
     if (!$ok) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo "v7.5.0 Release Console reliability and presentation contract passed.\n";
+echo "v7.5.3 Release Console reliability and presentation contract passed.\n";

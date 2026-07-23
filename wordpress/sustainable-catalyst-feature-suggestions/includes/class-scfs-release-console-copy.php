@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Release_Console_Copy {
-    const VERSION = '7.5.0';
+    const VERSION = '7.5.3';
     const SCHEMA = 'scfs-release-console-copy/1.0';
     const OPTION_KEY = 'scfs_release_console_copy';
     const ADMIN_SLUG = 'scfs-release-console-copy';
@@ -70,7 +70,7 @@ final class SCFS_Release_Console_Copy {
             'controls_aria' => __('Release Console controls', 'sustainable-catalyst-feature-suggestions'),
             'screens_aria' => __('Release Console screens. Use Left and Right Arrow keys to navigate, Home for the first screen, End for the last screen, and Space to pause or play.', 'sustainable-catalyst-feature-suggestions'),
             'noscript' => __('Rotation controls require JavaScript. All release groups are shown.', 'sustainable-catalyst-feature-suggestions'),
-            'footer_releases' => __('releases', 'sustainable-catalyst-feature-suggestions'),
+            'footer_releases' => __('repository', 'sustainable-catalyst-feature-suggestions'),
             'footer_support' => __('support', 'sustainable-catalyst-feature-suggestions'),
             'empty_message' => __('No governed releases are available for this view.', 'sustainable-catalyst-feature-suggestions'),
             'unavailable_message' => __('Release intelligence is temporarily unavailable.', 'sustainable-catalyst-feature-suggestions'),
@@ -85,6 +85,8 @@ final class SCFS_Release_Console_Copy {
             'label_docs_missing' => __('docs missing', 'sustainable-catalyst-feature-suggestions'),
             'label_known_issue' => __('known issue', 'sustainable-catalyst-feature-suggestions'),
             'label_known_issues' => __('known issues', 'sustainable-catalyst-feature-suggestions'),
+            'label_commit' => __('commit', 'sustainable-catalyst-feature-suggestions'),
+            'label_repository_updated' => __('repository updated', 'sustainable-catalyst-feature-suggestions'),
             'label_recently_updated' => __('recently updated', 'sustainable-catalyst-feature-suggestions'),
             'label_maintenance' => __('maintenance', 'sustainable-catalyst-feature-suggestions'),
             'label_superseded' => __('superseded', 'sustainable-catalyst-feature-suggestions'),
@@ -142,7 +144,7 @@ final class SCFS_Release_Console_Copy {
             __('Header and screens', 'sustainable-catalyst-feature-suggestions') => array('title','terminal_intro','standard_intro','screen_foundation','screen_research_intelligence','screen_data_analysis','screen_creation_systems','screen_commercial'),
             __('Controls and navigation', 'sustainable-catalyst-feature-suggestions') => array('previous','pause','play','next','previous_aria','pause_aria','play_aria','next_aria','controls_aria','screens_aria','noscript'),
             __('Columns, summary, and footer', 'sustainable-catalyst-feature-suggestions') => array('column_system','column_version','column_state','column_source','summary_systems','summary_plugin','summary_manual','summary_matched','summary_last_sync','footer_releases','footer_support'),
-            __('Release intelligence labels', 'sustainable-catalyst-feature-suggestions') => array('label_previous_version','label_released','label_validated','label_validation_partial','label_validation_pending','label_validation_failed','label_docs_ready','label_docs_partial','label_docs_missing','label_known_issue','label_known_issues','label_recently_updated','label_maintenance','label_superseded'),
+            __('Release intelligence labels', 'sustainable-catalyst-feature-suggestions') => array('label_previous_version','label_released','label_validated','label_validation_partial','label_validation_pending','label_validation_failed','label_docs_ready','label_docs_partial','label_docs_missing','label_known_issue','label_known_issues','label_commit','label_repository_updated','label_recently_updated','label_maintenance','label_superseded'),
             __('Fallback messages', 'sustainable-catalyst-feature-suggestions') => array('empty_message','unavailable_message'),
         );
         echo '<div class="wrap"><h1>' . esc_html__('Release Console Copy', 'sustainable-catalyst-feature-suggestions') . '</h1>';
