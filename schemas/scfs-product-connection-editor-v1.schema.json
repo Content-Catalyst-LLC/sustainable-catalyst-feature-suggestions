@@ -20,7 +20,7 @@
       "const": "scfs-product-connection-editor/1.0"
     },
     "version": {
-      "const": "7.7.0"
+      "const": "7.7.1"
     },
     "canonical_id": {
       "type": "string"

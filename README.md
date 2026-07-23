@@ -1,12 +1,12 @@
-## Current release: v7.7.0 — Canonical Product Registry Administration
+## Current release: v7.7.1 — Plugin Discovery Intelligence
 
-The **Product Registry** screen is now the governed catalog for Sustainable Catalyst product identity. It adds search, family and lifecycle filters, accessible Release Console ordering, product creation, duplicate merges, alias collision review, archive and restore, dry-run import, automatic backups, rollback, and administrator-attributed history.
+**Plugin Discovery Intelligence** now inventories standard, site-active, network-active, inactive, must-use, and drop-in WordPress implementations; ranks canonical-product suggestions by evidence; supports governed bulk mapping and ignore decisions; compares installed versions with GitHub; and flags duplicate, header, and repository inconsistencies.
 
-See `docs/canonical-product-registry-administration-v7.7.0.md`.
+See `docs/plugin-discovery-intelligence-v7.7.1.md`.
 
 # Sustainable Catalyst Product Support and Feedback Platform
 
-**Current release: v7.7.0 — Canonical Product Registry Administration**
+**Current release: v7.7.1 — Plugin Discovery Intelligence**
 
 ## Primary public shortcodes
 

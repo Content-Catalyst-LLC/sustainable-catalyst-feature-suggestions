@@ -1,4 +1,4 @@
-"""Installed WordPress plugin discovery validation for v7.7.0."""
+"""Installed WordPress plugin discovery validation for v7.7.1."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import List, Literal, Sequence
 
 from pydantic import BaseModel, Field, model_validator
 
-VERSION = "7.7.0"
+VERSION = "7.7.1"
 SCHEMA = "scfs-installed-plugin-discovery/1.0"
 DIAGNOSTICS_SCHEMA = "scfs-plugin-discovery-diagnostics/1.0"
 
@@ -17,13 +17,17 @@ MatchStrategy = Literal[
     "exact_plugin_file",
     "legacy_plugin_file",
     "sc_product_id_header",
+    "sc_product_header",
     "plugin_slug",
     "legacy_plugin_slug",
     "text_domain",
     "legacy_text_domain",
+    "plugin_repository_url",
     "approved_name_alias",
 ]
 ActivationScope = Literal["inactive", "site", "network", "both"]
+PluginType = Literal["standard", "must-use", "drop-in"]
+VersionComparison = Literal["current", "update_available", "ahead", "unknown"]
 VersionState = Literal["valid", "development", "missing", "malformed"]
 ReviewState = Literal["pending", "duplicate_match", "malformed_header"]
 DiagnosticLevel = Literal["error", "warning", "info"]
@@ -35,10 +39,12 @@ _STRATEGY_CONFIDENCE = {
     "exact_plugin_file": 100,
     "legacy_plugin_file": 99,
     "sc_product_id_header": 98,
+    "sc_product_header": 96,
     "plugin_slug": 95,
     "legacy_plugin_slug": 94,
     "text_domain": 90,
     "legacy_text_domain": 89,
+    "plugin_repository_url": 86,
     "approved_name_alias": 80,
 }
 _VERSION_STATE_SCORE = {"valid": 3, "development": 2, "missing": 1, "malformed": 0}
@@ -59,6 +65,14 @@ def normalize_plugin_version(raw: str) -> tuple[str, VersionState]:
     return value, "valid"
 
 
+class PluginDiscoverySuggestion(BaseModel):
+    product_id: str = Field(min_length=2, max_length=100)
+    name: str = Field(min_length=1, max_length=200)
+    confidence: int = Field(ge=0, le=100)
+    signals: List[str] = Field(default_factory=list, max_length=12)
+    primary_signal: str = Field(default="", max_length=100)
+
+
 class PluginDiscoveryMatch(BaseModel):
     product_id: str = Field(min_length=2, max_length=100)
     plugin_file: str = Field(min_length=3, max_length=240)
@@ -72,6 +86,11 @@ class PluginDiscoveryMatch(BaseModel):
     match_strategy: MatchStrategy
     confidence: int = Field(ge=0, le=100)
     legacy_match: bool = False
+    match_signals: List[str] = Field(default_factory=list, max_length=12)
+    plugin_type: PluginType = "standard"
+    plugin_uri: str = Field(default="", max_length=500)
+    latest_version: str = Field(default="", max_length=80)
+    version_comparison: VersionComparison = "unknown"
     discovered_at: str = ""
 
     @model_validator(mode="after")
@@ -95,6 +114,11 @@ class PluginDiscoveryCandidate(BaseModel):
     active: bool = False
     activation_scope: ActivationScope = "inactive"
     suggested_product_id: str = Field(default="", max_length=100)
+    suggested_confidence: int = Field(default=0, ge=0, le=100)
+    suggestion_signals: List[str] = Field(default_factory=list, max_length=12)
+    suggestions: List[PluginDiscoverySuggestion] = Field(default_factory=list, max_length=5)
+    plugin_type: PluginType = "standard"
+    plugin_uri: str = Field(default="", max_length=500)
     selected_plugin_file: str = Field(default="", max_length=240)
     sc_product_id: str = Field(default="", max_length=100)
     sc_product: str = Field(default="", max_length=200)
@@ -132,6 +156,27 @@ class PluginDiscoveryDiagnostic(BaseModel):
     message: str = Field(min_length=1, max_length=500)
 
 
+class PluginDiscoveryInventoryItem(BaseModel):
+    plugin_file: str = Field(min_length=3, max_length=240)
+    name: str = Field(min_length=1, max_length=200)
+    version: str = Field(default="", max_length=80)
+    version_state: VersionState = "missing"
+    active: bool = False
+    activation_scope: ActivationScope = "inactive"
+    plugin_type: PluginType = "standard"
+    text_domain: str = Field(default="", max_length=120)
+    plugin_uri: str = Field(default="", max_length=500)
+    mapping_state: Literal["matched", "review", "ignored", "unclassified"] = "unclassified"
+    product_id: str = Field(default="", max_length=100)
+    match_strategy: str = Field(default="", max_length=100)
+    confidence: int = Field(default=0, ge=0, le=100)
+    suggested_product_id: str = Field(default="", max_length=100)
+    suggested_confidence: int = Field(default=0, ge=0, le=100)
+    suggestion_signals: List[str] = Field(default_factory=list, max_length=12)
+    latest_version: str = Field(default="", max_length=80)
+    version_comparison: VersionComparison = "unknown"
+
+
 class PluginDiscoveryEvidence(BaseModel):
     installed_plugin_count: int = Field(ge=0, le=10000)
     matches: List[PluginDiscoveryMatch] = Field(default_factory=list, max_length=250)
@@ -139,6 +184,7 @@ class PluginDiscoveryEvidence(BaseModel):
     ignored: List[PluginDiscoveryCandidate] = Field(default_factory=list, max_length=250)
     manual_mappings: List[PluginDiscoveryManualMapping] = Field(default_factory=list, max_length=250)
     diagnostics: List[PluginDiscoveryDiagnostic] = Field(default_factory=list, max_length=250)
+    inventory: List[PluginDiscoveryInventoryItem] = Field(default_factory=list, max_length=10000)
 
 
 class PluginDiscoveryIssue(BaseModel):
@@ -165,6 +211,12 @@ class PluginDiscoveryAssessment(BaseModel):
     missing_version_count: int
     malformed_version_count: int
     diagnostic_count: int
+    standard_plugin_count: int
+    must_use_plugin_count: int
+    dropin_count: int
+    update_available_count: int
+    ahead_of_release_count: int
+    unknown_version_count: int
     strategies: dict[str, int]
     issues: List[PluginDiscoveryIssue]
     automatic_publication: bool = False
@@ -195,6 +247,18 @@ def discovery_capabilities() -> dict:
         "ignored_plugin_restore": True,
         "ajax_progressive_enhancement": True,
         "alias_collision_protection": True,
+        "complete_plugin_inventory": True,
+        "site_network_inactive_classification": True,
+        "must_use_plugin_detection": True,
+        "dropin_detection": True,
+        "confidence_ranked_suggestions": True,
+        "matching_signal_explanation": True,
+        "bulk_map_suggested": True,
+        "bulk_ignore": True,
+        "duplicate_mapping_detection": True,
+        "installed_vs_github_version_comparison": True,
+        "plugin_header_repository_consistency": True,
+        "inventory_search_and_filters": True,
     }
 
 
@@ -289,6 +353,14 @@ def validate_plugin_discovery(evidence: PluginDiscoveryEvidence) -> PluginDiscov
             code="plugin_count_inconsistent",
             message="Matched and pending discovery records cannot exceed the installed plugin count.",
         ))
+    inventory_files = Counter(item.plugin_file for item in evidence.inventory)
+    for plugin_file, count in sorted(inventory_files.items()):
+        if count > 1:
+            issues.append(PluginDiscoveryIssue(
+                level="error",
+                code="duplicate_inventory_plugin",
+                message=f"Plugin file {plugin_file} appears more than once in the complete inventory.",
+            ))
     strategies = Counter(match.match_strategy for match in evidence.matches)
     return PluginDiscoveryAssessment(
         valid=not any(issue.level == "error" for issue in issues),
@@ -304,6 +376,12 @@ def validate_plugin_discovery(evidence: PluginDiscoveryEvidence) -> PluginDiscov
         missing_version_count=sum(1 for match in evidence.matches if match.version_state == "missing"),
         malformed_version_count=sum(1 for match in evidence.matches if match.version_state == "malformed"),
         diagnostic_count=len(evidence.diagnostics),
+        standard_plugin_count=sum(1 for item in evidence.inventory if item.plugin_type == "standard"),
+        must_use_plugin_count=sum(1 for item in evidence.inventory if item.plugin_type == "must-use"),
+        dropin_count=sum(1 for item in evidence.inventory if item.plugin_type == "drop-in"),
+        update_available_count=sum(1 for item in evidence.inventory if item.version_comparison == "update_available"),
+        ahead_of_release_count=sum(1 for item in evidence.inventory if item.version_comparison == "ahead"),
+        unknown_version_count=sum(1 for item in evidence.inventory if item.version_comparison == "unknown"),
         strategies=dict(sorted(strategies.items())),
         issues=issues,
     )

@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_GitHub_Connection_Settings {
-    const VERSION = '7.7.0';
+    const VERSION = '7.7.1';
     const SCHEMA = 'scfs-github-connection-settings/1.0';
     const OPTION_KEY = 'scfs_github_connection_settings';
     const ADMIN_SLUG = 'scfs-github-connection';

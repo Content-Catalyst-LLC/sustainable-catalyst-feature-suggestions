@@ -1,6 +1,6 @@
 <?php
 /**
- * Installed Plugin Discovery.
+ * Plugin Discovery Intelligence.
  *
  * Safely reconciles approved Sustainable Catalyst product records with the
  * WordPress plugins actually installed on the site. Unknown, malformed, and
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class SCFS_Installed_Plugin_Discovery {
-    const VERSION = '7.7.0';
+    const VERSION = '7.7.1';
     const SCHEMA = 'scfs-installed-plugin-discovery/1.0';
     const DIAGNOSTICS_SCHEMA = 'scfs-plugin-discovery-diagnostics/1.0';
     const SCHEMA_OPTION = 'scfs_installed_plugin_discovery_schema';
@@ -27,6 +27,7 @@ final class SCFS_Installed_Plugin_Discovery {
     const CACHE_KEY = 'scfs_installed_plugin_discovery_cache';
     const ADMIN_SLUG = 'scfs-plugin-discovery';
     const DECISION_NONCE = 'scfs_plugin_discovery_decision';
+    const BULK_NONCE = 'scfs_plugin_discovery_bulk';
     const MAX_AUDIT_ENTRIES = 250;
     const MAX_DIAGNOSTICS = 250;
     const CACHE_TTL = 900;
@@ -46,6 +47,7 @@ final class SCFS_Installed_Plugin_Discovery {
         add_action('admin_post_scfs_rescan_installed_plugins', array($this, 'rescan_action'));
         add_action('admin_post_scfs_clear_plugin_discovery', array($this, 'clear_action'));
         add_action('admin_post_scfs_plugin_discovery_decision', array($this, 'decision_action'));
+        add_action('admin_post_scfs_plugin_discovery_bulk', array($this, 'bulk_action'));
         add_action('admin_post_scfs_save_product_connection', array($this, 'save_product_connection_action'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('activated_plugin', array($this, 'plugin_state_changed'), 10, 2);
@@ -132,10 +134,12 @@ final class SCFS_Installed_Plugin_Discovery {
                 'exact_plugin_file',
                 'legacy_plugin_file',
                 'sc_product_id_header',
+                'sc_product_header',
                 'plugin_slug',
                 'legacy_plugin_slug',
                 'text_domain',
                 'legacy_text_domain',
+                'plugin_repository_url',
                 'approved_name_alias',
             ),
             'approved_registry_only' => true,
@@ -165,6 +169,18 @@ final class SCFS_Installed_Plugin_Discovery {
             'release_operations_integrity_source' => true,
             'active_mapping_stale_detection' => true,
             'rescan_clears_stale_status' => true,
+            'complete_plugin_inventory' => true,
+            'site_network_inactive_classification' => true,
+            'must_use_plugin_detection' => true,
+            'dropin_detection' => true,
+            'confidence_ranked_suggestions' => true,
+            'matching_signal_explanation' => true,
+            'bulk_map_suggested' => true,
+            'bulk_ignore' => true,
+            'duplicate_mapping_detection' => true,
+            'installed_vs_github_version_comparison' => true,
+            'plugin_header_repository_consistency' => true,
+            'inventory_search_and_filters' => true,
         );
     }
 
@@ -185,7 +201,18 @@ final class SCFS_Installed_Plugin_Discovery {
             'inactive_match_count' => 0,
             'network_active_match_count' => 0,
             'diagnostic_count' => 0,
+            'standard_plugin_count' => 0,
+            'site_active_plugin_count' => 0,
+            'network_active_plugin_count' => 0,
+            'both_active_plugin_count' => 0,
+            'inactive_plugin_count' => 0,
+            'must_use_plugin_count' => 0,
+            'dropin_count' => 0,
+            'update_available_count' => 0,
+            'ahead_of_release_count' => 0,
+            'unknown_version_count' => 0,
             'matches' => array(),
+            'inventory' => array(),
         );
     }
 
@@ -371,6 +398,12 @@ final class SCFS_Installed_Plugin_Discovery {
             'diagnostic_count' => count((array) $diagnostics['items']),
             'diagnostic_errors' => absint($diagnostics['error_count']),
             'diagnostic_warnings' => absint($diagnostics['warning_count']),
+            'standard_plugin_count' => absint($snapshot['standard_plugin_count']),
+            'must_use_plugin_count' => absint($snapshot['must_use_plugin_count']),
+            'dropin_count' => absint($snapshot['dropin_count']),
+            'update_available_count' => absint($snapshot['update_available_count']),
+            'ahead_of_release_count' => absint($snapshot['ahead_of_release_count']),
+            'unknown_version_count' => absint($snapshot['unknown_version_count']),
             'cache_ttl_seconds' => self::CACHE_TTL,
             'human_review_required' => true,
         );
@@ -442,13 +475,20 @@ final class SCFS_Installed_Plugin_Discovery {
         return $scopes;
     }
 
-    private function custom_headers($plugin_file) {
+    private function custom_headers($plugin_file, $plugin_type = 'standard') {
         $headers = array(
             'SCProductID' => 'SC Product ID',
             'SCProduct' => 'SC Product',
             'SCPublicRelease' => 'SC Public Release',
         );
-        $full_path = defined('WP_PLUGIN_DIR') ? WP_PLUGIN_DIR . '/' . $plugin_file : '';
+        $full_path = '';
+        if ($plugin_type === 'must-use' && defined('WPMU_PLUGIN_DIR')) {
+            $full_path = rtrim(WPMU_PLUGIN_DIR, '/\\') . '/' . basename($plugin_file);
+        } elseif ($plugin_type === 'drop-in' && defined('WP_CONTENT_DIR')) {
+            $full_path = rtrim(WP_CONTENT_DIR, '/\\') . '/' . basename($plugin_file);
+        } elseif (defined('WP_PLUGIN_DIR')) {
+            $full_path = rtrim(WP_PLUGIN_DIR, '/\\') . '/' . $plugin_file;
+        }
         if (!$full_path || !is_file($full_path) || !function_exists('get_file_data')) {
             return array_fill_keys(array_keys($headers), '');
         }
@@ -476,6 +516,33 @@ final class SCFS_Installed_Plugin_Discovery {
         return array('raw' => $raw, 'normalized' => $normalized, 'state' => $state);
     }
 
+    private function plugin_record($plugin_file, $metadata, $plugin_type, $scope) {
+        $plugin_file = $this->normalize_plugin_file($plugin_file);
+        $custom = $this->custom_headers($plugin_file, $plugin_type);
+        $directory = dirname($plugin_file);
+        $directory_slug = sanitize_key($plugin_type === 'standard' && $directory !== '.' ? basename($directory) : pathinfo($plugin_file, PATHINFO_FILENAME));
+        $name = $this->clean_header($metadata['Name'] ?? '');
+        $version = $this->normalize_version($metadata['Version'] ?? '');
+        return array(
+            'plugin_file' => $plugin_file,
+            'directory_slug' => $directory_slug,
+            'name' => $name,
+            'name_state' => $name === '' ? 'missing' : 'valid',
+            'version' => $version['normalized'],
+            'version_raw' => $version['raw'],
+            'version_state' => $version['state'],
+            'author' => $this->clean_header($metadata['AuthorName'] ?? ($metadata['Author'] ?? '')),
+            'text_domain' => sanitize_key($metadata['TextDomain'] ?? ''),
+            'plugin_uri' => esc_url_raw($metadata['PluginURI'] ?? ''),
+            'active' => $scope !== 'inactive',
+            'activation_scope' => $scope,
+            'plugin_type' => $plugin_type,
+            'sc_product_id' => sanitize_key($custom['SCProductID'] ?? ''),
+            'sc_product' => $this->clean_header($custom['SCProduct'] ?? ''),
+            'sc_public_release' => $this->clean_header($custom['SCPublicRelease'] ?? ''),
+        );
+    }
+
     private function installed_plugins() {
         if (!$this->load_plugin_api()) {
             return array();
@@ -487,30 +554,33 @@ final class SCFS_Installed_Plugin_Discovery {
             if ($plugin_file === '') {
                 continue;
             }
-            $custom = $this->custom_headers($plugin_file);
-            $directory_slug = sanitize_key(dirname($plugin_file) === '.' ? pathinfo($plugin_file, PATHINFO_FILENAME) : dirname($plugin_file));
-            $name = $this->clean_header($metadata['Name'] ?? '');
-            $version = $this->normalize_version($metadata['Version'] ?? '');
             $scope = isset($scopes[$plugin_file]) ? $scopes[$plugin_file] : 'inactive';
-            $plugins[$plugin_file] = array(
-                'plugin_file' => $plugin_file,
-                'directory_slug' => $directory_slug,
-                'name' => $name,
-                'name_state' => $name === '' ? 'missing' : 'valid',
-                'version' => $version['normalized'],
-                'version_raw' => $version['raw'],
-                'version_state' => $version['state'],
-                'author' => $this->clean_header($metadata['AuthorName'] ?? ($metadata['Author'] ?? '')),
-                'text_domain' => sanitize_key($metadata['TextDomain'] ?? ''),
-                'active' => $scope !== 'inactive',
-                'activation_scope' => $scope,
-                'sc_product_id' => sanitize_key($custom['SCProductID'] ?? ''),
-                'sc_product' => $this->clean_header($custom['SCProduct'] ?? ''),
-                'sc_public_release' => $this->clean_header($custom['SCPublicRelease'] ?? ''),
-            );
+            $plugins[$plugin_file] = $this->plugin_record($plugin_file, $metadata, 'standard', $scope);
+        }
+        if (function_exists('get_mu_plugins')) {
+            foreach ((array) get_mu_plugins() as $plugin_file => $metadata) {
+                $key = 'mu-plugins/' . basename($this->normalize_plugin_file($plugin_file));
+                $plugins[$key] = $this->plugin_record($key, $metadata, 'must-use', 'network');
+            }
+        }
+        if (function_exists('get_dropins')) {
+            foreach ((array) get_dropins() as $plugin_file => $metadata) {
+                $key = 'drop-ins/' . basename($this->normalize_plugin_file($plugin_file));
+                $plugins[$key] = $this->plugin_record($key, $metadata, 'drop-in', 'network');
+            }
         }
         ksort($plugins, SORT_NATURAL | SORT_FLAG_CASE);
         return $plugins;
+    }
+
+    public function plugin_inventory() {
+        $snapshot = $this->snapshot();
+        if (!empty($snapshot['inventory']) && is_array($snapshot['inventory'])) {
+            return $snapshot['inventory'];
+        }
+        $this->refresh(true, 'inventory_requested');
+        $snapshot = $this->snapshot();
+        return (array) ($snapshot['inventory'] ?? array());
     }
 
     private function normalize_name($name) {
@@ -535,69 +605,124 @@ final class SCFS_Installed_Plugin_Discovery {
         return array_values(array_unique(array_filter(array_map(array($this, 'normalize_name'), $aliases))));
     }
 
-    private function match_plugin($plugin, $registry) {
-        $manual_mappings = $this->manual_mappings();
-        if (isset($manual_mappings[$plugin['plugin_file']])) {
-            $product_id = sanitize_key($manual_mappings[$plugin['plugin_file']]['product_id'] ?? '');
-            if ($product_id !== '' && isset($registry[$product_id]) && !empty($registry[$product_id]['discovery_enabled'])) {
-                return array('product_id' => $product_id, 'strategy' => 'administrator_mapping', 'confidence' => 100, 'legacy' => false);
-            }
+    private function normalize_repository_identity($url) {
+        $url = strtolower(trim((string) $url));
+        if ($url === '') {
+            return '';
         }
+        $url = preg_replace('#^git@github\.com:#', '', $url);
+        $url = preg_replace('#^https?://github\.com/#', '', $url);
+        $url = preg_replace('#\.git$#', '', $url);
+        return trim($url, '/');
+    }
+
+    private function suggestion_candidates($plugin, $registry) {
+        $suggestions = array();
+        $manual = $this->manual_mappings();
         foreach ($registry as $product_id => $record) {
             if (empty($record['discovery_enabled'])) {
                 continue;
+            }
+            $signals = array();
+            $score = 0;
+            $add = function ($value, $signal) use (&$signals, &$score) {
+                if ($value > $score) {
+                    $score = $value;
+                }
+                if ($value > 0) {
+                    $signals[$signal] = $value;
+                }
+            };
+            if (isset($manual[$plugin['plugin_file']]) && sanitize_key($manual[$plugin['plugin_file']]['product_id'] ?? '') === $product_id) {
+                $add(100, 'administrator_mapping');
             }
             $configured_file = $this->normalize_plugin_file($record['plugin_file'] ?? '');
-            if ($configured_file && hash_equals($configured_file, $plugin['plugin_file'])) {
-                return array('product_id' => $product_id, 'strategy' => 'exact_plugin_file', 'confidence' => 100, 'legacy' => false);
+            if ($configured_file !== '' && hash_equals($configured_file, $plugin['plugin_file'])) {
+                $add(100, 'exact_plugin_file');
             }
             if (in_array($plugin['plugin_file'], $this->normalize_identifier_list($record['legacy_plugin_files'] ?? array(), 'file'), true)) {
-                return array('product_id' => $product_id, 'strategy' => 'legacy_plugin_file', 'confidence' => 99, 'legacy' => true);
+                $add(99, 'legacy_plugin_file');
             }
-        }
-        if (!empty($plugin['sc_product_id']) && isset($registry[$plugin['sc_product_id']]) && !empty($registry[$plugin['sc_product_id']]['discovery_enabled'])) {
-            return array('product_id' => $plugin['sc_product_id'], 'strategy' => 'sc_product_id_header', 'confidence' => 98, 'legacy' => false);
-        }
-        foreach ($registry as $product_id => $record) {
-            if (empty($record['discovery_enabled'])) {
-                continue;
+            if (!empty($plugin['sc_product_id']) && hash_equals($product_id, $plugin['sc_product_id'])) {
+                $add(98, 'sc_product_id_header');
+            }
+            if (!empty($plugin['sc_product']) && in_array($this->normalize_name($plugin['sc_product']), $this->approved_aliases($record), true)) {
+                $add(96, 'sc_product_header');
             }
             $slug = sanitize_key($record['plugin_slug'] ?? '');
-            if ($slug && hash_equals($slug, $plugin['directory_slug'])) {
-                return array('product_id' => $product_id, 'strategy' => 'plugin_slug', 'confidence' => 95, 'legacy' => false);
+            if ($slug !== '' && hash_equals($slug, $plugin['directory_slug'])) {
+                $add(95, 'plugin_slug');
             }
             if (in_array($plugin['directory_slug'], $this->normalize_identifier_list($record['legacy_plugin_slugs'] ?? array()), true)) {
-                return array('product_id' => $product_id, 'strategy' => 'legacy_plugin_slug', 'confidence' => 94, 'legacy' => true);
+                $add(94, 'legacy_plugin_slug');
             }
-        }
-        foreach ($registry as $product_id => $record) {
-            if (empty($record['discovery_enabled'])) {
-                continue;
-            }
-            $text_domain = sanitize_key($record['plugin_text_domain'] ?? '');
-            if (!$text_domain) {
-                $text_domain = sanitize_key($record['plugin_slug'] ?? '');
-            }
-            if ($text_domain && !empty($plugin['text_domain']) && hash_equals($text_domain, $plugin['text_domain'])) {
-                return array('product_id' => $product_id, 'strategy' => 'text_domain', 'confidence' => 90, 'legacy' => false);
+            $text_domain = sanitize_key($record['plugin_text_domain'] ?? ($record['plugin_slug'] ?? ''));
+            if ($text_domain !== '' && !empty($plugin['text_domain']) && hash_equals($text_domain, $plugin['text_domain'])) {
+                $add(90, 'text_domain');
             }
             if (!empty($plugin['text_domain']) && in_array($plugin['text_domain'], $this->normalize_identifier_list($record['legacy_text_domains'] ?? array()), true)) {
-                return array('product_id' => $product_id, 'strategy' => 'legacy_text_domain', 'confidence' => 89, 'legacy' => true);
+                $add(89, 'legacy_text_domain');
+            }
+            $plugin_repo = $this->normalize_repository_identity($plugin['plugin_uri'] ?? '');
+            $product_repo = $this->normalize_repository_identity($record['github_repository_url'] ?? '');
+            if ($plugin_repo !== '' && $product_repo !== '' && hash_equals($product_repo, $plugin_repo)) {
+                $add(86, 'plugin_repository_url');
+            }
+            $approved_author = stripos($plugin['author'] ?? '', 'Content Catalyst') !== false;
+            if ($approved_author && ($plugin['name_state'] ?? '') === 'valid' && in_array($this->normalize_name($plugin['name']), $this->approved_aliases($record), true)) {
+                $add(80, 'approved_name_alias');
+            }
+            if ($score > 0) {
+                arsort($signals, SORT_NUMERIC);
+                $suggestions[] = array(
+                    'product_id' => $product_id,
+                    'name' => sanitize_text_field($record['name'] ?? $product_id),
+                    'confidence' => $score,
+                    'signals' => array_keys($signals),
+                    'primary_signal' => (string) array_key_first($signals),
+                );
             }
         }
-        $approved_author = stripos($plugin['author'], 'Content Catalyst') !== false;
-        if ($approved_author && $plugin['name_state'] === 'valid') {
-            $plugin_name = $this->normalize_name($plugin['name']);
-            foreach ($registry as $product_id => $record) {
-                if (empty($record['discovery_enabled'])) {
-                    continue;
-                }
-                if ($plugin_name && in_array($plugin_name, $this->approved_aliases($record), true)) {
-                    return array('product_id' => $product_id, 'strategy' => 'approved_name_alias', 'confidence' => 80, 'legacy' => $plugin_name !== $this->normalize_name($record['name'] ?? ''));
-                }
+        usort($suggestions, function ($left, $right) {
+            if ($left['confidence'] !== $right['confidence']) {
+                return $right['confidence'] <=> $left['confidence'];
             }
+            return strcasecmp($left['name'], $right['name']);
+        });
+        return array_slice($suggestions, 0, 5);
+    }
+
+    private function match_plugin($plugin, $registry) {
+        $suggestions = $this->suggestion_candidates($plugin, $registry);
+        if (!$suggestions || $suggestions[0]['confidence'] < 80) {
+            return null;
         }
-        return null;
+        if (isset($suggestions[1]) && $suggestions[1]['confidence'] === $suggestions[0]['confidence']) {
+            return null;
+        }
+        $top = $suggestions[0];
+        return array(
+            'product_id' => $top['product_id'],
+            'strategy' => $top['primary_signal'],
+            'confidence' => absint($top['confidence']),
+            'legacy' => strpos($top['primary_signal'], 'legacy_') === 0,
+            'signals' => $top['signals'],
+        );
+    }
+
+    private function compare_plugin_versions($installed, $latest) {
+        $installed = trim((string) $installed);
+        $latest = trim((string) $latest);
+        if ($installed === '' || $latest === '') {
+            return 'unknown';
+        }
+        if (version_compare($installed, $latest, '<')) {
+            return 'update_available';
+        }
+        if (version_compare($installed, $latest, '>')) {
+            return 'ahead';
+        }
+        return 'current';
     }
 
     private function catalyst_candidate($plugin) {
@@ -633,6 +758,23 @@ final class SCFS_Installed_Plugin_Discovery {
                 } else {
                     $owners[$alias] = $product_id;
                 }
+            }
+        }
+        return $items;
+    }
+
+    private function manual_mapping_diagnostics() {
+        $by_product = array();
+        $items = array();
+        foreach ($this->manual_mappings() as $plugin_file => $mapping) {
+            $product_id = sanitize_key($mapping['product_id'] ?? '');
+            if ($product_id !== '') {
+                $by_product[$product_id][] = $plugin_file;
+            }
+        }
+        foreach ($by_product as $product_id => $plugin_files) {
+            if (count($plugin_files) > 1) {
+                $items[] = $this->diagnostic('warning', 'multiple_plugins_mapped_to_product', 'Multiple installed plugins are manually mapped to the same canonical product.', array('plugin_file' => implode(', ', $plugin_files)), $product_id);
             }
         }
         return $items;
@@ -698,7 +840,7 @@ final class SCFS_Installed_Plugin_Discovery {
         $candidate_groups = array();
         $matches = array();
         $pending = array();
-        $diagnostics = $this->registry_alias_diagnostics($registry);
+        $diagnostics = array_merge($this->registry_alias_diagnostics($registry), $this->manual_mapping_diagnostics());
         $active_count = 0;
         $inactive_count = 0;
         $network_count = 0;
@@ -719,9 +861,11 @@ final class SCFS_Installed_Plugin_Discovery {
                 $diagnostics[] = $this->diagnostic('info', 'development_version_detected', 'A development or prerelease plugin version was detected.', $plugin);
             }
 
+            $suggestions = $this->suggestion_candidates($plugin, $registry);
             $match = $this->match_plugin($plugin, $registry);
             if (!$match) {
                 if ($this->catalyst_candidate($plugin)) {
+                    $top_suggestion = $suggestions ? $suggestions[0] : array();
                     $pending[] = array(
                         'plugin_file' => $plugin['plugin_file'],
                         'directory_slug' => $plugin['directory_slug'],
@@ -736,7 +880,12 @@ final class SCFS_Installed_Plugin_Discovery {
                         'sc_product_id' => $plugin['sc_product_id'],
                         'sc_product' => $plugin['sc_product'],
                         'sc_public_release' => $plugin['sc_public_release'],
-                        'suggested_product_id' => $plugin['sc_product_id'],
+                        'suggested_product_id' => sanitize_key($top_suggestion['product_id'] ?? $plugin['sc_product_id']),
+                        'suggested_confidence' => absint($top_suggestion['confidence'] ?? 0),
+                        'suggestion_signals' => (array) ($top_suggestion['signals'] ?? array()),
+                        'suggestions' => $suggestions,
+                        'plugin_type' => sanitize_key($plugin['plugin_type'] ?? 'standard'),
+                        'plugin_uri' => esc_url_raw($plugin['plugin_uri'] ?? ''),
                         'review_state' => $plugin['name_state'] === 'missing' || $plugin['version_state'] === 'malformed' ? 'malformed_header' : 'pending',
                     );
                 }
@@ -748,6 +897,7 @@ final class SCFS_Installed_Plugin_Discovery {
                 'match_strategy' => $match['strategy'],
                 'confidence' => absint($match['confidence']),
                 'legacy_match' => !empty($match['legacy']),
+                'match_signals' => (array) ($match['signals'] ?? array($match['strategy'])),
             ));
         }
 
@@ -760,6 +910,14 @@ final class SCFS_Installed_Plugin_Discovery {
             $record = $registry[$product_id] ?? array();
             if ($winner['name_state'] === 'valid' && $this->normalize_name($winner['name']) !== $this->normalize_name($record['name'] ?? '')) {
                 $diagnostics[] = $this->diagnostic('info', 'plugin_display_name_changed', 'The installed plugin display name differs from the canonical product name; the canonical public name is preserved.', $winner, $product_id);
+            }
+            if (!empty($winner['sc_product_id']) && $winner['sc_product_id'] !== $product_id) {
+                $diagnostics[] = $this->diagnostic('warning', 'plugin_header_product_mismatch', 'The SC Product ID plugin header points to a different canonical product.', $winner, $product_id);
+            }
+            $plugin_repository = $this->normalize_repository_identity($winner['plugin_uri'] ?? '');
+            $canonical_repository = $this->normalize_repository_identity($record['github_repository_url'] ?? '');
+            if ($plugin_repository !== '' && $canonical_repository !== '' && $plugin_repository !== $canonical_repository) {
+                $diagnostics[] = $this->diagnostic('warning', 'plugin_repository_mismatch', 'The plugin header repository does not match the canonical GitHub repository.', $winner, $product_id);
             }
             foreach ($candidates as $duplicate) {
                 $pending[] = array(
@@ -776,7 +934,12 @@ final class SCFS_Installed_Plugin_Discovery {
                     'sc_product_id' => $duplicate['sc_product_id'],
                     'sc_product' => $duplicate['sc_product'],
                     'sc_public_release' => $duplicate['sc_public_release'],
+                    'plugin_type' => sanitize_key($duplicate['plugin_type'] ?? 'standard'),
+                    'plugin_uri' => esc_url_raw($duplicate['plugin_uri'] ?? ''),
                     'suggested_product_id' => $product_id,
+                    'suggested_confidence' => absint($duplicate['confidence']),
+                    'suggestion_signals' => (array) ($duplicate['match_signals'] ?? array($duplicate['match_strategy'])),
+                    'suggestions' => $this->suggestion_candidates($duplicate, $registry),
                     'selected_plugin_file' => $winner['plugin_file'],
                     'review_state' => 'duplicate_match',
                 );
@@ -799,6 +962,11 @@ final class SCFS_Installed_Plugin_Discovery {
                 'match_strategy' => $winner['match_strategy'],
                 'confidence' => absint($winner['confidence']),
                 'legacy_match' => (bool) $winner['legacy_match'],
+                'match_signals' => (array) ($winner['match_signals'] ?? array($winner['match_strategy'])),
+                'plugin_type' => sanitize_key($winner['plugin_type'] ?? 'standard'),
+                'plugin_uri' => esc_url_raw($winner['plugin_uri'] ?? ''),
+                'latest_version' => trim((string) ($record['github_latest_version'] ?? ($record['public_version'] ?? ''))),
+                'version_comparison' => $this->compare_plugin_versions($winner['version'], $record['github_latest_version'] ?? ($record['public_version'] ?? '')),
                 'discovered_at' => $scanned_at,
             );
         }
@@ -862,6 +1030,52 @@ final class SCFS_Installed_Plugin_Discovery {
         unset($record);
         update_option(SCFS_Canonical_Product_Registry::OPTION_KEY, $registry_service->normalize_registry($registry), false);
 
+        $match_by_file = array();
+        foreach ($matches as $match_record) {
+            $match_by_file[$match_record['plugin_file']] = $match_record;
+        }
+        $pending_by_file = array();
+        foreach ($pending as $candidate) {
+            $pending_by_file[$candidate['plugin_file']] = $candidate;
+        }
+        $inventory = array();
+        $classification_counts = array('standard' => 0, 'site' => 0, 'network' => 0, 'both' => 0, 'inactive' => 0, 'must-use' => 0, 'drop-in' => 0);
+        $comparison_counts = array('update_available' => 0, 'ahead' => 0, 'unknown' => 0);
+        foreach ($plugins as $plugin_file => $plugin) {
+            $plugin_type = sanitize_key($plugin['plugin_type'] ?? 'standard');
+            $classification_counts[$plugin_type] = ($classification_counts[$plugin_type] ?? 0) + 1;
+            $scope = sanitize_key($plugin['activation_scope'] ?? 'inactive');
+            $classification_counts[$scope] = ($classification_counts[$scope] ?? 0) + 1;
+            $matched = $match_by_file[$plugin_file] ?? array();
+            $candidate = $pending_by_file[$plugin_file] ?? array();
+            $suggestions = $candidate['suggestions'] ?? $this->suggestion_candidates($plugin, $registry);
+            $top = $suggestions ? $suggestions[0] : array();
+            $comparison = $matched['version_comparison'] ?? 'unknown';
+            if (isset($comparison_counts[$comparison])) {
+                $comparison_counts[$comparison]++;
+            }
+            $inventory[] = array(
+                'plugin_file' => $plugin_file,
+                'name' => $plugin['name'] !== '' ? $plugin['name'] : $plugin_file,
+                'version' => $plugin['version'],
+                'version_state' => $plugin['version_state'],
+                'active' => (bool) $plugin['active'],
+                'activation_scope' => $plugin['activation_scope'],
+                'plugin_type' => $plugin_type,
+                'text_domain' => $plugin['text_domain'],
+                'plugin_uri' => $plugin['plugin_uri'],
+                'mapping_state' => isset($match_by_file[$plugin_file]) ? 'matched' : (isset($ignored[$plugin_file]) ? 'ignored' : (isset($pending_by_file[$plugin_file]) ? 'review' : 'unclassified')),
+                'product_id' => sanitize_key($matched['product_id'] ?? ''),
+                'match_strategy' => sanitize_key($matched['match_strategy'] ?? ''),
+                'confidence' => absint($matched['confidence'] ?? 0),
+                'suggested_product_id' => sanitize_key($top['product_id'] ?? ''),
+                'suggested_confidence' => absint($top['confidence'] ?? 0),
+                'suggestion_signals' => (array) ($top['signals'] ?? array()),
+                'latest_version' => $matched['latest_version'] ?? '',
+                'version_comparison' => $comparison,
+            );
+        }
+
         $diagnostics_record = $this->diagnostics_record($diagnostics, $scanned_at);
         $snapshot = array(
             'schema' => self::SCHEMA,
@@ -879,7 +1093,18 @@ final class SCFS_Installed_Plugin_Discovery {
             'inactive_match_count' => $inactive_count,
             'network_active_match_count' => $network_count,
             'diagnostic_count' => count($diagnostics_record['items']),
+            'standard_plugin_count' => absint($classification_counts['standard'] ?? 0),
+            'site_active_plugin_count' => absint($classification_counts['site'] ?? 0),
+            'network_active_plugin_count' => absint($classification_counts['network'] ?? 0),
+            'both_active_plugin_count' => absint($classification_counts['both'] ?? 0),
+            'inactive_plugin_count' => absint($classification_counts['inactive'] ?? 0),
+            'must_use_plugin_count' => absint($classification_counts['must-use'] ?? 0),
+            'dropin_count' => absint($classification_counts['drop-in'] ?? 0),
+            'update_available_count' => absint($comparison_counts['update_available'] ?? 0),
+            'ahead_of_release_count' => absint($comparison_counts['ahead'] ?? 0),
+            'unknown_version_count' => absint($comparison_counts['unknown'] ?? 0),
             'matches' => array_values($matches),
+            'inventory' => $inventory,
         );
         update_option(self::SNAPSHOT_OPTION, $snapshot, false);
         update_option(self::PENDING_OPTION, array_values($pending), false);
@@ -1183,6 +1408,64 @@ final class SCFS_Installed_Plugin_Discovery {
     }
 
 
+    public function apply_bulk_decision($plugin_files, $bulk_decision) {
+        $plugin_files = array_values(array_unique(array_filter(array_map(array($this, 'normalize_plugin_file'), (array) $plugin_files))));
+        $bulk_decision = sanitize_key($bulk_decision);
+        if (!$plugin_files || !in_array($bulk_decision, array('ignore', 'map_suggested'), true)) {
+            return new WP_Error('scfs_bulk_decision_invalid', __('Select at least one plugin and a supported bulk action.', 'sustainable-catalyst-feature-suggestions'));
+        }
+        $processed = 0;
+        $skipped = array();
+        $used_products = array();
+        foreach ($plugin_files as $plugin_file) {
+            $candidate = $this->pending_candidate($plugin_file);
+            if (!$candidate) {
+                $skipped[] = $plugin_file;
+                continue;
+            }
+            if ($bulk_decision === 'ignore') {
+                $result = $this->ignore_candidate($candidate);
+            } else {
+                $product_id = sanitize_key($candidate['suggested_product_id'] ?? '');
+                $confidence = absint($candidate['suggested_confidence'] ?? 0);
+                if ($product_id === '' || $confidence < 80 || isset($used_products[$product_id])) {
+                    $skipped[] = $plugin_file;
+                    continue;
+                }
+                $result = $this->map_candidate_to_product($candidate, $product_id);
+                $used_products[$product_id] = true;
+            }
+            if (is_wp_error($result)) {
+                $skipped[] = $plugin_file;
+            } else {
+                $processed++;
+            }
+        }
+        $this->refresh(true, 'bulk_' . $bulk_decision);
+        $this->audit('plugin_discovery_bulk_decision', array('decision' => $bulk_decision, 'processed' => $processed, 'skipped' => count($skipped)));
+        return array(
+            'processed' => $processed,
+            'skipped' => $skipped,
+            'message' => sprintf(__('%1$d plugin decisions applied; %2$d skipped for review.', 'sustainable-catalyst-feature-suggestions'), $processed, count($skipped)),
+        );
+    }
+
+    public function bulk_action() {
+        if (!$this->can_manage()) {
+            wp_die('Forbidden');
+        }
+        check_admin_referer(self::BULK_NONCE, 'scfs_plugin_discovery_bulk_nonce');
+        $plugin_files = isset($_POST['plugin_files']) ? (array) wp_unslash($_POST['plugin_files']) : array();
+        $bulk_decision = isset($_POST['bulk_decision']) ? wp_unslash($_POST['bulk_decision']) : '';
+        $result = $this->apply_bulk_decision($plugin_files, $bulk_decision);
+        if (is_wp_error($result)) {
+            wp_die(esc_html($result->get_error_message()));
+        }
+        set_transient('scfs_plugin_discovery_bulk_' . get_current_user_id(), $result['message'], 60);
+        wp_safe_redirect(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . self::ADMIN_SLUG . '&bulk_updated=1'));
+        exit;
+    }
+
     public function save_product_connection($product_id, $plugin_file, $repository_url) {
         $product_id = sanitize_key($product_id);
         $plugin_file = $this->normalize_plugin_file($plugin_file);
@@ -1367,19 +1650,19 @@ final class SCFS_Installed_Plugin_Discovery {
         }
         $plugin_file = dirname(__DIR__) . '/sustainable-catalyst-feature-suggestions.php';
         wp_enqueue_style(
-            'scfs-plugin-discovery-v754',
-            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.7.0.css',
+            'scfs-plugin-discovery-v771',
+            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.7.1.css',
             array(),
             self::VERSION
         );
         wp_enqueue_script(
-            'scfs-plugin-discovery-v754',
-            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.7.0.js',
+            'scfs-plugin-discovery-v771',
+            plugin_dir_url($plugin_file) . 'assets/plugin-discovery-v7.7.1.js',
             array(),
             self::VERSION,
             true
         );
-        wp_localize_script('scfs-plugin-discovery-v754', 'SCFSPluginDiscovery', array(
+        wp_localize_script('scfs-plugin-discovery-v771', 'SCFSPluginDiscovery', array(
             'restUrl' => esc_url_raw(rest_url(Sustainable_Catalyst_Feature_Suggestions::REST_NAMESPACE . '/product-registry/discovery/decision')),
             'nonce' => wp_create_nonce('wp_rest'),
             'saving' => __('Saving decision…', 'sustainable-catalyst-feature-suggestions'),
@@ -1422,6 +1705,9 @@ final class SCFS_Installed_Plugin_Discovery {
             __('SC Product ID header', 'sustainable-catalyst-feature-suggestions') => $candidate['sc_product_id'] ?? '',
             __('SC Product header', 'sustainable-catalyst-feature-suggestions') => $candidate['sc_product'] ?? '',
             __('SC Public Release header', 'sustainable-catalyst-feature-suggestions') => $candidate['sc_public_release'] ?? '',
+            __('Plugin classification', 'sustainable-catalyst-feature-suggestions') => $candidate['plugin_type'] ?? 'standard',
+            __('Plugin URI', 'sustainable-catalyst-feature-suggestions') => $candidate['plugin_uri'] ?? '',
+            __('Suggestion signals', 'sustainable-catalyst-feature-suggestions') => implode(', ', (array) ($candidate['suggestion_signals'] ?? array())),
         );
         echo '<details class="scfs-discovery-details"><summary>' . esc_html__('View plugin evidence', 'sustainable-catalyst-feature-suggestions') . '</summary><dl>';
         foreach ($details as $label => $value) {
@@ -1434,24 +1720,30 @@ final class SCFS_Installed_Plugin_Discovery {
     }
 
     private function render_candidate_table($candidates) {
-        echo '<div class="scfs-discovery-table-wrap"><table class="widefat striped scfs-discovery-candidates"><thead><tr><th>' . esc_html__('Installed plugin', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Evidence', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Review status', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Mapping decision', 'sustainable-catalyst-feature-suggestions') . '</th></tr></thead><tbody>';
+        $form_id = 'scfs-discovery-bulk-' . substr(md5(wp_json_encode(array_column((array) $candidates, 'plugin_file'))), 0, 10);
+        echo '<form id="' . esc_attr($form_id) . '" class="scfs-discovery-bulk" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        echo '<input type="hidden" name="action" value="scfs_plugin_discovery_bulk">';
+        wp_nonce_field(self::BULK_NONCE, 'scfs_plugin_discovery_bulk_nonce');
+        echo '<label><span class="screen-reader-text">' . esc_html__('Bulk action', 'sustainable-catalyst-feature-suggestions') . '</span><select name="bulk_decision"><option value="">' . esc_html__('Bulk actions', 'sustainable-catalyst-feature-suggestions') . '</option><option value="map_suggested">' . esc_html__('Map to high-confidence suggestions', 'sustainable-catalyst-feature-suggestions') . '</option><option value="ignore">' . esc_html__('Mark as not a Sustainable Catalyst product', 'sustainable-catalyst-feature-suggestions') . '</option></select></label> ';
+        echo '<button type="submit" class="button">' . esc_html__('Apply', 'sustainable-catalyst-feature-suggestions') . '</button></form>';
+        echo '<div class="scfs-discovery-table-wrap"><table class="widefat striped scfs-discovery-candidates"><thead><tr><th class="check-column"><input type="checkbox" data-scfs-select-all aria-label="' . esc_attr__('Select all plugins in this table', 'sustainable-catalyst-feature-suggestions') . '"></th><th>' . esc_html__('Installed plugin', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Evidence', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Review status', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Mapping decision', 'sustainable-catalyst-feature-suggestions') . '</th></tr></thead><tbody>';
         foreach ((array) $candidates as $candidate) {
-            $version = $candidate['version'] ?? '';
-            if ($version === '') {
-                $version = $candidate['version_raw'] ?? '';
-            }
+            $version = $candidate['version'] ?? ($candidate['version_raw'] ?? '');
             if ($version === '') {
                 $version = __('Missing', 'sustainable-catalyst-feature-suggestions');
             }
             $suggested_id = sanitize_key($candidate['suggested_product_id'] ?? '');
             $suggested = $suggested_id !== '' ? SCFS_Canonical_Product_Registry::instance()->get_product($suggested_id) : null;
-            echo '<tr data-plugin-file="' . esc_attr($candidate['plugin_file']) . '"><td><strong>' . esc_html($candidate['name'] ?? $candidate['plugin_file']) . '</strong><br><code>' . esc_html($candidate['plugin_file']) . '</code><br><span class="scfs-discovery-chip">' . esc_html($candidate['activation_scope'] ?? 'inactive') . '</span></td>';
+            $confidence = absint($candidate['suggested_confidence'] ?? 0);
+            echo '<tr data-plugin-file="' . esc_attr($candidate['plugin_file']) . '"><th class="check-column"><input form="' . esc_attr($form_id) . '" type="checkbox" name="plugin_files[]" value="' . esc_attr($candidate['plugin_file']) . '" aria-label="' . esc_attr(sprintf(__('Select %s', 'sustainable-catalyst-feature-suggestions'), $candidate['name'] ?? $candidate['plugin_file'])) . '"></th><td><strong>' . esc_html($candidate['name'] ?? $candidate['plugin_file']) . '</strong><br><code>' . esc_html($candidate['plugin_file']) . '</code><br><span class="scfs-discovery-chip">' . esc_html($candidate['plugin_type'] ?? 'standard') . '</span> <span class="scfs-discovery-chip">' . esc_html($candidate['activation_scope'] ?? 'inactive') . '</span></td>';
             echo '<td><strong>' . esc_html($version) . '</strong> <small>' . esc_html($candidate['version_state'] ?? 'missing') . '</small>';
             $this->render_candidate_details($candidate);
-            echo '</td>';
-            echo '<td>' . esc_html($this->candidate_reason_label($candidate)) . '<br><code>' . esc_html($candidate['review_state'] ?? 'pending') . '</code>';
+            echo '</td><td>' . esc_html($this->candidate_reason_label($candidate)) . '<br><code>' . esc_html($candidate['review_state'] ?? 'pending') . '</code>';
             if ($suggested) {
-                echo '<p><strong>' . esc_html__('Suggested:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($suggested['name']) . '</p>';
+                echo '<p><strong>' . esc_html__('Suggested:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($suggested['name']) . ' <span class="scfs-discovery-confidence">' . esc_html($confidence) . '%</span></p>';
+                if (!empty($candidate['suggestion_signals'])) {
+                    echo '<small>' . esc_html(implode(' · ', (array) $candidate['suggestion_signals'])) . '</small>';
+                }
             }
             if (!empty($candidate['selected_plugin_file'])) {
                 echo '<p><small>' . esc_html(sprintf(__('Current winner: %s', 'sustainable-catalyst-feature-suggestions'), $candidate['selected_plugin_file'])) . '</small></p>';
@@ -1463,10 +1755,36 @@ final class SCFS_Installed_Plugin_Discovery {
         echo '</tbody></table></div>';
     }
 
+    private function render_inventory_panel() {
+        $snapshot = $this->snapshot();
+        $registry = SCFS_Canonical_Product_Registry::instance();
+        echo '<section data-scfs-plugin-inventory><div class="scfs-discovery-section-heading"><div><h2>' . esc_html__('Complete plugin inventory', 'sustainable-catalyst-feature-suggestions') . '</h2><p class="description">' . esc_html__('All standard, must-use, and drop-in plugins are classified. Matching suggestions remain advisory until an administrator confirms them.', 'sustainable-catalyst-feature-suggestions') . '</p></div><div class="scfs-discovery-inventory-filters"><label><span class="screen-reader-text">' . esc_html__('Search plugin inventory', 'sustainable-catalyst-feature-suggestions') . '</span><input type="search" data-scfs-inventory-search placeholder="' . esc_attr__('Search plugins', 'sustainable-catalyst-feature-suggestions') . '"></label><label><span class="screen-reader-text">' . esc_html__('Filter plugin classification', 'sustainable-catalyst-feature-suggestions') . '</span><select data-scfs-inventory-filter><option value="all">' . esc_html__('All classifications', 'sustainable-catalyst-feature-suggestions') . '</option><option value="site">' . esc_html__('Site active', 'sustainable-catalyst-feature-suggestions') . '</option><option value="network">' . esc_html__('Network active', 'sustainable-catalyst-feature-suggestions') . '</option><option value="inactive">' . esc_html__('Inactive', 'sustainable-catalyst-feature-suggestions') . '</option><option value="must-use">' . esc_html__('Must-use', 'sustainable-catalyst-feature-suggestions') . '</option><option value="drop-in">' . esc_html__('Drop-ins', 'sustainable-catalyst-feature-suggestions') . '</option></select></label></div></div>';
+        echo '<div class="scfs-discovery-table-wrap"><table class="widefat striped scfs-plugin-inventory"><thead><tr><th>' . esc_html__('Plugin', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Classification', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Canonical mapping', 'sustainable-catalyst-feature-suggestions') . '</th><th>' . esc_html__('Version intelligence', 'sustainable-catalyst-feature-suggestions') . '</th></tr></thead><tbody>';
+        foreach ((array) $snapshot['inventory'] as $item) {
+            $product = !empty($item['product_id']) ? $registry->get_product($item['product_id']) : null;
+            $suggested = !empty($item['suggested_product_id']) ? $registry->get_product($item['suggested_product_id']) : null;
+            $haystack = strtolower(($item['name'] ?? '') . ' ' . ($item['plugin_file'] ?? '') . ' ' . ($item['text_domain'] ?? ''));
+            echo '<tr data-scfs-inventory-row data-search="' . esc_attr($haystack) . '" data-scope="' . esc_attr($item['activation_scope'] ?? 'inactive') . '" data-type="' . esc_attr($item['plugin_type'] ?? 'standard') . '"><td><strong>' . esc_html($item['name']) . '</strong><br><code>' . esc_html($item['plugin_file']) . '</code></td><td><span class="scfs-discovery-chip">' . esc_html($item['plugin_type']) . '</span> <span class="scfs-discovery-chip">' . esc_html($item['activation_scope']) . '</span></td><td>';
+            if ($product) {
+                echo '<strong>' . esc_html($product['name']) . '</strong><br><small>' . esc_html($item['match_strategy']) . ' · ' . esc_html($item['confidence']) . '%</small>';
+            } elseif ($suggested) {
+                echo esc_html(sprintf(__('Suggested: %1$s (%2$d%%)', 'sustainable-catalyst-feature-suggestions'), $suggested['name'], $item['suggested_confidence']));
+            } else {
+                echo esc_html(ucwords(str_replace('_', ' ', $item['mapping_state'])));
+            }
+            echo '</td><td><strong>' . esc_html($item['version'] ?: __('Missing', 'sustainable-catalyst-feature-suggestions')) . '</strong>';
+            if (!empty($item['latest_version'])) {
+                echo '<br><small>' . esc_html(sprintf(__('GitHub: %s', 'sustainable-catalyst-feature-suggestions'), $item['latest_version'])) . '</small>';
+            }
+            echo '<br><span class="scfs-discovery-version-state scfs-discovery-version-state--' . esc_attr($item['version_comparison']) . '">' . esc_html(str_replace('_', ' ', $item['version_comparison'])) . '</span></td></tr>';
+        }
+        echo '</tbody></table></div><p data-scfs-inventory-empty hidden>' . esc_html__('No plugins match the current inventory filters.', 'sustainable-catalyst-feature-suggestions') . '</p></section>';
+    }
+
     private function render_summary_panel() {
         $snapshot = $this->snapshot();
         $pending_count = count($this->pending_candidates());
-        echo '<div class="notice notice-info inline scfs-discovery-summary" data-scfs-discovery-summary><p><strong>' . esc_html(sprintf(__('%d approved products matched', 'sustainable-catalyst-feature-suggestions'), $snapshot['matched_product_count'])) . '</strong> · ' . esc_html(sprintf(__('%d active', 'sustainable-catalyst-feature-suggestions'), $snapshot['active_match_count'])) . ' · ' . esc_html(sprintf(__('%d inactive', 'sustainable-catalyst-feature-suggestions'), $snapshot['inactive_match_count'])) . ' · ' . esc_html(sprintf(__('%d network-active', 'sustainable-catalyst-feature-suggestions'), $snapshot['network_active_match_count'])) . ' · <strong data-scfs-pending-count>' . esc_html(sprintf(__('%d pending review', 'sustainable-catalyst-feature-suggestions'), $pending_count)) . '</strong></p></div>';
+        echo '<div class="notice notice-info inline scfs-discovery-summary" data-scfs-discovery-summary><p><strong>' . esc_html(sprintf(__('%d approved products matched', 'sustainable-catalyst-feature-suggestions'), $snapshot['matched_product_count'])) . '</strong> · ' . esc_html(sprintf(__('%d site active', 'sustainable-catalyst-feature-suggestions'), $snapshot['site_active_plugin_count'])) . ' · ' . esc_html(sprintf(__('%d network active', 'sustainable-catalyst-feature-suggestions'), $snapshot['network_active_plugin_count'] + $snapshot['both_active_plugin_count'])) . ' · ' . esc_html(sprintf(__('%d inactive', 'sustainable-catalyst-feature-suggestions'), $snapshot['inactive_plugin_count'])) . ' · ' . esc_html(sprintf(__('%d must-use', 'sustainable-catalyst-feature-suggestions'), $snapshot['must_use_plugin_count'])) . ' · ' . esc_html(sprintf(__('%d drop-ins', 'sustainable-catalyst-feature-suggestions'), $snapshot['dropin_count'])) . ' · <strong data-scfs-pending-count>' . esc_html(sprintf(__('%d pending review', 'sustainable-catalyst-feature-suggestions'), $pending_count)) . '</strong></p><p>' . esc_html(sprintf(__('%1$d updates available · %2$d ahead of GitHub · %3$d unknown comparisons', 'sustainable-catalyst-feature-suggestions'), $snapshot['update_available_count'], $snapshot['ahead_of_release_count'], $snapshot['unknown_version_count'])) . '</p></div>';
     }
 
     private function render_matches_panel() {
@@ -1486,7 +1804,9 @@ final class SCFS_Installed_Plugin_Discovery {
                     wp_nonce_field(self::DECISION_NONCE, 'scfs_plugin_discovery_nonce');
                     echo '<button class="button-link-delete" type="submit">' . esc_html__('Remove manual mapping', 'sustainable-catalyst-feature-suggestions') . '</button><span class="spinner" aria-hidden="true"></span></form>';
                 }
-                echo '</td><td>' . esc_html($version) . '<br><small>' . esc_html($match['version_state']) . '</small></td><td>' . esc_html($match['activation_scope']) . '</td><td><code>' . esc_html($match['match_strategy']) . '</code> ' . esc_html($match['confidence']) . '%</td></tr>';
+                echo '</td><td>' . esc_html($version) . '<br><small>' . esc_html($match['version_state']) . '</small>';
+                if (!empty($match['latest_version'])) { echo '<br><small>' . esc_html(sprintf(__('GitHub: %s', 'sustainable-catalyst-feature-suggestions'), $match['latest_version'])) . '</small>'; }
+                echo '<br><span class="scfs-discovery-version-state scfs-discovery-version-state--' . esc_attr($match['version_comparison'] ?? 'unknown') . '">' . esc_html(str_replace('_', ' ', $match['version_comparison'] ?? 'unknown')) . '</span></td><td>' . esc_html($match['activation_scope']) . '</td><td><code>' . esc_html($match['match_strategy']) . '</code> ' . esc_html($match['confidence']) . '%</td></tr>';
             }
         }
         echo '</tbody></table></div></section>';
@@ -1561,13 +1881,14 @@ final class SCFS_Installed_Plugin_Discovery {
             'matches' => $this->render_fragment('render_matches_panel'),
             'review' => $this->render_fragment('render_review_panel'),
             'ignored' => $this->render_fragment('render_ignored_panel'),
+            'inventory' => $this->render_fragment('render_inventory_panel'),
         );
     }
 
     public function register_admin_page() {
         add_submenu_page(
             'edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE,
-            __('Installed Plugin Discovery', 'sustainable-catalyst-feature-suggestions'),
+            __('Plugin Discovery Intelligence', 'sustainable-catalyst-feature-suggestions'),
             __('Plugin Discovery', 'sustainable-catalyst-feature-suggestions'),
             $this->capability(),
             self::ADMIN_SLUG,
@@ -1587,6 +1908,10 @@ final class SCFS_Installed_Plugin_Discovery {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Installed plugins rescanned and registry evidence refreshed.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         } elseif (isset($_GET['decision_updated'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Plugin discovery decision saved and the registry was refreshed.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
+        } elseif (isset($_GET['bulk_updated'])) {
+            $message = get_transient('scfs_plugin_discovery_bulk_' . get_current_user_id());
+            delete_transient('scfs_plugin_discovery_bulk_' . get_current_user_id());
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($message ?: __('Bulk plugin discovery decisions applied.', 'sustainable-catalyst-feature-suggestions')) . '</p></div>';
         } elseif (isset($_GET['connection_saved'])) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Canonical product, active plugin, and GitHub repository connection saved.', 'sustainable-catalyst-feature-suggestions') . '</p></div>';
         } elseif (isset($_GET['github_synced'])) {
@@ -1602,6 +1927,7 @@ final class SCFS_Installed_Plugin_Discovery {
         echo '<a class="button" href="' . esc_url(admin_url('edit.php?post_type=' . Sustainable_Catalyst_Feature_Suggestions::POST_TYPE . '&page=' . SCFS_GitHub_Connection_Settings::ADMIN_SLUG)) . '">' . esc_html__('GitHub Connection', 'sustainable-catalyst-feature-suggestions') . '</a> ';
         echo '<a class="button" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=scfs_clear_plugin_discovery'), 'scfs_clear_plugin_discovery')) . '">' . esc_html__('Clear cached snapshot', 'sustainable-catalyst-feature-suggestions') . '</a></p>';
         echo '<p><strong>' . esc_html__('Last scan:', 'sustainable-catalyst-feature-suggestions') . '</strong> ' . esc_html($snapshot['scanned_at'] ?: __('Not yet scanned', 'sustainable-catalyst-feature-suggestions')) . '</p>';
+        $this->render_inventory_panel();
         $this->render_connections_panel();
         $this->render_matches_panel();
         $this->render_review_panel();
@@ -1660,6 +1986,15 @@ final class SCFS_Installed_Plugin_Discovery {
             'callback' => array($this, 'rest_rescan'),
             'permission_callback' => array($this, 'rest_permission'),
         ));
+        register_rest_route(Sustainable_Catalyst_Feature_Suggestions::REST_NAMESPACE, '/product-registry/discovery/bulk', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'rest_bulk'),
+            'permission_callback' => array($this, 'rest_permission'),
+            'args' => array(
+                'plugin_files' => array('required' => true, 'type' => 'array'),
+                'bulk_decision' => array('required' => true, 'type' => 'string'),
+            ),
+        ));
         register_rest_route(Sustainable_Catalyst_Feature_Suggestions::REST_NAMESPACE, '/product-registry/discovery/diagnostics', array(
             'methods' => 'GET',
             'callback' => array($this, 'rest_diagnostics'),
@@ -1689,6 +2024,7 @@ final class SCFS_Installed_Plugin_Discovery {
             'ignored' => $this->ignored_candidates(),
             'manual_mappings' => array_values($this->manual_mappings()),
             'diagnostics' => $this->diagnostics(),
+            'inventory' => $this->plugin_inventory(),
         ));
     }
 
@@ -1717,6 +2053,20 @@ final class SCFS_Installed_Plugin_Discovery {
             'pending' => $this->pending_candidates(),
             'ignored' => $this->ignored_candidates(),
             'manual_mappings' => array_values($this->manual_mappings()),
+            'fragments' => $this->fragment_payload(),
+        ));
+    }
+
+    public function rest_bulk($request) {
+        $result = $this->apply_bulk_decision($request->get_param('plugin_files'), $request->get_param('bulk_decision'));
+        if (is_wp_error($result)) {
+            $result->add_data(array('status' => 400));
+            return $result;
+        }
+        return rest_ensure_response(array(
+            'ok' => true,
+            'message' => $result['message'],
+            'snapshot' => $this->snapshot(),
             'fragments' => $this->fragment_payload(),
         ));
     }

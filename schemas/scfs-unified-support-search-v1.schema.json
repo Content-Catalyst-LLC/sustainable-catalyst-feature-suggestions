@@ -3,28 +3,85 @@
   "$id": "https://sustainablecatalyst.com/schemas/scfs-unified-support-search-v1.schema.json",
   "title": "Sustainable Catalyst Unified Support Search Result",
   "type": "object",
-  "required": ["schema", "version", "query", "result_count", "confidence", "resolution_state", "groups", "journey", "personal_data_stored", "human_review_required"],
+  "required": [
+    "schema",
+    "version",
+    "query",
+    "result_count",
+    "confidence",
+    "resolution_state",
+    "groups",
+    "journey",
+    "personal_data_stored",
+    "human_review_required"
+  ],
   "properties": {
-    "schema": {"const": "scfs-unified-support-search/1.0"},
-    "journey_schema": {"const": "scfs-support-resolution-journey/1.0"},
-    "version": {"const": "5.4.0"},
-    "query": {"type": "string"},
-    "result_count": {"type": "integer", "minimum": 0},
-    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
-    "resolution_state": {"enum": ["strong_match", "possible_match", "low_confidence", "no_match"]},
+    "schema": {
+      "const": "scfs-unified-support-search/1.0"
+    },
+    "journey_schema": {
+      "const": "scfs-support-resolution-journey/1.0"
+    },
+    "version": {
+      "const": "5.4.0"
+    },
+    "query": {
+      "type": "string"
+    },
+    "result_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "resolution_state": {
+      "enum": [
+        "strong_match",
+        "possible_match",
+        "low_confidence",
+        "no_match"
+      ]
+    },
     "groups": {
       "type": "object",
-      "required": ["known_issues", "support_articles", "releases", "public_suggestions"],
+      "required": [
+        "known_issues",
+        "support_articles",
+        "releases",
+        "public_suggestions"
+      ],
       "properties": {
-        "known_issues": {"type": "array"},
-        "support_articles": {"type": "array"},
-        "releases": {"type": "array"},
-        "public_suggestions": {"type": "array"}
+        "known_issues": {
+          "type": "array"
+        },
+        "support_articles": {
+          "type": "array"
+        },
+        "releases": {
+          "type": "array"
+        },
+        "public_suggestions": {
+          "type": "array"
+        }
       }
     },
-    "journey": {"type": ["array", "object"]},
-    "personal_data_stored": {"const": false},
-    "automatic_case_creation": {"const": false},
-    "human_review_required": {"const": true}
+    "journey": {
+      "type": [
+        "array",
+        "object"
+      ]
+    },
+    "personal_data_stored": {
+      "const": false
+    },
+    "automatic_case_creation": {
+      "const": false
+    },
+    "human_review_required": {
+      "const": true
+    }
   }
 }

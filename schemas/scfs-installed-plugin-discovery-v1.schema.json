@@ -17,7 +17,7 @@
       "const": "scfs-installed-plugin-discovery/1.0"
     },
     "version": {
-      "const": "7.7.0"
+      "const": "7.7.1"
     },
     "scanned_at": {
       "type": "string"
@@ -62,6 +62,53 @@
       "maxItems": 250,
       "items": {
         "$ref": "#/$defs/manual_mapping"
+      }
+    },
+    "standard_plugin_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "site_active_plugin_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "network_active_plugin_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "both_active_plugin_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "inactive_plugin_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "must_use_plugin_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "dropin_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "update_available_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ahead_of_release_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unknown_version_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "inventory": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/inventory"
       }
     }
   },
@@ -110,10 +157,12 @@
             "exact_plugin_file",
             "legacy_plugin_file",
             "sc_product_id_header",
+            "sc_product_header",
             "plugin_slug",
             "legacy_plugin_slug",
             "text_domain",
             "legacy_text_domain",
+            "plugin_repository_url",
             "approved_name_alias"
           ]
         },
@@ -146,6 +195,34 @@
         },
         "legacy_match": {
           "type": "boolean"
+        },
+        "match_signals": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string"
+          }
+        },
+        "plugin_type": {
+          "enum": [
+            "standard",
+            "must-use",
+            "drop-in"
+          ]
+        },
+        "plugin_uri": {
+          "type": "string"
+        },
+        "latest_version": {
+          "type": "string"
+        },
+        "version_comparison": {
+          "enum": [
+            "current",
+            "update_available",
+            "ahead",
+            "unknown"
+          ]
         }
       }
     },
@@ -230,6 +307,35 @@
         },
         "ignored_by": {
           "type": "string"
+        },
+        "suggested_confidence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "suggestion_signals": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string"
+          }
+        },
+        "suggestions": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/suggestion"
+          }
+        },
+        "plugin_type": {
+          "enum": [
+            "standard",
+            "must-use",
+            "drop-in"
+          ]
+        },
+        "plugin_uri": {
+          "type": "string"
         }
       }
     },
@@ -304,6 +410,142 @@
         },
         "source_before": {
           "type": "object"
+        }
+      }
+    },
+    "suggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_id",
+        "name",
+        "confidence",
+        "signals",
+        "primary_signal"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "signals": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string"
+          }
+        },
+        "primary_signal": {
+          "type": "string"
+        }
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plugin_file",
+        "name",
+        "version",
+        "version_state",
+        "active",
+        "activation_scope",
+        "plugin_type",
+        "mapping_state",
+        "version_comparison"
+      ],
+      "properties": {
+        "plugin_file": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "version_state": {
+          "enum": [
+            "valid",
+            "development",
+            "missing",
+            "malformed"
+          ]
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "activation_scope": {
+          "enum": [
+            "inactive",
+            "site",
+            "network",
+            "both"
+          ]
+        },
+        "plugin_type": {
+          "enum": [
+            "standard",
+            "must-use",
+            "drop-in"
+          ]
+        },
+        "text_domain": {
+          "type": "string"
+        },
+        "plugin_uri": {
+          "type": "string"
+        },
+        "mapping_state": {
+          "enum": [
+            "matched",
+            "review",
+            "ignored",
+            "unclassified"
+          ]
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "match_strategy": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "suggested_product_id": {
+          "type": "string"
+        },
+        "suggested_confidence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "suggestion_signals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "latest_version": {
+          "type": "string"
+        },
+        "version_comparison": {
+          "enum": [
+            "current",
+            "update_available",
+            "ahead",
+            "unknown"
+          ]
         }
       }
     }

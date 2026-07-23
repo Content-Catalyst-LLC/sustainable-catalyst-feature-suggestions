@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sustainablecatalyst.com/schemas/scfs-plugin-discovery-intelligence-v1.schema.json",
+  "title": "Sustainable Catalyst Plugin Discovery Intelligence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "complete_plugin_inventory",
+    "confidence_ranked_suggestions",
+    "bulk_mapping_and_ignore",
+    "human_confirmation_required"
+  ],
+  "properties": {
+    "schema": {
+      "const": "scfs-plugin-discovery-intelligence/1.0"
+    },
+    "version": {
+      "const": "7.7.1"
+    },
+    "complete_plugin_inventory": {
+      "const": true
+    },
+    "classifications": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "standard",
+          "site-active",
+          "network-active",
+          "inactive",
+          "must-use",
+          "drop-in"
+        ]
+      },
+      "minItems": 6,
+      "uniqueItems": true
+    },
+    "confidence_ranked_suggestions": {
+      "const": true
+    },
+    "matching_signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "bulk_mapping_and_ignore": {
+      "const": true
+    },
+    "duplicate_mapping_detection": {
+      "const": true
+    },
+    "installed_vs_github_version_comparison": {
+      "const": true
+    },
+    "plugin_header_repository_consistency": {
+      "const": true
+    },
+    "inventory_search_and_filters": {
+      "const": true
+    },
+    "human_confirmation_required": {
+      "const": true
+    },
+    "automatic_product_creation": {
+      "const": false
+    }
+  }
+}

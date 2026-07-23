@@ -1,3 +1,7 @@
+## 7.7.1 — Plugin Discovery Intelligence
+
+- Added complete plugin inventory classification, ranked canonical suggestions, bulk review, duplicate mapping diagnostics, version comparison, and header/repository consistency checks.
+
 ## v7.7.0 — Canonical Product Registry Administration
 
 - Added searchable and filterable canonical product catalog administration.

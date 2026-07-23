@@ -4,10 +4,10 @@ $plugin = $root . '/wordpress/sustainable-catalyst-feature-suggestions';
 $main = file_get_contents($plugin . '/sustainable-catalyst-feature-suggestions.php');
 $registry = file_get_contents($plugin . '/includes/class-scfs-canonical-product-registry.php');
 $admin = file_get_contents($plugin . '/includes/class-scfs-canonical-product-registry-admin.php');
-$css = file_get_contents($plugin . '/assets/canonical-product-registry-admin-v7.7.0.css');
-$js = file_get_contents($plugin . '/assets/canonical-product-registry-admin-v7.7.0.js');
+$css = file_get_contents($plugin . '/assets/canonical-product-registry-admin-v7.7.1.css');
+$js = file_get_contents($plugin . '/assets/canonical-product-registry-admin-v7.7.1.js');
 $checks = array(
-    'runtime identity' => strpos($main, 'Version: 7.7.0') !== false && strpos($admin, "const VERSION = '7.7.0'") !== false,
+    'runtime identity' => strpos($main, 'Version: 7.7.1') !== false && strpos($admin, "const VERSION = '7.7.1'") !== false,
     'class bootstrapped' => strpos($main, 'class-scfs-canonical-product-registry-admin.php') !== false && strpos($main, 'SCFS_Canonical_Product_Registry_Admin::instance()') !== false,
     'activation registered' => strpos($main, 'SCFS_Canonical_Product_Registry_Admin::activate()') !== false,
     'authoritative admin route' => strpos($registry, "SCFS_Canonical_Product_Registry_Admin::instance(), 'render_admin_page'") !== false,
@@ -32,4 +32,4 @@ foreach ($checks as $label => $passed) {
         exit(1);
     }
 }
-echo 'v7.7.0 Canonical Product Registry Administration contract passed (' . count($checks) . " checks).\n";
+echo 'v7.7.1 Plugin Discovery Intelligence contract passed (' . count($checks) . " checks).\n";

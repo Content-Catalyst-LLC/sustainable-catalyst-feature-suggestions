@@ -70,4 +70,4 @@ $checks = array(
 foreach ($checks as $label => $passed) {
     if (!$passed) { fwrite(STDERR, "FAIL: {$label}\n"); exit(1); }
 }
-echo 'v7.7.0 Canonical Product Registry Administration runtime contract passed (' . count($checks) . " checks).\n";
+echo 'v7.7.1 Plugin Discovery Intelligence runtime contract passed (' . count($checks) . " checks).\n";

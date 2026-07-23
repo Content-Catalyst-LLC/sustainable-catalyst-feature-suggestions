@@ -13,7 +13,7 @@
       "const": "scfs-canonical-product-registry-admin/1.0"
     },
     "version": {
-      "const": "7.7.0"
+      "const": "7.7.1"
     },
     "features": {
       "type": "object",

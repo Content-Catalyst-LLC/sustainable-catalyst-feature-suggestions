@@ -3,41 +3,92 @@
   "$id": "https://sustainablecatalyst.com/schemas/scfs-help-desk-agent-workspace-v1.schema.json",
   "title": "Sustainable Catalyst Help Desk Agent Workspace",
   "type": "object",
-  "required": ["schema", "version", "private_agent_workspace", "public_workspace_api", "automatic_assignment", "queues", "workload"],
+  "required": [
+    "schema",
+    "version",
+    "private_agent_workspace",
+    "public_workspace_api",
+    "automatic_assignment",
+    "queues",
+    "workload"
+  ],
   "properties": {
-    "schema": {"const": "scfs-help-desk-agent-workspace/1.0"},
-    "version": {"const": "6.2.0"},
-    "private_agent_workspace": {"const": true},
-    "public_workspace_api": {"const": false},
-    "automatic_assignment": {"const": false},
-    "identity_authority": {"const": "contact-engagement"},
-    "attachment_authority": {"const": "contact-engagement"},
+    "schema": {
+      "const": "scfs-help-desk-agent-workspace/1.0"
+    },
+    "version": {
+      "const": "6.2.0"
+    },
+    "private_agent_workspace": {
+      "const": true
+    },
+    "public_workspace_api": {
+      "const": false
+    },
+    "automatic_assignment": {
+      "const": false
+    },
+    "identity_authority": {
+      "const": "contact-engagement"
+    },
+    "attachment_authority": {
+      "const": "contact-engagement"
+    },
     "queues": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["key", "label", "count"],
+        "required": [
+          "key",
+          "label",
+          "count"
+        ],
         "properties": {
-          "key": {"type": "string"},
-          "label": {"type": "string"},
-          "count": {"type": "integer", "minimum": 0}
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
         },
         "additionalProperties": true
       }
     },
     "workload": {
       "type": "object",
-      "required": ["agents", "teams", "unassigned", "human_review_required"],
+      "required": [
+        "agents",
+        "teams",
+        "unassigned",
+        "human_review_required"
+      ],
       "properties": {
-        "agents": {"type": "array"},
-        "teams": {"type": "array"},
-        "unassigned": {"type": "integer", "minimum": 0},
-        "human_review_required": {"const": true}
+        "agents": {
+          "type": "array"
+        },
+        "teams": {
+          "type": "array"
+        },
+        "unassigned": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "human_review_required": {
+          "const": true
+        }
       },
       "additionalProperties": true
     },
-    "saved_views": {"type": "array"},
-    "human_review_required": {"const": true}
+    "saved_views": {
+      "type": "array"
+    },
+    "human_review_required": {
+      "const": true
+    }
   },
   "additionalProperties": true
 }

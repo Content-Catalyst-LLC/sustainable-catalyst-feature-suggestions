@@ -15,8 +15,12 @@
     "human_review_required"
   ],
   "properties": {
-    "schema": {"const": "scfs-known-issue-release-intelligence/1.0"},
-    "version": {"const": "5.4.0"},
+    "schema": {
+      "const": "scfs-known-issue-release-intelligence/1.0"
+    },
+    "version": {
+      "const": "5.4.0"
+    },
     "summary": {
       "type": "object",
       "required": [
@@ -30,39 +34,86 @@
         "review_required_count"
       ],
       "properties": {
-        "issue_count": {"type": "integer", "minimum": 0},
-        "active_issue_count": {"type": "integer", "minimum": 0},
-        "resolved_issue_count": {"type": "integer", "minimum": 0},
-        "issue_with_workaround_count": {"type": "integer", "minimum": 0},
-        "issue_with_release_or_article_links_count": {"type": "integer", "minimum": 0},
-        "release_count": {"type": "integer", "minimum": 0},
-        "release_with_open_issues_count": {"type": "integer", "minimum": 0},
-        "review_required_count": {"type": "integer", "minimum": 0}
+        "issue_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active_issue_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "resolved_issue_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "issue_with_workaround_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "issue_with_release_or_article_links_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "release_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "release_with_open_issues_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "review_required_count": {
+          "type": "integer",
+          "minimum": 0
+        }
       },
       "additionalProperties": false
     },
     "issues": {
       "type": "array",
-      "items": {"$ref": "#/$defs/issueRecord"}
+      "items": {
+        "$ref": "#/$defs/issueRecord"
+      }
     },
     "releases": {
       "type": "array",
-      "items": {"$ref": "#/$defs/releaseRecord"}
+      "items": {
+        "$ref": "#/$defs/releaseRecord"
+      }
     },
     "warnings": {
       "type": "array",
-      "items": {"$ref": "#/$defs/warning"}
+      "items": {
+        "$ref": "#/$defs/warning"
+      }
     },
-    "generated_at": {"type": "string", "format": "date-time"},
-    "wordpress_source_of_truth": {"const": true},
-    "automatic_incident_declaration": {"const": false},
-    "automatic_release_status_changes": {"const": false},
-    "automatic_publication": {"const": false},
-    "human_review_required": {"const": true}
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "wordpress_source_of_truth": {
+      "const": true
+    },
+    "automatic_incident_declaration": {
+      "const": false
+    },
+    "automatic_release_status_changes": {
+      "const": false
+    },
+    "automatic_publication": {
+      "const": false
+    },
+    "human_review_required": {
+      "const": true
+    }
   },
   "$defs": {
     "healthState": {
-      "enum": ["linked", "review_required", "blocked"]
+      "enum": [
+        "linked",
+        "review_required",
+        "blocked"
+      ]
     },
     "issueRecord": {
       "type": "object",
@@ -77,14 +128,39 @@
         "warnings"
       ],
       "properties": {
-        "issue_id": {"type": "string", "minLength": 1},
-        "state": {"$ref": "#/$defs/healthState"},
-        "relationship_count": {"type": "integer", "minimum": 0},
-        "affected_version_count": {"type": "integer", "minimum": 0},
-        "target_release_count": {"type": "integer", "minimum": 0},
-        "fixed_release_count": {"type": "integer", "minimum": 0},
-        "related_article_count": {"type": "integer", "minimum": 0},
-        "warnings": {"type": "array", "items": {"type": "string"}}
+        "issue_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "$ref": "#/$defs/healthState"
+        },
+        "relationship_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "affected_version_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target_release_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fixed_release_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "related_article_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       },
       "additionalProperties": false
     },
@@ -100,25 +176,76 @@
         "warnings"
       ],
       "properties": {
-        "release_id": {"type": "string", "minLength": 1},
-        "state": {"$ref": "#/$defs/healthState"},
-        "open_issue_ids": {"type": "array", "items": {"type": "string"}},
-        "resolved_issue_ids": {"type": "array", "items": {"type": "string"}},
-        "major_open_issue_ids": {"type": "array", "items": {"type": "string"}},
-        "related_article_count": {"type": "integer", "minimum": 0},
-        "warnings": {"type": "array", "items": {"type": "string"}}
+        "release_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "$ref": "#/$defs/healthState"
+        },
+        "open_issue_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "resolved_issue_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "major_open_issue_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "related_article_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       },
       "additionalProperties": false
     },
     "warning": {
       "type": "object",
-      "required": ["code", "record_id", "record_type", "severity", "message"],
+      "required": [
+        "code",
+        "record_id",
+        "record_type",
+        "severity",
+        "message"
+      ],
       "properties": {
-        "code": {"type": "string"},
-        "record_id": {"type": "string"},
-        "record_type": {"enum": ["known_issue", "release_record"]},
-        "severity": {"enum": ["info", "warning", "error"]},
-        "message": {"type": "string"}
+        "code": {
+          "type": "string"
+        },
+        "record_id": {
+          "type": "string"
+        },
+        "record_type": {
+          "enum": [
+            "known_issue",
+            "release_record"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
       },
       "additionalProperties": false
     }
